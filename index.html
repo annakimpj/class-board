@@ -40,12 +40,17 @@
   .used input:checked::after { display: block; }
   .used:has(input:focus-visible), .tools button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .used:has(input:disabled) { display: none; }
-  .tools .gear { width: 30px; height: 30px; border: 0; background: none; color: var(--muted); font-size: 18px; }
-  .tools .gear:hover { background: var(--line); color: var(--ink); }
+  /* 설정 버튼: 오른쪽 위, 창 버튼(─ □ ✕) 바로 왼쪽. 브라우저에서는 오른쪽 위 모서리 */
+  .gear { position: fixed; top: env(titlebar-area-y, 4px); height: env(titlebar-area-height, 34px); width: 36px;
+          left: min(calc(env(titlebar-area-x, 0px) + env(titlebar-area-width, 100vw) - 44px), calc(100vw - 44px));
+          display: grid; place-items: center; border: 0; border-radius: 6px; background: none; color: var(--muted); cursor: pointer; padding: 0;
+          app-region: no-drag; -webkit-app-region: no-drag; }
+  .gear:hover { background: var(--line); color: var(--ink); }
+  .gear:focus-visible { outline: 2px solid var(--accent); }
   /* 설정 창: 창 전체를 덮음. 숨긴 제목 표시줄의 버튼(─ □ ✕) 아래부터 시작 */
   #panel:not([hidden]) { position: fixed; inset: 0; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px;
          padding: calc(env(titlebar-area-height, 0px) + 12px) 18px 12px; background: var(--bg); color: var(--ink);
-         font: 14px/1.55 "Malgun Gothic", sans-serif; app-region: no-drag; -webkit-app-region: no-drag; }
+         font: 17px/1.5 "GangwonEdu", "Malgun Gothic", sans-serif; app-region: no-drag; -webkit-app-region: no-drag; }
   #panel nav { display: flex; gap: 6px; align-items: center; }
   #panel button { font: inherit; border: 1.5px solid var(--line); background: #fff; color: var(--ink); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
   #panel nav .on { background: var(--accent); border-color: var(--accent); color: #fff; }
@@ -54,7 +59,9 @@
   #panel p, #panel ul, #panel ol { margin: 0 0 8px; }
   #panel ul, #panel ol { padding-left: 18px; }
   #panel li b { color: var(--accent); margin-right: 4px; }
-  #panel .sum { color: var(--muted); font-size: 13px; }
+  #panel .sum { color: var(--muted); font-size: 15px; }
+  #panel li .date { border: 0; background: none; padding: 0 2px; color: var(--accent); text-decoration: underline dotted; border-radius: 4px; }
+  #panel li .date:hover { background: var(--line); }
   #panel .row { display: flex; gap: 6px; }
   #panel input { flex: 1; font: inherit; padding: 4px 10px; border: 1.5px solid var(--line); border-radius: 8px; background: #fff; }
   #panel .danger { background: var(--accent); border-color: var(--accent); color: #fff; }
@@ -78,12 +85,17 @@
   <footer>
   <p class="rule-line"><span id="rule" spellcheck="false" title="더블클릭해서 고칠 수 있어요"></span> <span class="hint">(더블클릭해서 수정)</span></p>
   <div class="tools">
-    <button class="gear" onclick="togglePanel(true)" title="설정" aria-label="설정">⚙</button>
     <label class="used" title="이 주제를 사용한 날짜 기록"><input type="checkbox" id="check"><span id="used">사용 체크</span></label>
     <button onclick="nextTopic()" title="다른 주제" aria-label="다른 주제">↻</button>
   </div>
   </footer>
 </main>
+<button class="gear" onclick="togglePanel(true)" title="설정" aria-label="설정">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+    <line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="17" x2="20" y2="17"/>
+    <circle cx="9" cy="7" r="2.5" fill="var(--bg)"/><circle cx="15" cy="17" r="2.5" fill="var(--bg)"/>
+  </svg>
+</button>
 <div id="panel" hidden>
   <nav>
     <button data-tab="history" onclick="openTab('history')">사용 기록</button>
@@ -465,7 +477,10 @@ function renderHistory() {
   const ol = document.createElement("ol");
   for (const [t, d] of rows) {
     const li = document.createElement("li");
-    const b = document.createElement("b"); b.textContent = d;
+    // 날짜를 누르면 그 주제를 메인 화면에 띄움
+    const b = document.createElement("button");
+    b.className = "date"; b.textContent = d; b.title = "이 주제를 화면에 띄우기";
+    b.onclick = () => { setCurrent(t); location.reload(); };
     li.append(b, " " + t);
     ol.append(li);
   }
