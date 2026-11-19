@@ -5,25 +5,39 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>오늘의 글감</title>
 <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#fdf0d5">
 <link rel="icon" href="icon-192.png">
 <style>
   /* 강원교육모두 Bold (무료 폰트, 눈누 CDN). 첫 실행 때 한 번 받고 이후엔 캐시 사용 */
   @font-face { font-family: "GangwonEdu"; font-display: swap;
     src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEdu_OTFBoldA.woff") format("woff"); }
-  html, body { margin: 0; height: 100%; background: #fffaf2; overflow: hidden; }
-  main { box-sizing: border-box; height: calc(100% - 16px); margin: 8px; padding: 0 56px 0 18px; display: flex; align-items: center; gap: 14px;
-         background: #fdf0d5; border: 2px dashed #f4c7c3; border-radius: 20px; color: #6b4f3f;
-         font-family: "GangwonEdu", "Malgun Gothic", sans-serif; position: relative; }
+  html, body { margin: 0; height: 100%; background: #fdf0d5; overflow: hidden; }
+  /* 제목 표시줄을 숨긴 앱 창에서는 카드 전체를 끌어서 창을 옮김 */
+  main { box-sizing: border-box; height: 100%; padding: 14px 16px 12px 16px; display: flex; align-items: center; gap: 12px;
+         color: #6b4f3f; font-family: "GangwonEdu", "Malgun Gothic", sans-serif; app-region: drag; -webkit-app-region: drag; }
   svg { flex: none; }
-  p { margin: 2px 0; font-size: 25px; line-height: 1.35; word-break: keep-all; }
-  .label { color: #e8836b; }
-  #rule { outline: none; color: #9a86c4; }
-  #rule:focus { background: rgba(255,255,255,.6); border-radius: 4px; }
-  .tools { position: absolute; right: 12px; bottom: 8px; font-size: 13px; color: #a39488; display: flex; gap: 10px; align-items: center;
-           font-family: "Malgun Gothic", sans-serif; }
-  .tools button { width: 36px; height: 36px; border-radius: 50%; border: 0; background: #f7c9c4; color: #fff; font-size: 22px;
+  .text { flex: 1; min-width: 0; }
+  p { margin: 0; word-break: keep-all; }
+  .label { font-size: 24px; color: #e8836b; }
+  #topic { font-size: 34px; line-height: 1.3; margin: 4px 0 6px; }
+  .rule-line { font-size: 26px; color: #9a86c4; }
+  #rule { outline: none; border-radius: 4px; padding: 0 2px; app-region: no-drag; -webkit-app-region: no-drag; cursor: text; }
+  #rule[contenteditable="true"] { background: #fff; box-shadow: 0 0 0 2px #d9cdf0; }
+  .hint { font-size: 14px; color: #b9aed0; }
+  .tools { flex: none; align-self: flex-end; display: flex; flex-direction: column; align-items: center; gap: 8px;
+           font-family: "Malgun Gothic", sans-serif; app-region: no-drag; -webkit-app-region: no-drag; }
+  .tools button { width: 40px; height: 40px; border-radius: 50%; border: 0; background: #f7c9c4; color: #fff; font-size: 24px;
                   line-height: 1; cursor: pointer; padding: 0; }
   .tools button:hover { background: #f1aea8; }
+  /* 사용 체크: 알약 모양 토글 */
+  .used { display: flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 999px; border: 1.5px solid #f4c7c3;
+          background: #fff; color: #c99a92; font-size: 12px; cursor: pointer; white-space: nowrap; user-select: none; }
+  .used input { appearance: none; width: 14px; height: 14px; margin: 0; border-radius: 50%; border: 1.5px solid #f4c7c3; display: grid; place-content: center; }
+  .used input::after { content: "✓"; font-size: 10px; color: #fff; display: none; }
+  .used:has(input:checked) { background: #f7c9c4; border-color: #f7c9c4; color: #fff; }
+  .used input:checked { background: #e8836b; border-color: #e8836b; }
+  .used input:checked::after { display: block; }
+  .used:has(input:focus-visible) { outline: 2px solid #e8836b; outline-offset: 2px; }
 </style>
 </head>
 <body>
@@ -38,14 +52,14 @@
       <polygon points="55,30 58,32 55,34" fill="#6b5b53"/>
     </g>
   </svg>
-  <div>
-  <p><span class="label">오늘의 주제:</span> <span id="topic"></span></p>
-  <p id="rule" contenteditable="true" spellcheck="false" title="클릭해서 고칠 수 있어요"></p>
+  <div class="text">
+    <p class="label">오늘의 주제</p>
+    <p id="topic"></p>
+    <p class="rule-line"><span id="rule" spellcheck="false" title="더블클릭해서 고칠 수 있어요"></span> <span class="hint">(더블클릭해서 수정)</span></p>
   </div>
   <div class="tools">
-    <span id="used"></span>
-    <label title="이 주제를 사용한 날짜 기록"><input type="checkbox" id="check"> 사용</label>
     <button onclick="location.reload()" title="다른 주제 (F5)" aria-label="다른 주제">↻</button>
+    <label class="used" title="이 주제를 사용한 날짜 기록"><input type="checkbox" id="check"><span id="used">사용 체크</span></label>
   </div>
 </main>
 <script>
@@ -317,15 +331,21 @@ const check = document.getElementById("check");
 const usedEl = document.getElementById("used");
 document.getElementById("topic").textContent = TOPICS[idx];
 
-// 두 번째 줄: 클릭해서 고치면 저장됨
+// 마지막 줄: 더블클릭해서 고치고 Enter 또는 바깥 클릭으로 저장
 const rule = document.getElementById("rule");
 try { rule.textContent = localStorage.getItem("rule") || "2줄 이상 쓰기"; } catch (e) { rule.textContent = "2줄 이상 쓰기"; }
+rule.addEventListener("dblclick", () => { rule.contentEditable = "true"; rule.focus(); });
 rule.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); rule.blur(); } });
-rule.addEventListener("blur", () => { try { localStorage.setItem("rule", rule.textContent.trim() || "2줄 이상 쓰기"); } catch (e) {} });
+rule.addEventListener("blur", () => {
+  rule.contentEditable = "false";
+  rule.textContent = rule.textContent.trim() || "2줄 이상 쓰기";
+  try { localStorage.setItem("rule", rule.textContent); } catch (e) {}
+});
 
 function show() {
   check.checked = !!used[idx];
-  usedEl.textContent = used[idx] || "";
+  usedEl.textContent = used[idx] ? `${used[idx].slice(5).replace("-", "/")} 사용` : "사용 체크"; // 짧게 "11/19 사용"
+  usedEl.parentElement.title = used[idx] ? `${used[idx]}에 사용함` : "이 주제를 사용한 날짜 기록";
 }
 check.addEventListener("change", () => {
   if (check.checked) used[idx] = new Date().toLocaleDateString("sv-SE"); // sv-SE = YYYY-MM-DD, 내 컴퓨터 시간 기준
@@ -335,11 +355,11 @@ check.addEventListener("change", () => {
 });
 show();
 
-// 앱으로 설치해 처음 열 때만 창 크기를 맞춤. 이후엔 선생님이 조절한 크기를 브라우저가 기억함
+// 앱 창으로 처음 열 때만 창 크기를 맞춤. 이후엔 선생님이 조절한 크기를 브라우저가 기억함
 try {
-  if (matchMedia("(display-mode: standalone)").matches && !localStorage.getItem("sized")) {
-    resizeTo(720, 260);
-    localStorage.setItem("sized", "1");
+  if (!matchMedia("(display-mode: browser)").matches && localStorage.getItem("sized") !== "3") {
+    resizeTo(720, 300);
+    localStorage.setItem("sized", "3");
   }
 } catch (e) {}
 </script>
