@@ -39,6 +39,25 @@
   .used input:checked { background: #fff; border-color: #fff; }
   .used input:checked::after { display: block; }
   .used:has(input:focus-visible), .tools button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .used:has(input:disabled) { display: none; }
+  .tools .gear { width: 30px; height: 30px; border: 0; background: none; color: var(--muted); font-size: 18px; }
+  .tools .gear:hover { background: var(--line); color: var(--ink); }
+  /* 설정 창: 창 전체를 덮음. 숨긴 제목 표시줄의 버튼(─ □ ✕) 아래부터 시작 */
+  #panel:not([hidden]) { position: fixed; inset: 0; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px;
+         padding: calc(env(titlebar-area-height, 0px) + 12px) 18px 12px; background: var(--bg); color: var(--ink);
+         font: 14px/1.55 "Malgun Gothic", sans-serif; app-region: no-drag; -webkit-app-region: no-drag; }
+  #panel nav { display: flex; gap: 6px; align-items: center; }
+  #panel button { font: inherit; border: 1.5px solid var(--line); background: #fff; color: var(--ink); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
+  #panel nav .on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  #panel nav .close { margin-left: auto; border: 0; background: none; font-size: 16px; }
+  #panel section { flex: 1; overflow-y: auto; }
+  #panel p, #panel ul, #panel ol { margin: 0 0 8px; }
+  #panel ul, #panel ol { padding-left: 18px; }
+  #panel li b { color: var(--accent); margin-right: 4px; }
+  #panel .sum { color: var(--muted); font-size: 13px; }
+  #panel .row { display: flex; gap: 6px; }
+  #panel input { flex: 1; font: inherit; padding: 4px 10px; border: 1.5px solid var(--line); border-radius: 8px; background: #fff; }
+  #panel .danger { background: var(--accent); border-color: var(--accent); color: #fff; }
 </style>
 </head>
 <body>
@@ -59,11 +78,43 @@
   <footer>
   <p class="rule-line"><span id="rule" spellcheck="false" title="더블클릭해서 고칠 수 있어요"></span> <span class="hint">(더블클릭해서 수정)</span></p>
   <div class="tools">
+    <button class="gear" onclick="togglePanel(true)" title="설정" aria-label="설정">⚙</button>
     <label class="used" title="이 주제를 사용한 날짜 기록"><input type="checkbox" id="check"><span id="used">사용 체크</span></label>
     <button onclick="nextTopic()" title="다른 주제" aria-label="다른 주제">↻</button>
   </div>
   </footer>
 </main>
+<div id="panel" hidden>
+  <nav>
+    <button data-tab="history" onclick="openTab('history')">사용 기록</button>
+    <button data-tab="share" onclick="openTab('share')">링크 공유</button>
+    <button data-tab="help" onclick="openTab('help')">사용 방법</button>
+    <button data-tab="reset" onclick="openTab('reset')">초기화</button>
+    <button class="close" onclick="togglePanel(false)" aria-label="닫기" title="닫기 (Esc)">✕</button>
+  </nav>
+  <section id="tab-history"></section>
+  <section id="tab-share" hidden>
+    <p>이 주소를 다른 선생님께 보내 주세요. 열어서 앱으로 설치하면 바로 쓸 수 있어요.</p>
+    <div class="row"><input id="share-url" readonly onclick="this.select()"><button onclick="copyLink()">복사</button></div>
+    <p id="copied" class="sum"></p>
+  </section>
+  <section id="tab-help" hidden>
+    <ul>
+      <li><b>↻</b> 다른 주제로 바꿔요. 창을 껐다 켜도 지금 주제가 그대로 나와요.</li>
+      <li><b>사용 체크</b> 쓴 주제를 체크하면 다시 나오지 않아요. 날짜는 '사용 기록'에 남아요.</li>
+      <li><b>2줄 이상 쓰기</b> 더블클릭하면 문구를 바꿀 수 있어요. Enter로 저장해요.</li>
+      <li><b>창 옮기기</b> 빈 곳을 잡고 끌어요. 창 크기는 모서리를 끌어 조절해요.</li>
+      <li><b>앱 설치 (Edge)</b> 이 주소를 Edge로 열고 주소창 오른쪽 설치 아이콘을 눌러요. 안 보이면 … 메뉴 → 앱 → '이 사이트를 앱으로 설치'.</li>
+      <li><b>앱 설치 (Chrome)</b> 주소창 오른쪽 설치 아이콘, 또는 ⋮ 메뉴 → 전송, 저장, 공유 → '페이지를 앱으로 설치'.</li>
+      <li><b>켤 때 자동 실행 (Edge)</b> 주소창에 edge://apps 입력 → 이 앱의 … → '장치 로그인 시 시작'.</li>
+      <li><b>기록 저장</b> 사용 기록은 이 컴퓨터에만 저장돼요. 다른 컴퓨터와 공유되지 않아요.</li>
+    </ul>
+  </section>
+  <section id="tab-reset" hidden>
+    <p>사용 기록을 모두 지우고, 모든 주제가 다시 나오게 해요. '2줄 이상 쓰기' 문구는 그대로 남아요.</p>
+    <button class="danger" onclick="resetAll()">전체 초기화</button>
+  </section>
+</div>
 <script>
 const TOPICS = [
   "빛이 없으면 세상을 어떻게 볼까?",
@@ -315,33 +366,57 @@ const TOPICS = [
   "하루 동안 말 대신 노래로만 말한다면 어떨까?",
   "거꾸로 걸어야만 하는 날이라면 어떨까?",
   "손가락이 하나 더 있다면 무엇이 편할까?",
-  "나에게 꼬리가 생긴다면 어디에 쓸까?"
+  "나에게 꼬리가 생긴다면 어디에 쓸까?",
+  // 성찰 주제
+  "요즘 마음에 드는 나의 모습은 무엇일까?",
+  "내 성격 중 고치고 싶은 점은 무엇일까?",
+  "내 성격 중 가장 자랑하고 싶은 점은 무엇일까?",
+  "작년의 나와 지금의 나는 무엇이 달라졌을까?",
+  "최근에 내가 가장 열심히 노력한 일은 무엇일까?",
+  "요즘 나를 고민하게 만드는 일은 무엇일까?",
+  "친구들은 나를 어떤 사람이라고 생각할까?",
+  "내가 정말 좋아하는 나의 습관은 무엇일까?",
+  "최근에 아쉬웠던 일은 무엇이고, 다음에는 어떻게 하고 싶을까?",
+  "나는 어떤 순간에 가장 나다울까?",
+  "요즘 내가 자주 하는 말은 무엇일까?",
+  "이번 주에 스스로 칭찬하고 싶은 일은 무엇일까?",
+  "내가 더 잘하고 싶은 것은 무엇이고, 그러려면 무엇을 해야 할까?",
+  "나는 화가 날 때 어떤 모습일까?",
+  "내가 다른 사람에게 듣고 싶은 말은 무엇일까?",
+  "요즘 내가 가장 많이 웃은 순간은 언제였을까?",
+  "포기하지 않고 끝까지 해낸 일은 무엇일까?",
+  "나의 장점을 세 가지 꼽는다면 무엇일까?",
+  "친구에게 더 잘해 주고 싶은 점은 무엇일까?",
+  "오늘의 나에게 점수를 준다면 몇 점이고, 왜 그럴까?"
 ];
 
-// 사용 기록: { 주제번호: "YYYY-MM-DD" } — 이 브라우저에만 저장됨
+// 사용 기록: { "주제 문장": "YYYY-MM-DD" } — 이 브라우저에만 저장됨
 const KEY = "usedTopics";
 let used = {};
 try { used = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) {}
+// 예전 버전은 주제 번호로 저장했음 → 주제 문장으로 바꿈
+for (const k in used) if (/^\d+$/.test(k)) { if (TOPICS[k]) used[TOPICS[k]] = used[k]; delete used[k]; }
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(used)); } catch (e) {} };
+save();
 
-// 아직 안 쓴 주제를 먼저 뽑고, 다 썼으면 전체에서 뽑기
-const unused = TOPICS.map((_, i) => i).filter(i => !used[i]);
-const pool = unused.length ? unused : TOPICS.map((_, i) => i);
+// 사용 체크한 주제는 다시 나오지 않음
+const pool = TOPICS.filter(t => !used[t]);
+const pick = list => list[Math.floor(Math.random() * list.length)];
+const setCurrent = t => { try { t ? localStorage.setItem("current", t) : localStorage.removeItem("current"); } catch (e) {} };
 // 창을 껐다 켜도 같은 주제 유지. ↻ 버튼을 눌러야 새 주제
-let idx = NaN;
-try { idx = parseInt(localStorage.getItem("current"), 10); } catch (e) {}
-if (!(idx >= 0 && idx < TOPICS.length)) {
-  idx = pool[Math.floor(Math.random() * pool.length)];
-  try { localStorage.setItem("current", idx); } catch (e) {}
-}
+let topic = null;
+try { topic = localStorage.getItem("current"); } catch (e) {}
+if (!TOPICS.includes(topic)) { topic = pool.length ? pick(pool) : null; setCurrent(topic); }
 function nextTopic() {
-  try { localStorage.removeItem("current"); } catch (e) {}
+  const others = pool.filter(t => t !== topic);
+  setCurrent(others.length ? pick(others) : pool[0]);
   location.reload();
 }
 
 const check = document.getElementById("check");
 const usedEl = document.getElementById("used");
-document.getElementById("topic").textContent = TOPICS[idx];
+document.getElementById("topic").textContent = topic || "모든 주제를 사용했어요! ⚙ 설정에서 초기화해 주세요.";
+check.disabled = !topic;
 
 // 마지막 줄: 더블클릭해서 고치고 Enter 또는 바깥 클릭으로 저장
 const rule = document.getElementById("rule");
@@ -355,17 +430,58 @@ rule.addEventListener("blur", () => {
 });
 
 function show() {
-  check.checked = !!used[idx];
-  usedEl.textContent = used[idx] ? `${used[idx].slice(5).replace("-", "/")} 사용` : "사용 체크"; // 짧게 "11/19 사용"
-  usedEl.parentElement.title = used[idx] ? `${used[idx]}에 사용함` : "이 주제를 사용한 날짜 기록";
+  const d = topic && used[topic];
+  check.checked = !!d;
+  usedEl.textContent = d ? `${d.slice(5).replace("-", "/")} 사용` : "사용 체크"; // 짧게 "11/19 사용"
+  usedEl.parentElement.title = d ? `${d}에 사용함` : "체크하면 이 주제는 다시 나오지 않아요";
 }
 check.addEventListener("change", () => {
-  if (check.checked) used[idx] = new Date().toLocaleDateString("sv-SE"); // sv-SE = YYYY-MM-DD, 내 컴퓨터 시간 기준
-  else delete used[idx];
+  if (check.checked) used[topic] = new Date().toLocaleDateString("sv-SE"); // sv-SE = YYYY-MM-DD, 내 컴퓨터 시간 기준
+  else delete used[topic];
   save();
   show();
 });
 show();
+
+// 설정 창
+const panel = document.getElementById("panel");
+const APP_URL = location.href.replace(/[?#].*$/, "").replace(/index\.html$/, "");
+document.getElementById("share-url").value = APP_URL;
+function openTab(name) {
+  panel.querySelectorAll("nav [data-tab]").forEach(b => b.classList.toggle("on", b.dataset.tab === name));
+  panel.querySelectorAll("section").forEach(s => s.hidden = s.id !== "tab-" + name);
+  if (name === "history") renderHistory();
+}
+function togglePanel(open) { panel.hidden = !open; if (open) openTab("history"); }
+function renderHistory() {
+  const rows = Object.entries(used).sort((a, b) => b[1].localeCompare(a[1]));
+  const box = document.getElementById("tab-history");
+  box.replaceChildren();
+  const sum = document.createElement("p");
+  sum.className = "sum";
+  sum.textContent = `사용한 주제 ${rows.length}개 · 남은 주제 ${TOPICS.length - rows.length}개`;
+  box.append(sum);
+  if (!rows.length) { const p = document.createElement("p"); p.textContent = "아직 사용 체크한 주제가 없어요."; box.append(p); return; }
+  const ol = document.createElement("ol");
+  for (const [t, d] of rows) {
+    const li = document.createElement("li");
+    const b = document.createElement("b"); b.textContent = d;
+    li.append(b, " " + t);
+    ol.append(li);
+  }
+  box.append(ol);
+}
+async function copyLink() {
+  const msg = document.getElementById("copied");
+  try { await navigator.clipboard.writeText(APP_URL); msg.textContent = "복사됐어요!"; }
+  catch (e) { document.getElementById("share-url").select(); msg.textContent = "Ctrl+C를 눌러 복사하세요"; }
+}
+function resetAll() {
+  if (!confirm("사용 기록을 모두 지울까요?\n지운 기록은 되돌릴 수 없어요.")) return;
+  try { localStorage.removeItem(KEY); localStorage.removeItem("current"); } catch (e) {}
+  location.reload();
+}
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !panel.hidden) togglePanel(false); });
 
 // 앱 창으로 처음 열 때만 창 크기를 맞춤. 이후엔 선생님이 조절한 크기를 브라우저가 기억함
 try {
