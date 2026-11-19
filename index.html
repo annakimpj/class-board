@@ -14,6 +14,7 @@
   /* 색은 두 가지만: 진갈색 글씨 + 주황 포인트 */
   :root { --bg: #fbf3e4; --ink: #2b1d14; --accent: #e2643f; --line: #ead8bf; --muted: #a8927c; }
   html, body { margin: 0; height: 100%; background: var(--bg); overflow: hidden; }
+  body { box-sizing: border-box; border-left: 10px solid var(--accent); } /* 왼쪽 포인트 띠 */
   /* 제목 표시줄을 숨긴 앱 창에서는 카드 전체를 끌어서 창을 옮김 */
   main { box-sizing: border-box; height: 100%; padding: 16px 24px 14px; display: grid; grid-template-rows: auto 1fr auto;
          color: var(--ink); font-family: "GangwonEdu", "Malgun Gothic", sans-serif; app-region: drag; -webkit-app-region: drag; }
