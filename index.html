@@ -25,7 +25,7 @@
   .rule-line { font-size: 26px; color: var(--accent); }
   #rule { outline: none; border-radius: 4px; padding: 0 2px; app-region: no-drag; -webkit-app-region: no-drag; cursor: text; }
   #rule[contenteditable="true"] { background: #fff; box-shadow: 0 0 0 2px var(--line); }
-  .hint { font-size: 13px; color: var(--muted); }
+  .hint { font-size: 13px; color: var(--muted); app-region: no-drag; -webkit-app-region: no-drag; cursor: default; }
   .tools { flex: none; display: flex; align-items: center; gap: 8px; font-family: "Malgun Gothic", sans-serif;
            app-region: no-drag; -webkit-app-region: no-drag; }
   .tools button { width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid var(--line); background: #fff; color: var(--accent);
@@ -84,7 +84,7 @@
   오늘의 주제</p>
   <p id="topic"></p>
   <footer>
-  <p class="rule-line"><span id="rule" spellcheck="false" title="더블클릭해서 고칠 수 있어요"></span> <span class="hint">(더블클릭해서 수정)</span></p>
+  <p class="rule-line"><span id="rule" spellcheck="false" title="더블클릭해서 고칠 수 있어요"></span> <span class="hint" id="hint" title="더블클릭하면 이 안내가 사라져요">(더블클릭해서 수정)</span></p>
   <div class="tools">
     <label class="used" title="이 주제를 사용한 날짜 기록"><input type="checkbox" id="check"><span id="used">사용 체크</span></label>
     <button onclick="nextTopic()" title="다른 주제" aria-label="다른 주제">↻</button>
@@ -440,7 +440,14 @@ rule.addEventListener("blur", () => {
   rule.contentEditable = "false";
   rule.textContent = rule.textContent.trim() || "2줄 이상 쓰기";
   try { localStorage.setItem("rule", rule.textContent); } catch (e) {}
+  hideHint(); // 한 번 고쳐 봤으면 안내는 필요 없음
 });
+
+// "(더블클릭해서 수정)" 안내: 처음 쓰는 선생님용. 더블클릭하거나 문구를 한 번 고치면 사라짐
+const hint = document.getElementById("hint");
+function hideHint() { hint.hidden = true; try { localStorage.setItem("hintOff", "1"); } catch (e) {} }
+try { if (localStorage.getItem("hintOff")) hint.hidden = true; } catch (e) {}
+hint.addEventListener("dblclick", hideHint);
 
 function show() {
   const d = topic && used[topic];
