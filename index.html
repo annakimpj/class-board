@@ -56,7 +56,10 @@
   .card-pin[aria-pressed="true"] { opacity: 1; filter: none; background: #fff; }
   .card-grip { position: absolute; right: 2px; bottom: 2px; width: 16px; height: 16px; cursor: nwse-resize; touch-action: none;
                background: linear-gradient(135deg, transparent 50%, var(--line) 50% 60%, transparent 60% 70%, var(--line) 70% 80%, transparent 80%); }
-  .board:not(.free) .card-grip, .locked .card-grip, #pop .card-grip, #pop .card-pin { display: none; }
+  .card .card-down { position: absolute; top: 6px; right: 8px; border: 0; background: none; color: #fff; font-size: 14px; line-height: 1;
+                     padding: 4px 6px; border-radius: 6px; cursor: pointer; opacity: .7; }
+  .card .card-down:hover { opacity: 1; background: rgba(255, 255, 255, .25); }
+  .board:not(.free) .card-grip, .locked .card-grip, #pop .card-grip, #pop .card-pin, #pop .card-down { display: none; }
   .label { display: flex; align-items: center; gap: 6px; font-size: 20px; color: var(--accent); }
   /* 카드마다 색: 포인트 색(--accent)과 바탕(--card), 테두리(--line) */
   [data-card="topic"]     { --accent: #e2643f; --card: #fff4ea; --line: #f3d6c2; }
@@ -219,7 +222,6 @@
   .tt-grid { display: grid; grid-template-columns: 52px repeat(5, minmax(0, 72px)); gap: 4px; margin-top: 8px; }
   .tt-grid b { font-weight: normal; text-align: center; color: var(--muted); }
   .tt-grid input { width: 100%; box-sizing: border-box; text-align: center; }
-  .layout { display: grid; grid-template-columns: max-content max-content; gap: 6px 12px; align-items: center; margin-bottom: 10px; }
   /* ───── 디자인: 흰 카드 + 색 제목줄 + 그림자, 점무늬 바탕, 떠 있는 아래쪽 바 ───── */
   :root { --bg: #f4f0e8; }
   html, body { background: var(--bg) radial-gradient(#e2d9ca 1px, transparent 1.2px) 0 0 / 18px 18px; }
@@ -240,7 +242,7 @@
           box-shadow: 0 1px 2px rgba(60, 40, 20, .06), 0 10px 28px rgba(60, 40, 20, .09); }
   .topic-card { border-left: 0; padding-left: 16px; }
   .card > .label { margin: 0 -16px 6px; padding: 9px 44px 9px 16px; background: var(--accent); color: #fff; font-size: 18px; }
-  .card .card-pin { top: 6px; right: 8px; filter: grayscale(1) brightness(3); opacity: .55; border: 0; background: none; padding: 2px 4px; font-size: 15px; border-radius: 6px; }
+  .card .card-pin { top: 6px; right: 34px; filter: grayscale(1) brightness(3); opacity: .55; border: 0; background: none; padding: 2px 4px; font-size: 15px; border-radius: 6px; }
   .card .card-pin[aria-pressed="true"] { filter: none; opacity: 1; background: rgba(255, 255, 255, .9); }
   .card-grip { background: linear-gradient(135deg, transparent 50%, #c9c2b8 50% 58%, transparent 58% 68%, #c9c2b8 68% 76%, transparent 76%); }
   footer { border-top-color: var(--line); }
@@ -432,7 +434,6 @@
 </button>
 <div id="panel" hidden>
   <nav>
-    <button data-tab="cards" onclick="openTab('cards')">보드 카드</button>
     <button data-tab="time" onclick="openTab('time')">시간표</button>
     <button data-tab="history" onclick="openTab('history')">주제 사용 기록</button>
     <button data-tab="share" onclick="openTab('share')">링크 공유</button>
@@ -440,13 +441,7 @@
     <button data-tab="reset" onclick="openTab('reset')">초기화</button>
     <button class="close" onclick="togglePanel(false)" aria-label="닫기" title="닫기 (Esc)">✕</button>
   </nav>
-  <section id="tab-cards">
-    <p class="sum">카드마다 보드에 둘지, 아래쪽 바 버튼으로 필요할 때만 띄울지, 끌지 고르세요. 꺼도 적어 둔 내용(메모·규칙·사진·명단·화이트보드)은 지워지지 않아요.</p>
-    <p class="sum">보드에서 카드 제목을 끌면 옮겨지고, 오른쪽 아래 모서리를 끌면 크기가 바뀌어요. 📌를 누르면 그 자리에 고정돼요.</p>
-    <div class="layout" id="layout"></div>
-    <button onclick="resetPlaces()">카드 자리 처음처럼</button>
-  </section>
-  <section id="tab-time" hidden>
+  <section id="tab-time">
     <h3>1. 연간시간표 가져오기</h3>
     <p class="sum">연간시간표, 주간 시간표, 주간학습안내 모두 돼요. 한글(.hwp)이나 PDF 파일을 고르거나, 한글·엑셀·나이스에서 표 전체를 복사해 아래 칸에 붙여넣으세요(Ctrl+V). 다시 넣으면 그 주만 새로 바뀌어요.</p>
     <div class="row">
@@ -480,7 +475,7 @@
       <li><b>소음 측정</b> '측정 시작'을 누르고 마이크를 허락하면 소리 크기를 막대로 보여 줘요. 기준(검은 선)을 1초 넘게 넘으면 경고음이 나고 오늘 경고 횟수가 쌓여요. '🔔 경고'로 직접 경고를 줄 수도 있어요. 소리는 이 컴퓨터 안에서만 재고, 녹음하거나 보내지 않아요.</li>
       <li><b>화이트보드</b> ✏️ 펜으로 그리고, T 글상자는 누른 뒤 보드를 클릭해 써요. 사진은 복사해서 Ctrl+V(또는 끌어다 놓기). ✋ 옮기기에서 사진·글상자를 끌어 옮기고, 오른쪽 아래 파란 점으로 크기를 바꾸고, Delete로 지워요. 글상자는 두 번 클릭하면 고쳐요. Ctrl+Z로 되돌려요.</li>
       <li><b>시간표</b> 설정 → 시간표에서 연간시간표(한글 파일 또는 표 붙여넣기)와 시정표를 넣으면, 지금 몇 교시인지와 다음 시간을 알려 줘요. 표에 없는 주는 '매주 기본 시간표'를 써요.</li>
-      <li><b>보드 카드</b> 설정 → 보드 카드에서 카드마다 보드에 두기 · 필요할 때 띄우기 · 끄기를 골라요. 꺼도 적어 둔 내용은 남아요. 보드에서는 카드 제목을 끌어 옮기고, 오른쪽 아래 모서리로 크기를 바꾸고, 📌로 그 자리에 고정해요.</li>
+      <li><b>보드 카드</b> 아래쪽 바에서 띄운 카드의 '보드에 두기'를 누르면 보드에 붙어요. 보드 카드 제목을 끌어 옮기고, 오른쪽 아래 모서리로 크기를 바꾸고, 📌로 그 자리에 고정해요. ✕를 누르면 보드에서 닫히고 아래쪽 바로 들어가요. 닫아도 적어 둔 내용은 남아요.</li>
       <li><b>아래쪽 바</b> 필요할 때 띄우기로 고른 도구(사진·타이머·뽑기·화이트보드)가 있어요. 🔊 버튼으로 효과음을 끄고 켜요. 띄운 창은 오른쪽 아래 모서리로 크기를 바꿔요.</li>
       <li><b>준비물</b> 시간표 카드 오른쪽 칸에 쓰면 저장돼요.</li>
       <li><b>창 옮기기</b> 맨 위 줄을 잡고 끌어요. 창 크기는 모서리를 끌어 조절해요. 창이 좁으면 카드가 아래로 쌓여요.</li>
@@ -493,6 +488,8 @@
   <section id="tab-reset" hidden>
     <p>주제 사용 기록을 모두 지우고, 모든 주제가 다시 나오게 해요. 메모·규칙·사진과 '2줄 이상 쓰기' 문구는 그대로 남아요.</p>
     <button class="danger" onclick="resetAll()">주제 기록 초기화</button>
+    <p style="margin-top:16px">보드 카드의 자리와 크기를 처음처럼 되돌려요. 적어 둔 내용은 그대로예요.</p>
+    <button onclick="resetPlaces()">카드 자리 처음처럼</button>
   </section>
 </div>
 <script>
@@ -840,7 +837,7 @@ function openTab(name) {
   if (name === "history") renderHistory();
   if (name === "time") ttEditor();
 }
-function togglePanel(open) { panel.hidden = !open; if (open) openTab("cards"); }
+function togglePanel(open) { panel.hidden = !open; if (open) openTab("time"); }
 function renderHistory() {
   const rows = Object.entries(used).sort((a, b) => b[1].localeCompare(a[1]));
   const box = document.getElementById("tab-history");
@@ -880,10 +877,12 @@ document.getElementById("today").textContent =
 
 // 카드 배치: { 카드: { mode: "board"(보드에 두기) | "popup"(필요할 때 띄우기) | "off", rect: {x, y, w, h}(보드 크기에 대한 비율), locked(📌 고정) } }
 // 처음엔 칸 맞춤으로 자리를 잡아 그 위치를 기억하고, 그다음부터는 제목을 끌어 옮기고 오른쪽 아래 모서리로 크기를 바꿈
-const CARDS = [["topic", "✏️ 오늘의 주제", "board", "2"], ["timetable", "🕘 시간표", "board", "2"], ["memo", "📝 메모", "board", "1"],
-  ["rules", "📌 우리반 규칙", "board", "1"], ["photo", "🖼️ 사진", "popup", "1"], ["timer", "⏱️ 타이머", "popup", "1"], ["picker", "🎲 뽑기", "popup", "1"],
-  ["whiteboard", "🖍️ 화이트보드", "popup", "4"], ["dust", "😷 미세먼지", "board", "1"], ["noise", "🔉 소음 측정", "popup", "1"]];
-const MODES = [["board", "보드에 두기"], ["popup", "필요할 때 띄우기"], ["off", "끄기"]];
+// [이름, 표시, 처음 위치(board 보드 | popup 아래쪽 바), 처음 크기(칸), 최소 크기 px [가로, 세로]]
+const CARDS = [["topic", "✏️ 오늘의 주제", "board", "2", [340, 200]], ["timetable", "🕘 시간표", "board", "2", [320, 190]],
+  ["memo", "📝 메모", "board", "1", [210, 180]], ["rules", "📌 우리반 규칙", "board", "1", [210, 180]],
+  ["photo", "🖼️ 사진", "popup", "1", [200, 170]], ["timer", "⏱️ 타이머", "popup", "1", [240, 240]], ["picker", "🎲 뽑기", "popup", "1", [240, 250]],
+  ["whiteboard", "🖍️ 화이트보드", "popup", "4", [420, 320]], ["dust", "😷 미세먼지", "board", "1", [180, 190]], ["noise", "🔉 소음 측정", "popup", "1", [240, 270]]];
+const minOf = k => CARDS.find(c => c[0] === k)[4];
 const board = document.querySelector(".board"), pop = document.createElement("div");
 pop.id = "pop"; pop.hidden = true; document.body.append(pop);
 let layout = {}, zTop = 1;
@@ -892,15 +891,21 @@ try {
   const old = JSON.parse(localStorage.getItem("cards")) || {}; // 예전 켜기/끄기 설정 옮기기
   for (const k in old) if (old[k] === false && !layout[k]) layout[k] = { mode: "off" };
 } catch (e) {}
-const lay = k => { const d = CARDS.find(c => c[0] === k); return Object.assign({ mode: d[2] }, layout[k], { size: d[3] }); }; // 처음 크기는 늘 기본값 (예전에 저장된 크기는 무시)
+const lay = k => { // 처음 크기는 늘 기본값. 예전 '끄기'는 아래쪽 바로
+  const d = CARDS.find(c => c[0] === k), l = Object.assign({ mode: d[2] }, layout[k], { size: d[3] });
+  if (l.mode === "off") l.mode = "popup";
+  return l;
+};
 const card = k => document.querySelector(`.card[data-card="${k}"]`);
 const saveLayout = () => { try { localStorage.setItem("layout", JSON.stringify(layout)); } catch (e) {} };
 const POS = ["left", "top", "width", "height"];
-CARDS.forEach(([k]) => { // 카드마다 📌 고정 버튼과 크기 조절 모서리
-  const c = card(k), pin = document.createElement("button"), grip = document.createElement("span");
+CARDS.forEach(([k]) => { // 카드마다 📌 고정, ✕ 닫기(아래쪽 바로), 크기 조절 모서리
+  const c = card(k), pin = document.createElement("button"), down = document.createElement("button"), grip = document.createElement("span");
   pin.className = "card-pin"; pin.onclick = () => setLayout(k, { locked: !lay(k).locked });
+  down.className = "card-down"; down.textContent = "✕"; down.title = "닫기 (아래쪽 바에서 다시 띄울 수 있어요)"; down.setAttribute("aria-label", "닫기");
+  down.onclick = () => setLayout(k, { mode: "popup" });
   grip.className = "card-grip"; grip.title = "끌어서 크기 조절";
-  c.append(pin, grip);
+  c.append(down, pin, grip);
 });
 // 카드 크기를 칸 수로: 1=1칸, 2=가로 2칸, 4=2×2, full=한 줄 전체
 const cellsOf = (size, cols) => size === "full" ? cols : size === "4" ? 4 : +size || 1;
@@ -920,7 +925,8 @@ function placeCards() {
     const B = board.getBoundingClientRect();
     for (const [k] of need) {
       const r = card(k).getBoundingClientRect();
-      layout[k] = Object.assign(lay(k), { rect: { x: (r.left - B.left) / B.width, y: (r.top - B.top) / B.height, w: r.width / B.width, h: r.height / B.height } });
+      const [mw, mh] = minOf(k), w = Math.min(1, Math.max(r.width, mw) / B.width), h = Math.min(1, Math.max(r.height, mh) / B.height);
+      layout[k] = Object.assign(lay(k), { rect: { x: Math.min((r.left - B.left) / B.width, 1 - w), y: Math.min((r.top - B.top) / B.height, 1 - h), w, h } });
     }
     board.style.gridTemplateColumns = board.style.gridTemplateRows = "";
     saveLayout();
@@ -949,7 +955,8 @@ board.addEventListener("pointerdown", e => {
   t.setPointerCapture(e.pointerId); e.preventDefault();
   const move = ev => {
     const dx = (ev.clientX - sx) / B.width, dy = (ev.clientY - sy) / B.height;
-    if (grip) { r.w = Math.min(1 - r.x, Math.max(140 / B.width, r0.w + dx)); r.h = Math.min(1 - r.y, Math.max(110 / B.height, r0.h + dy)); }
+    const [mw, mh] = minOf(k); // 이보다 작게는 못 줄임
+    if (grip) { r.w = Math.min(1 - r.x, Math.max(mw / B.width, r0.w + dx)); r.h = Math.min(1 - r.y, Math.max(mh / B.height, r0.h + dy)); }
     else { r.x = Math.min(Math.max(0, r0.x + dx), 1 - r.w); r.y = Math.min(Math.max(0, r0.y + dy), 1 - r.h); } // 화면 밖으로 못 나감
     [r.x, r.y, r.w, r.h].forEach((v, i) => c.style[POS[i]] = v * 100 + "%");
   };
@@ -974,7 +981,7 @@ function applyLayout() {
 }
 function setLayout(k, change) {
   layout[k] = Object.assign(lay(k), change);
-  saveLayout(); applyLayout(); renderLayout();
+  saveLayout(); applyLayout();
 }
 function resetPlaces() {
   if (!confirm("카드 자리와 크기를 처음처럼 되돌릴까요? 적어 둔 내용은 그대로예요.")) return;
@@ -1001,19 +1008,7 @@ function closePop() {
 }
 pop.addEventListener("click", e => { if (e.target === pop) closePop(); });
 document.addEventListener("keydown", e => { if (e.key === "Escape" && pop.dataset.open && panel.hidden) closePop(); });
-function renderLayout() {
-  const box = document.getElementById("layout");
-  box.replaceChildren();
-  for (const [k, name] of CARDS) {
-    const lab = document.createElement("span"), s = document.createElement("select");
-    lab.textContent = name;
-    s.setAttribute("aria-label", `${name} 보이기`);
-    s.append(...MODES.map(([v, t]) => new Option(t, v)));
-    s.value = lay(k).mode; s.onchange = () => setLayout(k, { mode: s.value });
-    box.append(lab, s);
-  }
-}
-applyLayout(); renderLayout();
+applyLayout();
 
 // 메모·우리반 규칙: 쓰는 대로 저장
 document.querySelectorAll("textarea[data-key]").forEach(ta => {
