@@ -46,7 +46,7 @@
   .card[data-size="full"] { grid-column: 1 / -1; }
   /* 자유 배치: 처음 칸 맞춤 자리를 기억한 뒤 카드를 끌어서 옮기고 크기 조절 */
   .card { position: relative; }
-  .board.free { display: block; position: relative; overflow: hidden; padding: 0; isolation: isolate; } /* 스크롤 없이 한 화면. isolation: 카드를 앞으로 가져와도 설정 창·팝업보다 위로 못 올라가게 */
+  .board.free { display: block; position: relative; overflow: hidden; padding: 0; isolation: isolate; } /* 스크롤 없이 한 화면. isolation: 카드를 앞으로 가져와도 설정 창보다 위로 못 올라가게 */
   .board.free > .card { position: absolute; box-sizing: border-box; }
   .board.free .label { cursor: move; user-select: none; touch-action: none; }
   .card-grip { position: absolute; right: 2px; bottom: 2px; width: 16px; height: 16px; cursor: nwse-resize; touch-action: none;
@@ -54,7 +54,7 @@
   .card .card-down { position: absolute; top: 6px; right: 8px; border: 0; background: none; color: #fff; font-size: 14px; line-height: 1;
                      padding: 4px 6px; border-radius: 6px; cursor: pointer; opacity: .7; }
   .card .card-down:hover { opacity: 1; background: rgba(255, 255, 255, .25); }
-  .board:not(.free) .card-grip, #pop .card-grip, #pop .card-down { display: none; }
+  .board:not(.free) .card-grip { display: none; }
   .label { display: flex; align-items: center; gap: 6px; font-size: 20px; color: var(--accent); }
   /* 카드마다 색: 포인트 색(--accent)과 바탕(--card), 테두리(--line) */
   [data-card="topic"]     { --accent: #e2643f; --card: #fff4ea; --line: #f3d6c2; }
@@ -92,17 +92,6 @@
   .wb-obj .del { display: none; position: absolute; right: -10px; top: -10px; width: 22px; height: 22px; border-radius: 50%; border: 0;
                  background: #e2643f; color: #fff; font-size: 12px; cursor: pointer; padding: 0; }
   .wb[data-tool="select"] .wb-obj.sel .grip, .wb[data-tool="select"] .wb-obj.sel .del { display: block; }
-  #pop[data-open="whiteboard"] .pop-box { width: 96vw; height: 90vh; }
-
-  /* 팝업: 필요할 때 카드를 크게 띄움 */
-  #pop:not([hidden]) { position: fixed; inset: 0; z-index: 5; display: grid; place-items: center; background: rgba(43, 29, 20, .35);
-                       app-region: no-drag; -webkit-app-region: no-drag; }
-  #pop .pop-box { width: min(760px, 92vw); height: min(560px, 86vh); display: flex; flex-direction: column; position: relative;
-                  resize: both; overflow: hidden; min-width: 280px; min-height: 220px; max-width: 98vw; max-height: 94vh; border-radius: 16px; }
-  #pop .pop-box > .card { flex: 1; box-shadow: 0 20px 50px rgba(0, 0, 0, .25); }
-  #pop .pop-bar { position: absolute; top: 10px; right: 12px; display: flex; gap: 6px; z-index: 1; }
-  #pop .pop-bar button { font: 13px "GangwonEdu", "Malgun Gothic", sans-serif; border: 1.5px solid rgba(0, 0, 0, .12); background: #fff; border-radius: 999px;
-                         padding: 3px 12px; cursor: pointer; }
 
   /* 오늘의 주제 카드: 왼쪽 띠 */
   .topic-card { border-top-width: 1.5px; border-left: 8px solid var(--accent); padding-left: 22px; container-type: inline-size; }
@@ -132,6 +121,12 @@
                    font: 26px/1.5 "GangwonEdu", "Malgun Gothic", sans-serif; }
   .card textarea::placeholder { color: #cdbba6; }
   .card textarea:focus { background: #fff; border-radius: 8px; box-shadow: 0 0 0 6px #fff; }
+  /* 우리반 규칙: 다 쓰면 한 줄씩 번호 붙은 목록으로 */
+  .rule-list { flex: 1; min-height: 0; overflow-y: auto; margin: 0; padding: 0; list-style: none; counter-reset: rule; cursor: text;
+               font: 26px/1.4 "GangwonEdu", "Malgun Gothic", sans-serif; color: var(--ink); }
+  .rule-list li { counter-increment: rule; display: flex; align-items: center; gap: .45em; padding: .25em 0; border-bottom: 2px dashed var(--line); }
+  .rule-list li::before { content: counter(rule); flex: none; width: 1.5em; height: 1.5em; line-height: 1.5em; border-radius: 50%;
+                          text-align: center; font-size: .75em; background: var(--accent); color: #fff; }
 
   /* 사진 */
   .photo-box { flex: 1; min-height: 0; position: relative; border-radius: 10px; overflow: hidden; display: grid; place-items: center; }
@@ -217,7 +212,7 @@
   #panel h3 { font-weight: normal; font-size: 19px; color: var(--accent); margin: 14px 0 4px; }
   /* 글꼴 위아래가 잘리지 않게 줄 높이와 높이를 넉넉히 */
   #panel select { font: inherit; line-height: 1.4; height: 36px; padding: 0 28px 0 10px; border: 1.5px solid var(--line); border-radius: 8px; background: #fff; }
-  .tt-bells { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 4px 14px; }
+  .tt-bells { display: grid; grid-template-columns: max-content; gap: 4px; }
   .tt-bells label { display: flex; align-items: center; gap: 4px; white-space: nowrap; }
   .tt-bells input, .tt-grid input { font: 15px "GangwonEdu", "Malgun Gothic", sans-serif; padding: 2px 4px; border: 1.5px solid var(--line); border-radius: 6px; background: #fff; }
   .tt-grid { display: grid; grid-template-columns: 52px repeat(5, minmax(0, 72px)); gap: 4px; margin-top: 8px; }
@@ -260,16 +255,14 @@
   .dock button:hover { transform: none; background: var(--card); }
   .dock button:hover i { background: var(--accent); }
   .dock .sound { border-left: 1.5px solid #eee6da; border-radius: 0 14px 14px 0; }
-  #pop .pop-bar { top: 6px; }
-  #pop .pop-bar button { background: rgba(255, 255, 255, .92); border: 0; }
 
   /* 미세먼지 */
   [data-card="dust"]  { --accent: #6b7f99; --card: #eef2f7; --line: #d3dbe6; }
   [data-card="noise"] { --accent: #f97316; --card: #fff2e8; --line: #fbd6bb; }
   .dust-main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 0; }
-  .dust-main .face, .noise-meter .face { font-size: clamp(20px, min(18cqw, 16cqh), 64px); line-height: 1; }
-  .dust-main b { font-weight: normal; font-size: clamp(18px, 10cqw, 30px); color: var(--grade, var(--ink)); }
-  .dust-chips { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; font-size: 15px; }
+  .dust-main .face, .noise-meter .face { font-size: clamp(36px, min(18cqw, 16cqh), 64px); line-height: 1; }
+  .dust-main b { font-weight: normal; font-size: clamp(24px, 10cqw, 34px); color: var(--grade, var(--ink)); }
+  .dust-chips { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; font-size: 18px; }
   .dust-chips span { border-radius: 999px; padding: 2px 10px; color: #fff; background: var(--grade); }
   .dust-set { display: flex; flex-direction: column; gap: 6px; font: 14px "GangwonEdu", "Malgun Gothic", sans-serif; }
   .dust-set input { flex: 1; min-width: 0; font: inherit; padding: 3px 8px; border: 1.5px solid var(--line); border-radius: 8px; }
@@ -316,11 +309,12 @@
   </section>
   <section class="card" data-card="memo">
     <p class="label">📝 메모</p>
-    <textarea data-key="memo" spellcheck="false" aria-label="메모" placeholder="여기를 눌러 메모를 쓰세요.&#10;쓰는 대로 저장돼요."></textarea>
+    <textarea data-key="memo" spellcheck="false" aria-label="메모"></textarea>
   </section>
   <section class="card" data-card="rules">
     <p class="label">📌 우리반 규칙</p>
-    <textarea data-key="rules" spellcheck="false" aria-label="우리반 규칙" placeholder="예)&#10;1. 친구의 말을 끝까지 들어요.&#10;2. 쓰레기는 내가 먼저 주워요."></textarea>
+    <textarea data-key="rules" spellcheck="false" aria-label="우리반 규칙"></textarea>
+    <ol class="rule-list" id="rule-list" title="눌러서 고치기" hidden></ol>
   </section>
   <section class="card" data-card="photo">
     <p class="label">🖼️ 사진</p>
@@ -386,7 +380,7 @@
     <div class="noise-count">오늘 경고 <b id="noise-count">0</b>회</div>
     <label class="noise-th">기준 <input type="range" id="noise-th" min="30" max="95" value="65" aria-label="경고 기준"> <span id="noise-th-v">65</span></label>
     <div class="acts">
-      <button class="main" id="noise-go" onclick="noiseToggle()">측정 시작</button><button onclick="noiseWarn()" title="직접 경고 주기 (횟수에 더해져요)">🔔 경고</button><button onclick="noiseResetCount()">횟수 0</button>
+      <button class="main" id="noise-go" onclick="noiseToggle()">측정 시작</button><button onclick="noiseWarn()" title="직접 경고 주기 (횟수에 더해져요)">🔔 경고</button><button onclick="noiseResetCount()" title="경고 횟수를 0으로">↻ 초기화</button>
     </div>
   </section>
   <section class="card wb-card" data-card="whiteboard">
@@ -418,7 +412,7 @@
       </div>
       <div class="tt-right">
         <p class="sub">🎒 준비물</p>
-        <textarea data-key="supplies" spellcheck="false" aria-label="준비물" placeholder="예)&#10;내일: 리코더&#10;금요일: 체육복"></textarea>
+        <textarea data-key="supplies" spellcheck="false" aria-label="준비물"></textarea>
       </div>
     </div>
   </section>
@@ -474,8 +468,8 @@
       <li><b>소음 측정</b> '측정 시작'을 누르고 마이크를 허락하면 소리 크기를 막대로 보여 줘요. 기준(검은 선)을 1초 넘게 넘으면 경고음이 나고 오늘 경고 횟수가 쌓여요. '🔔 경고'로 직접 경고를 줄 수도 있어요. 소리는 이 컴퓨터 안에서만 재고, 녹음하거나 보내지 않아요.</li>
       <li><b>화이트보드</b> ✏️ 펜으로 그리고, T 글상자는 누른 뒤 보드를 클릭해 써요. 사진은 복사해서 Ctrl+V(또는 끌어다 놓기). ✋ 옮기기에서 사진·글상자를 끌어 옮기고, 오른쪽 아래 파란 점으로 크기를 바꾸고, Delete로 지워요. 글상자는 두 번 클릭하면 고쳐요. Ctrl+Z로 되돌려요.</li>
       <li><b>시간표</b> 설정 → 시간표에서 연간시간표(한글 파일 또는 표 붙여넣기)와 시정표를 넣으면, 지금 몇 교시인지와 다음 시간을 알려 줘요. 표에 없는 주는 '매주 기본 시간표'를 써요.</li>
-      <li><b>보드 카드</b> 아래쪽 바에서 띄운 카드의 '보드에 두기'를 누르면 보드에 붙어요. 보드 카드 제목을 끌어 옮기고, 오른쪽 아래 모서리로 크기를 바꿔요. 옮긴 자리와 크기는 앱을 껐다 켜도 그대로예요. ✕를 누르면 보드에서 닫히고 아래쪽 바로 들어가요. 닫아도 적어 둔 내용은 남아요.</li>
-      <li><b>아래쪽 바</b> 필요할 때 띄우기로 고른 도구(사진·타이머·뽑기·화이트보드)가 있어요. 🔊 버튼으로 효과음을 끄고 켜요. 띄운 창은 오른쪽 아래 모서리로 크기를 바꿔요.</li>
+      <li><b>보드 카드</b> 제목을 끌어 옮기고, 오른쪽 아래 모서리로 크기를 바꿔요. 옮긴 자리와 크기는 앱을 껐다 켜도 그대로예요. ✕를 누르면 보드에서 닫히고 아래쪽 바로 들어가요. 닫아도 적어 둔 내용은 남아요.</li>
+      <li><b>아래쪽 바</b> 보드에서 닫은 카드가 들어가요. 누르면 보드에 다시 나와요. 🔊 버튼으로 효과음을 끄고 켜요.</li>
       <li><b>준비물</b> 시간표 카드 오른쪽 칸에 쓰면 저장돼요.</li>
       <li><b>창 옮기기</b> 맨 위 줄을 잡고 끌어요. 창 크기는 모서리를 끌어 조절해요. 창이 좁으면 카드가 아래로 쌓여요.</li>
       <li><b>앱 설치 (Edge)</b> 이 주소를 Edge로 열고 주소창 오른쪽 설치 아이콘을 눌러요. 안 보이면 … 메뉴 → 앱 → '이 사이트를 앱으로 설치'.</li>
@@ -874,16 +868,15 @@ document.addEventListener("keydown", e => { if (e.key === "Escape" && !panel.hid
 document.getElementById("today").textContent =
   new Date().toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "short" });
 
-// 카드 배치: { 카드: { mode: "board"(보드에 두기) | "popup"(필요할 때 띄우기) | "off", rect: {x, y, w, h}(보드 크기에 대한 비율) } }
+// 카드 배치: { 카드: { mode: "board"(보드에 두기) | "popup"(아래쪽 바에 넣어 두기) | "off", rect: {x, y, w, h}(보드 크기에 대한 비율) } }
 // 처음엔 칸 맞춤으로 자리를 잡아 그 위치를 기억하고, 그다음부터는 제목을 끌어 옮기고 오른쪽 아래 모서리로 크기를 바꿈
 // [이름, 표시, 처음 위치(board 보드 | popup 아래쪽 바), 처음 크기(칸), 최소 크기 px [가로, 세로]]
 const CARDS = [["topic", "✏️ 오늘의 주제", "board", "2", [340, 200]], ["timetable", "🕘 시간표", "board", "2", [320, 190]],
   ["memo", "📝 메모", "board", "1", [210, 180]], ["rules", "📌 우리반 규칙", "board", "1", [210, 180]],
   ["photo", "🖼️ 사진", "popup", "1", [200, 170]], ["timer", "⏱️ 타이머", "popup", "1", [240, 240]], ["picker", "🎲 뽑기", "popup", "1", [240, 250]],
-  ["whiteboard", "🖍️ 화이트보드", "popup", "4", [420, 320]], ["dust", "😷 미세먼지", "board", "1", [180, 190]], ["noise", "🔉 소음 측정", "popup", "1", [240, 270]]];
+  ["whiteboard", "🖍️ 화이트보드", "popup", "4", [420, 320]], ["dust", "😷 미세먼지", "board", "1", [260, 270]], ["noise", "🔉 소음 측정", "popup", "1", [240, 270]]];
 const minOf = k => CARDS.find(c => c[0] === k)[4];
-const board = document.querySelector(".board"), pop = document.createElement("div");
-pop.id = "pop"; pop.hidden = true; document.body.append(pop);
+const board = document.querySelector(".board");
 let layout = {}, zTop = 1;
 try {
   layout = JSON.parse(localStorage.getItem("layout")) || {};
@@ -932,9 +925,10 @@ function placeCards() {
   board.classList.add("free");
   for (const [k] of CARDS) {
     const c = card(k), l = lay(k);
-    if (l.mode !== "board" || pop.dataset.open === k) continue;
-    const { x, y, w, h } = l.rect;
+    if (l.mode !== "board") continue;
+    const { x, y, w, h } = l.rect, [mw, mh] = minOf(k);
     [x, y, w, h].forEach((v, i) => c.style[POS[i]] = v * 100 + "%");
+    c.style.minWidth = mw + "px"; c.style.minHeight = mh + "px"; // 예전에 더 작게 줄여 둔 카드도 최소 크기는 지킴
   }
 }
 // 제목 줄을 끌면 옮기기, 오른쪽 아래 모서리를 끌면 크기 조절
@@ -958,7 +952,6 @@ board.addEventListener("pointerdown", e => {
   t.addEventListener("pointermove", move); t.addEventListener("pointerup", up);
 });
 function applyLayout() {
-  closePop();
   const launch = document.getElementById("launch");
   launch.replaceChildren();
   CARDS.forEach(([k, name], i) => {
@@ -967,7 +960,7 @@ function applyLayout() {
     c.hidden = l.mode !== "board";
     if (l.mode === "popup") {
       const b = document.createElement("button"), [icon, ...label] = name.split(" "), ic = document.createElement("i");
-      ic.textContent = icon; b.append(ic, label.join(" ")); b.dataset.card = k; b.onclick = () => openPop(k);
+      ic.textContent = icon; b.append(ic, label.join(" ")); b.dataset.card = k; b.onclick = () => showCard(k);
       launch.append(b);
     }
   });
@@ -982,26 +975,9 @@ function resetPlaces() {
   for (const k in layout) { delete layout[k].rect; delete layout[k].locked; } // locked: 예전 📌 고정 값 정리
   saveLayout(); applyLayout();
 }
-function openPop(k) {
-  closePop();
-  const c = card(k), box = document.createElement("div"), bar = document.createElement("div");
-  box.className = "pop-box"; bar.className = "pop-bar";
-  const pin = document.createElement("button"), x = document.createElement("button");
-  pin.textContent = "보드에 두기"; pin.title = "이 카드를 보드에 계속 놓아 두기"; pin.onclick = () => setLayout(k, { mode: "board" });
-  x.textContent = "✕ 닫기"; x.onclick = closePop;
-  POS.forEach(p => c.style[p] = ""); c.style.zIndex = "";
-  bar.append(pin, x); c.hidden = false; box.append(bar, c); pop.replaceChildren(box); pop.hidden = false; pop.dataset.open = k;
+function showCard(k) { // 아래쪽 바에서 누르면 보드에 바로 맨 앞으로
+  setLayout(k, { mode: "board" }); card(k).style.zIndex = ++zTop;
 }
-function closePop() {
-  const k = pop.dataset.open;
-  if (!k) return;
-  const c = card(k);
-  board.append(c); c.hidden = lay(k).mode !== "board";
-  pop.hidden = true; pop.replaceChildren(); delete pop.dataset.open;
-  placeCards();
-}
-pop.addEventListener("click", e => { if (e.target === pop) closePop(); });
-document.addEventListener("keydown", e => { if (e.key === "Escape" && pop.dataset.open && panel.hidden) closePop(); });
 applyLayout();
 
 // 메모·우리반 규칙: 쓰는 대로 저장
@@ -1029,6 +1005,18 @@ document.querySelectorAll("textarea[data-key]").forEach(ta => {
     ...NOTE_COLORS.map(c => { const b = btn("", "글씨 색", () => { st.color = c; apply(); }); b.className = "dot"; b.dataset.c = c; b.style.background = c; b.setAttribute("aria-label", "글씨 색"); return b; }));
   ta.before(bar); apply();
 });
+// 우리반 규칙: 쓸 때는 글상자, 다 쓰면 한 줄씩 번호 붙은 목록. 직접 쓴 '1.' 같은 번호는 떼고 보여 줌
+const ruleTa = document.querySelector('textarea[data-key="rules"]'), ruleList = document.getElementById("rule-list");
+function showRules() {
+  const lines = ruleTa.value.split("\n").map(t => t.trim().replace(/^\d+\s*[.)]\s*/, "")).filter(Boolean);
+  ruleList.replaceChildren(...lines.map(t => { const li = document.createElement("li"); li.textContent = t; return li; }));
+  ruleList.style.fontSize = ruleTa.style.fontSize; ruleList.style.color = ruleTa.style.color;
+  ruleList.hidden = !lines.length || document.activeElement === ruleTa; ruleTa.hidden = !ruleList.hidden;
+}
+ruleTa.addEventListener("blur", showRules);
+ruleTa.previousElementSibling.addEventListener("click", showRules); // 글씨 크기·색 도구줄
+ruleList.onclick = () => { ruleList.hidden = true; ruleTa.hidden = false; ruleTa.focus(); };
+showRules();
 
 // 사진: 긴 변 1600px JPEG로 줄여서 이 컴퓨터에 저장
 // shortcut: localStorage(약 5MB)에 한 장만 저장, 여러 장 슬라이드가 필요해지면 IndexedDB로 옮기기
@@ -1099,7 +1087,7 @@ function timerTick() {
   tLastSec = sec;
   if (!tLeft) {
     timerStop(); timerCard.classList.add("done"); beep();
-    if (lay("timer").mode === "popup" && pop.dataset.open !== "timer") openPop("timer"); // 닫혀 있어도 끝나면 띄움
+    if (lay("timer").mode === "popup") showCard("timer"); // 닫혀 있어도 끝나면 띄움
   }
   timerDraw();
 }
