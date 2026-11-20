@@ -253,13 +253,20 @@
   @keyframes blink { to { background: #ffd9cc; } }
   /* 뽑기: 뽑을 대상마다 이름 카드. 불빛이 카드 사이를 옮겨 다니다 느려지며 한 장에 멈춤 */
   #pick-name.cards { display: flex; flex-wrap: wrap; align-content: center; justify-content: center; gap: .35em; overflow-y: auto; padding: 4px; line-height: 1.2; }
-  /* 순서 뽑기 달리기: 한 줄에 한 명, 오른쪽 끝이 결승선 */
-  .race { width: 100%; height: 100%; display: flex; flex-direction: column; border-right: 4px dashed var(--accent); }
-  .race .lane { flex: 1; position: relative; border-bottom: 1px dashed var(--line); min-height: 0; }
-  .race .lane.in { background: var(--card); }
-  .race .lane[data-rank]::after { content: attr(data-rank); position: absolute; left: 4px; top: 50%; transform: translateY(-50%); font-size: .8em; color: var(--accent); }
-  .race .runner i { display: inline-block; font-style: normal; transform: scaleX(-1); }
-  .race .runner { position: absolute; top: 50%; margin-top: -.6em; line-height: 1.2; white-space: nowrap; }
+  /* 순서 뽑기 핀볼: 왼쪽은 구슬이 굴러떨어지는 판, 오른쪽은 들어온 순서 */
+  .race { width: 100%; height: 100%; display: grid; grid-template-columns: minmax(0, 1fr) 34%; gap: 8px; font-size: 14px; }
+  .race canvas { display: block; width: 100%; height: 100%; min-height: 0; border-radius: 10px; background: #1f2433; }
+  .race ol { min-height: 0; margin: 0; padding: 4px 0; list-style: none; overflow-y: auto; font-size: 13px; line-height: 1.5; }
+  .race li { display: flex; gap: 6px; align-items: baseline; animation: rank-in .35s ease-out; }
+  @keyframes rank-in { from { opacity: 0; transform: translateY(-6px); } }
+  .race li:first-child { font-size: 1.2em; }
+  .race li span { color: var(--accent); min-width: 2.6em; }
+  /* 순서 결과: 1등부터 세로로 쭉. 길면 옆 칸으로 이어짐 */
+  #pick-name.ranks { display: block; columns: 9em; column-gap: 2em; column-fill: auto; height: 100%; overflow: auto; text-align: left; line-height: 1.5; padding: 4px 8px; }
+  .rank-row { break-inside: avoid; display: flex; gap: .5em; align-items: baseline; padding: .1em 0; border-bottom: 1px dashed var(--line); }
+  .rank-row span { color: var(--accent); min-width: 2.4em; }
+  .rank-row small { color: var(--muted); font-size: .7em; }
+  .rank-row:first-child { font-size: 1.15em; }
   .pick-card small { display: block; font-size: .6em; opacity: .7; text-align: center; }
   .pick-card b { display: block; font-weight: normal; font-size: 1.15em; text-align: center; }
   .pick-card { padding: .3em .6em; border-radius: .4em; background: #fff; border: 2px solid var(--line); color: var(--ink); white-space: nowrap;
@@ -280,19 +287,30 @@
           app-region: no-drag; -webkit-app-region: no-drag; }
   .gear:hover { background: var(--line); color: var(--ink); }
   .gear:focus-visible { outline: 2px solid var(--accent); }
-  /* 설정 창: 창 전체를 덮음. 숨긴 제목 표시줄의 버튼(─ □ ✕) 아래부터 시작 */
-  #panel:not([hidden]) { position: fixed; inset: 0; z-index: 6; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px;
-         padding: calc(env(titlebar-area-height, 0px) + 12px) 18px 12px; background: var(--bg); color: var(--ink);
-         font: 17px/1.5 "Wanted Sans", "Malgun Gothic", sans-serif; app-region: no-drag; -webkit-app-region: no-drag; }
-  #panel nav { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-  #panel button { font: inherit; border: 1.5px solid var(--line); background: #fff; color: var(--ink); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
-  #panel nav .on { background: var(--accent); border-color: var(--accent); color: #fff; }
-  #panel nav .close { margin-left: auto; border: 0; background: none; font-size: 16px; }
-  #panel section { flex: 1; overflow-y: auto; }
+  /* 설정 창: 창 전체를 덮음. 숨긴 제목 표시줄의 버튼(─ □ ✕) 아래부터 시작
+     왼쪽에 조용한 메뉴, 오른쪽에 흰 종이 한 장. 강조색은 고른 메뉴 표시에만 */
+  #panel:not([hidden]) { position: fixed; inset: 0; z-index: 6; box-sizing: border-box; display: grid; grid-template-columns: 168px minmax(0, 1fr);
+         grid-template-rows: auto minmax(0, 1fr); gap: 0 20px; padding: calc(env(titlebar-area-height, 0px) + 16px) 24px 20px; background: var(--bg); color: var(--ink);
+         font: 16px/1.6 "Wanted Sans", "Malgun Gothic", sans-serif; app-region: no-drag; -webkit-app-region: no-drag; }
+  #panel .panel-title { grid-column: 1 / -1; margin: 0 0 14px 12px; font-size: 20px; }
+  #panel nav { display: flex; flex-direction: column; gap: 2px; }
+  #panel button { font: inherit; font-size: 15px; border: 1px solid #e6dccf; background: #fff; color: var(--ink); border-radius: 8px; padding: 5px 12px; cursor: pointer; }
+  #panel nav button { border: 0; background: none; text-align: left; padding: 8px 12px; color: var(--muted); }
+  #panel nav button:hover { color: var(--ink); }
+  #panel nav .on { background: #fff; color: var(--ink); box-shadow: inset 3px 0 0 var(--accent), 0 1px 3px rgba(60, 40, 20, .08); }
+  #panel nav .close { position: absolute; top: calc(env(titlebar-area-height, 0px) + 14px); right: 20px; width: 36px; height: 36px; padding: 0; text-align: center; font-size: 17px; }
+  #panel section { overflow-y: auto; max-width: 760px; box-sizing: border-box; background: #fff; border-radius: 14px; padding: 22px 26px;
+                   box-shadow: 0 1px 2px rgba(60, 40, 20, .05), 0 8px 24px rgba(60, 40, 20, .06); }
+  @media (max-width: 640px) { /* 좁은 화면: 메뉴를 위쪽 한 줄로 */
+    #panel:not([hidden]) { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto minmax(0, 1fr); padding: 12px; }
+    #panel nav { flex-direction: row; overflow-x: auto; margin-bottom: 10px; }
+    #panel nav button { white-space: nowrap; }
+    #panel section { padding: 16px; }
+  }
   #panel p, #panel ul, #panel ol { margin: 0 0 8px; }
   #panel ul, #panel ol { padding-left: 18px; }
   #panel li b { color: var(--accent); margin-right: 4px; }
-  #panel .sum { color: var(--muted); font-size: 15px; }
+  #panel .sum { color: var(--muted); font-size: 14px; }
   #panel li .date { border: 0; background: none; padding: 0 2px; color: var(--accent); text-decoration: underline dotted; border-radius: 4px; }
   #panel li .date:hover { background: var(--line); }
   #panel .row { display: flex; gap: 6px; }
@@ -306,7 +324,8 @@
   #panel .roster-table button { border: 0; background: none; color: var(--muted); padding: 2px 8px; }
   #panel input:not([type]) { flex: 1; font: inherit; padding: 4px 10px; border: 1.5px solid var(--line); border-radius: 8px; background: #fff; }
   #panel .danger { background: var(--accent); border-color: var(--accent); color: #fff; }
-  #panel h3 { font-weight: normal; font-size: 19px; color: var(--accent); margin: 14px 0 4px; }
+  #panel h3 { font-weight: normal; font-size: 17px; color: var(--ink); margin: 22px 0 4px; padding-top: 18px; border-top: 1px solid #f1e9dd; }
+  #panel h3:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
   /* 글꼴 위아래가 잘리지 않게 줄 높이와 높이를 넉넉히 */
   #panel select { font: inherit; line-height: 1.4; height: 36px; padding: 0 28px 0 10px; border: 1.5px solid var(--line); border-radius: 8px; background: #fff; }
   .tt-bells { display: grid; grid-template-columns: max-content; gap: 4px; }
@@ -442,7 +461,7 @@
   <section class="card tool-card" data-card="picker">
     <p class="label">🎲 뽑기</p>
     <div class="modes" role="group" aria-label="뽑기 방법">
-      <button data-mode="all" title="명단 전체에서 뽑기">전체</button><button data-mode="select" title="명단에서 고른 사람만">선택</button><button data-mode="group" title="모둠 뽑기">모둠</button><button data-mode="direct" title="그때그때 직접 입력한 것 중에서">직접입력</button><button data-mode="order" title="명단 전체가 달리기를 해서 들어온 순서대로 순서 정하기">순서</button>
+      <button data-mode="all" title="명단 전체에서 뽑기">전체</button><button data-mode="select" title="명단에서 고른 사람만">선택</button><button data-mode="group" title="모둠 뽑기">모둠</button><button data-mode="direct" title="그때그때 직접 입력한 것 중에서">직접입력</button><button data-mode="order" title="명단 전체가 핀볼처럼 굴러떨어져 빠진 순서대로 순서 정하기">순서</button>
     </div>
     <div class="big" id="pick-name" aria-live="polite">?</div>
     <div class="pick-edit" id="pick-edit" hidden>
@@ -538,6 +557,7 @@
   </svg>
 </button>
 <div id="panel" hidden>
+  <p class="panel-title">설정</p>
   <nav>
     <button data-tab="time" onclick="openTab('time')">시간표</button>
     <button data-tab="roster" onclick="openTab('roster')">명단</button>
@@ -588,7 +608,7 @@
       <li><b>메모 · 우리반 규칙</b> 카드를 눌러 바로 쓰면 저절로 저장돼요. 글자를 끌어서 고른 뒤 오른쪽 아래 Tt에서 색을 고르면 그 글자만 바뀌어요. 메모는 아래쪽 바 버튼을 누를 때마다 한 장씩 더 생겨요(더 만든 메모는 닫으면 지워져요).</li>
       <li><b>사진</b> '사진 넣기'로 사진을 고르세요. 사진 위에 마우스를 올리면 바꾸기·지우기 버튼이 나와요. 아래쪽 바 버튼을 누를 때마다 사진 카드가 한 장씩 더 생겨요.</li>
       <li><b>타이머</b> 30초·1·3·5·10분을 고르거나, 가운데 시간(00:00)을 눌러 3:30처럼 직접 쓰고 '시작'. +1은 1분 더하기예요. 시간이 끝나면 소리가 나고 카드가 깜빡여요.</li>
-      <li><b>뽑기</b> <u>전체</u>: 설정 → 명단에 우리 반 이름을 한 줄에 하나씩(숫자만 쓰면 번호로). <u>선택</u>: 오른쪽 아래 '✎ 고르기'로 뽑을 사람만 골라요. <u>모둠</u>: 오른쪽 아래에 모둠 수를 정해요. <u>직접입력</u>: 오른쪽 아래 '✎ 쓰기'로 그때그때 뽑을 것을 써요. <u>순서</u>: 명단 전체가 달리기를 해서 결승선에 들어온 순서대로 순서를 정해요. 한 번 뽑힌 것은 모두 뽑힐 때까지 다시 나오지 않고, '처음부터'로 다시 시작해요.</li>
+      <li><b>뽑기</b> <u>전체</u>: 설정 → 명단에 우리 반 이름을 한 줄에 하나씩(숫자만 쓰면 번호로). <u>선택</u>: 오른쪽 아래 '✎ 고르기'로 뽑을 사람만 골라요. <u>모둠</u>: 오른쪽 아래에 모둠 수를 정해요. <u>직접입력</u>: 오른쪽 아래 '✎ 쓰기'로 그때그때 뽑을 것을 써요. <u>순서</u>: 명단 전체가 이름 구슬이 되어 핀볼 판을 굴러떨어지고, 아래 구멍으로 빠진 순서대로 1등부터 정해요. 한 번 뽑힌 것은 모두 뽑힐 때까지 다시 나오지 않고, '처음부터'로 다시 시작해요.</li>
       <li><b>미세먼지</b> '지역 설정'에서 '지금 위치로'를 누르거나 시·군 이름(예: 수원시)으로 찾으세요. Open-Meteo(무료 공개 자료)의 예보값이라 에어코리아 측정소 값과 조금 다를 수 있어요. 30분마다 새로 받아요.</li>
       <li><b>소음 측정</b> '측정 시작'을 누르고 마이크를 허락하면 소리 크기를 막대로 보여 줘요. 기준(검은 선)을 1초 넘게 넘으면 경고음이 나고 오늘 경고 횟수가 쌓여요. '🔔 경고'로 직접 경고를 줄 수도 있어요. 소리는 이 컴퓨터 안에서만 재고, 녹음하거나 보내지 않아요.</li>
       <li><b>화이트보드</b> ✏️ 펜을 누르면 색과 굵기를 골라 그려요. T 글상자는 누른 뒤 보드(사진 위도 돼요)를 클릭해 써요. 사진은 복사해서 Ctrl+V(또는 끌어다 놓기). 옮기기에서 사진·글상자·펜 선을 끌어 옮기고, 오른쪽 아래 파란 점으로 크기를 바꾸고(글상자는 글씨도 같이 커져요), 오른쪽 위 ✕나 Delete로 지워요. Shift를 누른 채 여러 개를 누르면 함께 골라지고, '묶기'로 한 덩어리로 묶어요('풀기'로 다시 나눠요). 글상자는 두 번 클릭하면 고치고, Tt로 글씨 크기·색을 바꿔요(고른 글상자가 없으면 새로 만들 글상자에 적용). ↶나 Ctrl+Z로 되돌려요. 제목 줄 오른쪽 1~4 버튼으로 화이트보드를 4개까지 따로 써요.</li>
@@ -1445,27 +1465,31 @@ function pickInfo() {
   const empty = { all: "설정 → 명단을 넣어 주세요", order: "설정 → 명단을 넣어 주세요", select: people().length ? "'✎ 고르기'로 골라 주세요" : "설정 → 명단을 넣어 주세요",
     direct: "'✎ 쓰기'로 써 주세요" };
   pickLeft.textContent = !all.length ? empty[pk.mode] : pk.mode !== "order" ? `남은 ${left.length} / ${all.length}`
-    : pk.order ? "들어온 순서예요" : `${all.length}명 · '뽑기'를 누르면 달리기 시작`;
+    : pk.order ? "빠진 순서예요" : `${all.length}명 · '뽑기'를 누르면 구슬이 떨어져요`;
   document.querySelectorAll(".modes [data-mode]").forEach(b => b.classList.toggle("on", b.dataset.mode === pk.mode));
   editBtn.hidden = pk.mode === "group"; groupsRow.hidden = pk.mode !== "group";
   editBtn.textContent = pickEdit.hidden ? EDIT_LABEL[pk.mode] : "✓ 완료";
   if (pickGo.disabled) return left; // 뽑는 중에는 카드를 다시 그리지 않음
   // 이름 카드: 뽑힌 건 회색 줄긋기, 방금 뽑힌 건 강조. 다 보이도록 글씨를 줄여 맞춤
-  pickName.classList.toggle("cards", !!all.length);
+  const ranked = pk.mode === "order" && pk.order; // 순서: 다 들어왔으면 "1등 김하늘 (5번)" 줄을 세로로
+  pickName.classList.toggle("cards", !!all.length && !ranked); pickName.classList.toggle("ranks", !!ranked);
   pickName.style.fontSize = "";
   if (!all.length) { pickName.textContent = "?"; return left; }
-  const ranked = pk.mode === "order" && pk.order; // 순서: 달리기가 끝났으면 들어온 순서대로 "1등 · 3번 / 김하늘"
-  pickName.replaceChildren(...(ranked || all).map((p, i) => {
+  if (ranked) pickName.replaceChildren(...ranked.map((p, i) => {
+    const r = document.createElement("div"), n = document.createElement("span"), m = p.match(/^(\d+번) (.+)$/);
+    r.className = "rank-row"; n.textContent = `${i + 1}등`; r.append(n, m ? m[2] : p);
+    if (m) { const sm = document.createElement("small"); sm.textContent = m[1]; r.append(sm); }
+    return r;
+  }));
+  else pickName.replaceChildren(...all.map(p => {
     const c = document.createElement("span");
     c.className = "pick-card" + (p === pkWin ? " win" : done.includes(p) ? " done" : ""); c.dataset.p = p;
     const m = p.match(/^(\d+번) (.+)$/); // "1번 김하늘": 번호는 윗줄에 작게, 이름은 아랫줄에 크게
-    if (m || ranked) {
-      const n = document.createElement("small"), b = document.createElement("b");
-      n.textContent = ranked ? `${i + 1}등` + (m ? " · " + m[1] : "") : m[1]; b.textContent = m ? m[2] : p; c.append(n, b);
-    } else c.textContent = p;
+    if (m) { const n = document.createElement("small"), b = document.createElement("b"); n.textContent = m[1]; b.textContent = m[2]; c.append(n, b); }
+    else c.textContent = p;
     return c;
   }));
-  if (pickName.clientHeight) for (let f = 30; f >= 10; f -= 2) { pickName.style.fontSize = f + "px"; if (pickName.scrollHeight <= pickName.clientHeight) break; }
+  if (pickName.clientHeight) for (let f = 30; f >= 10; f -= 2) { pickName.style.fontSize = f + "px"; if (pickName.scrollHeight <= pickName.clientHeight && pickName.scrollWidth <= pickName.clientWidth) break; }
   return left;
 }
 let pkWin = null; // 방금 뽑힌 것
@@ -1507,36 +1531,100 @@ function pickOne() {
   step();
 }
 function pickReset() { pk.picked[pk.mode] = []; pkWin = null; if (pk.mode === "order") delete pk.order; pkSave(); pickInfo(); }
-// 순서 뽑기: 모두가 한 줄씩 달려서 결승선에 들어온 순서가 곧 순서
-// 들어올 순서를 먼저 섞어 정하고, 그 순서대로 결승 시간을 줌. 가는 동안은 앞서거니 뒤서거니 하도록 흔들림을 넣음
-const RUNNERS = ["🐇", "🐢", "🐎", "🐕", "🐈", "🐿️", "🦔", "🐖", "🦆", "🐆", "🐄", "🐓", "🐧", "🦊", "🐻", "🐼"];
+// 순서 뽑기 (핀볼): 이름 구슬이 못·범퍼에 부딪히며 떨어지고, 아래 깔때기 구멍으로 빠진 순서가 곧 순서
+// 진짜로 굴려서 정함 (미리 정해 두지 않음). 구멍이 구슬 하나 겨우 지날 만큼이라 끝에서 몰리며 긴장감이 생김
 function pickRace(all) {
-  const order = [...all].map(p => [Math.random(), p]).sort((a, b) => a[0] - b[0]).map(x => x[1]);
-  delete pk.order; pickGo.disabled = true; pickName.classList.remove("cards");
-  const laneH = pickName.clientHeight / all.length, track = document.createElement("div");
-  track.className = "race"; track.style.fontSize = Math.max(9, Math.min(22, laneH * .62)) + "px";
-  const lanes = all.map(p => {
-    const lane = document.createElement("div"), run = document.createElement("span"), rank = order.indexOf(p);
-    lane.className = "lane"; run.className = "runner";
-    const face = document.createElement("i"); face.textContent = pick(RUNNERS); // 동물 그림은 왼쪽을 봐서 뒤집어 오른쪽으로 달리게
-    run.append(face, " " + (p.match(/^\d+번 (.+)$/)?.[1] || p));
-    lane.append(run); track.append(lane);
-    return { lane, run, T: 4200 + rank * (2600 / Math.max(1, all.length - 1)) + Math.random() * 120, ph: Math.random() * 6.3, k: 4 + Math.random() * 3, done: false };
+  delete pk.order; pickGo.disabled = true; pickName.classList.remove("cards", "ranks"); pickName.style.fontSize = "";
+  const wrap = document.createElement("div"), cv = document.createElement("canvas"), list = document.createElement("ol");
+  wrap.className = "race"; wrap.append(cv, list); pickName.replaceChildren(wrap);
+  const box = cv.getBoundingClientRect(), dpr = devicePixelRatio || 1, W = box.width, H = box.height, g = cv.getContext("2d");
+  cv.width = W * dpr; cv.height = H * dpr; g.scale(dpr, dpr);
+  const R = Math.max(5, Math.min(13, W / 22, Math.sqrt(W * H / all.length) / 6)); // 구슬 반지름: 판 크기와 사람 수에 맞춤
+  const GRAV = H * 1.6, top = R * 4, funnelY = H - Math.max(R * 6, H * .16), gap = R * 2.6;
+  // 못: 엇갈린 줄. 범퍼: 큰 원, 닿으면 세게 튕기고 번쩍
+  const pegs = [], sx = R * 4.2, sy = R * 3.6;
+  for (let y = top + R * 3, row = 0; y < funnelY - R * 2; y += sy, row++)
+    for (let x = (row % 2 ? sx / 2 : sx) ; x < W - R; x += sx) pegs.push({ x, y, r: R * .35 });
+  const bumpers = [[.3, .38], [.7, .38], [.5, .62]].map(([fx, fy]) => ({ x: W * fx, y: top + (funnelY - top) * fy, r: R * 1.8, lit: 0 }));
+  for (const b of bumpers) for (let i = pegs.length - 1; i >= 0; i--) if (Math.hypot(pegs[i].x - b.x, pegs[i].y - b.y) < b.r + R * 2.2) pegs.splice(i, 1);
+  const walls = [[0, funnelY, W / 2 - gap / 2, H - R], [W, funnelY, W / 2 + gap / 2, H - R]]; // 깔때기 두 벽
+  const balls = all.map((p, i) => {
+    const m = p.match(/^(\d+)번(?: (.+))?$/);
+    return { p, label: m ? m[1] : p.slice(0, 2), x: R + Math.random() * (W - 2 * R), y: -Math.random() * top * 3 - R, vx: (Math.random() - .5) * W * .3, vy: 0,
+      c: `hsl(${(i * 360 / all.length + 20) % 360} 75% 60%)`, still: 0, out: false };
   });
-  pickName.replaceChildren(track);
-  let t0 = 0, finished = 0;
-  const frame = now => {
-    const t = now - t0;
-    for (const L of lanes) {
-      const u = Math.min(1, t / L.T), p = Math.max(0, Math.min(1, u + .05 * Math.sin(L.ph + u * L.k) * 4 * u * (1 - u))); // 처음과 끝은 0·1에 딱 맞음
-      L.run.style.left = p * 100 + "%"; L.run.style.transform = `translateX(-${p * 100}%)`;
-      if (u >= 1 && !L.done) { L.done = true; finished++; L.lane.dataset.rank = finished + "등"; L.lane.classList.add("in"); tone(600 + Math.max(0, 12 - finished) * 60, 0, .08, "triangle", .15); }
+  const order = [];
+  let last = 0, tick = 0, elapsed = 0;
+  const bounce = (b, nx, ny, e) => { const vn = b.vx * nx + b.vy * ny; if (vn < 0) { b.vx -= (1 + e) * vn * nx; b.vy -= (1 + e) * vn * ny; } };
+  const step = dt => {
+    for (const b of balls) {
+      if (b.out) continue;
+      b.vy += GRAV * dt; b.x += b.vx * dt; b.y += b.vy * dt;
+      if (b.x < R) { b.x = R; b.vx = Math.abs(b.vx) * .5; } if (b.x > W - R) { b.x = W - R; b.vx = -Math.abs(b.vx) * .5; }
+      for (const q of pegs) {
+        const dx = b.x - q.x, dy = b.y - q.y, d = Math.hypot(dx, dy), m = R + q.r;
+        if (d < m && d > 0) { const nx = dx / d, ny = dy / d; b.x = q.x + nx * m; b.y = q.y + ny * m; bounce(b, nx, ny, .45); b.vx += (Math.random() - .5) * 20; if (elapsed - tick > .04) { tick = elapsed; tone(1400 + Math.random() * 600, 0, .015, "square", .02); } }
+      }
+      for (const q of bumpers) {
+        const dx = b.x - q.x, dy = b.y - q.y, d = Math.hypot(dx, dy), m = R + q.r;
+        if (d < m && d > 0) { const nx = dx / d, ny = dy / d; b.x = q.x + nx * m; b.y = q.y + ny * m; bounce(b, nx, ny, .9); b.vx += nx * H * .35; b.vy += ny * H * .35; q.lit = .25; tone(520 + Math.random() * 200, 0, .06, "triangle", .08); }
+      }
+      for (const [x1, y1, x2, y2] of walls) {
+        const wx = x2 - x1, wy = y2 - y1, t = Math.max(0, Math.min(1, ((b.x - x1) * wx + (b.y - y1) * wy) / (wx * wx + wy * wy)));
+        const cx = x1 + t * wx, cy = y1 + t * wy, dx = b.x - cx, dy = b.y - cy, d = Math.hypot(dx, dy);
+        if (d < R && d > 0) { const nx = dx / d, ny = dy / d; b.x = cx + nx * R; b.y = cy + ny * R; bounce(b, nx, ny, .3); }
+      }
+      // 끼어서 안 움직이면 살짝 흔들어 줌
+      if (Math.hypot(b.vx, b.vy) < R * 2) { if ((b.still += dt) > 1.2) { b.vx += (Math.random() - .5) * H; b.vy -= H * .3; b.still = 0; } } else b.still = 0;
+      if (b.y > H + R) { b.out = true; finish(b); }
     }
-    if (finished < lanes.length) { requestAnimationFrame(frame); return; }
-    setTimeout(() => { pk.order = order; pkSave(); pickGo.disabled = false; pickInfo(); melody([523, 659, 784, 1047], .1, "triangle", .3); }, 900);
+    // 구슬끼리 부딪힘
+    for (let i = 0; i < balls.length; i++) for (let j = i + 1; j < balls.length; j++) {
+      const a = balls[i], b = balls[j];
+      if (a.out || b.out) continue;
+      const dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy);
+      if (d >= 2 * R || d === 0) continue;
+      const nx = dx / d, ny = dy / d, o = (2 * R - d) / 2;
+      a.x -= nx * o; a.y -= ny * o; b.x += nx * o; b.y += ny * o;
+      const vn = (b.vx - a.vx) * nx + (b.vy - a.vy) * ny;
+      if (vn < 0) { const k = vn * .8; a.vx += k * nx; a.vy += k * ny; b.vx -= k * nx; b.vy -= k * ny; }
+    }
   };
+  const finish = b => {
+    order.push(b.p);
+    const li = document.createElement("li"), n = document.createElement("span"), m = b.p.match(/^\d+번 (.+)$/);
+    n.textContent = order.length + "등"; li.append(n, m ? m[1] : b.p); list.append(li); list.scrollTop = list.scrollHeight;
+    tone(500 + Math.max(0, 14 - order.length) * 70, 0, .12, "triangle", .2);
+  };
+  const draw = () => {
+    g.clearRect(0, 0, W, H);
+    g.fillStyle = "#3a4258"; for (const q of pegs) { g.beginPath(); g.arc(q.x, q.y, q.r, 0, 7); g.fill(); }
+    for (const q of bumpers) {
+      g.beginPath(); g.arc(q.x, q.y, q.r, 0, 7); g.fillStyle = q.lit > 0 ? "#ffd43b" : "#e2643f"; g.shadowColor = "#ffd43b"; g.shadowBlur = q.lit > 0 ? 24 : 0; g.fill(); g.shadowBlur = 0;
+    }
+    g.strokeStyle = "#8b95b0"; g.lineWidth = 3; g.beginPath();
+    for (const [x1, y1, x2, y2] of walls) { g.moveTo(x1, y1); g.lineTo(x2, y2); }
+    g.stroke();
+    g.textAlign = "center"; g.textBaseline = "middle"; g.font = `${Math.round(R * .95)}px "Wanted Sans", sans-serif`;
+    for (const b of balls) {
+      if (b.out || b.y < -R) continue;
+      g.beginPath(); g.arc(b.x, b.y, R, 0, 7); g.fillStyle = b.c; g.fill();
+      g.fillStyle = "#1f2433"; g.fillText(b.label, b.x, b.y + 1);
+    }
+  };
+  const frame = now => {
+    const dt = Math.min(.25, (now - last) / 1000), n = Math.ceil(dt * 240); last = now; // 화면이 느려도 실제 시간만큼 굴러감
+    elapsed += dt;
+    for (let k = 0; k < n; k++) step(dt / n); // 잘게 나눠 계산해야 빠른 구슬이 못을 뚫고 지나가지 않음
+    for (const q of bumpers) q.lit -= dt;
+    draw();
+    if (order.length < balls.length && elapsed < 60) { requestAnimationFrame(frame); return; }
+    balls.filter(b => !b.out).sort((a, b) => b.y - a.y).forEach(b => { b.out = true; finish(b); }); // 1분이 지나도 안 나온 구슬은 아래 있는 순서로
+    setTimeout(() => { pk.order = order; pkSave(); pickGo.disabled = false; pickInfo(); melody([523, 659, 784, 1047], .1, "triangle", .3); }, 1500);
+  };
+  draw();
   [0, .5, 1].forEach(at => tone(440, at, .15, "square", .1)); tone(880, 1.5, .35, "square", .12); // 삐 삐 삐 빠앙!
-  setTimeout(() => { t0 = performance.now(); requestAnimationFrame(frame); }, 1500);
+  setTimeout(() => { last = performance.now(); requestAnimationFrame(frame); }, 1500);
 }
 function renderChecks() {
   const ps = people();
