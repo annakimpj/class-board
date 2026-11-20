@@ -46,7 +46,7 @@
   .card[data-size="full"] { grid-column: 1 / -1; }
   /* 자유 배치: 처음 칸 맞춤 자리를 기억한 뒤 카드를 끌어서 옮기고 크기 조절 */
   .card { position: relative; }
-  .board.free { display: block; position: relative; overflow: hidden; padding: 0; } /* 스크롤 없이 한 화면 */
+  .board.free { display: block; position: relative; overflow: hidden; padding: 0; isolation: isolate; } /* 스크롤 없이 한 화면. isolation: 카드를 앞으로 가져와도 설정 창·팝업보다 위로 못 올라가게 */
   .board.free > .card { position: absolute; box-sizing: border-box; }
   .board.free .label { cursor: move; user-select: none; touch-action: none; }
   .board.free .locked .label { cursor: default; }
@@ -134,7 +134,7 @@
 
   /* 메모·우리반 규칙: 바로 써서 저장 */
   .card textarea { flex: 1; min-height: 0; resize: none; border: 0; outline: none; background: none; padding: 0; color: var(--ink);
-                   font: 22px/1.55 "GangwonEdu", "Malgun Gothic", sans-serif; }
+                   font: 26px/1.5 "GangwonEdu", "Malgun Gothic", sans-serif; }
   .card textarea::placeholder { color: #cdbba6; }
   .card textarea:focus { background: #fff; border-radius: 8px; box-shadow: 0 0 0 6px #fff; }
 
@@ -176,7 +176,13 @@
   .tt-left, .tt-right { display: flex; flex-direction: column; gap: 6px; min-height: 0; min-width: 0; }
   .tt-right { border-left: 2px dashed var(--line); padding-left: 12px; }
   .tt-right .sub { text-align: left; font-size: 15px; color: var(--accent); }
-  .tt-right textarea { font-size: 19px; }
+  .tt-right textarea { font-size: 22px; }
+  .note-tools { display: flex; align-items: center; gap: 4px; height: 24px; opacity: 0; transition: opacity .15s; }
+  .card:hover .note-tools, .card:focus-within .note-tools { opacity: 1; }
+  .note-tools button { font: 13px "GangwonEdu", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); background: #fff; color: var(--ink);
+                       border-radius: 6px; padding: 0 6px; height: 22px; cursor: pointer; }
+  .note-tools .dot { width: 18px; height: 18px; padding: 0; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px var(--line); }
+  .note-tools .dot.on { box-shadow: 0 0 0 2px var(--ink); }
   .tt-big { flex: 1; display: grid; place-items: center; text-align: center; font-size: clamp(18px, min(7cqw, 14cqh), 42px); line-height: 1.2; min-height: 0; }
   .tt-big small { display: block; font-size: .5em; color: var(--muted); }
   .tt-today { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
@@ -1015,6 +1021,25 @@ document.querySelectorAll("textarea[data-key]").forEach(ta => {
   const key = "note-" + ta.dataset.key;
   try { ta.value = localStorage.getItem(key) || ""; } catch (e) {}
   ta.addEventListener("input", () => { try { localStorage.setItem(key, ta.value); } catch (e) {} });
+});
+// 메모·규칙·준비물 글씨 크기와 색: 카드에 마우스를 올리면 나오는 작은 도구줄. 칸마다 따로 저장
+const NOTE_COLORS = ["#2b1d14", "#e03131", "#1c7ed6", "#2f9e44", "#7048e8"];
+document.querySelectorAll("textarea[data-key]").forEach(ta => {
+  const key = "note-style-" + ta.dataset.key;
+  let st = {};
+  try { st = JSON.parse(localStorage.getItem(key)) || {}; } catch (e) {}
+  const apply = () => {
+    ta.style.fontSize = st.fs ? st.fs + "px" : ""; ta.style.color = st.color || "";
+    bar.querySelectorAll(".dot").forEach(d => d.classList.toggle("on", d.dataset.c === (st.color || NOTE_COLORS[0])));
+    try { localStorage.setItem(key, JSON.stringify(st)); } catch (e) {}
+  };
+  const btn = (txt, title, fn) => { const b = document.createElement("button"); b.textContent = txt; b.title = title; b.onclick = fn; return b; };
+  const size = d => { st.fs = Math.max(14, Math.min(64, (st.fs || parseFloat(getComputedStyle(ta).fontSize)) + d)); apply(); };
+  const bar = document.createElement("div");
+  bar.className = "note-tools";
+  bar.append(btn("가−", "글씨 작게", () => size(-2)), btn("가+", "글씨 크게", () => size(2)),
+    ...NOTE_COLORS.map(c => { const b = btn("", "글씨 색", () => { st.color = c; apply(); }); b.className = "dot"; b.dataset.c = c; b.style.background = c; b.setAttribute("aria-label", "글씨 색"); return b; }));
+  ta.before(bar); apply();
 });
 
 // 사진: 긴 변 1600px JPEG로 줄여서 이 컴퓨터에 저장
