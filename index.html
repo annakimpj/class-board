@@ -69,6 +69,7 @@
   [data-card^="memo"]     { --accent: #c98a00; --card: #fff8db; --line: #f0e0a6; }
   [data-card="rules"]     { --accent: #2e9a63; --card: #eaf7ef; --line: #c3e6d0; }
   [data-card="motto"]     { --accent: #8a5a2b; --card: #f7efe2; --line: #e3d2b8; }
+  [data-card="seat"]      { --accent: #2f7d8c; --card: #e9f5f7; --line: #c3e1e6; }
   [data-card^="photo"]    { --accent: #7a5cc7; --card: #f2edff; --line: #dcd1f5; }
   [data-card="timer"]     { --accent: #e0457b; --card: #ffedf3; --line: #f6c9d8; }
   [data-card="picker"]    { --accent: #3a78d4; --card: #eaf2ff; --line: #c8daf6; }
@@ -299,6 +300,62 @@
           app-region: no-drag; -webkit-app-region: no-drag; }
   .gear:hover { background: var(--line); color: var(--ink); }
   .gear:focus-visible { outline: 2px solid var(--accent); }
+
+  /* ───── 자리배치 ───── 학급 보드와 같은 색·글꼴·버튼 모양을 그대로 씀 */
+  .seat-mini { flex: 1; min-height: 0; position: relative; overflow: hidden; }
+  .seat-mini .sm-desk, .seat-mini .sm-board { position: absolute; box-sizing: border-box; display: grid; place-items: center; overflow: hidden; white-space: nowrap; }
+  .seat-mini .sm-desk { background: #fff; border: 1px solid var(--line); border-radius: 4px; color: var(--ink); }
+  .seat-mini .sm-desk.empty { color: var(--muted); background: transparent; border-style: dashed; }
+  .seat-mini .sm-board { background: #3c6e4f; color: #fff; border-radius: 4px; font-size: 11px; }
+  #seat-ed:not([hidden]) { position: fixed; inset: 0; z-index: 7; display: grid; grid-template-rows: auto minmax(0, 1fr); background: var(--bg); color: var(--ink);
+       font: 15px/1.5 "Wanted Sans", "Malgun Gothic", sans-serif; padding: calc(env(titlebar-area-height, 0px) + 10px) 14px 14px; gap: 10px; app-region: no-drag; -webkit-app-region: no-drag; }
+  #seat-ed button, #seat-ed select, #seat-ed input:not([type=checkbox]) { font: inherit; font-size: 14px; border: 1px solid #e6dccf; background: #fff; color: var(--ink); border-radius: 8px; padding: 4px 10px; }
+  #seat-ed button { cursor: pointer; }
+  #seat-ed button.on { background: #2f7d8c; border-color: #2f7d8c; color: #fff; }
+  #seat-ed button:disabled { opacity: .4; cursor: default; }
+  .se-top { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  .se-top b { font-size: 18px; font-weight: normal; margin-right: 6px; }
+  .se-top .grp { display: flex; gap: 3px; padding-right: 8px; border-right: 1px solid #e6dccf; }
+  .se-top .close { margin-left: auto; border: 0 !important; background: none !important; font-size: 18px !important; }
+  .se-body { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 12px; min-height: 0; }
+  .se-wrap { overflow: auto; background: #fff; border-radius: 14px; box-shadow: 0 1px 2px rgba(60, 40, 20, .05), 0 8px 24px rgba(60, 40, 20, .06); touch-action: none; }
+  .se-room { position: relative; margin: 12px; background-image: radial-gradient(#e2d9ca 1px, transparent 1.2px); background-size: 18px 18px; touch-action: none; user-select: none; }
+  .se-desk { position: absolute; box-sizing: border-box; background: #fff; border: 1.5px solid #cfc3b0; border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+             line-height: 1.15; overflow: hidden; white-space: nowrap; cursor: grab; touch-action: none; }
+  .se-desk small { font-size: .7em; color: var(--muted); }
+  .se-desk.empty { color: #c9bda9; }
+  .se-desk.sel { outline: 2.5px solid #3a78d4; outline-offset: 1px; }
+  .se-desk.fixed::after { content: "🔒"; position: absolute; top: 1px; right: 2px; font-size: 11px; } /* 교사 화면에서만 */
+  .se-desk.drop { outline: 2.5px dashed #2f7d8c; }
+  .se-board { position: absolute; background: #3c6e4f; color: #fff; border-radius: 6px; display: grid; place-items: center; font-size: 14px; }
+  .se-marq { position: absolute; border: 1.5px solid #3a78d4; background: rgba(58, 120, 212, .1); pointer-events: none; }
+  .se-side { display: flex; flex-direction: column; min-height: 0; background: #fff; border-radius: 14px; box-shadow: 0 1px 2px rgba(60, 40, 20, .05), 0 8px 24px rgba(60, 40, 20, .06); }
+  .se-tabs { display: flex; gap: 2px; padding: 8px 8px 0; flex-wrap: wrap; }
+  #seat-ed .se-tabs button { border: 0; background: none; color: var(--muted); }
+  #seat-ed .se-tabs button.on { background: var(--bg); color: var(--ink); }
+  .se-pane { flex: 1; overflow-y: auto; padding: 10px 14px 14px; display: flex; flex-direction: column; gap: 8px; }
+  .se-pane h4 { margin: 8px 0 0; font-weight: normal; font-size: 15px; }
+  .se-pane .sum { margin: 0; color: var(--muted); font-size: 13px; }
+  .se-pane .row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .se-list { display: flex; flex-direction: column; gap: 3px; min-height: 60px; }
+  .se-stu { display: flex; align-items: center; gap: 6px; }
+  .se-chip { display: inline-block; padding: 2px 10px; border-radius: 999px; border: 1px solid #e6dccf; background: #fff; cursor: grab; touch-action: none; user-select: none; white-space: nowrap; }
+  .se-chip.seated { color: var(--muted); }
+  .se-chip.pick { background: #2f7d8c; border-color: #2f7d8c; color: #fff; }
+  #seat-ed .se-stu .g { padding: 0 8px; min-width: 34px; }
+  .se-stu .g.M { color: #1c7ed6; } .se-stu .g.F { color: #e03131; }
+  .se-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+  .se-group { border: 1.5px dashed #e6dccf; border-radius: 10px; padding: 6px 8px; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; min-height: 34px; }
+  .se-group.drop { border-color: #2f7d8c; background: #e9f5f7; }
+  .se-group b { font-weight: normal; color: #2f7d8c; margin-right: 4px; }
+  #seat-ed .x { border: 0; background: none; color: var(--muted); padding: 0 4px; }
+  .se-msg { font-size: 13px; padding: 8px 10px; border-radius: 8px; background: #e9f5f7; white-space: pre-line; }
+  .se-msg.warn { background: #fff4ea; color: #a5431c; }
+  .se-msg:empty { display: none; }
+  .se-ghost { position: fixed; z-index: 9; pointer-events: none; transform: translate(-50%, -120%); padding: 3px 12px; border-radius: 999px; background: #2f7d8c; color: #fff; font: 14px "Wanted Sans", sans-serif; }
+  @media (max-width: 820px) { /* 태블릿 세로·폰: 책상 판 아래에 옆 칸 */
+    .se-body { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1.3fr) minmax(0, 1fr); }
+  }
   /* 설정 창: 창 전체를 덮음. 숨긴 제목 표시줄의 버튼(─ □ ✕) 아래부터 시작
      왼쪽에 조용한 메뉴, 오른쪽에 흰 종이 한 장. 강조색은 고른 메뉴 표시에만 */
   #panel:not([hidden]) { position: fixed; inset: 0; z-index: 6; box-sizing: border-box; display: grid; grid-template-columns: 168px minmax(0, 1fr);
@@ -358,6 +415,7 @@
   [data-card^="memo"]     { --accent: #e09a00; --card: #fff8e1; --line: #f3e1a8; }
   [data-card="rules"]     { --accent: #1fa463; --card: #eaf8f0; --line: #c2e9d3; }
   [data-card="motto"]     { --accent: #8a5a2b; --card: #f7efe2; --line: #e3d2b8; }
+  [data-card="seat"]      { --accent: #2f7d8c; --card: #e9f5f7; --line: #c3e1e6; }
   [data-card^="photo"]    { --accent: #8b5cf6; --card: #f3eeff; --line: #ddd0fb; }
   [data-card="timer"]     { --accent: #ec4889; --card: #fdeef5; --line: #f8c8dc; }
   [data-card="picker"]    { --accent: #3b82f6; --card: #ecf3ff; --line: #c9dcfb; }
@@ -446,6 +504,11 @@
   <section class="card" data-card="rules">
     <p class="label">📌 우리반 규칙</p>
     <ol class="note rule-list" data-key="rules" contenteditable="true" spellcheck="false" role="textbox" aria-multiline="true" aria-label="우리반 규칙"></ol>
+  </section>
+  <section class="card tool-card" data-card="seat">
+    <p class="label">🪑 자리배치</p>
+    <div class="seat-mini" id="seat-mini"></div>
+    <div class="acts"><button onclick="seatOpen()">✎ 자리배치 편집</button></div>
   </section>
   <section class="card" data-card="motto">
     <p class="label">🏫 급훈</p>
@@ -570,6 +633,26 @@
     <circle cx="12" cy="12" r="3.6"/>
   </svg>
 </button>
+<div id="seat-ed" hidden>
+  <div class="se-top">
+    <b>🪑 자리배치</b>
+    <span class="grp" id="se-modes"><button data-m="desk" title="책상 놓기·옮기기">🪑 책상</button><button data-m="stu" title="학생을 끌어 자리에 앉히기">👤 학생</button><button data-m="lock" title="누른 자리의 학생을 랜덤 배치 때도 그대로 둠 (교사 화면에서만 보여요)">🔒 비밀 고정</button></span>
+    <span class="grp"><select id="se-preset" aria-label="배치 틀"><option value="">배치 틀 고르기…</option><option value="pair">짝꿍형</option><option value="u">ㄷ자</option><option value="232">2-3-2</option><option value="group">모둠형</option><option value="exam">시험대형</option></select></span>
+    <span class="grp" id="se-desktools"><button onclick="seAdd()" title="책상 하나 더">＋ 책상</button><button onclick="seCopy()" title="고른 책상 복사">복사</button><button onclick="seDelete()" title="고른 책상 지우기 (Delete)">지우기</button>
+      <button onclick="seSpace(1, 0)" title="좌우 간격 넓게">↔＋</button><button onclick="seSpace(-1, 0)" title="좌우 간격 좁게">↔−</button><button onclick="seSpace(0, 1)" title="앞뒤 간격 넓게">↕＋</button><button onclick="seSpace(0, -1)" title="앞뒤 간격 좁게">↕−</button></span>
+    <span class="grp"><button onclick="seZoomBy(-1)" title="작게 보기">－</button><button onclick="seZoomBy(1)" title="크게 보기">＋</button></span>
+    <span class="grp"><button id="se-undo" onclick="seUndo()" title="되돌리기 (Ctrl+Z)">↶</button><button id="se-redo" onclick="seRedo()" title="다시 하기 (Ctrl+Y)">↷</button></span>
+    <span class="grp"><button id="se-boardbtn" onclick="seBoard()" title="칠판이 교실 앞쪽(위·아래) 어디인지"></button><button id="se-viewbtn" onclick="seView()" title="학생이 보는 방향 ↔ 교사가 보는 방향 (위아래가 뒤집혀요)"></button></span>
+    <button class="close" onclick="seatClose()" aria-label="닫기" title="닫기">✕</button>
+  </div>
+  <div class="se-body">
+    <div class="se-wrap" id="se-wrap"><div class="se-room" id="se-room"></div></div>
+    <div class="se-side">
+      <div class="se-tabs" id="se-tabs"><button data-t="stu">학생</button><button data-t="rule">분리 조건</button><button data-t="auto">자동 배치</button><button data-t="save">저장·출력</button></div>
+      <div class="se-pane" id="se-pane"></div>
+    </div>
+  </div>
+</div>
 <div id="panel" hidden>
   <p class="panel-title">설정</p>
   <nav>
@@ -629,6 +712,7 @@
       <li><b>시간표</b> 설정 → 시간표에서 연간시간표(한글 파일 또는 표 붙여넣기)와 시정표를 넣으면, 지금 몇 교시인지와 다음 시간을 알려 줘요. 표에 없는 주는 '매주 기본 시간표'를 써요.</li>
       <li><b>보드 카드</b> 제목을 끌어 옮기고, 오른쪽 아래 모서리로 크기를 바꿔요. 옮긴 자리와 크기는 앱을 껐다 켜도 그대로예요. ✕를 누르면 보드에서 닫히고 아래쪽 바로 들어가요. 닫아도 적어 둔 내용은 남아요.</li>
       <li><b>아래쪽 바</b> 보드에서 닫은 카드가 들어가요. 누르면 보드에 다시 나와요.</li>
+      <li><b>자리배치</b> 카드의 '자리배치 편집'에서 1인용 책상을 놓고(배치 틀: 짝꿍형·ㄷ자·2-3-2·모둠형·시험대형), 학생 이름을 끌어 앉혀요. 분리 조건(두 학생 떨어뜨리기, 분리 그룹)과 성별 조건으로 자동 배치하고, 🔒 비밀 고정한 학생은 자동 배치 때도 그대로 둬요(교사 화면에서만 보여요). 저장·출력에서 기록을 남기고 인쇄·이미지로 내보내요.</li>
       <li><b>로그인</b> 설정 → 로그인에서 구글로 로그인하면 보드가 서버에 저장되고, 다른 컴퓨터에서 같은 계정으로 로그인하면 같은 보드가 나와요.</li>
       <li><b>준비물</b> 시간표 카드 오른쪽 칸에 쓰면 저장돼요.</li>
       <li><b>창 옮기기</b> 맨 위 줄을 잡고 끌어요. 창 크기는 모서리를 끌어 조절해요. 창이 좁으면 카드가 아래로 쌓여요.</li>
@@ -1042,7 +1126,7 @@ document.getElementById("today").textContent =
 // 처음엔 칸 맞춤으로 자리를 잡아 그 위치를 기억하고, 그다음부터는 제목을 끌어 옮기고 오른쪽 아래 모서리로 크기를 바꿈
 // [이름, 표시, 처음 위치(board 보드 | popup 아래쪽 바), 처음 크기(칸), 최소 크기 px [가로, 세로]]
 const CARDS = [["topic", "✏️ 오늘의 주제", "board", "2", [340, 200]], ["timetable", "🕘 시간표", "board", "2", [320, 190]],
-  ["memo", "📝 메모", "board", "1", [210, 180]], ["rules", "📌 우리반 규칙", "board", "1", [260, 230]], ["motto", "🏫 급훈", "popup", "2", [320, 170]],
+  ["memo", "📝 메모", "board", "1", [210, 180]], ["rules", "📌 우리반 규칙", "board", "1", [260, 230]], ["motto", "🏫 급훈", "popup", "2", [320, 170]], ["seat", "🪑 자리배치", "popup", "2", [320, 260]],
   ["photo", "🖼️ 사진", "popup", "1", [200, 170]], ["timer", "⏱️ 타이머", "popup", "1", [240, 240]], ["picker", "🎲 뽑기", "popup", "1", [300, 260]],
   ["whiteboard", "🖍️ 화이트보드", "popup", "4", [420, 320]], ["dust", "😷 미세먼지", "board", "1", [260, 270]], ["noise", "🔉 소음 측정", "popup", "1", [240, 270]]];
 const minOf = k => CARDS.find(c => c[0] === k)[4];
@@ -2700,7 +2784,7 @@ async function wbAddImage(file) {
     wbData.objs.push(o); setTool("select"); wbRender(); wbSelect(o); wbSave();
   } catch (e) { alert("이 파일은 사진으로 넣을 수 없어요."); }
 }
-const wbShown = () => wb.offsetParent !== null && panel.hidden;
+const wbShown = () => wb.offsetParent !== null && panel.hidden && document.getElementById("seat-ed").hidden;
 document.addEventListener("paste", e => {
   if (!wbShown() || e.target.closest("input, textarea, [contenteditable='true']")) return;
   const f = [...e.clipboardData.files].find(f => f.type.startsWith("image/"));
@@ -2849,6 +2933,447 @@ try {
     localStorage.setItem("sized", "4");
   }
 } catch (e) {}
+
+
+// ───── 자리배치 ─────
+// 저장은 셋으로 나눔. 공개해도 되는 것과 교사만 보는 것을 섞지 않음
+//  seat (공개) = { cur: { name, desks: [{id, x, y, z?}], seats: {책상 id: 학생}, board: "top"|"bottom" }, hist: [cur 모양 + id, date], view: "student"|"teacher" }
+//    책상(desks)과 학생 배정(seats)은 따로. z는 교사가 직접 정한 모둠 번호
+//  seat-secret (교사만) = { fixed: {책상 id: 학생}, histFixed: {기록 id: fixed}, pairs: [{a, b, rule}], groups: [[학생…]] }
+//  gender = {학생: "M"|"F"}
+// 책상 한 개 = 가로 1, 세로 .7 (책상 단위). x, y는 왼쪽 위. 칠판 쪽(board)이 y가 작은 쪽
+const DW = 1, DH = .7;
+const jget = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) || d; } catch (e) { return d; } };
+const jset = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+let seat = jget("seat", { cur: { name: "", desks: [], seats: {}, board: "top" }, hist: [], view: "student" });
+let seatSec = jget("seat-secret", { fixed: {}, histFixed: {}, pairs: [], groups: [] });
+let gender = jget("gender", {});
+const sc = () => seat.cur, $s = id => document.getElementById(id);
+const seName = p => p.replace(/^\d+번 /, ""), seNum = p => (p.match(/^(\d+)번/) || [])[1] || "";
+const seId = () => "d" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const clone = v => JSON.parse(JSON.stringify(v));
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) if (k.startsWith("on")) el[k] = v; else if (k === "class") el.className = v; else el.setAttribute(k, v);
+  el.append(...kids.flat().filter(x => x !== null && x !== undefined && x !== false));
+  return el;
+};
+function seatStore() { jset("seat", seat); jset("seat-secret", seatSec); jset("gender", gender); seatMini(); }
+// 명단에서 빠진 학생·없어진 책상의 배정은 정리. 고정은 '그 책상에 그 학생이 앉아 있을 때'만 유효
+function seClean() {
+  const ppl = new Set(people()), c = sc(), ids = new Set(c.desks.map(d => d.id));
+  for (const k in c.seats) if (!ids.has(k) || !ppl.has(c.seats[k])) delete c.seats[k];
+  for (const k in seatSec.fixed) if (c.seats[k] !== seatSec.fixed[k]) delete seatSec.fixed[k];
+  seatSec.pairs = seatSec.pairs.filter(x => ppl.has(x.a) && ppl.has(x.b));
+  seatSec.groups = seatSec.groups.map(g => g.filter(x => ppl.has(x))).filter(g => g.length);
+}
+// 화면 좌표: 교사가 보는 방향이면 위아래·좌우를 뒤집어(180도) 그림. 데이터는 그대로
+function seBounds() { const d = sc().desks; return { w: Math.max(12, ...d.map(x => x.x + DW + 1)), h: Math.max(7, ...d.map(x => x.y + DH + 1)) }; }
+function seLayout(flip) {
+  const c = sc(), b = seBounds(), top = (c.board === "top") !== flip, off = top ? 1.2 : 0;
+  return { W: b.w, H: b.h + 1.2, flip, board: { x: b.w * .25, y: top ? .25 : b.h + .45, w: b.w * .5, h: .55 },
+    desks: c.desks.map(d => ({ d, x: flip ? b.w - d.x - DW : d.x, y: (flip ? b.h - d.y - DH : d.y) + off, person: c.seats[d.id] })) };
+}
+// 보드 카드: 공개 화면이라 비밀 고정은 절대 표시하지 않음
+function seatMini() {
+  const box = $s("seat-mini"); if (!box) return;
+  const L = seLayout(seat.view === "teacher"), cw = box.clientWidth, ch = box.clientHeight;
+  if (!sc().desks.length) { box.replaceChildren(h("p", { class: "sub" }, "'자리배치 편집'에서 책상을 놓아 주세요")); return; }
+  const u = Math.min(cw / L.W, ch / L.H), ox = (cw - L.W * u) / 2;
+  const at = (el, x, y, w, hh) => { Object.assign(el.style, { left: ox + x * u + "px", top: y * u + "px", width: w * u + "px", height: hh * u + "px" }); return el; };
+  box.replaceChildren(at(h("div", { class: "sm-board" }, "칠판"), L.board.x, L.board.y, L.board.w, L.board.h),
+    ...L.desks.map(t => { const el = at(h("div", { class: "sm-desk" + (t.person ? "" : " empty") }, t.person ? seName(t.person) : ""), t.x, t.y, DW, DH); el.style.fontSize = Math.max(8, u * .26) + "px"; return el; }));
+}
+new ResizeObserver(seatMini).observe($s("seat-mini"));
+
+// ── 편집 화면 상태
+let seMode = "desk", seTab = "stu", seSel = new Set(), seZoom = 1, seUndoS = [], seRedoS = [], sePick = new Set(), seShowZones = false, seGender = "random";
+const U = () => 64 * seZoom;
+const seState = () => JSON.stringify({ desks: sc().desks, seats: sc().seats, fixed: seatSec.fixed });
+function seSnap() { seUndoS.push(seState()); if (seUndoS.length > 60) seUndoS.shift(); seRedoS = []; }
+function seRestore(js) { const v = JSON.parse(js); sc().desks = v.desks; sc().seats = v.seats; seatSec.fixed = v.fixed; seSel.clear(); seatStore(); seRender(); }
+function seUndo() { if (seUndoS.length) { seRedoS.push(seState()); seRestore(seUndoS.pop()); } }
+function seRedo() { if (seRedoS.length) { seUndoS.push(seState()); seRestore(seRedoS.pop()); } }
+function seatOpen() { seClean(); seSel.clear(); seUndoS = []; seRedoS = []; $s("seat-ed").hidden = false; seRender(); }
+function seatClose() { $s("seat-ed").hidden = true; seatStore(); }
+document.querySelectorAll("#se-modes [data-m]").forEach(b => b.onclick = () => { seMode = b.dataset.m; seSel.clear(); seRender(); });
+document.querySelectorAll("#se-tabs [data-t]").forEach(b => b.onclick = () => { seTab = b.dataset.t; seSide(); });
+function seMsg(text, warn) { const m = $s("se-msg"); if (m) { m.textContent = text; m.classList.toggle("warn", !!warn); } }
+
+// ── 책상 판 그리기 (교사 화면: 고정 표시 보임)
+function seRender() {
+  const L = seLayout(seat.view === "teacher"), u = U(), room = $s("se-room"), zone = seShowZones ? seZones() : null, fixed = seatSec.fixed;
+  room.style.width = L.W * u + "px"; room.style.height = L.H * u + "px";
+  const zs = zone && seZoneSizes(zone), zc = {};
+  const els = [Object.assign(h("div", { class: "se-board" }, "칠판"), { style: `left:${L.board.x * u}px;top:${L.board.y * u}px;width:${L.board.w * u}px;height:${L.board.h * u}px` })];
+  for (const t of L.desks) {
+    const p = t.person, el = h("div", { class: `se-desk${seSel.has(t.d.id) ? " sel" : ""}${p ? "" : " empty"}${fixed[t.d.id] ? " fixed" : ""}`, "data-id": t.d.id },
+      p ? [seNum(p) ? h("small", {}, seNum(p) + "번") : null, seName(p)] : "빈자리");
+    Object.assign(el.style, { left: t.x * u + "px", top: t.y * u + "px", width: DW * u + "px", height: DH * u + "px", fontSize: Math.max(10, u * .22) + "px" });
+    if (zone && zs[zone[t.d.id]] > 1) { const k = zone[t.d.id]; el.style.background = `hsl(${(zc[k] ??= Object.keys(zc).length) * 67 % 360} 70% 92%)`; }
+    els.push(el);
+  }
+  room.replaceChildren(...els);
+  document.querySelectorAll("#se-modes [data-m]").forEach(b => b.classList.toggle("on", b.dataset.m === seMode));
+  $s("se-desktools").style.display = seMode === "desk" ? "" : "none";
+  $s("se-undo").disabled = !seUndoS.length; $s("se-redo").disabled = !seRedoS.length;
+  $s("se-boardbtn").textContent = sc().board === "top" ? "칠판: 위" : "칠판: 아래";
+  $s("se-viewbtn").textContent = seat.view === "teacher" ? "교사가 보는 방향" : "학생이 보는 방향";
+  seSide();
+}
+// 화면에서 끈 거리(px) → 책상 단위 (뒤집힌 화면이면 반대로)
+const seDelta = (dx, dy) => { const f = seat.view === "teacher" ? -1 : 1; return [dx / U() * f, dy / U() * f]; };
+const snap = v => Math.max(0, Math.round(v * 20) / 20);
+
+// ── 손가락·마우스 공용 끌기: 이름표가 따라다니다가 놓은 곳의 요소를 알려 줌
+function seDrag(e, label, onDrop) {
+  const gh = h("div", { class: "se-ghost" }, label), sx = e.clientX, sy = e.clientY;
+  let moved = false, over = null;
+  gh.hidden = true; document.body.append(gh);
+  const mv = ev => {
+    if (!moved && Math.hypot(ev.clientX - sx, ev.clientY - sy) < 6) return;
+    moved = true; gh.hidden = false; gh.style.left = ev.clientX + "px"; gh.style.top = ev.clientY + "px";
+    const t = document.elementFromPoint(ev.clientX, ev.clientY)?.closest(".se-desk, .se-group");
+    if (t !== over) { over?.classList.remove("drop"); (over = t)?.classList.add("drop"); }
+  };
+  const up = ev => {
+    removeEventListener("pointermove", mv); removeEventListener("pointerup", up); removeEventListener("pointercancel", up);
+    gh.remove(); over?.classList.remove("drop");
+    onDrop(moved ? document.elementFromPoint(ev.clientX, ev.clientY) : null);
+  };
+  addEventListener("pointermove", mv); addEventListener("pointerup", up); addEventListener("pointercancel", up);
+  e.preventDefault();
+}
+// 학생 놓기: 책상이면 앉힘(앉아 있던 학생과 자리 교환), 분리 그룹 상자면 그룹에 넣음, 목록이면 자리에서 뺌
+function seDropStudent(person, from, target) {
+  const desk = target?.closest(".se-desk"), grp = target?.closest(".se-group"), list = target?.closest(".se-list");
+  if (desk) seAssign(person, desk.dataset.id, from);
+  else if (grp) { const g = seatSec.groups[+grp.dataset.group]; if (!g.includes(person)) { seatSec.groups.forEach(x => { const i = x.indexOf(person); if (i >= 0 && x !== g) x.splice(i, 1); }); g.push(person); } }
+  else if (list && from) { seSnap(); delete sc().seats[from]; }
+  else return;
+  seClean(); seatStore(); seRender();
+}
+function seAssign(person, to, from) {
+  const S = sc().seats, other = S[to];
+  if (other === person) return;
+  seSnap();
+  for (const k in S) if (S[k] === person) delete S[k];
+  if (other) { if (from) S[from] = other; } // 앉아 있던 학생은 끌어온 학생의 원래 자리로 (목록에서 왔으면 자리에서 빠짐)
+  S[to] = person;
+}
+
+// ── 책상 판 누르기
+$s("se-room").addEventListener("pointerdown", e => {
+  const el = e.target.closest(".se-desk"), id = el?.dataset.id, c = sc();
+  if (seMode === "lock") { // 비밀 고정: 앉아 있는 학생이 있는 책상만
+    if (id && c.seats[id]) { seSnap(); if (seatSec.fixed[id]) delete seatSec.fixed[id]; else seatSec.fixed[id] = c.seats[id]; seatStore(); seRender(); }
+    return;
+  }
+  if (seMode === "stu") { if (id && c.seats[id]) seDrag(e, seName(c.seats[id]), t => seDropStudent(c.seats[id], id, t)); return; }
+  if (!el) return seMarquee(e);
+  if (e.shiftKey || e.ctrlKey || e.metaKey) { seSel.has(id) ? seSel.delete(id) : seSel.add(id); seRender(); return; }
+  if (!seSel.has(id)) { seSel = new Set([id]); seRender(); }
+  // 고른 책상 함께 옮기기
+  const room = $s("se-room"), sx = e.clientX, sy = e.clientY, start = c.desks.filter(d => seSel.has(d.id)).map(d => [d, d.x, d.y]);
+  let moved = false;
+  room.setPointerCapture(e.pointerId); e.preventDefault();
+  const mv = ev => {
+    const [dx, dy] = seDelta(ev.clientX - sx, ev.clientY - sy);
+    if (!moved) { if (Math.hypot(ev.clientX - sx, ev.clientY - sy) < 3) return; moved = true; seSnap(); }
+    for (const [d, x, y] of start) { d.x = snap(x + dx); d.y = snap(y + dy); }
+    seRender();
+  };
+  const up = () => { room.removeEventListener("pointermove", mv); room.removeEventListener("pointerup", up); if (moved) seatStore(); };
+  room.addEventListener("pointermove", mv); room.addEventListener("pointerup", up);
+});
+// 빈 곳에서 끌면 네모 안에 통째로 들어온 책상만 고름 (Shift면 더하기)
+function seMarquee(e) {
+  if (seMode !== "desk") return;
+  const room = $s("se-room"), r = room.getBoundingClientRect(), sx = e.clientX - r.left, sy = e.clientY - r.top, keep = e.shiftKey ? new Set(seSel) : new Set();
+  const box = h("div", { class: "se-marq" }); room.append(box);
+  let rect = null;
+  room.setPointerCapture(e.pointerId); e.preventDefault();
+  const mv = ev => {
+    const x = ev.clientX - r.left, y = ev.clientY - r.top;
+    rect = [Math.min(sx, x), Math.min(sy, y), Math.max(sx, x), Math.max(sy, y)];
+    Object.assign(box.style, { left: rect[0] + "px", top: rect[1] + "px", width: rect[2] - rect[0] + "px", height: rect[3] - rect[1] + "px" });
+  };
+  const up = () => {
+    room.removeEventListener("pointermove", mv); room.removeEventListener("pointerup", up); box.remove();
+    seSel = keep;
+    if (rect) for (const el of room.querySelectorAll(".se-desk")) {
+      const b = el.getBoundingClientRect();
+      if (b.left - r.left >= rect[0] && b.top - r.top >= rect[1] && b.right - r.left <= rect[2] && b.bottom - r.top <= rect[3]) seSel.add(el.dataset.id);
+    }
+    seRender();
+  };
+  room.addEventListener("pointermove", mv); room.addEventListener("pointerup", up);
+}
+
+// ── 책상 도구
+const overlaps = (x, y, skip) => sc().desks.some(d => d !== skip && Math.abs(d.x - x) < DW - .01 && Math.abs(d.y - y) < DH - .01);
+function seAdd() {
+  seSnap();
+  for (let y = .4; ; y += .9) for (let x = .4; x < 12; x += 1.1) if (!overlaps(x, y)) { const d = { id: seId(), x: snap(x), y: snap(y) }; sc().desks.push(d); seSel = new Set([d.id]); seatStore(); return seRender(); }
+}
+function seCopy() {
+  const pick = sc().desks.filter(d => seSel.has(d.id));
+  if (!pick.length) return;
+  seSnap();
+  const top = Math.max(...pick.map(d => d.y)) - Math.min(...pick.map(d => d.y)) + DH + .5; // 고른 책상 묶음 바로 아래에 복사
+  const copies = pick.map(d => ({ id: seId(), x: d.x, y: snap(d.y + top) }));
+  sc().desks.push(...copies); seSel = new Set(copies.map(d => d.id)); seatStore(); seRender();
+}
+function seDelete() {
+  if (!seSel.size) return;
+  seSnap(); sc().desks = sc().desks.filter(d => !seSel.has(d.id)); seSel.clear(); seClean(); seatStore(); seRender();
+}
+// 간격: 고른 책상(없으면 전체)을 가운데를 기준으로 좌우·앞뒤로 벌리거나 좁힘
+function seSpace(sx, sy) {
+  const pick = sc().desks.filter(d => !seSel.size || seSel.has(d.id));
+  if (pick.length < 2) return;
+  seSnap();
+  const cx = pick.reduce((a, d) => a + d.x, 0) / pick.length, cy = pick.reduce((a, d) => a + d.y, 0) / pick.length, kx = 1 + sx * .1, ky = 1 + sy * .1;
+  for (const d of pick) { d.x = snap(cx + (d.x - cx) * kx); d.y = snap(cy + (d.y - cy) * ky); }
+  seatStore(); seRender();
+}
+function seZoomBy(d) { seZoom = Math.max(.5, Math.min(2, +(seZoom + d * .15).toFixed(2))); seRender(); }
+$s("se-wrap").addEventListener("wheel", e => { if (e.ctrlKey) { e.preventDefault(); seZoomBy(e.deltaY < 0 ? 1 : -1); } }, { passive: false });
+function seBoard() { sc().board = sc().board === "top" ? "bottom" : "top"; seatStore(); seRender(); }
+function seView() { seat.view = seat.view === "teacher" ? "student" : "teacher"; seatStore(); seRender(); }
+// 배치 틀: 지금 학생 수만큼 1인용 책상을 놓음. 놓은 뒤에는 마음대로 고칠 수 있음
+function sePresetDesks(kind, n) {
+  const D = [], add = (x, y) => D.push({ id: seId(), x: snap(x), y: snap(y) }), y0 = .4;
+  for (let i = 0; i < n && kind !== "u"; i++) {
+    if (kind === "pair") { const r = Math.floor(i / 6), k = i % 6; add(Math.floor(k / 2) * (2 * DW + .9) + (k % 2) * DW, y0 + r * 1.5); }
+    if (kind === "232") { const r = Math.floor(i / 7), k = i % 7, gx = k < 2 ? 0 : k < 5 ? 2.9 - 2 : 6.8 - 5; add(gx + k, y0 + r * 1.5); }
+    if (kind === "group") { const g = Math.floor(i / 4), j = i % 4, gr = Math.floor(g / 3), gc = g % 3; add(gc * (2 * DW + 1.2) + (j % 2) * DW, y0 + gr * (2 * DH + 1.2) + Math.floor(j / 2) * DH); }
+    if (kind === "exam") { const r = Math.floor(i / 6), k = i % 6; add(k * 1.7, y0 + r * 1.5); }
+  }
+  if (kind === "u") { // ㄷ자: 칠판 쪽이 열린 모양 (왼쪽 줄, 뒤쪽 줄, 오른쪽 줄)
+    const back = Math.max(3, Math.round(n / 3)), side = Math.ceil((n - back) / 2), right = n - back - side;
+    for (let i = 0; i < side; i++) add(0, y0 + i * .95);
+    for (let i = 0; i < back; i++) add(1.6 + i * DW, y0 + side * .95 + .3);
+    for (let i = 0; i < right; i++) add(1.6 + back * DW + .6, y0 + i * .95);
+  }
+  return D;
+}
+$s("se-preset").onchange = e => {
+  const kind = e.target.value; e.target.value = "";
+  if (!kind) return;
+  if (sc().desks.length && !confirm("지금 책상 배치를 이 틀로 바꿀까요? 학생 배정은 지워져요. (↶로 되돌릴 수 있어요)")) return;
+  seSnap(); sc().desks = sePresetDesks(kind, Math.max(people().length, 4)); sc().seats = {}; seSel.clear(); seClean(); seatStore(); seRender();
+};
+
+// ── 모둠 영역: 교사가 정한 모둠(z)이 먼저, 나머지는 맞닿은 책상끼리 한 모둠으로 자동
+function seZones() {
+  const D = sc().desks, zone = {};
+  for (const d of D) if (d.z) zone[d.id] = "m" + d.z;
+  const rest = D.filter(d => !d.z);
+  let n = 0;
+  for (const d of rest) {
+    if (zone[d.id]) continue;
+    const key = "a" + n++, q = [d]; zone[d.id] = key;
+    while (q.length) { const a = q.pop(); for (const b of rest) if (!zone[b.id] && Math.abs(a.x - b.x) <= DW + .15 && Math.abs(a.y - b.y) <= DH + .15) { zone[b.id] = key; q.push(b); } }
+  }
+  return zone;
+}
+const seZoneSizes = zone => Object.values(zone).reduce((m, k) => (m[k] = (m[k] || 0) + 1, m), {});
+function seZoneSet(on) {
+  if (!seSel.size) return seMsg("먼저 '🪑 책상'에서 모둠으로 묶을 책상을 고르세요.", true);
+  seSnap();
+  const z = on ? Math.max(0, ...sc().desks.map(d => d.z || 0)) + 1 : 0;
+  for (const d of sc().desks) if (seSel.has(d.id)) { if (z) d.z = z; else delete d.z; }
+  seShowZones = true; seatStore(); seRender();
+}
+// 두 책상 사이 관계 (책상 단위). 짝: 바로 옆에 붙음, 좌우: 같은 줄 옆자리(통로 건너 포함), 앞뒤: 같은 칸 앞뒷자리, 가까움: 대각선 포함 한 칸 안
+const seRel = (a, b) => { const dx = Math.abs(a.x - b.x), dy = Math.abs(a.y - b.y); return { pair: dy < .35 && dx <= DW + .15, side: dy < .35 && dx <= 1.9, front: dx < .5 && dy <= 2.1, near: dx <= 1.9 && dy <= 2.1 }; };
+const RULES = { pair: "짝꿍(바로 옆)으로 앉지 않기", side: "좌우로 붙지 않기", front: "앞뒤로 붙지 않기", near: "최소 2칸 떨어지기" };
+const RULE_BAD = { pair: "짝꿍으로 앉았어요", side: "좌우로 붙어 있어요", front: "앞뒤로 붙어 있어요", near: "2칸 안에 있어요" };
+const GL = i => String.fromCharCode(65 + i); // 분리 그룹 A, B, C…
+
+// ── 조건 확인: 어긴 조건 목록 [{who: [학생…], text}]
+function seGeo() {
+  const D = sc().desks, byId = Object.fromEntries(D.map(d => [d.id, d])), zone = seZones(), zs = seZoneSizes(zone);
+  const solo = Object.values(zs).every(n => n === 1); // 시험대형처럼 모둠이 없으면 분리 그룹은 '붙지 않기'로
+  const pairs = [];
+  for (let i = 0; i < D.length; i++) for (let j = i + 1; j < D.length; j++) if (seRel(D[i], D[j]).pair) pairs.push([D[i].id, D[j].id]);
+  return { byId, zone, zs, solo, pairs };
+}
+function seViol(S, mode, G) {
+  const where = {}, out = [];
+  for (const k in S) if (S[k]) where[S[k]] = G.byId[k];
+  for (const p of seatSec.pairs) { const a = where[p.a], b = where[p.b]; if (a && b && seRel(a, b)[p.rule]) out.push({ who: [p.a, p.b], text: `${seName(p.a)}·${seName(p.b)}: ${RULE_BAD[p.rule]}` }); }
+  seatSec.groups.forEach((g, gi) => {
+    for (let i = 0; i < g.length; i++) for (let j = i + 1; j < g.length; j++) {
+      const a = where[g[i]], b = where[g[j]];
+      if (!a || !b) continue;
+      const bad = G.solo ? (() => { const r = seRel(a, b); return r.side || r.front; })() : G.zone[a.id] === G.zone[b.id] && G.zs[G.zone[a.id]] > 1;
+      if (bad) out.push({ who: [g[i], g[j]], text: `분리 그룹 ${GL(gi)}: ${seName(g[i])}·${seName(g[j])}이(가) ${G.solo ? "붙어 있어요" : "같은 모둠이에요"}` });
+    }
+  });
+  if (mode === "mixed" || mode === "same") for (const [x, y] of G.pairs) {
+    const a = S[x], b = S[y], ga = a && gender[a], gb = b && gender[b];
+    if (ga && gb && (mode === "mixed" ? ga === gb : ga !== gb)) out.push({ who: [a, b], text: `${seName(a)}·${seName(b)}: ${mode === "mixed" ? "남녀 짝이 아니에요" : "같은 성별 짝이 아니에요"}` });
+  }
+  if (mode === "balance") { // 모둠마다(모둠이 없으면 줄마다) 남녀 수 차이가 1명 넘지 않게
+    const cnt = {};
+    for (const k in S) { const p = S[k], gg = p && gender[p]; if (!gg) continue; const key = G.solo ? "줄" + Math.round(G.byId[k].y / .5) : G.zone[k]; (cnt[key] ||= { M: [], F: [] })[gg].push(p); }
+    for (const key in cnt) { const { M, F } = cnt[key]; if (Math.abs(M.length - F.length) > 1) out.push({ who: [...M, ...F], text: `${key.startsWith("줄") ? "한 줄" : "한 모둠"}에 ${M.length > F.length ? "남학생" : "여학생"}이 몰렸어요` }); }
+  }
+  return out;
+}
+
+// ── 자동 배치: 고정 학생은 그대로, 나머지만 섞어서 조건을 최대한 지키는 자리를 찾음 (0.6초 안에서 여러 번 다시 시도)
+function seAuto() {
+  seClean();
+  const mode = seGender, c = sc(), G = seGeo(), fixed = seatSec.fixed, fixedP = new Set(Object.values(fixed));
+  const free = c.desks.map(d => d.id).filter(id => !fixed[id]), movers = people().filter(p => !fixedP.has(p));
+  if (!c.desks.length) return seMsg("먼저 책상을 놓아 주세요.", true);
+  if (movers.length > free.length) return seMsg(`책상이 ${movers.length - free.length}개 모자라요. 책상을 더 놓아 주세요.`, true);
+  const pre = []; // 해 보기 전에 알 수 있는 충돌
+  const nz = new Set(Object.values(G.zone)).size;
+  if (!G.solo) seatSec.groups.forEach((g, i) => { if (g.length > nz) pre.push(`분리 그룹 ${GL(i)}은(는) ${g.length}명인데 모둠은 ${nz}개뿐이라 같은 모둠을 피할 수 없어요.`); });
+  if (mode !== "random") { const un = people().filter(p => !gender[p]).length; if (un) pre.push(`성별을 정하지 않은 학생 ${un}명은 성별 조건에서 빠져요. ('학생' 탭에서 정할 수 있어요)`); }
+  if (mode === "mixed") { const m = people().filter(p => gender[p] === "M").length, f = people().filter(p => gender[p] === "F").length; if (Math.abs(m - f) > 1) pre.push(`남학생 ${m}명, 여학생 ${f}명이라 모든 짝을 남녀로 할 수는 없어요.`); }
+  const seatOf = S => { const w = {}; for (const k in S) if (S[k]) w[S[k]] = k; return w; };
+  const swap = (S, a, b) => { const t = S[a]; if (S[b]) S[a] = S[b]; else delete S[a]; if (t) S[b] = t; else delete S[b]; };
+  let best = null, bestCost = Infinity;
+  const t0 = performance.now();
+  while (performance.now() - t0 < 600 && bestCost > 0) {
+    const S = {}, order = shuffle(free.slice());
+    for (const k in fixed) S[k] = fixed[k];
+    movers.forEach((p, i) => S[order[i]] = p);
+    let cost = seViol(S, mode, G).length;
+    for (let it = 0; it < 250 && cost > 0; it++) {
+      const bad = shuffle(seViol(S, mode, G).flatMap(v => v.who).filter(p => !fixedP.has(p)));
+      if (!bad.length) break;
+      const from = seatOf(S)[bad[0]];
+      let to = null, bc = cost;
+      for (const k of free) { if (k === from) continue; swap(S, from, k); const cc = seViol(S, mode, G).length; if (cc < bc || (cc === bc && !to && Math.random() < .15)) { bc = cc; to = k; } swap(S, from, k); }
+      if (!to) to = free[Math.floor(Math.random() * free.length)]; // 막히면 아무 데나 바꿔서 빠져나옴
+      swap(S, from, to); cost = seViol(S, mode, G).length;
+    }
+    if (cost < bestCost) { bestCost = cost; best = { ...S }; }
+  }
+  seSnap(); c.seats = best; seClean(); seatStore(); seRender();
+  const v = [...new Set(seViol(best, mode, G).map(x => x.text))];
+  seMsg(v.length ? `모든 조건을 지킬 수는 없어서 가장 가까운 배치로 했어요.\n지키지 못한 조건:\n· ${v.slice(0, 8).join("\n· ")}${v.length > 8 ? `\n… 외 ${v.length - 8}개` : ""}${pre.length ? "\n\n" + pre.join("\n") : ""}`
+    : "조건을 모두 지켜서 배치했어요." + (pre.length ? "\n" + pre.join("\n") : ""), v.length > 0);
+}
+
+// ── 옆 칸 (학생 / 분리 조건 / 자동 배치 / 저장·출력)
+function seStudentChip(p, extra = {}) {
+  const seated = Object.values(sc().seats).includes(p);
+  const chip = h("span", { class: `se-chip${seated ? " seated" : ""}${extra.pick && sePick.has(p) ? " pick" : ""}`, title: "끌어서 책상이나 분리 그룹에 놓기" }, seName(p));
+  chip.onpointerdown = e => seDrag(e, seName(p), t => {
+    if (!t && extra.pick) { sePick.has(p) ? sePick.delete(p) : sePick.add(p); return seSide(); } // 그냥 누르면 고르기
+    const from = Object.keys(sc().seats).find(k => sc().seats[k] === p);
+    seDropStudent(p, from, t);
+  });
+  return chip;
+}
+function seSide() {
+  document.querySelectorAll("#se-tabs [data-t]").forEach(b => b.classList.toggle("on", b.dataset.t === seTab));
+  const pane = $s("se-pane"), ppl = people(), c = sc(), keepMsg = $s("se-msg")?.textContent, keepWarn = $s("se-msg")?.classList.contains("warn");
+  const msg = h("div", { class: "se-msg", id: "se-msg" });
+  if (!ppl.length) return pane.replaceChildren(h("p", { class: "sum" }, "설정 → 명단에 학생을 먼저 넣어 주세요."));
+  let kids = [];
+  if (seTab === "stu") {
+    const seated = new Set(Object.values(c.seats));
+    kids = [h("p", { class: "sum" }, "이름을 끌어 책상에 놓으세요. 앉은 학생 위에 놓으면 서로 자리를 바꿔요. '👤 학생'에서는 책상 위 이름을 끌어 옮기고, 여기로 끌어오면 자리에서 빠져요. 남·여는 눌러서 바꿔요."),
+      h("div", { class: "row" }, h("button", { onclick: () => { seSnap(); for (const k in c.seats) if (!seatSec.fixed[k]) delete c.seats[k]; seatStore(); seRender(); } }, "모두 자리에서 빼기 (고정 제외)"),
+        h("span", { class: "sum" }, `앉음 ${seated.size} / ${ppl.length}명 · 책상 ${c.desks.length}개`)),
+      h("div", { class: "se-list" }, ppl.map(p => h("div", { class: "se-stu" }, seStudentChip(p),
+        h("button", { class: "g " + (gender[p] || ""), title: "성별 바꾸기", onclick: () => { gender[p] = { "": "M", M: "F", F: "" }[gender[p] || ""]; if (!gender[p]) delete gender[p]; seatStore(); seSide(); } },
+          { M: "남", F: "여" }[gender[p]] || "－"))))];
+  }
+  if (seTab === "rule") {
+    const sel = id => h("select", { id }, h("option", { value: "" }, "학생 고르기"), ppl.map(p => h("option", { value: p }, seName(p))));
+    const rule = h("select", { id: "se-rule" }, Object.entries(RULES).map(([k, t]) => h("option", { value: k }, t)));
+    kids = [h("h4", {}, "두 학생 떨어뜨리기"), h("p", { class: "sum" }, "여러 쌍을 정할 수 있어요. 자동 배치 때 지켜요."),
+      h("div", { class: "row" }, sel("se-pa"), sel("se-pb")), h("div", { class: "row" }, rule, h("button", { onclick: () => {
+        const a = $s("se-pa").value, b = $s("se-pb").value;
+        if (!a || !b || a === b) return seMsg("서로 다른 두 학생을 골라 주세요.", true);
+        seatSec.pairs.push({ a, b, rule: $s("se-rule").value }); seatStore(); seSide(); } }, "추가")),
+      seatSec.pairs.map((x, i) => h("div", { class: "row" }, `${seName(x.a)} ↔ ${seName(x.b)} · ${RULES[x.rule]}`, h("button", { class: "x", title: "지우기", onclick: () => { seatSec.pairs.splice(i, 1); seatStore(); seSide(); } }, "✕"))),
+      h("h4", {}, "분리 그룹"), h("p", { class: "sum" }, "같은 분리 그룹 학생은 같은 모둠에 앉지 않아요 (모둠이 없는 시험대형에서는 서로 붙지 않게). 이름을 눌러 여러 명 고른 뒤 그룹을 만들거나, 이름을 그룹 상자로 끌어 넣으세요."),
+      h("div", { class: "se-chips" }, ppl.map(p => seStudentChip(p, { pick: true }))),
+      h("div", { class: "row" }, h("button", { onclick: () => { if (sePick.size < 2) return seMsg("두 명 이상 골라 주세요.", true); const pk = [...sePick]; seatSec.groups.forEach(g => pk.forEach(p => { const i = g.indexOf(p); if (i >= 0) g.splice(i, 1); })); seatSec.groups = seatSec.groups.filter(g => g.length); seatSec.groups.push(pk); sePick.clear(); seatStore(); seSide(); } }, `고른 ${sePick.size}명으로 분리 그룹 만들기`),
+        sePick.size ? h("button", { onclick: () => { sePick.clear(); seSide(); } }, "고르기 취소") : null),
+      seatSec.groups.map((g, gi) => h("div", { class: "se-group", "data-group": gi }, h("b", {}, "그룹 " + GL(gi)),
+        g.map(p => h("span", { class: "se-chip" }, seName(p), h("button", { class: "x", title: "그룹에서 빼기", onclick: () => { g.splice(g.indexOf(p), 1); seatSec.groups = seatSec.groups.filter(x => x.length); seatStore(); seSide(); } }, "✕"))),
+        h("button", { class: "x", title: "그룹 지우기", onclick: () => { seatSec.groups.splice(gi, 1); seatStore(); seSide(); } }, "그룹 지우기"))),
+      h("h4", {}, "모둠 영역"), h("p", { class: "sum" }, "맞닿은 책상끼리 저절로 한 모둠이 돼요. 직접 정하려면 '🪑 책상'에서 책상을 고른 뒤 아래 버튼을 누르세요."),
+      h("div", { class: "row" }, h("button", { onclick: () => seZoneSet(true) }, "고른 책상을 한 모둠으로"), h("button", { onclick: () => seZoneSet(false) }, "모둠 지정 풀기"),
+        h("button", { class: seShowZones ? "on" : "", onclick: () => { seShowZones = !seShowZones; seRender(); } }, "모둠 영역 보기"))];
+  }
+  if (seTab === "auto") {
+    const g = h("select", { onchange: e => seGender = e.target.value }, [["random", "성별 상관없이"], ["mixed", "남녀 짝꿍"], ["same", "남남·여여 짝꿍"], ["balance", "모둠(줄)마다 성별 균형"]].map(([v, t]) => h("option", { value: v }, t)));
+    g.value = seGender;
+    kids = [h("p", { class: "sum" }, "분리 조건(두 학생 떨어뜨리기·분리 그룹)과 성별 조건을 지키며 무작위로 앉혀요. 짝꿍 조건은 바로 옆에 붙은 책상끼리에 적용돼요. 🔒 비밀 고정한 학생은 그 자리에 그대로 둬요."),
+      h("div", { class: "row" }, "성별 조건", g), h("button", { class: "on", onclick: seAuto }, "🎲 자동 배치"),
+      h("p", { class: "sum" }, `🔒 비밀 고정 ${Object.keys(seatSec.fixed).length}명 · 교사 화면(이 편집 화면)에서만 보이고, 보드 카드·인쇄·이미지에는 나오지 않아요. 위쪽 '🔒 비밀 고정'을 고르고 자리를 누르면 고정·해제돼요.`)];
+  }
+  if (seTab === "save") {
+    const name = h("input", { value: c.name || "", placeholder: "예: 1학기 2차 자리", oninput: e => { c.name = e.target.value; seatStore(); } });
+    const dir = h("select", { id: "se-out-dir" }, h("option", { value: "student" }, "학생이 보는 방향"), h("option", { value: "teacher" }, "교사가 보는 방향"));
+    dir.value = seat.view;
+    kids = [h("h4", {}, "저장"), h("div", { class: "row" }, "이름", name),
+      h("button", { onclick: () => { const id = seId(); seat.hist.unshift({ ...clone(c), name: c.name || "자리배치", id, date: iso(new Date()) }); seatSec.histFixed[id] = clone(seatSec.fixed); seatStore(); seMsg("지금 배치를 기록에 저장했어요."); seSide(); } }, "현재 배치 저장"),
+      h("h4", {}, "기록"), seat.hist.length ? null : h("p", { class: "sum" }, "아직 저장한 배치가 없어요."),
+      seat.hist.map((x, i) => h("div", { class: "row" }, h("span", {}, `${x.name} · ${x.date} · ${Object.keys(x.seats).length}명`),
+        h("button", { onclick: () => { if (!confirm(`'${x.name}'을(를) 불러올까요? 저장하지 않은 지금 배치는 바뀌어요. (↶로 되돌릴 수 있어요)`)) return; seSnap(); const { id, date, ...rest } = clone(x); seat.cur = rest; seatSec.fixed = clone(seatSec.histFixed[x.id] || {}); seClean(); seatStore(); seRender(); } }, "불러오기"),
+        h("button", { onclick: () => { const id = seId(); seat.hist.splice(i, 0, { ...clone(x), name: x.name + " 복사", id, date: iso(new Date()) }); seatSec.histFixed[id] = clone(seatSec.histFixed[x.id] || {}); seatStore(); seSide(); } }, "복사"),
+        h("button", { class: "x", onclick: () => { if (!confirm(`'${x.name}' 기록을 지울까요?`)) return; seat.hist.splice(i, 1); delete seatSec.histFixed[x.id]; seatStore(); seSide(); } }, "삭제"))),
+      h("h4", {}, "출력"), h("p", { class: "sum" }, "비밀 고정은 출력에 나오지 않아요."),
+      h("div", { class: "row" }, dir, h("label", {}, h("input", { type: "checkbox", id: "se-out-names", checked: "" }), " 학생 이름")),
+      h("div", { class: "row" }, h("button", { onclick: () => sePrint() }, "🖨 인쇄"), h("button", { onclick: () => seImage() }, "🖼 이미지 저장"))];
+  }
+  pane.replaceChildren(...kids.flat(), msg);
+  if (keepMsg) seMsg(keepMsg, keepWarn);
+}
+
+// ── 출력 (공개용: 비밀 고정 표시 없음)
+function seOut() { return { L: seLayout($s("se-out-dir").value === "teacher"), names: $s("se-out-names").checked }; }
+function sePrint() {
+  const { L, names } = seOut(), u = 64, w = window.open("", "_blank");
+  if (!w) return seMsg("새 창이 막혀 있어요. 브라우저에서 팝업을 허용해 주세요.", true);
+  const d = w.document, el = (tag, css, text = "") => { const x = d.createElement(tag); x.style.cssText = css; x.textContent = text; return x; };
+  d.title = sc().name || "자리배치";
+  d.body.style.cssText = "margin:24px;font-family:'Wanted Sans','Malgun Gothic',sans-serif";
+  const room = el("div", `position:relative;width:${L.W * u}px;height:${L.H * u}px;margin-top:12px`);
+  room.append(el("div", `position:absolute;left:${L.board.x * u}px;top:${L.board.y * u}px;width:${L.board.w * u}px;height:${L.board.h * u}px;border:2px solid #333;display:grid;place-items:center;font-size:15px`, "칠판"));
+  for (const t of L.desks) room.append(el("div", `position:absolute;box-sizing:border-box;left:${t.x * u}px;top:${t.y * u}px;width:${DW * u}px;height:${DH * u}px;border:1.5px solid #333;border-radius:4px;display:grid;place-items:center;font-size:${t.person ? 15 : 11}px;color:${t.person ? "#000" : "#999"}`,
+    t.person ? (names ? seName(t.person) : seNum(t.person)) : "빈자리"));
+  d.body.append(el("h2", "margin:0;font-weight:normal", `${sc().name || "자리배치"} (${L.flip ? "교사가 보는 방향" : "학생이 보는 방향"})`), room);
+  w.focus(); w.print();
+}
+function seImage() {
+  const { L, names } = seOut(), u = 64, cv = document.createElement("canvas"), g = cv.getContext("2d");
+  cv.width = L.W * u + 40; cv.height = L.H * u + 70;
+  g.fillStyle = "#fff"; g.fillRect(0, 0, cv.width, cv.height); g.translate(20, 50);
+  g.fillStyle = "#222"; g.font = '20px "Wanted Sans", sans-serif'; g.fillText(`${sc().name || "자리배치"} (${L.flip ? "교사가 보는 방향" : "학생이 보는 방향"})`, 0, -18);
+  g.fillStyle = "#3c6e4f"; g.fillRect(L.board.x * u, L.board.y * u, L.board.w * u, L.board.h * u);
+  g.fillStyle = "#fff"; g.textAlign = "center"; g.textBaseline = "middle"; g.font = '15px "Wanted Sans", sans-serif'; g.fillText("칠판", (L.board.x + L.board.w / 2) * u, (L.board.y + L.board.h / 2) * u);
+  for (const t of L.desks) {
+    g.strokeStyle = "#555"; g.lineWidth = 1.5; g.strokeRect(t.x * u + 1, t.y * u + 1, DW * u - 2, DH * u - 2);
+    g.fillStyle = t.person ? "#111" : "#aaa"; g.font = `${t.person ? 15 : 11}px "Wanted Sans", sans-serif`;
+    g.fillText(t.person ? (names ? seName(t.person) : seNum(t.person)) : "빈자리", (t.x + DW / 2) * u, (t.y + DH / 2) * u);
+  }
+  const a = document.createElement("a"); a.href = cv.toDataURL("image/png"); a.download = `${sc().name || "자리배치"}-${iso(new Date())}.png`; a.click();
+}
+// 편집 화면 단축키
+document.addEventListener("keydown", e => {
+  if ($s("seat-ed").hidden || e.target.closest("input, textarea, select, [contenteditable='true']")) return;
+  const k = e.key.toLowerCase();
+  if ((e.ctrlKey || e.metaKey) && k === "z") { e.preventDefault(); e.shiftKey ? seRedo() : seUndo(); }
+  else if ((e.ctrlKey || e.metaKey) && k === "y") { e.preventDefault(); seRedo(); }
+  else if ((e.key === "Delete" || e.key === "Backspace") && seMode === "desk") { e.preventDefault(); seDelete(); }
+  else if (e.key === "Escape") { if (seSel.size) { seSel.clear(); seRender(); } else seatClose(); }
+});
+seatMini();
 
 // ───── 로그인·동기화 (Firebase, 무료 Spark 요금제) ─────
 // 서버 구조: boards/{uid} = { ls: 글로 된 설정 전부, photos: 사진 카드 이름들, updatedAt }
