@@ -230,8 +230,11 @@
   /* 타이머 시작·다시: 시간 고르는 동그란 버튼과 달리 큼직한 네모 버튼 */
   #timer-card .acts button { border-radius: 10px; padding: 7px 22px; font-size: 16px; border-width: 2px; }
   #timer-card .acts .again { background: #fff; border-color: var(--accent); color: var(--accent); }
-  .sec-in { display: flex; align-items: center; gap: 3px; font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; }
-  .sec-in input { width: 52px; font: inherit; padding: 3px 6px; border: 1.5px solid var(--line); border-radius: 999px; text-align: center; background: #fff; }
+  /* 시간 글자를 눌러 직접 입력: 멈춰 있을 때 ✎ 표시와 점선 테두리로 누를 수 있다는 걸 보여 줌 */
+  #timer-time { display: flex; align-items: center; justify-content: center; gap: .1em; border-radius: 14px; cursor: text; }
+  #timer-card:not(.running) #timer-time::after { content: "✎"; font-size: .3em; color: var(--muted); }
+  #timer-card:not(.running) #timer-time:hover { outline: 2px dashed var(--line); background: #fff; }
+  .time-in { width: 5.2ch; font: inherit; text-align: center; border: 0; border-bottom: 3px solid var(--accent); background: none; color: var(--ink); outline: none; padding: 0; }
   #timer-card.done { animation: blink .5s 6 alternate; }
   #timer-card.done .big { color: var(--accent); }
   @keyframes blink { to { background: #ffd9cc; } }
@@ -387,23 +390,20 @@
   </section>
   <section class="card" data-card="photo">
     <p class="label">🖼️ 사진</p>
-    <div class="photo-box" id="photo-box">
-      <button class="empty" id="photo-add" onclick="photoInput.click()">+ 사진 넣기</button>
-      <img id="photo" alt="우리반 사진" hidden>
-      <div class="photo-tools" id="photo-tools" hidden>
-        <button onclick="photoInput.click()">바꾸기</button><button onclick="setPhoto(null)">지우기</button>
-      </div>
+    <div class="photo-box">
+      <button class="empty">+ 사진 넣기</button>
+      <img alt="우리반 사진" hidden>
+      <div class="photo-tools" hidden><button>바꾸기</button><button>지우기</button></div>
     </div>
-    <input type="file" id="photo-input" accept="image/*" hidden>
+    <input type="file" accept="image/*" hidden>
   </section>
   <section class="card tool-card" data-card="timer" id="timer-card">
     <p class="label">⏱️ 타이머</p>
-    <div class="big" id="timer-time" role="timer" aria-live="off">05:00</div>
+    <div class="big" id="timer-time" role="timer" aria-live="off" title="눌러서 시간 바꾸기 (예: 3:30)">05:00</div>
     <div class="bar"><i id="timer-bar"></i></div>
     <div class="chips">
       <button onclick="timerSet(.5)">30초</button><button onclick="timerSet(1)">1분</button><button onclick="timerSet(3)">3분</button>
       <button onclick="timerSet(5)">5분</button><button onclick="timerSet(10)">10분</button><button onclick="timerAdd(1)" title="1분 더하기">+1</button>
-      <label class="sec-in"><input type="number" min="1" max="5999" inputmode="numeric" aria-label="직접 초 입력" onchange="timerSetSec(this)">초</label>
     </div>
     <div class="acts">
       <button class="main" id="timer-go" onclick="timerToggle()">시작</button><button class="again" onclick="timerReset()">↺ 다시</button>
@@ -543,9 +543,9 @@
   <section id="tab-help" hidden>
     <ul>
       <li><b>오늘의 주제</b> ↻로 다른 주제를 뽑아요. 쓴 주제는 '사용 체크'하면 다시 나오지 않아요. '2줄 이상 쓰기'는 더블클릭해서 고쳐요.</li>
-      <li><b>메모 · 우리반 규칙</b> 카드를 눌러 바로 쓰면 저절로 저장돼요. 글자를 끌어서 고른 뒤 색 점을 누르면 그 글자만 색이 바뀌어요.</li>
-      <li><b>사진</b> '사진 넣기'로 사진을 고르세요. 사진 위에 마우스를 올리면 바꾸기·지우기 버튼이 나와요.</li>
-      <li><b>타이머</b> 1·3·5·10분을 고르고 '시작'. +1은 1분 더하기예요. 시간이 끝나면 소리가 나고 카드가 깜빡여요.</li>
+      <li><b>메모 · 우리반 규칙</b> 카드를 눌러 바로 쓰면 저절로 저장돼요. 글자를 끌어서 고른 뒤 오른쪽 아래 Tt에서 색을 고르면 그 글자만 바뀌어요. 메모는 아래쪽 바 버튼을 누를 때마다 한 장씩 더 생겨요(더 만든 메모는 닫으면 지워져요).</li>
+      <li><b>사진</b> '사진 넣기'로 사진을 고르세요. 사진 위에 마우스를 올리면 바꾸기·지우기 버튼이 나와요. 아래쪽 바 버튼을 누를 때마다 사진 카드가 한 장씩 더 생겨요.</li>
+      <li><b>타이머</b> 30초·1·3·5·10분을 고르거나, 가운데 시간(00:00)을 눌러 3:30처럼 직접 쓰고 '시작'. +1은 1분 더하기예요. 시간이 끝나면 소리가 나고 카드가 깜빡여요.</li>
       <li><b>뽑기</b> <u>전체</u>: 설정 → 명단에 우리 반 이름을 한 줄에 하나씩(숫자만 쓰면 번호로). <u>선택</u>: 오른쪽 아래 '✎ 고르기'로 뽑을 사람만 골라요. <u>모둠</u>: 오른쪽 아래에 모둠 수를 정해요. <u>직접입력</u>: 오른쪽 아래 '✎ 쓰기'로 그때그때 뽑을 것을 써요. 한 번 뽑힌 것은 모두 뽑힐 때까지 다시 나오지 않고, '처음부터'로 다시 시작해요.</li>
       <li><b>미세먼지</b> '지역 설정'에서 '지금 위치로'를 누르거나 시·군 이름(예: 수원시)으로 찾으세요. Open-Meteo(무료 공개 자료)의 예보값이라 에어코리아 측정소 값과 조금 다를 수 있어요. 30분마다 새로 받아요.</li>
       <li><b>소음 측정</b> '측정 시작'을 누르고 마이크를 허락하면 소리 크기를 막대로 보여 줘요. 기준(검은 선)을 1초 넘게 넘으면 경고음이 나고 오늘 경고 횟수가 쌓여요. '🔔 경고'로 직접 경고를 줄 수도 있어요. 소리는 이 컴퓨터 안에서만 재고, 녹음하거나 보내지 않아요.</li>
@@ -974,15 +974,46 @@ const lay = k => { // 처음 크기는 늘 기본값. 예전 '끄기'는 아래�
 const card = k => document.querySelector(`.card[data-card="${k}"]`);
 const saveLayout = () => { try { localStorage.setItem("layout", JSON.stringify(layout)); } catch (e) {} };
 const POS = ["left", "top", "width", "height"];
-CARDS.forEach(([k]) => { // 카드마다 ⛶ 전체 화면, ✕ 닫기(아래쪽 바로), 크기 조절 모서리
+// 메모·사진은 여러 장: 이미 보드에 있으면 아래쪽 바 버튼을 누를 때마다 새 카드(memo-2, photo-2 …)를 만듦
+// 새 카드는 처음 모양을 복사하고, 카드 이름을 저장 이름으로 씀 (note-html-memo-2, 사진은 photo-2)
+const MULTI = { memo: card("memo").cloneNode(true), photo: card("photo").cloneNode(true) };
+let extras = [];
+try { extras = JSON.parse(localStorage.getItem("extra-cards")) || []; } catch (e) {}
+const saveExtras = () => { try { localStorage.setItem("extra-cards", JSON.stringify(extras)); } catch (e) {} };
+function makeCard(id) {
+  const base = id.split("-")[0], c = MULTI[base].cloneNode(true), d = CARDS.find(x => x[0] === base);
+  c.dataset.card = id; c.querySelectorAll("[data-key]").forEach(n => n.dataset.key = id);
+  board.append(c); CARDS.push([id, d[1], "board", d[3], d[4]]);
+  return c;
+}
+extras.forEach(makeCard);
+function addCard(base) {
+  let n = 2;
+  while (card(`${base}-${n}`)) n++;
+  const id = `${base}-${n}`, c = makeCard(id);
+  extras.push(id); saveExtras(); cardChrome(id);
+  if (base === "memo") { const el = c.querySelector(".note"); initNote(el); initNoteTools(el); } else initPhoto(c);
+  setLayout(id, { mode: "board" }); c.style.zIndex = ++zTop;
+}
+function removeCard(k) { // 더 만든 카드는 닫으면 내용과 함께 없앰
+  const c = card(k), photo = k.startsWith("photo");
+  const has = photo ? !c.querySelector("img").hidden : c.querySelector(".note").textContent.trim();
+  if (has && !confirm("이 카드를 닫으면 안의 내용도 지워져요. 닫을까요?")) return;
+  try { [k, "note-html-" + k, "note-style-" + k].forEach(x => localStorage.removeItem(x)); } catch (e) {}
+  document.querySelector(`.note-pop[data-for="${k}"]`)?.remove();
+  c.remove(); CARDS.splice(CARDS.findIndex(x => x[0] === k), 1);
+  delete layout[k]; saveLayout(); extras = extras.filter(x => x !== k); saveExtras(); applyLayout();
+}
+function cardChrome(k) { // 카드마다 ⛶ 전체 화면, ✕ 닫기(아래쪽 바로), 크기 조절 모서리
   const c = card(k), full = document.createElement("button"), down = document.createElement("button"), grip = document.createElement("span");
   full.className = "card-down card-full"; full.textContent = "⛶"; full.title = "전체 화면 (Esc로 돌아와요)"; full.setAttribute("aria-label", "전체 화면");
   full.onclick = () => document.fullscreenElement ? document.exitFullscreen() : c.requestFullscreen().catch(() => {});
   down.className = "card-down"; down.textContent = "✕"; down.title = "닫기 (아래쪽 바에서 다시 띄울 수 있어요)"; down.setAttribute("aria-label", "닫기");
-  down.onclick = () => setLayout(k, { mode: "popup" });
+  down.onclick = () => extras.includes(k) ? removeCard(k) : setLayout(k, { mode: "popup" });
   grip.className = "card-grip"; grip.title = "끌어서 크기 조절";
   c.append(full, down, grip);
-});
+}
+CARDS.forEach(([k]) => cardChrome(k));
 // 카드 크기를 칸 수로: 1=1칸, 2=가로 2칸, 4=2×2, full=한 줄 전체
 const cellsOf = (size, cols) => size === "full" ? cols : size === "4" ? 4 : +size || 1;
 function placeCards() {
@@ -1043,7 +1074,7 @@ function applyLayout() {
     const c = card(k), l = lay(k);
     c.style.order = i; c.dataset.size = l.size;
     c.hidden = l.mode !== "board";
-    if (l.mode === "popup") {
+    if (l.mode === "popup" || MULTI[k]) { // 메모·사진 버튼은 늘 있음 (여러 장 띄우기)
       const b = document.createElement("button"), [icon, ...label] = name.split(" "), ic = document.createElement("i");
       ic.textContent = icon; b.append(ic, label.join(" ")); b.dataset.card = k; b.onclick = () => showCard(k);
       launch.append(b);
@@ -1061,12 +1092,13 @@ function resetPlaces() {
   saveLayout(); applyLayout();
 }
 function showCard(k) { // 아래쪽 바에서 누르면 보드에 바로 맨 앞으로
+  if (MULTI[k] && lay(k).mode === "board") { addCard(k); return; }
   setLayout(k, { mode: "board" }); card(k).style.zIndex = ++zTop;
 }
 applyLayout();
 
 // 메모·우리반 규칙·준비물: 쓰는 대로 저장. 몇 글자만 색을 바꿀 수 있게 HTML로 note-html-<칸>에 저장 (예전 글자만 있던 note-<칸>은 처음 한 번 옮겨 옴)
-document.querySelectorAll(".note[data-key]").forEach(el => {
+function initNote(el) {
   const k = el.dataset.key, key = "note-html-" + k, rules = k === "rules";
   const li = t => { const l = document.createElement("li"); l.textContent = t; return l; };
   const fill = () => { if (rules && !el.querySelector("li")) el.replaceChildren(li("")); }; // 규칙은 늘 번호 줄이 하나는 있게
@@ -1080,7 +1112,8 @@ document.querySelectorAll(".note[data-key]").forEach(el => {
   el.addEventListener("input", () => { fill(); try { localStorage.setItem(key, el.innerHTML); } catch (e) {} });
   el.addEventListener("paste", e => { e.preventDefault(); document.execCommand("insertText", false, e.clipboardData.getData("text/plain")); }); // 붙여넣기는 글자만
   el.addEventListener("drop", e => e.preventDefault());
-});
+}
+document.querySelectorAll(".note[data-key]").forEach(initNote);
 const NOTE_COLORS = ["#2b1d14", "#e03131", "#1c7ed6", "#2f9e44", "#7048e8"]; // 메모·규칙·준비물·급훈 글씨 색
 // 급훈: 글자만 저장. 색·굵기는 Tt 팝업에서 (급훈 전체에 적용)
 const motto = document.getElementById("motto");
@@ -1116,7 +1149,7 @@ document.fonts.addEventListener("loadingdone", fitMotto); // 명조 글꼴이 �
 }
 // 메모·규칙·준비물 글씨 크기와 색: 카드에 마우스를 올리면 나오는 작은 도구줄. 칸마다 따로 저장
 // 색은 글자를 골라 두면 그 글자만, 안 골랐으면 칸 전체
-document.querySelectorAll(".note[data-key]").forEach(ta => {
+function initNoteTools(ta) {
   const key = "note-style-" + ta.dataset.key;
   let st = {};
   try { st = JSON.parse(localStorage.getItem(key)) || {}; } catch (e) {}
@@ -1151,40 +1184,44 @@ document.querySelectorAll(".note[data-key]").forEach(ta => {
     const r = open.getBoundingClientRect();
     pop.style.top = r.bottom + 4 + "px"; pop.style.left = Math.max(8, Math.min(r.right - 200, innerWidth - 220)) + "px";
   });
+  pop.dataset.for = ta.dataset.key; // 카드를 없앨 때 같이 치우려고
   bar.append(open); ta.before(bar); document.body.append(pop); apply();
-});
+}
+document.querySelectorAll(".note[data-key]").forEach(initNoteTools);
 
-// 사진: 긴 변 1600px JPEG로 줄여서 이 컴퓨터에 저장
-// shortcut: localStorage(약 5MB)에 한 장만 저장, 여러 장 슬라이드가 필요해지면 IndexedDB로 옮기기
-const photoInput = document.getElementById("photo-input");
-const photoImg = document.getElementById("photo");
-function setPhoto(dataUrl) {
-  if (dataUrl === null && !confirm("사진을 지울까요?")) return;
-  try {
-    if (dataUrl) localStorage.setItem("photo", dataUrl); else localStorage.removeItem("photo");
-  } catch (e) { alert("사진이 너무 커서 저장하지 못했어요. 더 작은 사진을 골라 주세요."); return; }
-  showPhoto(dataUrl);
+// 사진: 긴 변 1600px JPEG로 줄여서 이 컴퓨터에 저장. 카드 이름(photo, photo-2 …)이 저장 이름
+// shortcut: localStorage(약 5MB)에 카드마다 한 장, 여러 장이 모자라지면 IndexedDB로 옮기기
+function initPhoto(c) {
+  const k = c.dataset.card, input = c.querySelector("input[type=file]"), img = c.querySelector("img");
+  const tools = c.querySelector(".photo-tools"), add = c.querySelector(".empty"), [change, del] = tools.children;
+  const show = url => {
+    img.hidden = tools.hidden = !url; add.hidden = !!url;
+    if (url) img.src = url; else img.removeAttribute("src");
+  };
+  const set = url => {
+    if (url === null && !confirm("사진을 지울까요?")) return;
+    try { if (url) localStorage.setItem(k, url); else localStorage.removeItem(k); }
+    catch (e) { alert("사진이 너무 커서 저장하지 못했어요. 더 작은 사진을 고르거나 다른 사진 카드를 닫아 주세요."); return; }
+    show(url);
+  };
+  add.onclick = change.onclick = () => input.click();
+  del.onclick = () => set(null);
+  input.addEventListener("change", async () => {
+    const file = input.files[0];
+    input.value = "";
+    if (!file) return;
+    try {
+      const bmp = await createImageBitmap(file);
+      const r = Math.min(1, 1600 / Math.max(bmp.width, bmp.height));
+      const cv = document.createElement("canvas");
+      cv.width = Math.round(bmp.width * r); cv.height = Math.round(bmp.height * r);
+      cv.getContext("2d").drawImage(bmp, 0, 0, cv.width, cv.height);
+      set(cv.toDataURL("image/jpeg", 0.85));
+    } catch (e) { alert("이 파일은 사진으로 열 수 없어요."); }
+  });
+  try { show(localStorage.getItem(k)); } catch (e) { show(null); }
 }
-function showPhoto(dataUrl) {
-  photoImg.hidden = !dataUrl;
-  document.getElementById("photo-tools").hidden = !dataUrl;
-  document.getElementById("photo-add").hidden = !!dataUrl;
-  if (dataUrl) photoImg.src = dataUrl; else photoImg.removeAttribute("src");
-}
-photoInput.addEventListener("change", async () => {
-  const file = photoInput.files[0];
-  photoInput.value = "";
-  if (!file) return;
-  try {
-    const bmp = await createImageBitmap(file);
-    const k = Math.min(1, 1600 / Math.max(bmp.width, bmp.height));
-    const cv = document.createElement("canvas");
-    cv.width = Math.round(bmp.width * k); cv.height = Math.round(bmp.height * k);
-    cv.getContext("2d").drawImage(bmp, 0, 0, cv.width, cv.height);
-    setPhoto(cv.toDataURL("image/jpeg", 0.85));
-  } catch (e) { alert("이 파일은 사진으로 열 수 없어요."); }
-});
-try { showPhoto(localStorage.getItem("photo")); } catch (e) { showPhoto(null); }
+document.querySelectorAll('.card[data-card^="photo"]').forEach(initPhoto);
 
 // 타이머: 끝나는 시각을 기억해서 계산 (창이 가려져 있어도 정확함)
 const timerCard = document.getElementById("timer-card");
@@ -1194,15 +1231,31 @@ const fmt = ms => { const s = Math.ceil(ms / 1000); return String(Math.floor(s /
 function timerDraw() {
   tTime.textContent = fmt(tLeft);
   tBar.style.width = (tTotal ? tLeft / tTotal * 100 : 0) + "%";
-  tGo.textContent = tEnd ? "멈춤" : "시작";
+  tGo.textContent = tEnd ? "멈춤" : "시작"; timerCard.classList.toggle("running", !!tEnd);
 }
 function timerStop() { clearInterval(tTick); tEnd = 0; }
 function timerSet(min) { timerStop(); tTotal = tLeft = min * 60000; timerCard.classList.remove("done"); timerDraw(); }
-function timerSetSec(input) { // 직접 쓴 초. 1초~99분59초만
-  const s = Math.round(+input.value);
-  if (s >= 1 && s <= 5999) timerSet(s / 60);
-  input.value = "";
+// 시간 글자를 눌러 직접 입력. "3:30", "3분 30초", "330"(=3분 30초), "5"(=5분) 모두 됨
+function parseTime(v) {
+  v = v.replace(/\s/g, "");
+  let m = v.match(/^(\d+):(\d{1,2})$/) || v.match(/^(?:(\d+)분)?(?:(\d+)초)?$/);
+  if (m && (m[1] || m[2])) return (+m[1] || 0) * 60 + (+m[2] || 0);
+  if (!/^\d+$/.test(v)) return 0;
+  return v.length <= 2 ? +v * 60 : +v.slice(0, -2) * 60 + +v.slice(-2); // 두 자리까지는 분, 그보다 길면 끝 두 자리가 초
 }
+tTime.addEventListener("click", () => {
+  if (tTime.querySelector("input")) return;
+  if (tEnd) timerToggle(); // 도는 중이면 멈추고 고침
+  const inp = document.createElement("input");
+  inp.className = "time-in"; inp.value = fmt(tLeft); inp.setAttribute("aria-label", "타이머 시간 (분:초)");
+  tTime.replaceChildren(inp); inp.focus(); inp.select();
+  let cancel = false;
+  inp.onkeydown = e => { if (e.key === "Enter") inp.blur(); else if (e.key === "Escape") { cancel = true; inp.blur(); } };
+  inp.onblur = () => {
+    const sec = cancel ? 0 : parseTime(inp.value);
+    if (sec >= 1 && sec <= 5999) timerSet(sec / 60); else timerDraw();
+  };
+});
 function timerAdd(min) {
   tTotal += min * 60000;
   if (tEnd) tEnd += min * 60000; else tLeft += min * 60000;
