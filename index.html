@@ -118,6 +118,7 @@
   /* 고른 것 둘레: 점선 상자, 오른쪽 위 ✕, 위쪽에 묶기·풀기 (위에 자리가 없으면 아래) */
   .wb-selbox { position: absolute; z-index: 2; border: 2px dashed #3a78d4; border-radius: 6px; pointer-events: none; }
   .wb-selbox[hidden] { display: none; }
+  .wb-marquee { position: absolute; z-index: 3; border: 1.5px solid #3a78d4; background: rgba(58, 120, 212, .1); pointer-events: none; } /* 끌어서 여러 개 고르기 */
   .wb-selacts { position: absolute; left: -2px; bottom: 100%; margin-bottom: 4px; display: flex; gap: 4px; }
   .wb-selbox.low .wb-selacts { bottom: auto; top: 100%; margin: 4px 0 0; }
   .wb-selacts button { pointer-events: auto; font: 12px "Wanted Sans", "Malgun Gothic", sans-serif; border: 0; border-radius: 6px; background: #3a78d4; color: #fff; padding: 3px 8px; cursor: pointer; }
@@ -574,11 +575,11 @@
   </nav>
   <section id="tab-time">
     <h3>1. 연간시간표 가져오기</h3>
-    <p class="sum">연간시간표, 주간 시간표, 주간학습안내 모두 돼요. 한글(.hwp)이나 PDF 파일을 고르거나, 한글·엑셀·나이스에서 표 전체를 복사해 아래 칸에 붙여넣으세요(Ctrl+V). 다시 넣으면 그 주만 새로 바뀌어요.</p>
+    <p class="sum">연간시간표, 주간 시간표, 주간학습안내 모두 돼요. 한글(.hwp·.hwpx), 워드(.docx), PDF 파일을 고르거나, 한글·엑셀·나이스에서 표 전체를 복사해 아래 칸에 붙여넣으세요(Ctrl+V). 다시 넣으면 그 주만 새로 바뀌어요. 날짜가 있는 주간 시간표·주간학습안내를 넣으면 연간시간표의 그 주가 이걸로 바뀌어요.</p>
     <div class="row">
-      <button onclick="document.getElementById('tt-file').click()">파일 고르기 (.hwp · .pdf)</button>
+      <button onclick="document.getElementById('tt-file').click()">파일 고르기 (한글 · 워드 · PDF)</button>
       <input id="tt-paste" placeholder="여기를 누르고 Ctrl+V" aria-label="시간표 붙여넣기">
-      <input type="file" id="tt-file" accept=".hwp,.pdf" hidden>
+      <input type="file" id="tt-file" accept=".hwp,.hwpx,.doc,.docx,.pdf" hidden>
     </div>
     <p class="sum" id="tt-msg"></p>
     <h3>2. 시정표 (우리 학교 교시별 시간)</h3>
@@ -592,8 +593,8 @@
   <section id="tab-roster" hidden>
     <p class="sum">뽑기에 쓰는 우리 반 명단이에요. 한글·PDF 명렬표 파일에서 가져오거나, 아래 표에 번호와 이름을 직접 쓰세요. 가져온 뒤에도 표에서 바로 고칠 수 있어요. 이름 없이 번호만 써도 번호로 뽑아요. 쓰는 대로 저장돼요.</p>
     <div class="row">
-      <button onclick="document.getElementById('roster-file').click()">파일에서 가져오기 (.hwp · .pdf)</button>
-      <input type="file" id="roster-file" accept=".hwp,.pdf" hidden>
+      <button onclick="document.getElementById('roster-file').click()">파일에서 가져오기 (한글 · 워드 · PDF)</button>
+      <input type="file" id="roster-file" accept=".hwp,.hwpx,.doc,.docx,.pdf" hidden>
     </div>
     <p class="sum" id="roster-msg"></p>
     <textarea id="roster" hidden></textarea><!-- 저장용: "번호 이름" 한 줄씩. 보이는 건 아래 표 -->
@@ -615,7 +616,7 @@
       <li><b>뽑기</b> <u>전체</u>: 설정 → 명단에 우리 반 이름을 한 줄에 하나씩(숫자만 쓰면 번호로). <u>선택</u>: 오른쪽 아래 '✎ 고르기'로 뽑을 사람만 골라요. <u>모둠</u>: 오른쪽 아래에 모둠 수를 정해요. <u>직접입력</u>: 오른쪽 아래 '✎ 쓰기'로 그때그때 뽑을 것을 써요. <u>순서</u>: 명단 전체가 이름 구슬이 되어 긴 핀볼 코스(경사로·범퍼·도는 막대·쐐기)를 굴러 내려가요. 화면은 맨 앞 구슬을 따라 내려가고, 맨 아래 구멍으로 빠진 순서대로 1등부터 정해요. 한 번 뽑힌 것은 모두 뽑힐 때까지 다시 나오지 않고, '처음부터'로 다시 시작해요.</li>
       <li><b>미세먼지</b> '지역 설정'에서 '지금 위치로'를 누르거나 시·군 이름(예: 수원시)으로 찾으세요. Open-Meteo(무료 공개 자료)의 예보값이라 에어코리아 측정소 값과 조금 다를 수 있어요. 30분마다 새로 받아요.</li>
       <li><b>소음 측정</b> '측정 시작'을 누르고 마이크를 허락하면 소리 크기를 막대로 보여 줘요. 기준(검은 선)을 1초 넘게 넘으면 경고음이 나고 오늘 경고 횟수가 쌓여요. '🔔 경고'로 직접 경고를 줄 수도 있어요. 소리는 이 컴퓨터 안에서만 재고, 녹음하거나 보내지 않아요.</li>
-      <li><b>화이트보드</b> ✏️ 펜을 누르면 색과 굵기를 골라 그려요. T 글상자는 누른 뒤 보드(사진 위도 돼요)를 클릭해 써요. 사진은 복사해서 Ctrl+V(또는 끌어다 놓기). 옮기기에서 사진·글상자·펜 선을 끌어 옮기고, 오른쪽 아래 파란 점으로 크기를 바꾸고(글상자는 글씨도 같이 커져요), 오른쪽 위 ✕나 Delete로 지워요. Shift를 누른 채 여러 개를 누르면 함께 골라지고, '묶기'로 한 덩어리로 묶어요('풀기'로 다시 나눠요). 글상자는 두 번 클릭하면 고치고, 글상자를 고르면 위에 나오는 Tt로 글씨 크기·색을 바꿔요. 여러 개나 묶음은 점선 상자 오른쪽 아래 파란 점으로 한꺼번에 크기를 바꿔요. ↶나 Ctrl+Z로 되돌려요. 제목 줄 오른쪽 1~4 버튼으로 화이트보드를 4개까지 따로 써요.</li>
+      <li><b>화이트보드</b> ✏️ 펜을 누르면 색과 굵기를 골라 그려요. T 글상자는 누른 뒤 보드(사진 위도 돼요)를 클릭해 써요. 사진은 복사해서 Ctrl+V(또는 끌어다 놓기). 옮기기에서 사진·글상자·펜 선을 끌어 옮기고, 오른쪽 아래 파란 점으로 크기를 바꾸고(글상자는 글씨도 같이 커져요), 오른쪽 위 ✕나 Delete로 지워요. 빈 곳에서 끌어 네모를 그리면 그 안에 통째로 들어온 것이 함께 골라지고(조금 걸친 건 빠져요), Shift를 누른 채 여러 개를 눌러도 골라져요. '묶기'로 한 덩어리로 묶어요('풀기'로 다시 나눠요). 글상자는 두 번 클릭하면 고치고, 글상자를 고르면 위에 나오는 Tt로 글씨 크기·색을 바꿔요. 여러 개나 묶음은 점선 상자 오른쪽 아래 파란 점으로 한꺼번에 크기를 바꿔요. ↶나 Ctrl+Z로 되돌려요. 제목 줄 오른쪽 1~4 버튼으로 화이트보드를 4개까지 따로 써요.</li>
       <li><b>시간표</b> 설정 → 시간표에서 연간시간표(한글 파일 또는 표 붙여넣기)와 시정표를 넣으면, 지금 몇 교시인지와 다음 시간을 알려 줘요. 표에 없는 주는 '매주 기본 시간표'를 써요.</li>
       <li><b>보드 카드</b> 제목을 끌어 옮기고, 오른쪽 아래 모서리로 크기를 바꿔요. 옮긴 자리와 크기는 앱을 껐다 켜도 그대로예요. ✕를 누르면 보드에서 닫히고 아래쪽 바로 들어가요. 닫아도 적어 둔 내용은 남아요.</li>
       <li><b>아래쪽 바</b> 보드에서 닫은 카드가 들어가요. 누르면 보드에 다시 나와요.</li>
@@ -1451,12 +1452,12 @@ document.getElementById("roster-file").addEventListener("change", async e => {
   const msg = document.getElementById("roster-msg");
   msg.textContent = "읽는 중…";
   try {
-    const buf = await f.arrayBuffer(), list = parseRoster(/\.pdf$/i.test(f.name) ? await readPdfRows(buf) : await readHwpTables(buf));
+    const list = parseRoster(await readTables(f));
     if (!list.length) { msg.textContent = "번호와 이름을 찾지 못했어요. 번호·이름 칸이 있는 명렬표인지 확인해 주세요."; return; }
     if (roster.value.trim() && !confirm(`${list.length}명을 가져왔어요. 지금 명단을 바꿀까요?`)) { msg.textContent = ""; return; }
     roster.value = list.join("\n"); roster.dispatchEvent(new Event("input")); roster.dispatchEvent(new Event("change")); rosterTable();
     msg.textContent = `${list.length}명을 가져왔어요. 아래 표에서 번호와 이름을 바로 고칠 수 있어요.`;
-  } catch (err) { msg.textContent = "이 파일은 읽지 못했어요. 파일을 열어 명단을 복사해 붙여넣어 주세요."; }
+  } catch (err) { msg.textContent = fileError(err, "명단"); }
 });
 function candidates(mode = pk.mode) {
   if (mode === "select") return people().filter(p => pk.chosen.includes(p));
@@ -1542,8 +1543,8 @@ function pickRace(all) {
   delete pk.order; pickGo.disabled = true; pickName.classList.remove("cards", "ranks"); pickName.style.fontSize = "";
   const wrap = document.createElement("div"), cv = document.createElement("canvas"), list = document.createElement("ol");
   wrap.className = "race"; wrap.append(cv, list); pickName.replaceChildren(wrap);
-  const box = cv.getBoundingClientRect(), dpr = devicePixelRatio || 1, W = box.width, H = box.height, g = cv.getContext("2d");
-  cv.width = W * dpr; cv.height = H * dpr; g.scale(dpr, dpr);
+  // 세계 크기는 화면의 1/Z배로 넓게 잡고 그릴 때 줄여서, 코스가 더 많이 보이게(멀리서 보듯). Z가 작을수록 멀리
+  const box = cv.getBoundingClientRect(), Z = .6, W = box.width / Z, H = box.height / Z, g = cv.getContext("2d");
   const R = Math.max(5, Math.min(12, W / 24, Math.sqrt(W * H / all.length) / 6)); // 구슬 반지름: 판 크기와 사람 수에 맞춤
   const GRAV = H * 1.4, VMAX = R * 150, rnd = (a, b) => a + Math.random() * (b - a);
   const pegs = [], bumpers = [], segs = [], spinners = [];
@@ -1575,7 +1576,7 @@ function pickRace(all) {
       c: `hsl(${(i * 360 / all.length + 20) % 360} 75% 60%)`, still: 0, out: false };
   });
   const order = [];
-  let last = 0, tick = 0, elapsed = 0, camY = -H * .3;
+  let last = 0, tick = 0, elapsed = 0, camY = -H * .3, VH = H, mid = 0, leader = null, leadFlash = 0;
   const bounce = (b, nx, ny, e, ux = 0, uy = 0) => { // (ux, uy): 부딪힌 물체가 움직이는 속도 (도는 막대)
     const vn = (b.vx - ux) * nx + (b.vy - uy) * ny;
     if (vn < 0) { b.vx -= (1 + e) * vn * nx; b.vy -= (1 + e) * vn * ny; }
@@ -1592,6 +1593,8 @@ function pickRace(all) {
     for (const b of balls) {
       if (b.out) continue;
       b.vy += GRAV * dt;
+      // 엎치락뒤치락: 무리보다 한참 앞서면 바람을 맞아 느려지고, 한참 뒤처지면 뒷바람을 받음 (선두가 자주 바뀌게)
+      if (b.y > mid + H * .5) b.vy *= 1 - 1.6 * dt; else if (b.y < mid - H * .5) b.vy += GRAV * .35 * dt;
       const v = Math.hypot(b.vx, b.vy); if (v > VMAX) { b.vx *= VMAX / v; b.vy *= VMAX / v; } // 너무 빠르면 장애물을 뚫으니 제한
       b.x += b.vx * dt; b.y += b.vy * dt;
       if (b.x < R) { b.x = R; b.vx = Math.abs(b.vx) * .5; } if (b.x > W - R) { b.x = W - R; b.vx = -Math.abs(b.vx) * .5; }
@@ -1638,8 +1641,10 @@ function pickRace(all) {
     tone(500 + Math.max(0, 14 - order.length) * 70, 0, .12, "triangle", .2);
   };
   const draw = () => {
-    g.clearRect(0, 0, W, H); g.save(); g.translate(0, -camY);
-    const see = (y1, y2 = y1) => y2 > camY - 40 && y1 < camY + H + 40;
+    const dpr = devicePixelRatio || 1, SW = cv.clientWidth, SH = cv.clientHeight, k = SW / W;
+    if (cv.width !== Math.round(SW * dpr) || cv.height !== Math.round(SH * dpr)) { cv.width = Math.round(SW * dpr); cv.height = Math.round(SH * dpr); } // 화면 픽셀 그대로 그려서 안 깨지게
+    VH = SH / k; g.setTransform(dpr * k, 0, 0, dpr * k, 0, 0); g.clearRect(0, 0, W, VH); g.save(); g.translate(0, -camY);
+    const see = (y1, y2 = y1) => y2 > camY - 40 && y1 < camY + VH + 40;
     g.fillStyle = "#3a4258"; for (const q of pegs) if (see(q.y)) { g.beginPath(); g.arc(q.x, q.y, q.r, 0, 7); g.fill(); }
     for (const q of bumpers) if (see(q.y)) {
       g.beginPath(); g.arc(q.x, q.y, q.r, 0, 7); g.fillStyle = q.lit > 0 ? "#ffd43b" : "#e2643f"; g.shadowColor = "#ffd43b"; g.shadowBlur = q.lit > 0 ? 24 : 0; g.fill(); g.shadowBlur = 0;
@@ -1662,17 +1667,31 @@ function pickRace(all) {
     }
     g.restore();
     // 오른쪽 가장자리 작은 지도: 코스 전체에서 구슬들이 어디쯤 있는지
-    g.fillStyle = "rgba(255, 255, 255, .15)"; g.fillRect(W - 6, 4, 2, H - 8);
-    g.fillStyle = "rgba(255, 255, 255, .35)"; g.fillRect(W - 8, 4 + Math.max(0, camY) / WORLD * (H - 8), 6, H / WORLD * (H - 8));
-    for (const b of balls) if (!b.out) { g.fillStyle = b.c; g.fillRect(W - 9, 4 + Math.max(0, Math.min(1, b.y / WORLD)) * (H - 8), 8, 2); }
+    g.fillStyle = "rgba(255, 255, 255, .15)"; g.fillRect(W - 10, 6, 3, VH - 12);
+    g.fillStyle = "rgba(255, 255, 255, .35)"; g.fillRect(W - 13, 6 + Math.max(0, camY) / WORLD * (VH - 12), 9, VH / WORLD * (VH - 12));
+    for (const b of balls) if (!b.out) { g.fillStyle = b.c; g.fillRect(W - 15, 6 + Math.max(0, Math.min(1, b.y / WORLD)) * (VH - 12), 13, 3); }
+    if (leader && !leader.out) { // 맨 위 선두 알림: 바뀌는 순간 번쩍
+      const m = leader.p.match(/^(\d+번) (.+)$/), txt = "🏁 선두  " + (m ? m[2] + " " + m[1] : leader.p);
+      g.font = `${Math.round(R * 2.3)}px "Wanted Sans", sans-serif`; g.textAlign = "left"; g.textBaseline = "middle";
+      const tw = g.measureText(txt).width, ph = R * 3.6;
+      g.fillStyle = leadFlash > 0 ? "#ffd43b" : "rgba(0, 0, 0, .55)"; g.beginPath(); g.roundRect(R, R * .8, tw + R * 2, ph, ph / 2); g.fill();
+      g.fillStyle = leadFlash > 0 ? "#1f2433" : "#fff"; g.fillText(txt, R * 2, R * .8 + ph / 2);
+      g.beginPath(); g.arc(R * 2 + tw + R * 2.2, R * .8 + ph / 2, R * .9, 0, 7); g.fillStyle = leader.c; g.fill();
+    }
   };
   const frame = now => {
     const dt = Math.min(.25, (now - last) / 1000), n = Math.ceil(dt * 240); last = now; // 화면이 느려도 실제 시간만큼 굴러감
     elapsed += dt;
     for (let k = 0; k < n; k++) step(dt / n); // 잘게 나눠 계산해야 빠른 구슬이 장애물을 뚫고 지나가지 않음
     for (const q of bumpers) q.lit -= dt;
-    const lead = Math.max(...balls.filter(b => !b.out).map(b => b.y), -Infinity); // 화면은 맨 앞 구슬을 따라 내려감
-    if (lead > -Infinity) camY += (Math.max(-H * .3, Math.min(WORLD - H + R * 2, lead - H * .6)) - camY) * Math.min(1, dt * 4);
+    leadFlash -= dt;
+    const act = balls.filter(b => !b.out).sort((a, b) => b.y - a.y);
+    if (act.length) {
+      mid = act[Math.floor(act.length / 2)].y;
+      if (act[0] !== leader && elapsed > 1.5) { if (leader && !leader.out) { leadFlash = .7; tone(880, 0, .07, "square", .09); tone(1320, .07, .1, "square", .09); } leader = act[0]; } // 선두 바뀜: 띠링
+      else if (!leader) leader = act[0];
+      camY += (Math.max(-VH * .3, Math.min(WORLD - VH + R * 2, act[0].y - VH * .6)) - camY) * Math.min(1, dt * 4); // 화면은 맨 앞 구슬을 따라 내려감
+    }
     draw();
     if (order.length < balls.length && elapsed < 120) { requestAnimationFrame(frame); return; }
     balls.filter(b => !b.out).sort((a, b) => b.y - a.y).forEach(b => { b.out = true; finish(b); }); // 2분이 지나도 안 나온 구슬은 더 내려간 순서로
@@ -1829,11 +1848,50 @@ document.getElementById("tt-file").addEventListener("change", async e => {
   const msg = document.getElementById("tt-msg");
   msg.textContent = "읽는 중…";
   try {
-    const buf = await f.arrayBuffer();
-    ttImport(/\.pdf$/i.test(f.name) ? await readPdfRows(buf) : await readHwpTables(buf));
-  } catch (err) { msg.textContent = "이 파일은 읽지 못했어요. 파일을 열어 표 전체를 복사해 붙여넣어 주세요."; }
+    ttImport(await readTables(f));
+  } catch (err) { msg.textContent = fileError(err, "표 전체"); }
 });
 
+// 파일에서 표 줄 꺼내기: 교육청마다 쓰는 프로그램이 달라서 한글(.hwp·.hwpx)·워드(.docx)·PDF 모두 받음
+async function readTables(f) {
+  const buf = await f.arrayBuffer(), ext = f.name.split(".").pop().toLowerCase();
+  if (ext === "pdf") return readPdfRows(buf);
+  if (ext === "docx" || ext === "hwpx") return readZipTables(buf, ext);
+  if (ext === "doc") throw new Error("doc"); // 옛 워드 형식은 못 읽음
+  return readHwpTables(buf);
+}
+const fileError = (err, what) => err.message === "doc"
+  ? "옛 워드 파일(.doc)은 읽지 못해요. 워드에서 '다른 이름으로 저장 → Word 문서(.docx)'로 저장해서 넣어 주세요."
+  : `이 파일은 읽지 못했어요. 파일을 열어 ${what}를 복사해 붙여넣어 주세요.`;
+// .docx(워드)·.hwpx(한글 새 형식)는 ZIP 안의 XML. 표 → 줄 → 칸 → 글자 순으로 꺼냄 (칸 안 문단은 띄어 붙임)
+function unzip(buf) {
+  const u8 = new Uint8Array(buf), dv = new DataView(buf), files = {};
+  let e = u8.length - 22;
+  while (e >= 0 && dv.getUint32(e, true) !== 0x06054b50) e--; // 끝 쪽 목차 위치 찾기
+  if (e < 0) throw new Error("not zip");
+  for (let i = 0, p = dv.getUint32(e + 16, true); i < dv.getUint16(e + 10, true); i++) {
+    const method = dv.getUint16(p + 10, true), size = dv.getUint32(p + 20, true), nl = dv.getUint16(p + 28, true), off = dv.getUint32(p + 42, true);
+    const name = new TextDecoder().decode(u8.subarray(p + 46, p + 46 + nl)), start = off + 30 + dv.getUint16(off + 26, true) + dv.getUint16(off + 28, true);
+    const data = u8.subarray(start, start + size);
+    files[name] = () => method === 8 ? inflate(data) : data;
+    p += 46 + nl + dv.getUint16(p + 30, true) + dv.getUint16(p + 32, true);
+  }
+  return files;
+}
+function readZipTables(buf, ext) {
+  const files = unzip(buf), [TBL, TR, TC, P, T] = ext === "docx" ? ["w:tbl", "w:tr", "w:tc", "w:p", "w:t"] : ["hp:tbl", "hp:tr", "hp:tc", "hp:p", "hp:t"];
+  const parts = ext === "docx" ? ["word/document.xml"]
+    : Object.keys(files).filter(n => /^Contents\/section\d+\.xml$/.test(n)).sort((a, b) => parseInt(a.match(/\d+/)) - parseInt(b.match(/\d+/)));
+  const kids = (el, tag) => [...el.children].filter(c => c.tagName === tag);
+  const rows = [];
+  for (const part of parts) {
+    if (!files[part]) continue;
+    const doc = new DOMParser().parseFromString(new TextDecoder().decode(files[part]()), "application/xml");
+    for (const tbl of doc.getElementsByTagName(TBL)) for (const tr of kids(tbl, TR))
+      rows.push(kids(tr, TC).map(tc => [...tc.getElementsByTagName(P)].map(p => [...p.getElementsByTagName(T)].map(t => t.textContent).join("")).filter(Boolean).join(" ").trim()));
+  }
+  return rows;
+}
 // PDF: pdf.js(무료, 필요할 때만 불러옴)로 글자와 위치를 꺼내 표 줄로 다시 맞춤. 글자가 그림인 스캔본은 못 읽음
 const PDFJS = "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/";
 async function readPdfRows(buf) {
@@ -2356,7 +2414,7 @@ wbObjs.addEventListener("pointerdown", e => {
   if (o && e.target.classList.contains("grip")) { wbResize(e, el, o, r); return; }
   const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
   const it = wbData.strokes.findLast(s => wbHit(s, x, y, r, 10 + s.w * r.width / 2)) || o; // 펜 선이 사진·글상자보다 먼저
-  if (!it) { if (!e.shiftKey) wbPick([]); return; }
+  if (!it) { wbMarquee(e, r); return; }
   const mem = wbMembers(it);
   if (e.shiftKey) { // 더하기·빼기
     const on = wbSet.has(it), next = new Set(wbSet);
@@ -2366,6 +2424,36 @@ wbObjs.addEventListener("pointerdown", e => {
   if (!wbSet.has(it)) wbPick(mem);
   wbDrag(e, r);
 });
+// 빈 곳에서 끌면 네모가 생기고, 네모 안에 '통째로' 들어온 것만 고름 (조금 걸친 건 빼고). Shift면 지금 고른 것에 더함
+// 묶음은 묶인 것이 모두 들어와야 골라짐
+function wbMarquee(e, r) {
+  const sx = e.clientX - r.left, sy = e.clientY - r.top, keep = e.shiftKey ? [...wbSet] : [], box = document.createElement("div");
+  box.className = "wb-marquee"; wb.append(box);
+  if (!e.shiftKey) wbPick([]);
+  wbObjs.setPointerCapture(e.pointerId); e.preventDefault();
+  let rect = null;
+  const move = ev => {
+    const x = ev.clientX - r.left, y = ev.clientY - r.top;
+    rect = { x1: Math.min(sx, x), y1: Math.min(sy, y), x2: Math.max(sx, x), y2: Math.max(sy, y) };
+    Object.assign(box.style, { left: rect.x1 + "px", top: rect.y1 + "px", width: rect.x2 - rect.x1 + "px", height: rect.y2 - rect.y1 + "px" });
+  };
+  const up = () => {
+    wbObjs.removeEventListener("pointermove", move); wbObjs.removeEventListener("pointerup", up); box.remove();
+    if (!rect || rect.x2 - rect.x1 < 4 || rect.y2 - rect.y1 < 4) return; // 그냥 누른 것: 고른 것 풀기만
+    const inside = (a, b, c, d) => a >= rect.x1 && b >= rect.y1 && c <= rect.x2 && d <= rect.y2;
+    const isIn = it => {
+      if (it.pts) {
+        const p = it.w * r.width / 2, xs = it.pts.filter((_, i) => i % 2 === 0).map(v => v * r.width), ys = it.pts.filter((_, i) => i % 2).map(v => v * r.height);
+        return inside(Math.min(...xs) - p, Math.min(...ys) - p, Math.max(...xs) + p, Math.max(...ys) + p);
+      }
+      const b = wbEl(it).getBoundingClientRect();
+      return inside(b.left - r.left, b.top - r.top, b.right - r.left, b.bottom - r.top);
+    };
+    const hit = [...wbData.objs, ...wbData.strokes].filter(isIn);
+    wbPick([...new Set([...keep, ...hit.filter(it => wbMembers(it).every(m => hit.includes(m)))])]);
+  };
+  wbObjs.addEventListener("pointermove", move); wbObjs.addEventListener("pointerup", up);
+}
 function wbDrag(e, r) { // 고른 것을 함께 옮김
   const sx = e.clientX, sy = e.clientY, start = [...wbSet].map(it => [it, it.pts || [it.x, it.y]]);
   let moved = null;
