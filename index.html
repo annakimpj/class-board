@@ -7,8 +7,9 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#fbf3e4">
 <link rel="icon" href="icon-192.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Brush+Script&display=swap"><!-- 급훈 붓글씨 -->
 <style>
-  /* 강원교육모두 Bold (무료 폰트, 눈누 CDN). 첫 실행 때 한 번 받고 이후엔 캐시 사용 */
+  /* 원티드 산스 Regular (무료 폰트, jsDelivr CDN). 첫 실행 때 한 번 받고 이후엔 캐시 사용 */
   @font-face { font-family: "Wanted Sans"; font-display: swap;
     src: url("https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.3/packages/wanted-sans/fonts/webfonts/static/complete/woff2/WantedSans-Regular.woff2") format("woff2"); }
   /* 색은 두 가지만: 진갈색 글씨 + 주황 포인트 */
@@ -64,6 +65,7 @@
   [data-card="timetable"] { --accent: #1f93a8; --card: #e8f7fa; --line: #bfe3ea; }
   [data-card="memo"]      { --accent: #c98a00; --card: #fff8db; --line: #f0e0a6; }
   [data-card="rules"]     { --accent: #2e9a63; --card: #eaf7ef; --line: #c3e6d0; }
+  [data-card="motto"]     { --accent: #8a5a2b; --card: #f7efe2; --line: #e3d2b8; }
   [data-card="photo"]     { --accent: #7a5cc7; --card: #f2edff; --line: #dcd1f5; }
   [data-card="timer"]     { --accent: #e0457b; --card: #ffedf3; --line: #f6c9d8; }
   [data-card="picker"]    { --accent: #3a78d4; --card: #eaf2ff; --line: #c8daf6; }
@@ -132,6 +134,13 @@
   /* 메모·규칙·준비물: 몇 글자만 색을 바꿀 수 있게 textarea 대신 contenteditable */
   .card .note { flex: 1; min-height: 0; overflow-y: auto; outline: none; color: var(--ink); white-space: pre-wrap; word-break: keep-all;
                 font: 26px/1.5 "Wanted Sans", "Malgun Gothic", sans-serif; }
+  /* 급훈: 교실 칠판 위에 거는 액자. 나무 테두리 + 한지 + 붓글씨, 카드 크기에 맞춰 글씨 크기 조절 */
+  .motto-frame { flex: 1; min-height: 0; display: grid; padding: 10px; border-radius: 6px; background: linear-gradient(135deg, #8a5a2b, #5e3b1a 50%, #8a5a2b);
+                 box-shadow: inset 0 0 0 2px #c9975c, 0 4px 10px rgba(60, 40, 20, .25); container-type: size; }
+  .motto { display: grid; place-items: center; text-align: center; outline: none; padding: 4px 12px; overflow: hidden; word-break: keep-all;
+           background: #fdf8ec radial-gradient(circle at 30% 20%, #fffdf6, transparent 70%); box-shadow: inset 0 0 12px rgba(138, 90, 43, .25);
+           font: clamp(24px, min(16cqw, 55cqh), 140px)/1.15 "Nanum Brush Script", "Wanted Sans", serif; color: #1d1410; letter-spacing: .04em; }
+  .motto:empty::before { content: "여기를 눌러 급훈을 쓰세요"; font: 16px "Wanted Sans", "Malgun Gothic", sans-serif; color: #b9a98f; }
   /* 우리반 규칙: 한 줄씩 번호 붙은 목록. Enter를 치면 다음 번호 */
   .rule-list { margin: 0; padding: 0; list-style: none; counter-reset: rule; }
   .rule-list li { counter-increment: rule; padding: .25em 0; border-bottom: 2px dashed var(--line); line-height: 1.4; }
@@ -183,7 +192,10 @@
   .tt-right { border-left: 2px dashed var(--line); padding-left: 12px; }
   .tt-right .sub { text-align: left; font-size: 15px; color: var(--accent); }
   .tt-right .note { font-size: 22px; }
-  .note-tools { display: flex; justify-content: flex-end; height: 24px; opacity: 0; transition: opacity .15s; }
+  /* Tt 버튼: 줄을 따로 차지하지 않게 칸 오른쪽 아래에 띄움 (크기 조절 모서리 옆) */
+  .note-tools { position: absolute; right: 22px; bottom: 6px; z-index: 2; opacity: 0; transition: opacity .15s; }
+  .tt-right { position: relative; }
+  .tt-right .note-tools { right: 4px; bottom: 0; }
   .card:hover .note-tools, .card:focus-within .note-tools { opacity: 1; }
   .note-tools button, .note-pop button { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); background: #fff; color: var(--ink);
                        border-radius: 6px; padding: 0 6px; height: 22px; cursor: pointer; }
@@ -269,6 +281,7 @@
   [data-card="timetable"] { --accent: #0f9db5; --card: #ecf8fb; --line: #c4e7ee; }
   [data-card="memo"]      { --accent: #e09a00; --card: #fff8e1; --line: #f3e1a8; }
   [data-card="rules"]     { --accent: #1fa463; --card: #eaf8f0; --line: #c2e9d3; }
+  [data-card="motto"]     { --accent: #8a5a2b; --card: #f7efe2; --line: #e3d2b8; }
   [data-card="photo"]     { --accent: #8b5cf6; --card: #f3eeff; --line: #ddd0fb; }
   [data-card="timer"]     { --accent: #ec4889; --card: #fdeef5; --line: #f8c8dc; }
   [data-card="picker"]    { --accent: #3b82f6; --card: #ecf3ff; --line: #c9dcfb; }
@@ -357,6 +370,10 @@
   <section class="card" data-card="rules">
     <p class="label">📌 우리반 규칙</p>
     <ol class="note rule-list" data-key="rules" contenteditable="true" spellcheck="false" role="textbox" aria-multiline="true" aria-label="우리반 규칙"></ol>
+  </section>
+  <section class="card" data-card="motto">
+    <p class="label">🏫 급훈</p>
+    <div class="motto-frame"><div class="motto" id="motto" contenteditable="plaintext-only" spellcheck="false" role="textbox" aria-label="급훈"></div></div>
   </section>
   <section class="card" data-card="photo">
     <p class="label">🖼️ 사진</p>
@@ -923,7 +940,7 @@ document.getElementById("today").textContent =
 // 처음엔 칸 맞춤으로 자리를 잡아 그 위치를 기억하고, 그다음부터는 제목을 끌어 옮기고 오른쪽 아래 모서리로 크기를 바꿈
 // [이름, 표시, 처음 위치(board 보드 | popup 아래쪽 바), 처음 크기(칸), 최소 크기 px [가로, 세로]]
 const CARDS = [["topic", "✏️ 오늘의 주제", "board", "2", [340, 200]], ["timetable", "🕘 시간표", "board", "2", [320, 190]],
-  ["memo", "📝 메모", "board", "1", [210, 180]], ["rules", "📌 우리반 규칙", "board", "1", [260, 230]],
+  ["memo", "📝 메모", "board", "1", [210, 180]], ["rules", "📌 우리반 규칙", "board", "1", [260, 230]], ["motto", "🏫 급훈", "popup", "2", [320, 170]],
   ["photo", "🖼️ 사진", "popup", "1", [200, 170]], ["timer", "⏱️ 타이머", "popup", "1", [240, 240]], ["picker", "🎲 뽑기", "popup", "1", [300, 260]],
   ["whiteboard", "🖍️ 화이트보드", "popup", "4", [420, 320]], ["dust", "😷 미세먼지", "board", "1", [260, 270]], ["noise", "🔉 소음 측정", "popup", "1", [240, 270]]];
 const minOf = k => CARDS.find(c => c[0] === k)[4];
@@ -1049,6 +1066,10 @@ document.querySelectorAll(".note[data-key]").forEach(el => {
   el.addEventListener("paste", e => { e.preventDefault(); document.execCommand("insertText", false, e.clipboardData.getData("text/plain")); }); // 붙여넣기는 글자만
   el.addEventListener("drop", e => e.preventDefault());
 });
+// 급훈: 글자만 저장
+const motto = document.getElementById("motto");
+try { motto.textContent = localStorage.getItem("motto") || ""; } catch (e) {}
+motto.addEventListener("input", () => { try { localStorage.setItem("motto", motto.textContent); } catch (e) {} });
 // 메모·규칙·준비물 글씨 크기와 색: 카드에 마우스를 올리면 나오는 작은 도구줄. 칸마다 따로 저장
 // 색은 글자를 골라 두면 그 글자만, 안 골랐으면 칸 전체
 const NOTE_COLORS = ["#2b1d14", "#e03131", "#1c7ed6", "#2f9e44", "#7048e8"];
