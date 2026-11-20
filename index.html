@@ -316,7 +316,10 @@
   .sb .sb-flip { position: absolute; left: calc(100% + 8px); top: 50%; transform: translateY(-50%); letter-spacing: 0; font: 12px "Wanted Sans", sans-serif; white-space: nowrap;
                  border: 1.5px solid var(--line); border-radius: 999px; background: #fff; color: var(--muted); padding: 2px 8px; cursor: pointer; } /* 칠판 바로 오른쪽 */
   .st-map .sb-flip { display: none; }
-  .sg { border: 2px solid var(--line); border-radius: 10px; background: rgba(255, 255, 255, .55); color: var(--muted); padding: .15em .6em; }
+  .sg { border-radius: 14px; background: rgba(47, 125, 140, .07); color: var(--muted); display: flex; align-items: flex-end; justify-content: center; padding-bottom: .1em; }
+  .sd.f0 { border-top: 3px solid var(--accent); } .sd.f90 { border-right: 3px solid var(--accent); } /* 돌린 자리: 보는 쪽에 진한 선 */
+  .sd.f180 { border-bottom: 3px solid var(--accent); } .sd.f270 { border-left: 3px solid var(--accent); }
+  .sd.f90, .sd.f270 { writing-mode: vertical-rl; } /* 옆을 보는 좁은 자리는 이름을 세로로 */
   .sd { background: #fff; border: 1.5px solid var(--line); border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.1;
         color: var(--ink); overflow: hidden; white-space: nowrap; cursor: grab; touch-action: none; }
   .sd i { font-style: normal; font-size: .55em; color: var(--accent); }
@@ -361,37 +364,32 @@
   .se-msg.warn, #seat-msg.warn { background: #fff4ea; color: #a5431c; }
   .se-msg:empty { display: none; }
   @media (max-width: 820px) { .st-body { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1.2fr) minmax(0, 1fr); } }
-  /* 자리배치도 설정 창 */
+  /* 자리 대형 만들기 창: 왼쪽은 고르기, 오른쪽은 미리보기 (직접 그리기는 미리보기 칸을 눌러 고름) */
   .se-form { margin: auto; padding: 18px 22px; border: 0; border-radius: 16px; background: #fff; color: var(--ink); box-shadow: 0 12px 40px rgba(60, 40, 20, .2);
-             font: 15px/1.5 "Wanted Sans", "Malgun Gothic", sans-serif; width: min(760px, 94vw); max-height: 92vh; overflow-y: auto; box-sizing: border-box;
-             app-region: no-drag; -webkit-app-region: no-drag; } /* 설치한 앱에서 맨 위 '창 끌기' 띠에 겹쳐도 눌리게 */
+             font: 15px/1.5 "Wanted Sans", "Malgun Gothic", sans-serif; width: min(820px, 94vw); max-height: 92vh; overflow-y: auto; box-sizing: border-box;
+             app-region: no-drag; -webkit-app-region: no-drag; --accent: #2f7d8c; --line: #c3e1e6; }
   .se-form:popover-open { display: flex; flex-direction: column; gap: 14px; }
-  .se-form button, .se-form input:not([type]) { font: inherit; border: 1.5px solid #e6dccf; background: #fff; color: var(--ink); border-radius: 10px; padding: 6px 12px; cursor: pointer; }
-  .se-form .x { border: 0; font-size: 20px; padding: 0 6px; }
-  .sf-head { display: flex; justify-content: center; position: relative; font-size: 18px; } .sf-head b { font-weight: normal; } .sf-head .x { position: absolute; right: 0; top: -4px; }
-  .sf-name { display: flex; flex-direction: column; gap: 6px; } .sf-name input { cursor: text; }
-  .sf-t { margin: 0 0 6px; color: var(--ink); }
-  .sf-seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-  .se-form .sf-seg button { border: 0; background: #e9ecef; color: #868e96; }
-  .se-form .sf-seg button.on { background: #2b1d14; color: #fff; }
-  .sf-box { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; border: 1.5px solid #eee6da; border-radius: 12px; padding: 14px 16px; }
-  .sf-box .sf-opt + .sf-opt { border-left: 1.5px solid #eee6da; padding-left: 18px; }
-  .sf-tiles { display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch; }
-  .se-form .sf-tiles button { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 64px; color: #868e96; }
-  .se-form .sf-tiles button.on { border-color: #2f7d8c; background: #e9f5f7; color: var(--ink); }
-  .mini { display: grid; gap: 3px; } .mini s { display: block; width: 14px; height: 9px; border-radius: 2px; background: #c3e1e6; text-decoration: none; }
-  .mini.c1 { grid-template-columns: 14px; } .mini.c2 { grid-template-columns: 14px 14px; }
-  .sf-step { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 4px 14px; background: #f8f9fa; border-radius: 10px; }
-  .se-form .sf-tiles .sf-step button { border-radius: 50%; width: 28px; height: 28px; min-width: 0; padding: 0; display: grid; place-items: center; color: var(--ink); } .sf-step b { font-size: 22px; font-weight: normal; } .sf-step small { color: #868e96; }
-  .sf-step { flex-direction: row; } .sf-step small { margin-left: 4px; }
-  .sf-chk { display: flex; align-items: center; gap: 6px; margin-top: 10px; font-size: 14px; }
-  .sf-board { width: 60%; margin: 0 auto 6px; background: #3c6e4f; color: #fff; text-align: center; border-radius: 4px; font-size: 12px; letter-spacing: .3em; }
-  .sf-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px; }
-  .se-form .sf-grid button { height: 18px; padding: 0; border: 0; border-radius: 3px; background: #eef1f2; }
-  .se-form .sf-grid button.on { background: #2f7d8c; }
-  .se-form .sf-make { align-self: center; padding: 10px 60px; border-radius: 999px; background: #2f7d8c; border-color: #2f7d8c; color: #fff; font-size: 16px; }
-  .se-form .sum { margin: 6px 0 0; color: var(--muted); font-size: 13px; }
-  @media (max-width: 640px) { .sf-box { grid-template-columns: 1fr; } .sf-box .sf-opt + .sf-opt { border-left: 0; padding-left: 0; } }
+  .se-form button, .se-form input:not([type]) { font: inherit; font-size: 14px; border: 1.5px solid var(--line); background: #fff; color: var(--ink); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
+  .se-form input:not([type]) { border-radius: 8px; cursor: text; flex: 1; min-width: 0; }
+  .se-form .x { border: 0; font-size: 18px; padding: 0 6px; }
+  .sf-head { display: flex; justify-content: space-between; align-items: center; } .sf-head b { font-weight: normal; font-size: 18px; }
+  .sf-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; }
+  .sf-left { display: flex; flex-direction: column; gap: 10px; }
+  .sf-row { display: flex; align-items: center; gap: 10px; } .sf-row > span:first-child { flex: none; width: 64px; color: var(--muted); font-size: 14px; }
+  .pills { display: flex; flex-wrap: wrap; gap: 4px; }
+  .se-form .pills button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .sf-chk { display: flex; align-items: center; gap: 6px; font-size: 14px; margin-left: 74px; }
+  #sf-pair.off { opacity: .35; pointer-events: none; } /* 혼자 앉는 분단은 짝꿍이 없음 */
+  .se-form .sum { margin: 0; color: var(--muted); font-size: 13px; }
+  .sf-prev { position: relative; min-height: 260px; border-radius: 12px; background: var(--bg) radial-gradient(#e2d9ca 1px, transparent 1.2px) 0 0 / 14px 14px; overflow: hidden; }
+  .sf-prev .pb { position: absolute; background: #3c6e4f; border-radius: 3px; }
+  .sf-prev .pd { position: absolute; box-sizing: border-box; background: #fff; border: 1.5px solid var(--line); border-radius: 3px; }
+  .sf-prev .pg { position: absolute; background: rgba(47, 125, 140, .08); border-radius: 8px; }
+  .sf-grid { position: absolute; inset: 40px 14px 14px; display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(7, 1fr); gap: 5px; }
+  .se-form .sf-grid button { padding: 0; border-radius: 5px; border: 1.5px dashed #d8cfc2; background: rgba(255, 255, 255, .6); color: #fff; font-size: 14px; line-height: 1; }
+  .se-form .sf-grid button.on { border: 0; background: var(--accent); }
+  .se-form .sf-make { align-self: center; padding: 9px 56px; background: var(--accent); border-color: var(--accent); color: #fff; font-size: 16px; }
+  @media (max-width: 640px) { .sf-cols { grid-template-columns: minmax(0, 1fr); } }
   /* 설정 창: 창 전체를 덮음. 숨긴 제목 표시줄의 버튼(─ □ ✕) 아래부터 시작
      왼쪽에 조용한 메뉴, 오른쪽에 흰 종이 한 장. 강조색은 고른 메뉴 표시에만 */
   #panel:not([hidden]) { position: fixed; inset: 0; z-index: 6; box-sizing: border-box; display: grid; grid-template-columns: 168px minmax(0, 1fr);
@@ -549,7 +547,7 @@
     <p class="label">🪑 자리배치</p>
     <div class="seat-bar">
       <select id="seat-hist" aria-label="저장한 자리배치도"></select>
-      <span class="seat-tools"><button data-ic="print" onclick="sePrint()" title="출력" aria-label="출력"></button><button data-ic="save" onclick="seSaveToday()" title="오늘 날짜로 지금 자리 저장" aria-label="저장"></button><button data-ic="set" onclick="seFormOpen()" title="자리배치도 설정 (대형·짝꿍)" aria-label="자리배치도 설정"></button><button class="seat-star" data-ic="star" onclick="seTeachOpen()" title="선생님 모드" aria-label="선생님 모드"></button><button class="main" data-ic="shuffle" onclick="seRandom()">자동 자리배치</button></span>
+      <span class="seat-tools"><button data-ic="print" onclick="sePrint()" title="출력" aria-label="출력"></button><button data-ic="save" onclick="seSaveToday()" title="오늘 날짜로 지금 자리 저장" aria-label="저장"></button><button data-ic="set" onclick="seFormOpen()" title="자리 대형 만들기 (모양·짝꿍)" aria-label="자리 대형 만들기"></button><button class="seat-star" data-ic="star" onclick="seTeachOpen()" title="선생님 모드" aria-label="선생님 모드"></button><button class="main" data-ic="shuffle" onclick="seRandom()">자동 자리배치</button></span>
     </div>
     <div class="seat-mini" id="seat-mini"></div>
     <p class="sub" id="seat-msg"></p>
@@ -696,23 +694,32 @@
   </div>
 </div>
 <div id="se-form" class="se-form" popover="manual">
-  <div class="sf-head"><b>자리배치도 설정</b><button class="x" onclick="document.getElementById('se-form').hidePopover()" aria-label="닫기">✕</button></div>
-  <label class="sf-name">자리배치도 이름 <input id="sf-name"></label>
-  <div><p class="sf-t">대형 유형</p><div class="sf-seg" id="sf-type"><button data-v="col">분단형</button><button data-v="group">모둠형</button><button data-v="free">자유형</button></div></div>
-  <div class="sf-box">
-    <div class="sf-opt">
-      <div id="sf-col"><p class="sf-t">분단 설정</p><div class="sf-tiles" id="sf-w">
-        <button data-v="1"><i class="mini c1"><s></s><s></s><s></s></i>1열</button><button data-v="2"><i class="mini c2"><s></s><s></s><s></s><s></s><s></s><s></s></i>2열 (짝꿍)</button>
-        <span class="sf-step"><button onclick="sfK(-1)" aria-label="분단 줄이기">−</button><b id="sf-k">4</b><button onclick="sfK(1)" aria-label="분단 늘리기">＋</button><small>분단</small></span></div></div>
-      <div id="sf-group"><p class="sf-t">모둠 인원</p><div class="sf-tiles" id="sf-size"><button data-v="3">3인</button><button data-v="4">4인</button><button data-v="5">5인</button><button data-v="6">6인</button></div>
-        <label class="sf-chk"><input type="checkbox" id="sf-merge"> 남는 학생은 기존 모둠에 합하기</label></div>
-      <div id="sf-free"><p class="sf-t">쓸 자리를 눌러 고르세요 <span id="sf-count"></span></p><div class="sf-board">칠판</div><div class="sf-grid" id="sf-grid"></div></div>
+  <div class="sf-head"><b>자리 대형 만들기</b><button class="x" onclick="document.getElementById('se-form').hidePopover()" aria-label="닫기">✕</button></div>
+  <div class="sf-cols">
+    <div class="sf-left">
+      <label class="sf-row"><span>이름</span><input id="sf-name"></label>
+      <div class="sf-row"><span>모양</span><span class="pills" id="sf-type"><button data-v="col">분단</button><button data-v="group">모둠</button><button data-v="free">직접 그리기</button></span></div>
+      <div id="sf-col">
+        <div class="sf-row"><span>한 분단</span><span class="pills" id="sf-w"><button data-v="1">혼자 앉기</button><button data-v="2">짝꿍과 앉기</button></span></div>
+        <div class="sf-row"><span>분단 수</span><span class="pills" id="sf-k"></span></div>
+      </div>
+      <div id="sf-group">
+        <div class="sf-row"><span>모둠 인원</span><span class="pills" id="sf-size"><button data-v="3">3명</button><button data-v="4">4명</button><button data-v="5">5명</button><button data-v="6">6명</button></span></div>
+        <label class="sf-chk"><input type="checkbox" id="sf-merge"> 남는 학생은 기존 모둠에 합하기</label>
+      </div>
+      <div id="sf-free">
+        <div class="sf-row"><span>누르면</span><span class="pills" id="sf-tool"><button data-v="pick">자리 고르기</button><button data-v="rot">방향 돌리기</button></span></div>
+        <p class="sum" id="sf-count"></p>
+      </div>
+      <div id="sf-pair">
+        <div class="sf-row"><span>짝꿍</span><span class="pills" id="sf-gmode"><button data-v="random">상관없이</button><button data-v="mixed">이성끼리</button><button data-v="same">동성끼리</button><button data-v="balance">성별 고르게</button></span></div>
+        <label class="sf-chk"><input type="checkbox" id="sf-noprev"> 이전 짝꿍과 같이 안 앉기</label>
+      </div>
+      <p class="sum" id="sf-note"></p>
     </div>
-    <div class="sf-opt"><p class="sf-t">짝꿍 설정</p><div class="sf-tiles" id="sf-gmode"><button data-v="random">랜덤</button><button data-v="mixed">이성끼리</button><button data-v="same">동성끼리</button><button data-v="balance">성별 고르게</button></div>
-      <label class="sf-chk"><input type="checkbox" id="sf-noprev"> 이전 짝꿍과 같이 안 앉기</label>
-      <p class="sum">성별은 설정 → 명단에서 이름과 함께 정해요.</p></div>
+    <div class="sf-prev" id="sf-prev"></div>
   </div>
-  <button class="main sf-make" onclick="seFormApply()">만들기</button>
+  <button class="sf-make" onclick="seFormApply()">만들기</button>
 </div>
 <div id="panel" hidden>
   <p class="panel-title">설정</p>
@@ -773,7 +780,7 @@
       <li><b>시간표</b> 설정 → 시간표에서 연간시간표(한글 파일 또는 표 붙여넣기)와 시정표를 넣으면, 지금 몇 교시인지와 다음 시간을 알려 줘요. 표에 없는 주는 '매주 기본 시간표'를 써요.</li>
       <li><b>보드 카드</b> 제목을 끌어 옮기고, 오른쪽 아래 모서리로 크기를 바꿔요. 옮긴 자리와 크기는 앱을 껐다 켜도 그대로예요. ✕를 누르면 보드에서 닫히고 아래쪽 바로 들어가요. 닫아도 적어 둔 내용은 남아요.</li>
       <li><b>아래쪽 바</b> 보드에서 닫은 카드가 들어가요. 누르면 보드에 다시 나와요.</li>
-      <li><b>자리배치</b> 처음 한 번 설정 버튼에서 대형(분단형: 1열·2열과 분단 수 / 모둠형: 모둠 인원 / 자유형: 쓸 자리 고르기)과 짝꿍 조건(랜덤·이성끼리·동성끼리·성별 고르게, 이전 짝꿍과 같이 안 앉기)을 정하면 계속 유지돼요. 성별은 설정 → 명단에서 이름과 함께 정해요. 평소에는 '자동 자리배치'(한 자리씩 나타나요), 저장(오늘 날짜로), 출력만 누르면 돼요. 이름을 끌어 다른 자리에 놓으면 자리를 바꾸고, 칠판 옆 '상하전환'으로 위아래를 바꿔요. 오른쪽 작은 별은 선생님 모드예요(자리 미리 지정, 떨어뜨리기, 분리 그룹, 기록).</li>
+      <li><b>자리배치</b> 처음 한 번 설정 버튼에서 모양(분단: 혼자·짝꿍과 앉기와 분단 수 / 모둠: 모둠 인원 / 직접 그리기: 명단 인원만큼 자리를 고르고, 필요하면 '방향 돌리기'로 ㄷ자처럼 옆을 보게)과 짝꿍 조건(상관없이·이성끼리·동성끼리·성별 고르게, 이전 짝꿍과 같이 안 앉기)을 정하면 계속 유지돼요. 성별은 설정 → 명단에서 이름과 함께 정해요. 평소에는 '자동 자리배치'(한 자리씩 나타나요), 저장(오늘 날짜로), 출력만 누르면 돼요. 이름을 끌어 다른 자리에 놓으면 자리를 바꾸고, 칠판 옆 '상하전환'으로 위아래를 바꿔요. 오른쪽 작은 별은 선생님 모드예요(자리 미리 지정, 떨어뜨리기, 분리 그룹, 기록).</li>
       <li><b>로그인</b> 설정 → 로그인에서 구글로 로그인하면 보드가 서버에 저장되고, 다른 컴퓨터에서 같은 계정으로 로그인하면 같은 보드가 나와요.</li>
       <li><b>준비물</b> 시간표 카드 오른쪽 칸에 쓰면 저장돼요.</li>
       <li><b>창 옮기기</b> 맨 위 줄을 잡고 끌어요. 창 크기는 모서리를 끌어 조절해요. 창이 좁으면 카드가 아래로 쌓여요.</li>
@@ -1388,6 +1395,7 @@ document.fonts.addEventListener("loadingdone", fitMotto); // 명조 글꼴이 �
     const r = open.getBoundingClientRect();
     pop.style.top = r.bottom + 4 + "px"; pop.style.left = Math.max(8, Math.min(r.right - 200, innerWidth - 220)) + "px";
   });
+  open.addEventListener("pointerdown", () => (document.fullscreenElement || document.body).append(pop)); // 전체 화면이면 그 카드 안에 띄워야 보임
   bar.append(open); motto.closest(".card").append(bar); document.body.append(pop); apply();
 }
 // 메모·규칙·준비물 글씨 크기와 색: 카드에 마우스를 올리면 나오는 작은 도구줄. 칸마다 따로 저장
@@ -1428,6 +1436,7 @@ function initNoteTools(ta) {
     pop.style.top = r.bottom + 4 + "px"; pop.style.left = Math.max(8, Math.min(r.right - 200, innerWidth - 220)) + "px";
   });
   pop.dataset.for = ta.dataset.key; // 카드를 없앨 때 같이 치우려고
+  open.addEventListener("pointerdown", () => (document.fullscreenElement || document.body).append(pop)); // 전체 화면이면 그 카드 안에 띄워야 보임
   bar.append(open); ta.before(bar); document.body.append(pop); apply();
 }
 document.querySelectorAll(".note[data-key]").forEach(initNoteTools);
@@ -3064,6 +3073,7 @@ function seClean() {
 }
 
 // ── 대형 만들기: 분단형(1열·2열, 분단 수) · 모둠형(모둠 인원) · 자유형(칸 고르기)
+const dWd = d => (d.rot || 0) % 180 ? DH : DW, dHd = d => (d.rot || 0) % 180 ? DW : DH; // 돌린 자리(90·270도)는 세로로 긴 책상
 function seBuild(form, n) {
   const D = [], add = (x, y, z, g) => D.push({ id: seId(), x: +x.toFixed(2), y: +y.toFixed(2), ...(z !== undefined && { z }), ...(g !== undefined && { g }) });
   if (form.type === "col") { // 분단마다 고르게 나눠 앞에서부터 채움. 2열이면 한 줄 두 명이 짝(같은 z)
@@ -3078,27 +3088,31 @@ function seBuild(form, n) {
     const rowsMax = Math.ceil(Math.max(...sizes) / 2);
     sizes.forEach((cnt, g) => { for (let j = 0; j < cnt; j++) add((g % cols) * (2 * DW + 1.1) + (j % 2) * DW, Math.floor(g / cols) * (rowsMax * DH + 1.1) + Math.floor(j / 2) * DH, g, g); });
   }
-  if (form.type === "free") for (const cell of form.cells) { const [r, c] = cell.split(",").map(Number); add(c * 1.05, r * 1); }
+  if (form.type === "free") for (const cell of form.cells) { // 칸 간격 1.1: 옆 칸끼리는 짝, 앞뒤 칸은 다른 줄
+    const [r, c] = cell.split(",").map(Number), rot = form.rot?.[cell] || 0;
+    D.push({ id: seId(), x: +(c * 1.1 + (rot % 180 ? (DW - DH) / 2 : 0)).toFixed(2), y: +(r * 1.1).toFixed(2), ...(rot && { rot }) });
+  }
   return D;
 }
 const seBoxLabel = g => sc().form?.type === "group" ? `${g + 1}모둠` : `${g + 1}분단`;
 // 화면 배치: 칠판은 늘 책상들 한가운데 정면. 상하 반전이면 칠판이 아래로 가고 앞줄도 아래로 (좌우는 그대로)
 function seLayout(flip) {
   const c = sc(), D = c.desks, off = flip ? 0 : 1.2, hasG = D.some(d => d.g !== undefined), pad = hasG ? .5 : 0;
-  const x0 = Math.min(...D.map(d => d.x)), x1 = Math.max(...D.map(d => d.x + DW)), y0 = Math.min(...D.map(d => d.y)), y1 = Math.max(...D.map(d => d.y + DH));
+  const x0 = Math.min(...D.map(d => d.x)), x1 = Math.max(...D.map(d => d.x + dWd(d))), y0 = Math.min(...D.map(d => d.y)), y1 = Math.max(...D.map(d => d.y + dHd(d)));
   const W = x1 - x0 + 1, Hd = y1 - y0 + .6 + 2 * pad, sx = .5 - x0, sy = .3 + pad - y0, bw = Math.min(Math.max((x1 - x0) * .55, 2.5), 7);
-  const desks = D.map(d => { const y = d.y + sy; return { d, x: d.x + sx, y: (flip ? Hd - y - DH : y) + off, person: c.seats[d.id] }; });
+  // face: 그 자리 학생이 보는 쪽 (0 위, 90 오른쪽, 180 아래, 270 왼쪽). 상하 반전이면 위·아래만 바뀜
+  const desks = D.map(d => { const y = d.y + sy, w = dWd(d), hh = dHd(d), r = d.rot || 0; return { d, w, h: hh, x: d.x + sx, y: (flip ? Hd - y - hh : y) + off, face: flip && !(r % 180) ? (r + 180) % 360 : r, person: c.seats[d.id] }; });
   const boxes = {};
-  for (const t of desks) if (t.d.g !== undefined) { const b = boxes[t.d.g] ||= { g: t.d.g, x0: 1e9, y0: 1e9, x1: -1e9, y1: -1e9 }; b.x0 = Math.min(b.x0, t.x); b.y0 = Math.min(b.y0, t.y); b.x1 = Math.max(b.x1, t.x + DW); b.y1 = Math.max(b.y1, t.y + DH); }
+  for (const t of desks) if (t.d.g !== undefined) { const b = boxes[t.d.g] ||= { g: t.d.g, x0: 1e9, y0: 1e9, x1: -1e9, y1: -1e9 }; b.x0 = Math.min(b.x0, t.x); b.y0 = Math.min(b.y0, t.y); b.x1 = Math.max(b.x1, t.x + t.w); b.y1 = Math.max(b.y1, t.y + t.h); }
   return { W, H: Hd + 1.2, board: { x: W / 2 - bw / 2, y: flip ? Hd + .45 : .25, w: bw, h: .55 }, desks,
-    boxes: Object.values(boxes).map(b => ({ label: seBoxLabel(b.g), x: b.x0 - .1, y: b.y0 - .45, w: b.x1 - b.x0 + .2, h: b.y1 - b.y0 + .55 })) };
+    boxes: Object.values(boxes).map(b => ({ label: seBoxLabel(b.g), x: b.x0 - .12, y: b.y0 - .12, w: b.x1 - b.x0 + .24, h: b.y1 - b.y0 + .52 })) };
 }
 // 자리표 그리기. home = 보드 카드(공개: 고정 표시 없음), teach = 선생님 모드(🔒 보임)
 function seDraw(box, mode) {
   if (!box || seBusy) return; // 한 자리씩 나타나는 중에는 다시 그리지 않음 (끝나면 다시 그림)
   const c = sc();
   if (!c.desks.length) return box.replaceChildren(mode === "home" ? h("div", { class: "seat-guide" }, h("b", {}, "자리배치 이렇게 써요"), h("ol", {},
-    h("li", {}, "설정 버튼에서 대형(분단형·모둠형·자유형)과 짝꿍 조건을 정하고 '만들기'를 눌러요. 처음 한 번이면 계속 유지돼요."),
+    h("li", {}, "설정 버튼에서 모양(분단·모둠·직접 그리기)과 짝꿍 조건을 정하고 '만들기'를 눌러요. 처음 한 번이면 계속 유지돼요."),
     h("li", {}, "'자동 자리배치'를 누르면 학생들이 한 자리씩 앉아요. 명단과 성별은 설정 → 명단에서 넣어요."),
     h("li", {}, "이름을 끌어 다른 자리에 놓으면 서로 자리를 바꿔요."),
     h("li", {}, "저장 버튼으로 오늘 날짜 기록을 남기고, 출력 버튼으로 인쇄해요."))) : "");
@@ -3109,8 +3123,8 @@ function seDraw(box, mode) {
   const kids = [board];
   for (const b of L.boxes) { const el = at(h("div", { class: "sg" }, h("span", {}, b.label)), b.x, b.y, b.w, b.h); el.style.fontSize = Math.max(10, u * .17) + "px"; kids.push(el); }
   for (const t of L.desks) {
-    const p = t.person, el = at(h("div", { class: `sd${p ? "" : " empty"}`, "data-id": t.d.id },
-      p ? [h("i", {}, seNum(p)), h("b", {}, seName(p))] : "", mode === "teach" && seatSec.fixed[t.d.id] ? ic("lock", "lk") : null), t.x + .03, t.y + .03, DW - .06, DH - .06);
+    const p = t.person, el = at(h("div", { class: `sd${p ? "" : " empty"}${t.d.rot ? " f" + t.face : ""}`, "data-id": t.d.id },
+      p ? [h("i", {}, seNum(p)), h("b", {}, seName(p))] : "", mode === "teach" && seatSec.fixed[t.d.id] ? ic("lock", "lk") : null), t.x + .03, t.y + .03, t.w - .06, t.h - .06);
     el.style.fontSize = Math.max(9, u * .26) + "px"; kids.push(el);
   }
   box.replaceChildren(...kids);
@@ -3310,43 +3324,78 @@ $s("seat-hist").onchange = e => {
   const { id, date, ...rest } = clone(x); seat.cur = rest; seatSec.fixed = clone(seatSec.histFixed[x.id] || {}); seClean(); seatStore();
 };
 
-// ── 자리배치도 설정 창: 이름, 대형(분단형·모둠형·자유형), 짝꿍 조건, 결과 보기 효과
+// ── 자리 대형 만들기 창: 이름, 모양(분단·모둠·직접 그리기), 짝꿍 조건. 오른쪽은 미리보기
 let sf = null; // 창에서 고르는 중인 값
+const seHost = el => { const at = document.fullscreenElement || document.body; if (el.parentElement !== at) at.append(el); }; // 전체 화면 카드 안이어야 보이고 눌림
 function seFormOpen() {
-  const f = sc().form || { type: "col", w: 1, k: 4 }, now = new Date();
-  sf = { name: sc().name || `${now.getMonth() + 1}월 자리배치도`, type: f.type, w: f.w || 1, k: f.k || 4, size: f.size || 4, merge: f.merge ?? true, cells: new Set(f.cells || []),
-    gmode: seatSec.gmode || "random", noPrev: !!seatSec.noPrev };
-  $s("sf-name").value = sf.name; seFormDraw(); $s("se-form").showPopover();
+  const f = sc().form || { type: "col", w: 2, k: 3 }, now = new Date();
+  sf = { name: sc().name || `${now.getMonth() + 1}월 자리`, type: f.type, w: f.w || 2, k: f.k || 3, size: f.size || 4, merge: f.merge ?? true, cells: new Set(f.cells || []), rot: { ...(f.rot || {}) },
+    tool: "pick", gmode: seatSec.gmode || "random", noPrev: !!seatSec.noPrev, warn: "" };
+  $s("sf-name").value = sf.name; seFormDraw(); seHost($s("se-form")); $s("se-form").showPopover();
 }
+const sfForm = () => sf.type === "col" ? { type: "col", w: sf.w, k: sf.k } : sf.type === "group" ? { type: "group", size: sf.size, merge: sf.merge }
+  : { type: "free", cells: [...sf.cells].sort(), rot: Object.fromEntries(Object.entries(sf.rot).filter(([k, v]) => v && sf.cells.has(k))) };
+const sfNoPair = () => sf.type === "col" && sf.w === 1;
 function seFormDraw() {
-  const on = (sel, v, key) => document.querySelectorAll(sel).forEach(b => b.classList.toggle("on", b.dataset.v === String(v)));
-  on("#sf-type [data-v]", sf.type); on("#sf-w [data-v]", sf.w); on("#sf-size [data-v]", sf.size); on("#sf-gmode [data-v]", sf.gmode);
+  const on = (sel, v) => document.querySelectorAll(sel).forEach(b => b.classList.toggle("on", b.dataset.v === String(v)));
+  on("#sf-type [data-v]", sf.type); on("#sf-w [data-v]", sf.w); on("#sf-size [data-v]", sf.size); on("#sf-gmode [data-v]", sf.gmode); on("#sf-tool [data-v]", sf.tool);
   for (const t of ["col", "group", "free"]) $s("sf-" + t).hidden = sf.type !== t;
-  sf.k = Math.max(1, Math.min(sf.w === 2 ? 5 : 8, sf.k)); $s("sf-k").textContent = sf.k;
+  const kmax = sf.w === 2 ? 5 : 8; sf.k = Math.max(1, Math.min(kmax, sf.k));
+  $s("sf-k").replaceChildren(...Array.from({ length: kmax }, (_, i) => h("button", { class: i + 1 === sf.k ? "on" : "", onclick: () => { sf.k = i + 1; seFormDraw(); } }, i + 1)));
   $s("sf-merge").checked = sf.merge; $s("sf-noprev").checked = sf.noPrev;
-  $s("sf-grid").replaceChildren(...Array.from({ length: 56 }, (_, i) => { const key = `${Math.floor(i / 8)},${i % 8}`; return h("button", { class: sf.cells.has(key) ? "on" : "", title: "이 자리 쓰기", onclick: () => { sf.cells.has(key) ? sf.cells.delete(key) : sf.cells.add(key); seFormDraw(); } }); }));
-  $s("sf-count").textContent = `${sf.cells.size} / 56`;
+  $s("sf-pair").classList.toggle("off", sfNoPair());
+  $s("sf-note").textContent = sfNoPair() ? "혼자 앉는 분단은 짝꿍이 없어서 짝꿍 조건은 쓰지 않아요." : sf.type === "free" ? "옆으로 붙은 자리끼리 짝꿍이 돼요." : "";
+  const n = people().length || 24;
+  $s("sf-count").textContent = sf.warn || `${sf.cells.size} / ${n}자리 골랐어요 (명단 인원만큼). '방향 돌리기'로 ㄷ자처럼 옆을 보게 할 수 있어요.`;
+  $s("sf-count").style.color = sf.warn ? "#e03131" : "";
+  const box = $s("sf-prev"), bar = h("div", { class: "pb" }); // 칠판
+  if (sf.type === "free") { // 칸을 눌러 자리 고르기 / 방향 돌리기 (화살표 = 보는 쪽)
+    Object.assign(bar.style, { left: "30%", width: "40%", top: "12px", height: "14px" });
+    box.replaceChildren(bar, h("div", { class: "sf-grid" }, Array.from({ length: 56 }, (_, i) => {
+      const key = `${Math.floor(i / 8)},${i % 8}`, has = sf.cells.has(key);
+      return h("button", { class: has ? "on" : "", title: sf.tool === "rot" ? "보는 방향 돌리기" : "이 자리 쓰기", onclick: () => {
+        sf.warn = "";
+        if (sf.tool === "rot") { if (has) sf.rot[key] = ((sf.rot[key] || 0) + 90) % 360; }
+        else if (has) { sf.cells.delete(key); delete sf.rot[key]; }
+        else if (sf.cells.size >= n) sf.warn = `학생이 ${n}명이라 ${n}자리까지만 고를 수 있어요.`;
+        else sf.cells.add(key);
+        seFormDraw();
+      } }, has ? ["↑", "→", "↓", "←"][(sf.rot[key] || 0) / 90] : "");
+    })));
+    return;
+  }
+  const D = seBuild(sfForm(), n), x1 = Math.max(...D.map(d => d.x + DW)), y1 = Math.max(...D.map(d => d.y + DH)), cw = box.clientWidth || 340, ch = box.clientHeight || 260;
+  const u = Math.min((cw - 28) / x1, (ch - 60) / y1, 40), ox = (cw - x1 * u) / 2, oy = 44;
+  Object.assign(bar.style, { left: cw / 2 - Math.min(x1 * u * .55, 160) / 2 + "px", width: Math.min(x1 * u * .55, 160) + "px", top: "14px", height: "12px" });
+  const groups = {};
+  for (const d of D) if (d.g !== undefined) { const g = groups[d.g] ||= [1e9, 1e9, -1e9, -1e9]; g[0] = Math.min(g[0], d.x); g[1] = Math.min(g[1], d.y); g[2] = Math.max(g[2], d.x + DW); g[3] = Math.max(g[3], d.y + DH); }
+  const pos = (el, x, y, w, hh) => { Object.assign(el.style, { left: ox + x * u + "px", top: oy + y * u + "px", width: w * u + "px", height: hh * u + "px" }); return el; };
+  box.replaceChildren(bar, ...Object.values(groups).map(([a, b, c, d]) => pos(h("div", { class: "pg" }), a - .12, b - .12, c - a + .24, d - b + .24)),
+    ...D.map(d => pos(h("div", { class: "pd" }), d.x + .04, d.y + .04, DW - .08, DH - .08)));
 }
-document.querySelectorAll("#sf-type [data-v]").forEach(b => b.onclick = () => { sf.type = b.dataset.v; seFormDraw(); });
-document.querySelectorAll("#sf-w [data-v]").forEach(b => b.onclick = () => { sf.w = +b.dataset.v; seFormDraw(); });
-document.querySelectorAll("#sf-size [data-v]").forEach(b => b.onclick = () => { sf.size = +b.dataset.v; seFormDraw(); });
-document.querySelectorAll("#sf-gmode [data-v]").forEach(b => b.onclick = () => { sf.gmode = b.dataset.v; seFormDraw(); });
-function sfK(d) { sf.k += d; seFormDraw(); }
+for (const [id, key, num] of [["sf-type", "type"], ["sf-w", "w", 1], ["sf-size", "size", 1], ["sf-gmode", "gmode"], ["sf-tool", "tool"]])
+  document.querySelectorAll(`#${id} [data-v]`).forEach(b => b.onclick = () => { sf[key] = num ? +b.dataset.v : b.dataset.v; sf.warn = ""; seFormDraw(); });
+$s("sf-merge").onchange = e => { sf.merge = e.target.checked; seFormDraw(); };
 function seFormApply() {
-  sf.name = $s("sf-name").value.trim(); sf.merge = $s("sf-merge").checked; sf.noPrev = $s("sf-noprev").checked;
-  const form = sf.type === "col" ? { type: "col", w: sf.w, k: sf.k } : sf.type === "group" ? { type: "group", size: sf.size, merge: sf.merge } : { type: "free", cells: [...sf.cells].sort() };
+  sf.name = $s("sf-name").value.trim(); sf.noPrev = $s("sf-noprev").checked;
+  const form = sfForm();
   if (form.type === "free" && !form.cells.length) return alert("쓸 자리를 한 칸 이상 골라 주세요.");
   const c = sc(), changed = JSON.stringify(form) !== JSON.stringify(c.form) || !c.desks.length;
   if (changed && Object.keys(c.seats).length && !confirm("대형을 바꾸면 지금 자리와 미리 지정(고정)이 풀려요. 만들까요?")) return;
-  c.name = sf.name; seatSec.gmode = sf.gmode; seatSec.noPrev = sf.noPrev;
+  c.name = sf.name; seatSec.gmode = sfNoPair() ? "random" : sf.gmode; seatSec.noPrev = !sfNoPair() && sf.noPrev;
   if (changed) { c.form = form; c.desks = seBuild(form, people().length || 24); c.seats = {}; seatSec.fixed = {}; }
   $s("se-form").hidePopover(); seatStore();
   seMsg(changed ? "대형을 만들었어요. '자동 자리배치'를 눌러 보세요." : "설정을 바꿨어요.");
 }
+// 전체 화면이 바뀌면 떠 있던 창은 닫고, 선생님 모드 화면은 따라 옮김
+document.addEventListener("fullscreenchange", () => {
+  if ($s("se-form").matches(":popover-open")) $s("se-form").hidePopover();
+  seHost($s("seat-ed"));
+});
 
 // ── 선생님 모드: 자리 미리 지정(🔒), 두 학생 떨어뜨리기, 분리 그룹, 기록. 학생 화면·출력에는 안 나옴
 let stTab = "fix", sePick = new Set();
-function seTeachOpen() { seClean(); $s("seat-ed").hidden = false; seMsg(""); seDraw($s("st-map"), "teach"); seTeachSide(); }
+function seTeachOpen() { seClean(); seHost($s("seat-ed")); $s("seat-ed").hidden = false; seMsg(""); seDraw($s("st-map"), "teach"); seTeachSide(); }
 function seTeachClose() { $s("seat-ed").hidden = true; seRedraw(); }
 document.querySelectorAll("#st-tabs [data-t]").forEach(b => b.onclick = () => { stTab = b.dataset.t; seTeachSide(); });
 function seStudentChip(p, pick) {
@@ -3396,7 +3445,7 @@ function seTeachSide() {
 // ── 출력 (공개용: 고정 표시 없음). 화면과 같은 방향(상하 반전 포함)
 function seOutItems(u) {
   const L = seLayout(!!seat.flip);
-  return { L, items: [...L.boxes.map(b => ({ kind: "box", ...b })), ...L.desks.map(t => ({ kind: "desk", x: t.x, y: t.y, person: t.person }))] };
+  return { L, items: [...L.boxes.map(b => ({ kind: "box", ...b })), ...L.desks.map(t => ({ kind: "desk", x: t.x, y: t.y, w: t.w, h: t.h, person: t.person }))] };
 }
 function sePrint() {
   if (!sc().desks.length) return seMsg("먼저 설정 버튼에서 대형을 만들어 주세요.", true);
@@ -3408,8 +3457,8 @@ function sePrint() {
   const room = el("div", `position:relative;width:${L.W * u}px;height:${L.H * u}px;margin-top:12px`);
   room.append(el("div", `position:absolute;left:${L.board.x * u}px;top:${L.board.y * u}px;width:${L.board.w * u}px;height:${L.board.h * u}px;border:2px solid #333;display:grid;place-items:center;font-size:16px;letter-spacing:.3em`, "칠판"));
   for (const t of items) room.append(t.kind === "box"
-    ? el("div", `position:absolute;box-sizing:border-box;left:${t.x * u}px;top:${t.y * u}px;width:${t.w * u}px;height:${t.h * u}px;border:1.5px solid #bbb;border-radius:10px;padding:2px 8px;font-size:12px;color:#666`, t.label)
-    : el("div", `position:absolute;box-sizing:border-box;left:${(t.x + .03) * u}px;top:${(t.y + .03) * u}px;width:${(DW - .06) * u}px;height:${(DH - .06) * u}px;border:1.5px solid #333;border-radius:6px;display:grid;place-items:center;font-size:16px`, t.person ? seName(t.person) : ""));
+    ? el("div", `position:absolute;box-sizing:border-box;left:${t.x * u}px;top:${t.y * u}px;width:${t.w * u}px;height:${t.h * u}px;border:0;background:#f1f3f5;border-radius:12px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:2px;font-size:12px;color:#666`, t.label)
+    : el("div", `position:absolute;box-sizing:border-box;left:${(t.x + .03) * u}px;top:${(t.y + .03) * u}px;width:${(t.w - .06) * u}px;height:${(t.h - .06) * u}px;border:1.5px solid #333;border-radius:6px;display:grid;place-items:center;font-size:16px`, t.person ? seName(t.person) : ""));
   d.body.append(el("h2", "margin:0;font-weight:normal", sc().name || "자리배치"), room);
   w.focus(); w.print();
 }
@@ -3421,9 +3470,9 @@ function seImage() {
   g.fillStyle = "#3c6e4f"; g.fillRect(L.board.x * u, L.board.y * u, L.board.w * u, L.board.h * u);
   g.fillStyle = "#fff"; g.textAlign = "center"; g.textBaseline = "middle"; g.font = '16px "Wanted Sans", sans-serif'; g.fillText("칠 판", (L.board.x + L.board.w / 2) * u, (L.board.y + L.board.h / 2) * u);
   for (const t of items) {
-    if (t.kind === "box") { g.strokeStyle = "#bbb"; g.lineWidth = 1.5; g.strokeRect(t.x * u, t.y * u, t.w * u, t.h * u); g.fillStyle = "#666"; g.font = '12px "Wanted Sans", sans-serif'; g.textAlign = "left"; g.fillText(t.label, t.x * u + 8, t.y * u + 12); g.textAlign = "center"; continue; }
-    g.strokeStyle = "#555"; g.lineWidth = 1.5; g.strokeRect((t.x + .03) * u, (t.y + .03) * u, (DW - .06) * u, (DH - .06) * u);
-    g.fillStyle = "#111"; g.font = '16px "Wanted Sans", sans-serif'; if (t.person) g.fillText(seName(t.person), (t.x + DW / 2) * u, (t.y + DH / 2) * u);
+    if (t.kind === "box") { g.fillStyle = "#f1f3f5"; g.fillRect(t.x * u, t.y * u, t.w * u, t.h * u); g.fillStyle = "#666"; g.font = '12px "Wanted Sans", sans-serif'; g.fillText(t.label, (t.x + t.w / 2) * u, (t.y + t.h) * u - 9); continue; }
+    g.strokeStyle = "#555"; g.lineWidth = 1.5; g.strokeRect((t.x + .03) * u, (t.y + .03) * u, (t.w - .06) * u, (t.h - .06) * u);
+    g.fillStyle = "#111"; g.font = '16px "Wanted Sans", sans-serif'; if (t.person) g.fillText(seName(t.person), (t.x + t.w / 2) * u, (t.y + t.h / 2) * u);
   }
   const a = document.createElement("a"); a.href = cv.toDataURL("image/png"); a.download = `${sc().name || "자리배치"}-${iso(new Date())}.png`; a.click();
 }
