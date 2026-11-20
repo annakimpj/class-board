@@ -36,7 +36,7 @@
   .dock .sound { --accent: #8b7b6e; --card: #fff; --line: #e6dccf; min-width: 0; }
 
   /* 카드 보드 */
-  .board { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); grid-auto-rows: minmax(210px, 1fr);
+  .board { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: minmax(0, 1fr);
            grid-auto-flow: dense; gap: 14px; padding: 4px 16px 16px; overflow-y: auto; min-height: 0; }
   .card { background: var(--card); border: 1.5px solid var(--line); border-top: 6px solid var(--accent); border-radius: 16px;
           padding: 12px 18px 14px; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
@@ -46,7 +46,7 @@
   .card[data-size="full"] { grid-column: 1 / -1; }
   /* 자유 배치: 처음 칸 맞춤 자리를 기억한 뒤 카드를 끌어서 옮기고 크기 조절 */
   .card { position: relative; }
-  .board.free { display: block; position: relative; overflow: auto; padding: 0; } /* 창이 작아 아래로 밀린 카드는 스크롤로 */
+  .board.free { display: block; position: relative; overflow: hidden; padding: 0; } /* 스크롤 없이 한 화면 */
   .board.free > .card { position: absolute; box-sizing: border-box; }
   .board.free .label { cursor: move; user-select: none; touch-action: none; }
   .board.free .locked .label { cursor: default; }
@@ -145,8 +145,8 @@
   .photo-tools button { border-style: solid; padding: 3px 12px; font-size: 13px; }
 
   /* 타이머·사람 뽑기 */
-  .tool-card { container-type: inline-size; align-items: stretch; }
-  .tool-card .big { flex: 1; display: grid; place-items: center; text-align: center; font-size: clamp(30px, 22cqw, 72px);
+  .tool-card { container-type: size; align-items: stretch; } /* 카드 너비·높이 둘 다에 맞춰 글자 크기 조절 */
+  .tool-card .big { flex: 1; display: grid; place-items: center; text-align: center; font-size: clamp(18px, min(22cqw, 22cqh), 72px); overflow: hidden;
                     line-height: 1.1; font-variant-numeric: tabular-nums; word-break: keep-all; min-height: 0; }
   .tool-card .bar { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
   .tool-card .bar i { display: block; height: 100%; width: 100%; background: var(--accent); transition: width .3s linear; }
@@ -174,7 +174,7 @@
   .tt-right { border-left: 2px dashed var(--line); padding-left: 12px; }
   .tt-right .sub { text-align: left; font-size: 15px; color: var(--accent); }
   .tt-right textarea { font-size: 19px; }
-  .tt-big { flex: 1; display: grid; place-items: center; text-align: center; font-size: clamp(20px, 7cqw, 42px); line-height: 1.2; min-height: 0; }
+  .tt-big { flex: 1; display: grid; place-items: center; text-align: center; font-size: clamp(18px, min(7cqw, 14cqh), 42px); line-height: 1.2; min-height: 0; }
   .tt-big small { display: block; font-size: .5em; color: var(--muted); }
   .tt-today { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
   .tt-today span { font-size: 15px; min-width: 26px; text-align: center; padding: 2px 6px; border-radius: 8px; background: #fff; border: 1.5px solid var(--line); }
@@ -193,7 +193,7 @@
   .gear:hover { background: var(--line); color: var(--ink); }
   .gear:focus-visible { outline: 2px solid var(--accent); }
   /* 설정 창: 창 전체를 덮음. 숨긴 제목 표시줄의 버튼(─ □ ✕) 아래부터 시작 */
-  #panel:not([hidden]) { position: fixed; inset: 0; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px;
+  #panel:not([hidden]) { position: fixed; inset: 0; z-index: 6; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px;
          padding: calc(env(titlebar-area-height, 0px) + 12px) 18px 12px; background: var(--bg); color: var(--ink);
          font: 17px/1.5 "GangwonEdu", "Malgun Gothic", sans-serif; app-region: no-drag; -webkit-app-region: no-drag; }
   #panel nav { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
@@ -211,7 +211,8 @@
   #panel input:not([type]) { flex: 1; font: inherit; padding: 4px 10px; border: 1.5px solid var(--line); border-radius: 8px; background: #fff; }
   #panel .danger { background: var(--accent); border-color: var(--accent); color: #fff; }
   #panel h3 { font-weight: normal; font-size: 19px; color: var(--accent); margin: 14px 0 4px; }
-  #panel select { font: inherit; padding: 4px 8px; border: 1.5px solid var(--line); border-radius: 8px; background: #fff; }
+  /* 글꼴 위아래가 잘리지 않게 줄 높이와 높이를 넉넉히 */
+  #panel select { font: inherit; line-height: 1.4; height: 36px; padding: 0 28px 0 10px; border: 1.5px solid var(--line); border-radius: 8px; background: #fff; }
   .tt-bells { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 4px 14px; }
   .tt-bells label { display: flex; align-items: center; gap: 4px; white-space: nowrap; }
   .tt-bells input, .tt-grid input { font: 15px "GangwonEdu", "Malgun Gothic", sans-serif; padding: 2px 4px; border: 1.5px solid var(--line); border-radius: 6px; background: #fff; }
@@ -261,6 +262,30 @@
   #pop .pop-bar { top: 6px; }
   #pop .pop-bar button { background: rgba(255, 255, 255, .92); border: 0; }
 
+  /* 미세먼지 */
+  [data-card="dust"]  { --accent: #6b7f99; --card: #eef2f7; --line: #d3dbe6; }
+  [data-card="noise"] { --accent: #f97316; --card: #fff2e8; --line: #fbd6bb; }
+  .dust-main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 0; }
+  .dust-main .face, .noise-meter .face { font-size: clamp(20px, min(18cqw, 16cqh), 64px); line-height: 1; }
+  .dust-main b { font-weight: normal; font-size: clamp(18px, 10cqw, 30px); color: var(--grade, var(--ink)); }
+  .dust-chips { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; font-size: 15px; }
+  .dust-chips span { border-radius: 999px; padding: 2px 10px; color: #fff; background: var(--grade); }
+  .dust-set { display: flex; flex-direction: column; gap: 6px; font: 14px "GangwonEdu", "Malgun Gothic", sans-serif; }
+  .dust-set input { flex: 1; min-width: 0; font: inherit; padding: 3px 8px; border: 1.5px solid var(--line); border-radius: 8px; }
+  .dust-set .row { display: flex; gap: 4px; }
+  .dust-results { display: flex; flex-direction: column; gap: 3px; max-height: 120px; overflow-y: auto; }
+  .dust-results button { text-align: left; }
+  /* 소음 측정 */
+  .noise-meter { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 0; }
+  .noise-bar { position: relative; width: 100%; height: 18px; border-radius: 9px; background: var(--card); }
+  .noise-bar i { position: absolute; inset: 0 auto 0 0; width: 0; border-radius: 9px; background: #1fa463; transition: width .1s, background .2s; }
+  .noise-bar b { position: absolute; top: -4px; bottom: -4px; width: 3px; border-radius: 2px; background: var(--ink); }
+  .noise-count { text-align: center; font-size: 18px; }
+  .noise-count b { font-weight: normal; font-size: 28px; color: var(--accent); }
+  .noise-th { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 14px; color: var(--muted); }
+  .noise-th input { width: 50%; accent-color: var(--accent); }
+  #noise-card.alarm { animation: alarm .25s 6 alternate; }
+  @keyframes alarm { to { background: #ffd2b8; } }
 </style>
 </head>
 <body>
@@ -338,6 +363,31 @@
       <button class="main" id="pick-go" onclick="pickOne()">뽑기</button><button onclick="pickReset()" title="모두 다시 뽑힐 수 있게">처음부터</button><button id="edit-btn" onclick="toggleEdit()">명단</button>
     </div>
   </section>
+  <section class="card tool-card" data-card="dust">
+    <p class="label">😷 미세먼지</p>
+    <div class="dust-main" id="dust-main"><span class="face" id="dust-face">🌫️</span><b id="dust-grade">지역을 정해 주세요</b></div>
+    <div class="dust-chips" id="dust-chips"></div>
+    <p class="sub" id="dust-place"></p>
+    <div class="dust-set" id="dust-set" hidden>
+      <button onclick="dustHere()">📍 지금 이 컴퓨터 위치로 (추천)</button>
+      <div class="row"><input id="dust-q" placeholder="시·군 이름 (예: 수원시)" aria-label="시·군 이름"><button onclick="dustSearch()">찾기</button></div>
+      <div class="dust-results" id="dust-results"></div>
+    </div>
+    <div class="acts"><button id="dust-set-btn" onclick="dustToggleSet()">지역 설정</button><button onclick="dustLoad()">새로고침</button></div>
+  </section>
+  <section class="card tool-card" data-card="noise" id="noise-card">
+    <p class="label">🔉 소음 측정</p>
+    <div class="noise-meter">
+      <span class="face" id="noise-face">🤫</span>
+      <div class="noise-bar" aria-hidden="true"><i id="noise-fill"></i><b id="noise-limit"></b></div>
+    </div>
+    <p class="sub" id="noise-info">'측정 시작'을 누르면 마이크로 교실 소리를 재요</p>
+    <div class="noise-count">오늘 경고 <b id="noise-count">0</b>회</div>
+    <label class="noise-th">기준 <input type="range" id="noise-th" min="30" max="95" value="65" aria-label="경고 기준"> <span id="noise-th-v">65</span></label>
+    <div class="acts">
+      <button class="main" id="noise-go" onclick="noiseToggle()">측정 시작</button><button onclick="noiseWarn()" title="직접 경고 주기 (횟수에 더해져요)">🔔 경고</button><button onclick="noiseResetCount()">횟수 0</button>
+    </div>
+  </section>
   <section class="card wb-card" data-card="whiteboard">
     <p class="label">🖍️ 화이트보드</p>
     <div class="wb-tools" role="toolbar" aria-label="화이트보드 도구">
@@ -391,7 +441,7 @@
     <button class="close" onclick="togglePanel(false)" aria-label="닫기" title="닫기 (Esc)">✕</button>
   </nav>
   <section id="tab-cards">
-    <p class="sum">카드마다 보드에 둘지, 맨 위 버튼으로 필요할 때만 띄울지, 끌지 고르세요. 꺼도 적어 둔 내용(메모·규칙·사진·명단·화이트보드)은 지워지지 않아요.</p>
+    <p class="sum">카드마다 보드에 둘지, 아래쪽 바 버튼으로 필요할 때만 띄울지, 끌지 고르세요. 꺼도 적어 둔 내용(메모·규칙·사진·명단·화이트보드)은 지워지지 않아요.</p>
     <p class="sum">보드에서 카드 제목을 끌면 옮겨지고, 오른쪽 아래 모서리를 끌면 크기가 바뀌어요. 📌를 누르면 그 자리에 고정돼요.</p>
     <div class="layout" id="layout"></div>
     <button onclick="resetPlaces()">카드 자리 처음처럼</button>
@@ -426,6 +476,8 @@
       <li><b>사진</b> '사진 넣기'로 사진을 고르세요. 사진 위에 마우스를 올리면 바꾸기·지우기 버튼이 나와요.</li>
       <li><b>타이머</b> 1·3·5·10분을 고르고 '시작'. +1은 1분 더하기예요. 시간이 끝나면 소리가 나고 카드가 깜빡여요.</li>
       <li><b>뽑기</b> <u>전체</u>: '명단'에 우리 반 이름을 한 줄에 하나씩(숫자만 쓰면 번호로). <u>선택</u>: '고르기'로 뽑을 사람만 골라요. <u>모둠</u>: 모둠 수를 정하면 모둠을 뽑아요. <u>직접</u>: 그때그때 뽑을 것을 써요. 한 번 뽑힌 것은 모두 뽑힐 때까지 다시 나오지 않고, '처음부터'로 다시 시작해요.</li>
+      <li><b>미세먼지</b> '지역 설정'에서 '지금 위치로'를 누르거나 시·군 이름(예: 수원시)으로 찾으세요. Open-Meteo(무료 공개 자료)의 예보값이라 에어코리아 측정소 값과 조금 다를 수 있어요. 30분마다 새로 받아요.</li>
+      <li><b>소음 측정</b> '측정 시작'을 누르고 마이크를 허락하면 소리 크기를 막대로 보여 줘요. 기준(검은 선)을 1초 넘게 넘으면 경고음이 나고 오늘 경고 횟수가 쌓여요. '🔔 경고'로 직접 경고를 줄 수도 있어요. 소리는 이 컴퓨터 안에서만 재고, 녹음하거나 보내지 않아요.</li>
       <li><b>화이트보드</b> ✏️ 펜으로 그리고, T 글상자는 누른 뒤 보드를 클릭해 써요. 사진은 복사해서 Ctrl+V(또는 끌어다 놓기). ✋ 옮기기에서 사진·글상자를 끌어 옮기고, 오른쪽 아래 파란 점으로 크기를 바꾸고, Delete로 지워요. 글상자는 두 번 클릭하면 고쳐요. Ctrl+Z로 되돌려요.</li>
       <li><b>시간표</b> 설정 → 시간표에서 연간시간표(한글 파일 또는 표 붙여넣기)와 시정표를 넣으면, 지금 몇 교시인지와 다음 시간을 알려 줘요. 표에 없는 주는 '매주 기본 시간표'를 써요.</li>
       <li><b>보드 카드</b> 설정 → 보드 카드에서 카드마다 보드에 두기 · 필요할 때 띄우기 · 끄기를 골라요. 꺼도 적어 둔 내용은 남아요. 보드에서는 카드 제목을 끌어 옮기고, 오른쪽 아래 모서리로 크기를 바꾸고, 📌로 그 자리에 고정해요.</li>
@@ -828,9 +880,9 @@ document.getElementById("today").textContent =
 
 // 카드 배치: { 카드: { mode: "board"(보드에 두기) | "popup"(필요할 때 띄우기) | "off", rect: {x, y, w, h}(보드 크기에 대한 비율), locked(📌 고정) } }
 // 처음엔 칸 맞춤으로 자리를 잡아 그 위치를 기억하고, 그다음부터는 제목을 끌어 옮기고 오른쪽 아래 모서리로 크기를 바꿈
-const CARDS = [["topic", "✏️ 오늘의 주제", "board", "full"], ["timetable", "🕘 시간표", "board", "2"], ["memo", "📝 메모", "board", "2"],
-  ["rules", "📌 우리반 규칙", "board", "2"], ["photo", "🖼️ 사진", "popup", "1"], ["timer", "⏱️ 타이머", "popup", "1"], ["picker", "🎲 뽑기", "popup", "1"],
-  ["whiteboard", "🖍️ 화이트보드", "popup", "4"]];
+const CARDS = [["topic", "✏️ 오늘의 주제", "board", "2"], ["timetable", "🕘 시간표", "board", "2"], ["memo", "📝 메모", "board", "1"],
+  ["rules", "📌 우리반 규칙", "board", "1"], ["photo", "🖼️ 사진", "popup", "1"], ["timer", "⏱️ 타이머", "popup", "1"], ["picker", "🎲 뽑기", "popup", "1"],
+  ["whiteboard", "🖍️ 화이트보드", "popup", "4"], ["dust", "😷 미세먼지", "board", "1"], ["noise", "🔉 소음 측정", "popup", "1"]];
 const MODES = [["board", "보드에 두기"], ["popup", "필요할 때 띄우기"], ["off", "끄기"]];
 const board = document.querySelector(".board"), pop = document.createElement("div");
 pop.id = "pop"; pop.hidden = true; document.body.append(pop);
@@ -840,7 +892,7 @@ try {
   const old = JSON.parse(localStorage.getItem("cards")) || {}; // 예전 켜기/끄기 설정 옮기기
   for (const k in old) if (old[k] === false && !layout[k]) layout[k] = { mode: "off" };
 } catch (e) {}
-const lay = k => { const d = CARDS.find(c => c[0] === k); return Object.assign({ mode: d[2], size: d[3] }, layout[k]); };
+const lay = k => { const d = CARDS.find(c => c[0] === k); return Object.assign({ mode: d[2] }, layout[k], { size: d[3] }); }; // 처음 크기는 늘 기본값 (예전에 저장된 크기는 무시)
 const card = k => document.querySelector(`.card[data-card="${k}"]`);
 const saveLayout = () => { try { localStorage.setItem("layout", JSON.stringify(layout)); } catch (e) {} };
 const POS = ["left", "top", "width", "height"];
@@ -850,15 +902,27 @@ CARDS.forEach(([k]) => { // 카드마다 📌 고정 버튼과 크기 조절 모
   grip.className = "card-grip"; grip.title = "끌어서 크기 조절";
   c.append(pin, grip);
 });
+// 카드 크기를 칸 수로: 1=1칸, 2=가로 2칸, 4=2×2, full=한 줄 전체
+const cellsOf = (size, cols) => size === "full" ? cols : size === "4" ? 4 : +size || 1;
 function placeCards() {
-  const need = CARDS.filter(([k]) => lay(k).mode === "board" && !lay(k).rect);
+  const onBoard = CARDS.filter(([k]) => lay(k).mode === "board");
+  // 화면 밖으로 나간 카드가 있으면(예전 배치 등) 전체를 다시 한 화면에 맞춤. 📌 고정은 유지
+  if (onBoard.some(([k]) => { const r = lay(k).rect; return r && (r.x + r.w > 1.005 || r.y + r.h > 1.005); }))
+    onBoard.forEach(([k]) => { if (layout[k]) delete layout[k].rect; });
+  const need = onBoard.filter(([k]) => !lay(k).rect);
   if (need.length) { // 처음 자리: 칸 맞춤으로 놓아 보고 그 위치를 비율로 기억
     board.classList.remove("free");
+    const cols = board.clientWidth >= 1000 ? 4 : board.clientWidth >= 640 ? 3 : 2;
+    const rows = Math.max(1, Math.ceil(onBoard.reduce((n, [k]) => n + cellsOf(lay(k).size, cols), 0) / cols));
+    board.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
+    board.style.gridTemplateRows = `repeat(${rows}, minmax(0, 1fr))`; // 줄 수만큼 화면 높이를 나눠 스크롤 없이 들어가게
+    onBoard.forEach(([k]) => POS.forEach(p => card(k).style[p] = "")); // 이전 자리·크기를 지워야 칸 맞춤이 제대로 됨
     const B = board.getBoundingClientRect();
     for (const [k] of need) {
       const r = card(k).getBoundingClientRect();
       layout[k] = Object.assign(lay(k), { rect: { x: (r.left - B.left) / B.width, y: (r.top - B.top) / B.height, w: r.width / B.width, h: r.height / B.height } });
     }
+    board.style.gridTemplateColumns = board.style.gridTemplateRows = "";
     saveLayout();
   }
   board.classList.add("free");
@@ -885,8 +949,8 @@ board.addEventListener("pointerdown", e => {
   t.setPointerCapture(e.pointerId); e.preventDefault();
   const move = ev => {
     const dx = (ev.clientX - sx) / B.width, dy = (ev.clientY - sy) / B.height;
-    if (grip) { r.w = Math.max(140 / B.width, r0.w + dx); r.h = Math.max(110 / B.height, r0.h + dy); }
-    else { r.x = Math.min(Math.max(0, r0.x + dx), 1 - 60 / B.width); r.y = Math.min(Math.max(0, r0.y + dy), 1 - 40 / B.height); }
+    if (grip) { r.w = Math.min(1 - r.x, Math.max(140 / B.width, r0.w + dx)); r.h = Math.min(1 - r.y, Math.max(110 / B.height, r0.h + dy)); }
+    else { r.x = Math.min(Math.max(0, r0.x + dx), 1 - r.w); r.y = Math.min(Math.max(0, r0.y + dy), 1 - r.h); } // 화면 밖으로 못 나감
     [r.x, r.y, r.w, r.h].forEach((v, i) => c.style[POS[i]] = v * 100 + "%");
   };
   const up = () => { t.removeEventListener("pointermove", move); t.removeEventListener("pointerup", up); layout[k] = l; saveLayout(); };
@@ -1737,6 +1801,124 @@ document.addEventListener("keydown", e => {
 });
 setTool("pen");
 idb("readonly", s => s.get("whiteboard")).then(d => { if (d) wbData = d; wbRender(); wbDraw(); }).catch(() => {});
+
+// ───── 미세먼지 ─────
+// Open-Meteo 대기질 API (무료, 키 없음). 등급은 환경부 기준 (PM10: 30/80/150, PM2.5: 15/35/75)
+const DUST_GRADES = [["좋음", "#3b82f6", "😊"], ["보통", "#1fa463", "🙂"], ["나쁨", "#f59e0b", "😷"], ["매우 나쁨", "#ef4444", "😫"]];
+const dustGrade = (v, cuts) => { const i = cuts.findIndex(c => v <= c); return i < 0 ? 3 : i; };
+let dustPlace = null;
+try { dustPlace = JSON.parse(localStorage.getItem("dust-place")); } catch (e) {}
+async function dustLoad() {
+  const main = document.getElementById("dust-grade"), chips = document.getElementById("dust-chips");
+  document.getElementById("dust-place").textContent = dustPlace ? "📍 " + dustPlace.name : "";
+  if (!dustPlace) return;
+  try {
+    const r = await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${dustPlace.lat}&longitude=${dustPlace.lon}&current=pm10,pm2_5&timezone=Asia%2FSeoul`);
+    const c = (await r.json()).current;
+    const g10 = dustGrade(c.pm10, [30, 80, 150]), g25 = dustGrade(c.pm2_5, [15, 35, 75]);
+    const [name, color, face] = DUST_GRADES[Math.max(g10, g25)];
+    document.getElementById("dust-face").textContent = face;
+    main.textContent = name; main.style.setProperty("--grade", color);
+    chips.replaceChildren(...[["미세", c.pm10, g10], ["초미세", c.pm2_5, g25]].map(([t, v, g]) => {
+      const sp = document.createElement("span");
+      sp.textContent = `${t} ${Math.round(v)} ${DUST_GRADES[g][0]}`; sp.style.setProperty("--grade", DUST_GRADES[g][1]);
+      return sp;
+    }));
+    document.getElementById("dust-place").textContent = `📍 ${dustPlace.name} · ${c.time.slice(11, 16)} 기준`;
+  } catch (e) { main.textContent = "불러오지 못했어요"; main.style.removeProperty("--grade"); chips.replaceChildren(); }
+}
+function dustSet(place) {
+  dustPlace = place;
+  try { localStorage.setItem("dust-place", JSON.stringify(place)); } catch (e) {}
+  dustToggleSet(false); dustLoad();
+}
+function dustToggleSet(open = document.getElementById("dust-set").hidden) {
+  document.getElementById("dust-set").hidden = !open;
+  document.getElementById("dust-main").hidden = open; document.getElementById("dust-chips").hidden = open;
+  document.getElementById("dust-set-btn").textContent = open ? "닫기" : "지역 설정";
+  if (open) document.getElementById("dust-q").focus();
+}
+async function dustSearch() {
+  const q = document.getElementById("dust-q").value.trim(), box = document.getElementById("dust-results");
+  if (!q) return;
+  box.textContent = "찾는 중…";
+  try {
+    let res = [];
+    for (const name of [/(시|군|구)$/.test(q) ? q : q + "시", q, q.replace(/(특별시|광역시|특별자치시|시|군|구)$/, "")]) { // 이름을 조금씩 바꿔 가며 찾기
+      if (res.length || !name) break;
+      res = (await (await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(name)}&count=8&language=ko&countryCode=KR`)).json()).results || [];
+    }
+    if (!res.length) { box.textContent = "못 찾았어요. 시·군 이름으로 써 보세요 (예: 수원시, 화성시). 동 이름은 잘 못 찾아요."; return; }
+    box.replaceChildren(...res.map(p => {
+      const b = document.createElement("button"), where = [p.admin1, p.admin2, p.admin3].filter(Boolean).join(" ");
+      b.textContent = `${p.name} (${where})`;
+      b.onclick = () => dustSet({ name: p.name, lat: +p.latitude.toFixed(2), lon: +p.longitude.toFixed(2) });
+      return b;
+    }));
+  } catch (e) { box.textContent = "찾지 못했어요. 인터넷 연결을 확인해 주세요."; }
+}
+function dustHere() {
+  navigator.geolocation.getCurrentPosition( // 소수 둘째 자리(약 1km)까지만 씀
+    p => dustSet({ name: "이 컴퓨터 위치", lat: +p.coords.latitude.toFixed(2), lon: +p.coords.longitude.toFixed(2) }),
+    () => { document.getElementById("dust-results").textContent = "위치를 알 수 없어요. 동네 이름으로 찾아 주세요."; });
+}
+document.getElementById("dust-q").addEventListener("keydown", e => { if (e.key === "Enter") dustSearch(); });
+dustLoad();
+setInterval(dustLoad, 30 * 60000);
+
+// ───── 소음 측정 ─────
+// 마이크 소리 크기를 0~100으로 바꿔 보여 줌 (녹음·전송 없음). 기준을 1초 넘게 넘으면 경고음, 오늘 경고 횟수 저장
+const nFill = document.getElementById("noise-fill"), nLimit = document.getElementById("noise-limit"), nTh = document.getElementById("noise-th");
+const nFace = document.getElementById("noise-face"), nInfo = document.getElementById("noise-info"), nGo = document.getElementById("noise-go");
+let nStream = null, nRaf = 0, nLevel = 0, nOver = 0, nLastWarn = 0, nCount = { date: "", n: 0 };
+try { nCount = JSON.parse(localStorage.getItem("noise-count")) || nCount; nTh.value = localStorage.getItem("noise-th") || 65; } catch (e) {}
+function nShowCount() {
+  const today = iso(new Date());
+  if (nCount.date !== today) nCount = { date: today, n: 0 }; // 날이 바뀌면 0부터
+  document.getElementById("noise-count").textContent = nCount.n;
+  try { localStorage.setItem("noise-count", JSON.stringify(nCount)); } catch (e) {}
+}
+function nShowTh() { document.getElementById("noise-th-v").textContent = nTh.value; nLimit.style.left = nTh.value + "%"; }
+nTh.addEventListener("input", () => { nShowTh(); try { localStorage.setItem("noise-th", nTh.value); } catch (e) {} });
+function noiseWarn() {
+  nShowCount(); nCount.n++; nShowCount(); nLastWarn = Date.now();
+  melody([988, 740, 988, 740, 988, 740], .16, "square", .18); // 삐뽀삐뽀
+  const c = document.getElementById("noise-card");
+  c.classList.remove("alarm"); void c.offsetWidth; c.classList.add("alarm");
+}
+function noiseResetCount() { nCount.n = 0; nShowCount(); }
+function noiseLevel(db) { return Math.max(0, Math.min(100, (db + 75) * 1.6)); } // 대략 조용한 교실 ≈ 30, 떠들썩 ≈ 70+
+async function noiseToggle() {
+  if (nStream) { // 멈추기
+    cancelAnimationFrame(nRaf); nStream.getTracks().forEach(t => t.stop()); nStream = null;
+    nGo.textContent = "측정 시작"; nInfo.textContent = "측정을 멈췄어요"; nFill.style.width = "0"; nFace.textContent = "🤫";
+    return;
+  }
+  try {
+    nStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
+  } catch (e) { nInfo.textContent = "마이크를 쓸 수 없어요. 마이크 연결과 허락을 확인해 주세요."; return; }
+  actx = actx || new AudioContext(); actx.resume();
+  const an = actx.createAnalyser(); an.fftSize = 2048;
+  actx.createMediaStreamSource(nStream).connect(an);
+  const buf = new Float32Array(an.fftSize);
+  nGo.textContent = "측정 멈춤"; nInfo.textContent = "재는 중… 막대가 검은 선을 넘으면 경고해요";
+  let last = performance.now();
+  const loop = now => {
+    an.getFloatTimeDomainData(buf);
+    let sum = 0; for (const v of buf) sum += v * v;
+    nLevel += (noiseLevel(20 * Math.log10(Math.sqrt(sum / buf.length) + 1e-9)) - nLevel) * .15; // 부드럽게
+    const th = +nTh.value, hot = nLevel >= th, warm = nLevel >= th * .8;
+    nFill.style.width = nLevel + "%";
+    nFill.style.background = hot ? "#ef4444" : warm ? "#f59e0b" : "#1fa463";
+    nFace.textContent = hot ? "😣" : warm ? "😐" : "😊";
+    nOver = hot ? nOver + (now - last) : 0;
+    if (nOver > 1000 && Date.now() - nLastWarn > 5000) noiseWarn(); // 1초 넘게 시끄러우면, 5초에 한 번까지만
+    last = now;
+    nRaf = requestAnimationFrame(loop);
+  };
+  nRaf = requestAnimationFrame(loop);
+}
+nShowCount(); nShowTh();
 
 // 앱 창으로 처음 열 때만 창 크기를 맞춤. 이후엔 선생님이 조절한 크기를 브라우저가 기억함
 try {
