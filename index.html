@@ -253,6 +253,13 @@
   @keyframes blink { to { background: #ffd9cc; } }
   /* 뽑기: 뽑을 대상마다 이름 카드. 불빛이 카드 사이를 옮겨 다니다 느려지며 한 장에 멈춤 */
   #pick-name.cards { display: flex; flex-wrap: wrap; align-content: center; justify-content: center; gap: .35em; overflow-y: auto; padding: 4px; line-height: 1.2; }
+  /* 순서 뽑기 달리기: 한 줄에 한 명, 오른쪽 끝이 결승선 */
+  .race { width: 100%; height: 100%; display: flex; flex-direction: column; border-right: 4px dashed var(--accent); }
+  .race .lane { flex: 1; position: relative; border-bottom: 1px dashed var(--line); min-height: 0; }
+  .race .lane.in { background: var(--card); }
+  .race .lane[data-rank]::after { content: attr(data-rank); position: absolute; left: 4px; top: 50%; transform: translateY(-50%); font-size: .8em; color: var(--accent); }
+  .race .runner i { display: inline-block; font-style: normal; transform: scaleX(-1); }
+  .race .runner { position: absolute; top: 50%; margin-top: -.6em; line-height: 1.2; white-space: nowrap; }
   .pick-card small { display: block; font-size: .6em; opacity: .7; text-align: center; }
   .pick-card b { display: block; font-weight: normal; font-size: 1.15em; text-align: center; }
   .pick-card { padding: .3em .6em; border-radius: .4em; background: #fff; border: 2px solid var(--line); color: var(--ink); white-space: nowrap;
@@ -435,7 +442,7 @@
   <section class="card tool-card" data-card="picker">
     <p class="label">🎲 뽑기</p>
     <div class="modes" role="group" aria-label="뽑기 방법">
-      <button data-mode="all" title="명단 전체에서 뽑기">전체</button><button data-mode="select" title="명단에서 고른 사람만">선택</button><button data-mode="group" title="모둠 뽑기">모둠</button><button data-mode="direct" title="그때그때 직접 입력한 것 중에서">직접입력</button>
+      <button data-mode="all" title="명단 전체에서 뽑기">전체</button><button data-mode="select" title="명단에서 고른 사람만">선택</button><button data-mode="group" title="모둠 뽑기">모둠</button><button data-mode="direct" title="그때그때 직접 입력한 것 중에서">직접입력</button><button data-mode="order" title="명단 전체가 달리기를 해서 들어온 순서대로 순서 정하기">순서</button>
     </div>
     <div class="big" id="pick-name" aria-live="polite">?</div>
     <div class="pick-edit" id="pick-edit" hidden>
@@ -537,6 +544,7 @@
     <button data-tab="history" onclick="openTab('history')">주제 사용 기록</button>
     <button data-tab="share" onclick="openTab('share')">링크 공유</button>
     <button data-tab="help" onclick="openTab('help')">사용 방법</button>
+    <button data-tab="account" onclick="openTab('account')">로그인</button>
     <button data-tab="reset" onclick="openTab('reset')">초기화</button>
     <button class="close" onclick="togglePanel(false)" aria-label="닫기" title="닫기 (Esc)">✕</button>
   </nav>
@@ -580,13 +588,14 @@
       <li><b>메모 · 우리반 규칙</b> 카드를 눌러 바로 쓰면 저절로 저장돼요. 글자를 끌어서 고른 뒤 오른쪽 아래 Tt에서 색을 고르면 그 글자만 바뀌어요. 메모는 아래쪽 바 버튼을 누를 때마다 한 장씩 더 생겨요(더 만든 메모는 닫으면 지워져요).</li>
       <li><b>사진</b> '사진 넣기'로 사진을 고르세요. 사진 위에 마우스를 올리면 바꾸기·지우기 버튼이 나와요. 아래쪽 바 버튼을 누를 때마다 사진 카드가 한 장씩 더 생겨요.</li>
       <li><b>타이머</b> 30초·1·3·5·10분을 고르거나, 가운데 시간(00:00)을 눌러 3:30처럼 직접 쓰고 '시작'. +1은 1분 더하기예요. 시간이 끝나면 소리가 나고 카드가 깜빡여요.</li>
-      <li><b>뽑기</b> <u>전체</u>: 설정 → 명단에 우리 반 이름을 한 줄에 하나씩(숫자만 쓰면 번호로). <u>선택</u>: 오른쪽 아래 '✎ 고르기'로 뽑을 사람만 골라요. <u>모둠</u>: 오른쪽 아래에 모둠 수를 정해요. <u>직접입력</u>: 오른쪽 아래 '✎ 쓰기'로 그때그때 뽑을 것을 써요. 한 번 뽑힌 것은 모두 뽑힐 때까지 다시 나오지 않고, '처음부터'로 다시 시작해요.</li>
+      <li><b>뽑기</b> <u>전체</u>: 설정 → 명단에 우리 반 이름을 한 줄에 하나씩(숫자만 쓰면 번호로). <u>선택</u>: 오른쪽 아래 '✎ 고르기'로 뽑을 사람만 골라요. <u>모둠</u>: 오른쪽 아래에 모둠 수를 정해요. <u>직접입력</u>: 오른쪽 아래 '✎ 쓰기'로 그때그때 뽑을 것을 써요. <u>순서</u>: 명단 전체가 달리기를 해서 결승선에 들어온 순서대로 순서를 정해요. 한 번 뽑힌 것은 모두 뽑힐 때까지 다시 나오지 않고, '처음부터'로 다시 시작해요.</li>
       <li><b>미세먼지</b> '지역 설정'에서 '지금 위치로'를 누르거나 시·군 이름(예: 수원시)으로 찾으세요. Open-Meteo(무료 공개 자료)의 예보값이라 에어코리아 측정소 값과 조금 다를 수 있어요. 30분마다 새로 받아요.</li>
       <li><b>소음 측정</b> '측정 시작'을 누르고 마이크를 허락하면 소리 크기를 막대로 보여 줘요. 기준(검은 선)을 1초 넘게 넘으면 경고음이 나고 오늘 경고 횟수가 쌓여요. '🔔 경고'로 직접 경고를 줄 수도 있어요. 소리는 이 컴퓨터 안에서만 재고, 녹음하거나 보내지 않아요.</li>
       <li><b>화이트보드</b> ✏️ 펜을 누르면 색과 굵기를 골라 그려요. T 글상자는 누른 뒤 보드(사진 위도 돼요)를 클릭해 써요. 사진은 복사해서 Ctrl+V(또는 끌어다 놓기). 옮기기에서 사진·글상자·펜 선을 끌어 옮기고, 오른쪽 아래 파란 점으로 크기를 바꾸고(글상자는 글씨도 같이 커져요), 오른쪽 위 ✕나 Delete로 지워요. Shift를 누른 채 여러 개를 누르면 함께 골라지고, '묶기'로 한 덩어리로 묶어요('풀기'로 다시 나눠요). 글상자는 두 번 클릭하면 고치고, Tt로 글씨 크기·색을 바꿔요(고른 글상자가 없으면 새로 만들 글상자에 적용). ↶나 Ctrl+Z로 되돌려요. 제목 줄 오른쪽 1~4 버튼으로 화이트보드를 4개까지 따로 써요.</li>
       <li><b>시간표</b> 설정 → 시간표에서 연간시간표(한글 파일 또는 표 붙여넣기)와 시정표를 넣으면, 지금 몇 교시인지와 다음 시간을 알려 줘요. 표에 없는 주는 '매주 기본 시간표'를 써요.</li>
       <li><b>보드 카드</b> 제목을 끌어 옮기고, 오른쪽 아래 모서리로 크기를 바꿔요. 옮긴 자리와 크기는 앱을 껐다 켜도 그대로예요. ✕를 누르면 보드에서 닫히고 아래쪽 바로 들어가요. 닫아도 적어 둔 내용은 남아요.</li>
       <li><b>아래쪽 바</b> 보드에서 닫은 카드가 들어가요. 누르면 보드에 다시 나와요.</li>
+      <li><b>로그인</b> 설정 → 로그인에서 구글로 로그인하면 보드가 서버에 저장되고, 다른 컴퓨터에서 같은 계정으로 로그인하면 같은 보드가 나와요.</li>
       <li><b>준비물</b> 시간표 카드 오른쪽 칸에 쓰면 저장돼요.</li>
       <li><b>창 옮기기</b> 맨 위 줄을 잡고 끌어요. 창 크기는 모서리를 끌어 조절해요. 창이 좁으면 카드가 아래로 쌓여요.</li>
       <li><b>앱 설치 (Edge)</b> 이 주소를 Edge로 열고 주소창 오른쪽 설치 아이콘을 눌러요. 안 보이면 … 메뉴 → 앱 → '이 사이트를 앱으로 설치'.</li>
@@ -594,6 +603,16 @@
       <li><b>켤 때 자동 실행 (Edge)</b> 주소창에 edge://apps 입력 → 이 앱의 … → '장치 로그인 시 시작'.</li>
       <li><b>저장 위치</b> 메모, 규칙, 사진, 사용 기록은 모두 이 컴퓨터에만 저장돼요. 인터넷으로 보내지 않아요.</li>
     </ul>
+  </section>
+  <section id="tab-account" hidden>
+    <p class="sum">구글 계정으로 로그인하면 이 보드(명단·메모·급훈·시간표·카드 배치·사진·화이트보드)가 서버에 저장돼요. 다른 컴퓨터에서 같은 계정으로 로그인하면 같은 보드가 나와요. 고칠 때마다 몇 초 뒤 저절로 저장돼요.</p>
+    <p id="acct-status"></p>
+    <div class="row">
+      <button id="acct-in" onclick="syncLogin()">구글로 로그인</button>
+      <button id="acct-now" onclick="syncPush(true)" hidden>지금 모두 저장</button>
+      <button id="acct-out" onclick="syncLogout()" hidden>로그아웃</button>
+    </div>
+    <p class="sum">로그아웃해도 이 컴퓨터의 보드는 그대로 남아요. 여럿이 쓰는 컴퓨터라면 로그아웃한 뒤 '초기화'에서 지워 주세요.</p>
   </section>
   <section id="tab-reset" hidden>
     <p>주제 사용 기록을 모두 지우고, 모든 주제가 다시 나오게 해요. 메모·규칙·사진과 '2줄 이상 쓰기' 문구는 그대로 남아요.</p>
@@ -1344,7 +1363,7 @@ const groupsInp = document.getElementById("pick-groups"), checks = document.getE
 const pickName = document.getElementById("pick-name"), pickEdit = document.getElementById("pick-edit");
 const pickLeft = document.getElementById("pick-left"), pickGo = document.getElementById("pick-go"), editBtn = document.getElementById("edit-btn");
 const groupsRow = document.getElementById("pick-groups-row");
-const EDIT_LABEL = { all: "✎ 명단", select: "✎ 고르기", direct: "✎ 쓰기" }; // 모둠은 버튼 대신 모둠 수 칸
+const EDIT_LABEL = { all: "✎ 명단", select: "✎ 고르기", direct: "✎ 쓰기", order: "✎ 명단" }; // 모둠은 버튼 대신 모둠 수 칸
 let pk = { mode: "all", picked: {}, chosen: [] };
 try {
   pk = Object.assign(pk, JSON.parse(localStorage.getItem("pick")) || {});
@@ -1423,9 +1442,10 @@ function candidates(mode = pk.mode) {
 }
 function pickInfo() {
   const all = candidates(), done = pk.picked[pk.mode] || [], left = all.filter(p => !done.includes(p));
-  const empty = { all: "설정 → 명단을 넣어 주세요", select: people().length ? "'✎ 고르기'로 골라 주세요" : "설정 → 명단을 넣어 주세요",
+  const empty = { all: "설정 → 명단을 넣어 주세요", order: "설정 → 명단을 넣어 주세요", select: people().length ? "'✎ 고르기'로 골라 주세요" : "설정 → 명단을 넣어 주세요",
     direct: "'✎ 쓰기'로 써 주세요" };
-  pickLeft.textContent = all.length ? `남은 ${left.length} / ${all.length}` : empty[pk.mode];
+  pickLeft.textContent = !all.length ? empty[pk.mode] : pk.mode !== "order" ? `남은 ${left.length} / ${all.length}`
+    : pk.order ? "들어온 순서예요" : `${all.length}명 · '뽑기'를 누르면 달리기 시작`;
   document.querySelectorAll(".modes [data-mode]").forEach(b => b.classList.toggle("on", b.dataset.mode === pk.mode));
   editBtn.hidden = pk.mode === "group"; groupsRow.hidden = pk.mode !== "group";
   editBtn.textContent = pickEdit.hidden ? EDIT_LABEL[pk.mode] : "✓ 완료";
@@ -1434,12 +1454,15 @@ function pickInfo() {
   pickName.classList.toggle("cards", !!all.length);
   pickName.style.fontSize = "";
   if (!all.length) { pickName.textContent = "?"; return left; }
-  pickName.replaceChildren(...all.map(p => {
+  const ranked = pk.mode === "order" && pk.order; // 순서: 달리기가 끝났으면 들어온 순서대로 "1등 · 3번 / 김하늘"
+  pickName.replaceChildren(...(ranked || all).map((p, i) => {
     const c = document.createElement("span");
     c.className = "pick-card" + (p === pkWin ? " win" : done.includes(p) ? " done" : ""); c.dataset.p = p;
     const m = p.match(/^(\d+번) (.+)$/); // "1번 김하늘": 번호는 윗줄에 작게, 이름은 아랫줄에 크게
-    if (m) { const n = document.createElement("small"), b = document.createElement("b"); n.textContent = m[1]; b.textContent = m[2]; c.append(n, b); }
-    else c.textContent = p;
+    if (m || ranked) {
+      const n = document.createElement("small"), b = document.createElement("b");
+      n.textContent = ranked ? `${i + 1}등` + (m ? " · " + m[1] : "") : m[1]; b.textContent = m ? m[2] : p; c.append(n, b);
+    } else c.textContent = p;
     return c;
   }));
   if (pickName.clientHeight) for (let f = 30; f >= 10; f -= 2) { pickName.style.fontSize = f + "px"; if (pickName.scrollHeight <= pickName.clientHeight) break; }
@@ -1458,6 +1481,7 @@ function pickOne() {
   if (!pickEdit.hidden) toggleEdit(false);
   const all = candidates();
   if (!all.length) { toggleEdit(true); return; }
+  if (pk.mode === "order") { pickRace(all); return; }
   let left = pickInfo();
   if (!left.length) { pk.picked[pk.mode] = []; left = all; } // 모두 뽑혔으면 처음부터
   const winner = pick(left);
@@ -1482,7 +1506,38 @@ function pickOne() {
   };
   step();
 }
-function pickReset() { pk.picked[pk.mode] = []; pkWin = null; pkSave(); pickInfo(); }
+function pickReset() { pk.picked[pk.mode] = []; pkWin = null; if (pk.mode === "order") delete pk.order; pkSave(); pickInfo(); }
+// 순서 뽑기: 모두가 한 줄씩 달려서 결승선에 들어온 순서가 곧 순서
+// 들어올 순서를 먼저 섞어 정하고, 그 순서대로 결승 시간을 줌. 가는 동안은 앞서거니 뒤서거니 하도록 흔들림을 넣음
+const RUNNERS = ["🐇", "🐢", "🐎", "🐕", "🐈", "🐿️", "🦔", "🐖", "🦆", "🐆", "🐄", "🐓", "🐧", "🦊", "🐻", "🐼"];
+function pickRace(all) {
+  const order = [...all].map(p => [Math.random(), p]).sort((a, b) => a[0] - b[0]).map(x => x[1]);
+  delete pk.order; pickGo.disabled = true; pickName.classList.remove("cards");
+  const laneH = pickName.clientHeight / all.length, track = document.createElement("div");
+  track.className = "race"; track.style.fontSize = Math.max(9, Math.min(22, laneH * .62)) + "px";
+  const lanes = all.map(p => {
+    const lane = document.createElement("div"), run = document.createElement("span"), rank = order.indexOf(p);
+    lane.className = "lane"; run.className = "runner";
+    const face = document.createElement("i"); face.textContent = pick(RUNNERS); // 동물 그림은 왼쪽을 봐서 뒤집어 오른쪽으로 달리게
+    run.append(face, " " + (p.match(/^\d+번 (.+)$/)?.[1] || p));
+    lane.append(run); track.append(lane);
+    return { lane, run, T: 4200 + rank * (2600 / Math.max(1, all.length - 1)) + Math.random() * 120, ph: Math.random() * 6.3, k: 4 + Math.random() * 3, done: false };
+  });
+  pickName.replaceChildren(track);
+  let t0 = 0, finished = 0;
+  const frame = now => {
+    const t = now - t0;
+    for (const L of lanes) {
+      const u = Math.min(1, t / L.T), p = Math.max(0, Math.min(1, u + .05 * Math.sin(L.ph + u * L.k) * 4 * u * (1 - u))); // 처음과 끝은 0·1에 딱 맞음
+      L.run.style.left = p * 100 + "%"; L.run.style.transform = `translateX(-${p * 100}%)`;
+      if (u >= 1 && !L.done) { L.done = true; finished++; L.lane.dataset.rank = finished + "등"; L.lane.classList.add("in"); tone(600 + Math.max(0, 12 - finished) * 60, 0, .08, "triangle", .15); }
+    }
+    if (finished < lanes.length) { requestAnimationFrame(frame); return; }
+    setTimeout(() => { pk.order = order; pkSave(); pickGo.disabled = false; pickInfo(); melody([523, 659, 784, 1047], .1, "triangle", .3); }, 900);
+  };
+  [0, .5, 1].forEach(at => tone(440, at, .15, "square", .1)); tone(880, 1.5, .35, "square", .12); // 삐 삐 삐 빠앙!
+  setTimeout(() => { t0 = performance.now(); requestAnimationFrame(frame); }, 1500);
+}
 function renderChecks() {
   const ps = people();
   if (!ps.length) { checks.textContent = "먼저 설정 → 명단에 이름을 넣어 주세요."; return; }
@@ -1497,7 +1552,7 @@ function renderChecks() {
   }));
 }
 function toggleEdit(open = pickEdit.hidden) {
-  if (pk.mode === "all") { if (open) { togglePanel(true); openTab("roster"); rosterRows.querySelector(".nm")?.focus(); } return; } // 명단은 설정에서
+  if (pk.mode === "all" || pk.mode === "order") { if (open) { togglePanel(true); openTab("roster"); rosterRows.querySelector(".nm")?.focus(); } return; } // 명단은 설정에서
   pickEdit.hidden = !open; pickName.hidden = open;
   document.querySelector(".pick-bottom .acts").style.visibility = open ? "hidden" : ""; // 고르는 동안 뽑기·처음부터 숨김
   pickEdit.querySelectorAll("[data-edit]").forEach(el => el.hidden = el.dataset.edit !== pk.mode);
@@ -1955,7 +2010,7 @@ function wbSave() {
   wbSaveT = setTimeout(() => {
     const srcs = {}, strip = objs => objs.map(o => { if (!o.src) return o; srcs[o.id] = o.src; const { src, ...rest } = o; return rest; });
     const rec = { objs: d.objs, strokes: d.strokes, hist: h.map(x => ({ objs: strip(x.objs), strokes: x.strokes })), srcs };
-    idb("readwrite", s => s.put(rec, k)).catch(() => alert("화이트보드를 저장하지 못했어요. 사진을 몇 장 지워 주세요."));
+    idb("readwrite", s => s.put(rec, k)).then(() => syncMark("wb:" + k)).catch(() => alert("화이트보드를 저장하지 못했어요. 사진을 몇 장 지워 주세요."));
   }, 400);
 }
 // 되돌리기용 기록. 사진 글자(src)는 복사하지 않고 같이 씀
@@ -2382,6 +2437,130 @@ try {
     localStorage.setItem("sized", "4");
   }
 } catch (e) {}
+
+// ───── 로그인·동기화 (Firebase, 무료 Spark 요금제) ─────
+// 서버 구조: boards/{uid} = { ls: 글로 된 설정 전부, photos: 사진 카드 이름들, updatedAt }
+//            boards/{uid}/blobs/{사진 카드 이름 | wbimg-사진 id} = { data: 사진(data URL) }   ← 문서 하나 1MB 제한이라 한 장씩
+//            boards/{uid}/wb/{화이트보드 이름} = { json: 글상자·사진 자리·펜 선 }  (되돌리기 기록은 이 컴퓨터에만)
+// 이 컴퓨터 쪽 표시: sync-uid(로그인한 계정), sync-at(마지막으로 맞춘 서버 시각), sync-dirty(아직 안 올린 변경)
+const FB = "https://www.gstatic.com/firebasejs/10.14.1/";
+const FB_CONFIG = { apiKey: "AIzaSyCEsOWNlfwrGdTKfbgL-C6JTPlc7Z3pUmo", authDomain: "class-board-aeed0.firebaseapp.com", projectId: "class-board-aeed0",
+  storageBucket: "class-board-aeed0.firebasestorage.app", messagingSenderId: "826892766619", appId: "1:826892766619:web:67ca38017c7d580801a53e" };
+const PHOTO_KEY = /^photo(-\d+)?$/, WB_KEYS = [0, 1, 2, 3].map(wbKey);
+const SET = Storage.prototype.setItem, DEL = Storage.prototype.removeItem;
+const lsSet = (k, v) => SET.call(localStorage, k, v), lsDel = k => DEL.call(localStorage, k), lsGet = k => localStorage.getItem(k);
+let fb = null, fbUser = null, syncT = 0, syncBusy = false, syncAgain = false;
+const syncBlobs = new Set(), wbUp = new Set(); // 올려야 할 사진·화이트보드, 이미 올린 화이트보드 사진 id
+// localStorage에 쓰는 곳이 많아서 한곳에서 잡음. 값이 실제로 바뀔 때만 '바뀜'으로 표시
+Storage.prototype.setItem = function (k, v) { const old = this.getItem(k); SET.call(this, k, v); if (this === localStorage && old !== String(v)) syncMark(k); };
+Storage.prototype.removeItem = function (k) { const had = this.getItem(k) !== null; DEL.call(this, k); if (this === localStorage && had) syncMark(k); };
+function syncMark(k) {
+  if (k.startsWith("sync-")) return;
+  lsSet("sync-dirty", "1");
+  if (PHOTO_KEY.test(k) || k.startsWith("wb:")) syncBlobs.add(k);
+  if (fbUser) { clearTimeout(syncT); syncT = setTimeout(() => syncPush(false), 3000); }
+}
+async function fbLoad() { // 필요할 때만 불러옴 (로그인 안 하면 인터넷 없이도 그대로 씀)
+  if (fb) return fb;
+  const [app, auth, fs] = await Promise.all(["firebase-app.js", "firebase-auth.js", "firebase-firestore.js"].map(f => import(FB + f)));
+  const a = app.initializeApp(FB_CONFIG);
+  fb = { ...auth, ...fs, auth: auth.getAuth(a), db: fs.getFirestore(a) };
+  fb.onAuthStateChanged(fb.auth, u => {
+    fbUser = u; syncShow();
+    if (!u) return lsDel("sync-uid");
+    if (lsGet("sync-uid") !== u.uid) { lsDel("sync-at"); lsSet("sync-dirty", "1"); } // 다른 계정이면 처음부터 맞춤
+    lsSet("sync-uid", u.uid);
+    syncStart().catch(() => syncShow("서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요."));
+  });
+  return fb;
+}
+const boardRef = () => fb.doc(fb.db, "boards", fbUser.uid);
+const blobRef = k => fb.doc(fb.db, "boards", fbUser.uid, "blobs", k);
+const wbRef = k => fb.doc(fb.db, "boards", fbUser.uid, "wb", k);
+function syncShow(msg) {
+  const st = document.getElementById("acct-status");
+  document.getElementById("acct-in").hidden = !!fbUser;
+  document.getElementById("acct-out").hidden = document.getElementById("acct-now").hidden = !fbUser;
+  const at = +lsGet("sync-at");
+  st.textContent = msg || (fbUser ? `${fbUser.email}로 로그인했어요.` + (at ? ` 마지막 저장: ${new Date(at).toLocaleString("ko-KR")}` : "") : "로그인하지 않았어요. 보드는 이 컴퓨터에만 저장돼요.");
+}
+async function syncLogin() {
+  syncShow("로그인 창을 여는 중…");
+  try { const f = await fbLoad(); await f.signInWithPopup(f.auth, new f.GoogleAuthProvider()); }
+  catch (e) { syncShow(e.code === "auth/popup-closed-by-user" ? "" : "로그인하지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요."); }
+}
+async function syncLogout() { await fb.signOut(fb.auth); lsDel("sync-at"); syncShow(); }
+// 로그인했을 때: 서버가 비었으면 올리고, 서버가 더 새것이면 받아 옴. 둘 다 바뀌었으면 물어봄
+async function syncStart() {
+  syncShow("서버와 맞추는 중…");
+  const snap = await fb.getDoc(boardRef());
+  if (!snap.exists()) return syncPush(true);
+  const d = snap.data(), dirty = lsGet("sync-dirty");
+  if (String(d.updatedAt) === lsGet("sync-at")) return dirty ? syncPush(false) : syncShow();
+  if (dirty && !confirm("서버에 저장된 보드와 이 컴퓨터의 보드가 달라요.\n\n[확인] 서버 보드로 바꾸기 (이 컴퓨터 내용은 지워져요)\n[취소] 이 컴퓨터 보드를 서버에 올리기 (서버 내용이 바뀌어요)")) return syncPush(true);
+  await syncPull(d);
+}
+// 사진이 1MB 문서 제한을 넘으면 줄여서 올림
+async function fitBlob(url) {
+  while (url.length > 950000) {
+    const im = new Image(); im.src = url; await im.decode();
+    const cv = document.createElement("canvas"), k = .8;
+    cv.width = Math.round(im.naturalWidth * k); cv.height = Math.round(im.naturalHeight * k);
+    cv.getContext("2d").drawImage(im, 0, 0, cv.width, cv.height); url = cv.toDataURL("image/jpeg", .8);
+  }
+  return url;
+}
+async function pushWb(k) {
+  const rec = await idb("readonly", s => s.get(k));
+  if (!rec) return fb.deleteDoc(wbRef(k));
+  for (const o of rec.objs) if (o.type === "img" && !wbUp.has(o.id)) { await fb.setDoc(blobRef("wbimg-" + o.id), { data: await fitBlob(o.src) }); wbUp.add(o.id); }
+  // shortcut: 지운 화이트보드 사진은 서버에 남음, 저장 공간이 모자라지면 정리하기
+  const json = JSON.stringify({ objs: rec.objs.map(({ src, ...o }) => o), strokes: rec.strokes }, (_, v) => typeof v === "number" ? Math.round(v * 1e5) / 1e5 : v);
+  await fb.setDoc(wbRef(k), { json });
+}
+async function syncPush(all) {
+  if (!fbUser) return;
+  if (syncBusy) { syncAgain = true; return; }
+  syncBusy = true; syncShow("저장하는 중…");
+  const todo = all ? [...Object.keys(localStorage).filter(k => PHOTO_KEY.test(k)), ...WB_KEYS.map(k => "wb:" + k)] : [...syncBlobs];
+  if (all) wbUp.clear();
+  syncBlobs.clear();
+  try {
+    for (const b of todo) {
+      if (b.startsWith("wb:")) await pushWb(b.slice(3));
+      else { const v = lsGet(b); await (v ? fb.setDoc(blobRef(b), { data: await fitBlob(v) }) : fb.deleteDoc(blobRef(b))); }
+    }
+    const ls = {}, photos = [];
+    for (const k of Object.keys(localStorage)) if (!k.startsWith("sync-")) PHOTO_KEY.test(k) ? photos.push(k) : ls[k] = lsGet(k);
+    const at = Date.now();
+    await fb.setDoc(boardRef(), { ls, photos, updatedAt: at });
+    lsSet("sync-at", String(at)); lsDel("sync-dirty"); syncShow();
+  } catch (e) {
+    todo.forEach(b => syncBlobs.add(b)); // 다음에 다시 올림
+    syncShow("저장하지 못했어요. 인터넷 연결을 확인해 주세요. 고친 내용은 이 컴퓨터에 남아 있어요.");
+  } finally {
+    syncBusy = false;
+    if (syncAgain) { syncAgain = false; syncPush(false); }
+  }
+}
+// 서버 보드로 이 컴퓨터를 바꾸고 다시 불러옴
+async function syncPull(d) {
+  syncShow("서버 보드를 받는 중…");
+  for (const k of Object.keys(localStorage)) if (!k.startsWith("sync-") && !(k in d.ls) && !d.photos.includes(k)) lsDel(k);
+  for (const k in d.ls) lsSet(k, d.ls[k]);
+  for (const k of d.photos) { const b = await fb.getDoc(blobRef(k)); if (b.exists()) lsSet(k, b.data().data); }
+  const pages = await fb.getDocs(fb.collection(fb.db, "boards", fbUser.uid, "wb")), have = new Set();
+  for (const pg of pages.docs) {
+    const { objs, strokes } = JSON.parse(pg.data().json);
+    for (const o of objs) if (o.type === "img") { const b = await fb.getDoc(blobRef("wbimg-" + o.id)); o.src = b.exists() ? b.data().data : ""; wbUp.add(o.id); }
+    await idb("readwrite", s => s.put({ objs, strokes, hist: [], srcs: {} }, pg.id)); have.add(pg.id);
+  }
+  for (const k of WB_KEYS) if (!have.has(k)) await idb("readwrite", s => s.delete(k));
+  lsSet("sync-at", String(d.updatedAt)); lsDel("sync-dirty");
+  location.reload();
+}
+syncShow();
+if (lsGet("sync-uid")) fbLoad().catch(() => syncShow("서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요.")); // 전에 로그인했으면 이어서
 </script>
 </body>
 </html>
