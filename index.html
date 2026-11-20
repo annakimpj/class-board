@@ -612,7 +612,7 @@
       <li><b>메모 · 우리반 규칙</b> 카드를 눌러 바로 쓰면 저절로 저장돼요. 글자를 끌어서 고른 뒤 오른쪽 아래 Tt에서 색을 고르면 그 글자만 바뀌어요. 메모는 아래쪽 바 버튼을 누를 때마다 한 장씩 더 생겨요(더 만든 메모는 닫으면 지워져요).</li>
       <li><b>사진</b> '사진 넣기'로 사진을 고르세요. 사진 위에 마우스를 올리면 바꾸기·지우기 버튼이 나와요. 아래쪽 바 버튼을 누를 때마다 사진 카드가 한 장씩 더 생겨요.</li>
       <li><b>타이머</b> 30초·1·3·5·10분을 고르거나, 가운데 시간(00:00)을 눌러 3:30처럼 직접 쓰고 '시작'. +1은 1분 더하기예요. 시간이 끝나면 소리가 나고 카드가 깜빡여요.</li>
-      <li><b>뽑기</b> <u>전체</u>: 설정 → 명단에 우리 반 이름을 한 줄에 하나씩(숫자만 쓰면 번호로). <u>선택</u>: 오른쪽 아래 '✎ 고르기'로 뽑을 사람만 골라요. <u>모둠</u>: 오른쪽 아래에 모둠 수를 정해요. <u>직접입력</u>: 오른쪽 아래 '✎ 쓰기'로 그때그때 뽑을 것을 써요. <u>순서</u>: 명단 전체가 이름 구슬이 되어 핀볼 판을 굴러떨어지고, 아래 구멍으로 빠진 순서대로 1등부터 정해요. 한 번 뽑힌 것은 모두 뽑힐 때까지 다시 나오지 않고, '처음부터'로 다시 시작해요.</li>
+      <li><b>뽑기</b> <u>전체</u>: 설정 → 명단에 우리 반 이름을 한 줄에 하나씩(숫자만 쓰면 번호로). <u>선택</u>: 오른쪽 아래 '✎ 고르기'로 뽑을 사람만 골라요. <u>모둠</u>: 오른쪽 아래에 모둠 수를 정해요. <u>직접입력</u>: 오른쪽 아래 '✎ 쓰기'로 그때그때 뽑을 것을 써요. <u>순서</u>: 명단 전체가 이름 구슬이 되어 긴 핀볼 코스(경사로·범퍼·도는 막대·쐐기)를 굴러 내려가요. 화면은 맨 앞 구슬을 따라 내려가고, 맨 아래 구멍으로 빠진 순서대로 1등부터 정해요. 한 번 뽑힌 것은 모두 뽑힐 때까지 다시 나오지 않고, '처음부터'로 다시 시작해요.</li>
       <li><b>미세먼지</b> '지역 설정'에서 '지금 위치로'를 누르거나 시·군 이름(예: 수원시)으로 찾으세요. Open-Meteo(무료 공개 자료)의 예보값이라 에어코리아 측정소 값과 조금 다를 수 있어요. 30분마다 새로 받아요.</li>
       <li><b>소음 측정</b> '측정 시작'을 누르고 마이크를 허락하면 소리 크기를 막대로 보여 줘요. 기준(검은 선)을 1초 넘게 넘으면 경고음이 나고 오늘 경고 횟수가 쌓여요. '🔔 경고'로 직접 경고를 줄 수도 있어요. 소리는 이 컴퓨터 안에서만 재고, 녹음하거나 보내지 않아요.</li>
       <li><b>화이트보드</b> ✏️ 펜을 누르면 색과 굵기를 골라 그려요. T 글상자는 누른 뒤 보드(사진 위도 돼요)를 클릭해 써요. 사진은 복사해서 Ctrl+V(또는 끌어다 놓기). 옮기기에서 사진·글상자·펜 선을 끌어 옮기고, 오른쪽 아래 파란 점으로 크기를 바꾸고(글상자는 글씨도 같이 커져요), 오른쪽 위 ✕나 Delete로 지워요. Shift를 누른 채 여러 개를 누르면 함께 골라지고, '묶기'로 한 덩어리로 묶어요('풀기'로 다시 나눠요). 글상자는 두 번 클릭하면 고치고, 글상자를 고르면 위에 나오는 Tt로 글씨 크기·색을 바꿔요. 여러 개나 묶음은 점선 상자 오른쪽 아래 파란 점으로 한꺼번에 크기를 바꿔요. ↶나 Ctrl+Z로 되돌려요. 제목 줄 오른쪽 1~4 버튼으로 화이트보드를 4개까지 따로 써요.</li>
@@ -1535,63 +1535,100 @@ function pickOne() {
   step();
 }
 function pickReset() { pk.picked[pk.mode] = []; pkWin = null; if (pk.mode === "order") delete pk.order; pkSave(); pickInfo(); }
-// 순서 뽑기 (핀볼): 이름 구슬이 못·범퍼에 부딪히며 떨어지고, 아래 깔때기 구멍으로 빠진 순서가 곧 순서
-// 진짜로 굴려서 정함 (미리 정해 두지 않음). 구멍이 구슬 하나 겨우 지날 만큼이라 끝에서 몰리며 긴장감이 생김
+// 순서 뽑기 (핀볼): 이름 구슬이 긴 코스를 굴러 내려가고, 맨 아래 깔때기 구멍으로 빠진 순서가 곧 순서
+// 코스는 화면 높이의 몇 배로 길고, 화면은 맨 앞 구슬을 따라 아래로 내려감. 진짜로 굴려서 정함 (미리 정해 두지 않음)
+// 장애물: 못밭 → 지그재그 경사로 → 범퍼 → 도는 막대 → 세모 쐐기 → 못밭 → 깔때기
 function pickRace(all) {
   delete pk.order; pickGo.disabled = true; pickName.classList.remove("cards", "ranks"); pickName.style.fontSize = "";
   const wrap = document.createElement("div"), cv = document.createElement("canvas"), list = document.createElement("ol");
   wrap.className = "race"; wrap.append(cv, list); pickName.replaceChildren(wrap);
   const box = cv.getBoundingClientRect(), dpr = devicePixelRatio || 1, W = box.width, H = box.height, g = cv.getContext("2d");
   cv.width = W * dpr; cv.height = H * dpr; g.scale(dpr, dpr);
-  const R = Math.max(5, Math.min(13, W / 22, Math.sqrt(W * H / all.length) / 6)); // 구슬 반지름: 판 크기와 사람 수에 맞춤
-  const GRAV = H * 1.6, top = R * 4, funnelY = H - Math.max(R * 6, H * .16), gap = R * 2.6;
-  // 못: 엇갈린 줄. 범퍼: 큰 원, 닿으면 세게 튕기고 번쩍
-  const pegs = [], sx = R * 4.2, sy = R * 3.6;
-  for (let y = top + R * 3, row = 0; y < funnelY - R * 2; y += sy, row++)
-    for (let x = (row % 2 ? sx / 2 : sx) ; x < W - R; x += sx) pegs.push({ x, y, r: R * .35 });
-  const bumpers = [[.3, .38], [.7, .38], [.5, .62]].map(([fx, fy]) => ({ x: W * fx, y: top + (funnelY - top) * fy, r: R * 1.8, lit: 0 }));
-  for (const b of bumpers) for (let i = pegs.length - 1; i >= 0; i--) if (Math.hypot(pegs[i].x - b.x, pegs[i].y - b.y) < b.r + R * 2.2) pegs.splice(i, 1);
-  const walls = [[0, funnelY, W / 2 - gap / 2, H - R], [W, funnelY, W / 2 + gap / 2, H - R]]; // 깔때기 두 벽
+  const R = Math.max(5, Math.min(12, W / 24, Math.sqrt(W * H / all.length) / 6)); // 구슬 반지름: 판 크기와 사람 수에 맞춤
+  const GRAV = H * 1.4, VMAX = R * 150, rnd = (a, b) => a + Math.random() * (b - a);
+  const pegs = [], bumpers = [], segs = [], spinners = [];
+  const pegField = (y0, h, step) => { for (let y = y0, row = 0; y < y0 + h; y += step * .85, row++) for (let x = row % 2 ? step / 2 : step; x < W - R; x += step) pegs.push({ x, y, r: R * .35 }); };
+  // 코스 쌓기 (y는 위에서 아래로 늘어남)
+  let y = R * 4;
+  pegField(y, H * .7, R * 4.4); y += H * .8;
+  for (let k = 0; k < 4; k++, y += H * .22) { // 지그재그 경사로: 왼쪽·오른쪽 벽에서 번갈아 비스듬히
+    const left = k % 2 === 0;
+    segs.push(left ? [0, y, W * .72, y + H * .12] : [W, y, W * .28, y + H * .12]);
+  }
+  y += H * .1;
+  [[.25, .1], [.75, .1], [.5, .35], [.2, .55], [.8, .55], [.5, .75]].forEach(([fx, fy]) => bumpers.push({ x: W * fx, y: y + H * fy, r: R * 1.8, lit: 0 }));
+  y += H * .95;
+  [[.28, .15, 1], [.72, .15, -1], [.5, .5, 1.3]].forEach(([fx, fy, dir]) => spinners.push({ x: W * fx, y: y + H * fy, L: W * .17, a: rnd(0, 3), w: dir * rnd(2, 3) }));
+  pegField(y + H * .3, H * .15, R * 5); y += H * .75;
+  for (let k = 0; k < 2; k++, y += H * .3) { // 세모 쐐기: 뾰족한 산 모양을 줄마다 엇갈려
+    for (let x = (k % 2 ? W / 3 : W / 6); x < W; x += W / 3) { const hw = W * .07; segs.push([x - hw, y + H * .08, x, y], [x, y, x + hw, y + H * .08]); }
+  }
+  pegField(y, H * .45, R * 4); y += H * .55;
+  const gap = R * 2.6, funnelTop = y, end = y + H * .35;
+  segs.push([0, funnelTop, W / 2 - gap / 2, end - R], [W, funnelTop, W / 2 + gap / 2, end - R]); // 깔때기
+  const WORLD = end + R;
+  for (const b of bumpers) for (let n = pegs.length - 1; n >= 0; n--) if (Math.hypot(pegs[n].x - b.x, pegs[n].y - b.y) < b.r + R * 2.2) pegs.splice(n, 1);
+  for (const sp of spinners) for (let n = pegs.length - 1; n >= 0; n--) if (Math.hypot(pegs[n].x - sp.x, pegs[n].y - sp.y) < sp.L + R * 2) pegs.splice(n, 1);
   const balls = all.map((p, i) => {
     const m = p.match(/^(\d+)번(?: (.+))?$/);
-    return { p, label: m ? m[1] : p.slice(0, 2), x: R + Math.random() * (W - 2 * R), y: -Math.random() * top * 3 - R, vx: (Math.random() - .5) * W * .3, vy: 0,
+    return { p, label: m ? m[1] : p.slice(0, 2), x: rnd(R, W - R), y: -rnd(R, H * .6), vx: rnd(-.15, .15) * W, vy: 0,
       c: `hsl(${(i * 360 / all.length + 20) % 360} 75% 60%)`, still: 0, out: false };
   });
   const order = [];
-  let last = 0, tick = 0, elapsed = 0;
-  const bounce = (b, nx, ny, e) => { const vn = b.vx * nx + b.vy * ny; if (vn < 0) { b.vx -= (1 + e) * vn * nx; b.vy -= (1 + e) * vn * ny; } };
+  let last = 0, tick = 0, elapsed = 0, camY = -H * .3;
+  const bounce = (b, nx, ny, e, ux = 0, uy = 0) => { // (ux, uy): 부딪힌 물체가 움직이는 속도 (도는 막대)
+    const vn = (b.vx - ux) * nx + (b.vy - uy) * ny;
+    if (vn < 0) { b.vx -= (1 + e) * vn * nx; b.vy -= (1 + e) * vn * ny; }
+  };
+  const hitSeg = (b, x1, y1, x2, y2, e, ux = 0, uy = 0) => {
+    const wx = x2 - x1, wy = y2 - y1, t = Math.max(0, Math.min(1, ((b.x - x1) * wx + (b.y - y1) * wy) / (wx * wx + wy * wy)));
+    const cx = x1 + t * wx, cy = y1 + t * wy, dx = b.x - cx, dy = b.y - cy, d = Math.hypot(dx, dy), m = R + 2;
+    if (d >= m || d === 0) return false;
+    const nx = dx / d, ny = dy / d; b.x = cx + nx * m; b.y = cy + ny * m; bounce(b, nx, ny, e, ux, uy);
+    return true;
+  };
   const step = dt => {
+    for (const sp of spinners) sp.a += sp.w * dt;
     for (const b of balls) {
       if (b.out) continue;
-      b.vy += GRAV * dt; b.x += b.vx * dt; b.y += b.vy * dt;
+      b.vy += GRAV * dt;
+      const v = Math.hypot(b.vx, b.vy); if (v > VMAX) { b.vx *= VMAX / v; b.vy *= VMAX / v; } // 너무 빠르면 장애물을 뚫으니 제한
+      b.x += b.vx * dt; b.y += b.vy * dt;
       if (b.x < R) { b.x = R; b.vx = Math.abs(b.vx) * .5; } if (b.x > W - R) { b.x = W - R; b.vx = -Math.abs(b.vx) * .5; }
-      for (const q of pegs) {
-        const dx = b.x - q.x, dy = b.y - q.y, d = Math.hypot(dx, dy), m = R + q.r;
-        if (d < m && d > 0) { const nx = dx / d, ny = dy / d; b.x = q.x + nx * m; b.y = q.y + ny * m; bounce(b, nx, ny, .45); b.vx += (Math.random() - .5) * 20; if (elapsed - tick > .04) { tick = elapsed; tone(1400 + Math.random() * 600, 0, .015, "square", .02); } }
-      }
-      for (const q of bumpers) {
-        const dx = b.x - q.x, dy = b.y - q.y, d = Math.hypot(dx, dy), m = R + q.r;
-        if (d < m && d > 0) { const nx = dx / d, ny = dy / d; b.x = q.x + nx * m; b.y = q.y + ny * m; bounce(b, nx, ny, .9); b.vx += nx * H * .35; b.vy += ny * H * .35; q.lit = .25; tone(520 + Math.random() * 200, 0, .06, "triangle", .08); }
-      }
-      for (const [x1, y1, x2, y2] of walls) {
-        const wx = x2 - x1, wy = y2 - y1, t = Math.max(0, Math.min(1, ((b.x - x1) * wx + (b.y - y1) * wy) / (wx * wx + wy * wy)));
-        const cx = x1 + t * wx, cy = y1 + t * wy, dx = b.x - cx, dy = b.y - cy, d = Math.hypot(dx, dy);
-        if (d < R && d > 0) { const nx = dx / d, ny = dy / d; b.x = cx + nx * R; b.y = cy + ny * R; bounce(b, nx, ny, .3); }
+      if (b.y > -R && b.y < WORLD) {
+        for (const q of pegs) {
+          if (Math.abs(q.y - b.y) > R * 2) continue;
+          const dx = b.x - q.x, dy = b.y - q.y, d = Math.hypot(dx, dy), m = R + q.r;
+          if (d < m && d > 0) { const nx = dx / d, ny = dy / d; b.x = q.x + nx * m; b.y = q.y + ny * m; bounce(b, nx, ny, .45); b.vx += rnd(-10, 10); if (elapsed - tick > .04) { tick = elapsed; tone(rnd(1400, 2000), 0, .015, "square", .02); } }
+        }
+        for (const q of bumpers) {
+          const dx = b.x - q.x, dy = b.y - q.y, d = Math.hypot(dx, dy), m = R + q.r;
+          if (d < m && d > 0) { const nx = dx / d, ny = dy / d; b.x = q.x + nx * m; b.y = q.y + ny * m; bounce(b, nx, ny, .9); b.vx += nx * H * .35; b.vy += ny * H * .35; q.lit = .25; tone(rnd(520, 720), 0, .06, "triangle", .08); }
+        }
+        for (const [x1, y1, x2, y2] of segs) hitSeg(b, x1, y1, x2, y2, .3);
+        for (const sp of spinners) {
+          const cx = Math.cos(sp.a) * sp.L, cy = Math.sin(sp.a) * sp.L;
+          const t = Math.max(-1, Math.min(1, ((b.x - sp.x) * cx + (b.y - sp.y) * cy) / (sp.L * sp.L))); // 막대 위 가장 가까운 점
+          const px = sp.x + t * cx, py = sp.y + t * cy;
+          if (hitSeg(b, sp.x - cx, sp.y - cy, sp.x + cx, sp.y + cy, .6, -sp.w * (py - sp.y), sp.w * (px - sp.x)) && elapsed - tick > .06) { tick = elapsed; tone(rnd(300, 420), 0, .04, "sawtooth", .04); }
+        }
       }
       // 끼어서 안 움직이면 살짝 흔들어 줌
-      if (Math.hypot(b.vx, b.vy) < R * 2) { if ((b.still += dt) > 1.2) { b.vx += (Math.random() - .5) * H; b.vy -= H * .3; b.still = 0; } } else b.still = 0;
-      if (b.y > H + R) { b.out = true; finish(b); }
+      if (Math.hypot(b.vx, b.vy) < R * 2) { if ((b.still += dt) > 1.2) { b.vx += rnd(-.5, .5) * H; b.vy -= H * .3; b.still = 0; } } else b.still = 0;
+      if (b.y > WORLD + R) { b.out = true; finish(b); }
     }
     // 구슬끼리 부딪힘
-    for (let i = 0; i < balls.length; i++) for (let j = i + 1; j < balls.length; j++) {
-      const a = balls[i], b = balls[j];
-      if (a.out || b.out) continue;
-      const dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy);
+    for (let a = 0; a < balls.length; a++) for (let c = a + 1; c < balls.length; c++) {
+      const A = balls[a], B = balls[c];
+      if (A.out || B.out) continue;
+      const dx = B.x - A.x, dy = B.y - A.y;
+      if (Math.abs(dx) >= 2 * R || Math.abs(dy) >= 2 * R) continue;
+      const d = Math.hypot(dx, dy);
       if (d >= 2 * R || d === 0) continue;
       const nx = dx / d, ny = dy / d, o = (2 * R - d) / 2;
-      a.x -= nx * o; a.y -= ny * o; b.x += nx * o; b.y += ny * o;
-      const vn = (b.vx - a.vx) * nx + (b.vy - a.vy) * ny;
-      if (vn < 0) { const k = vn * .8; a.vx += k * nx; a.vy += k * ny; b.vx -= k * nx; b.vy -= k * ny; }
+      A.x -= nx * o; A.y -= ny * o; B.x += nx * o; B.y += ny * o;
+      const vn = (B.vx - A.vx) * nx + (B.vy - A.vy) * ny;
+      if (vn < 0) { const k = vn * .8; A.vx += k * nx; A.vy += k * ny; B.vx -= k * nx; B.vy -= k * ny; }
     }
   };
   const finish = b => {
@@ -1601,29 +1638,44 @@ function pickRace(all) {
     tone(500 + Math.max(0, 14 - order.length) * 70, 0, .12, "triangle", .2);
   };
   const draw = () => {
-    g.clearRect(0, 0, W, H);
-    g.fillStyle = "#3a4258"; for (const q of pegs) { g.beginPath(); g.arc(q.x, q.y, q.r, 0, 7); g.fill(); }
-    for (const q of bumpers) {
+    g.clearRect(0, 0, W, H); g.save(); g.translate(0, -camY);
+    const see = (y1, y2 = y1) => y2 > camY - 40 && y1 < camY + H + 40;
+    g.fillStyle = "#3a4258"; for (const q of pegs) if (see(q.y)) { g.beginPath(); g.arc(q.x, q.y, q.r, 0, 7); g.fill(); }
+    for (const q of bumpers) if (see(q.y)) {
       g.beginPath(); g.arc(q.x, q.y, q.r, 0, 7); g.fillStyle = q.lit > 0 ? "#ffd43b" : "#e2643f"; g.shadowColor = "#ffd43b"; g.shadowBlur = q.lit > 0 ? 24 : 0; g.fill(); g.shadowBlur = 0;
     }
-    g.strokeStyle = "#8b95b0"; g.lineWidth = 3; g.beginPath();
-    for (const [x1, y1, x2, y2] of walls) { g.moveTo(x1, y1); g.lineTo(x2, y2); }
+    g.lineCap = "round"; g.strokeStyle = "#8b95b0"; g.lineWidth = 4; g.beginPath();
+    for (const [x1, y1, x2, y2] of segs) if (see(Math.min(y1, y2), Math.max(y1, y2))) { g.moveTo(x1, y1); g.lineTo(x2, y2); }
     g.stroke();
+    g.strokeStyle = "#4dabf7"; g.lineWidth = 6;
+    for (const sp of spinners) if (see(sp.y)) {
+      const cx = Math.cos(sp.a) * sp.L, cy = Math.sin(sp.a) * sp.L;
+      g.beginPath(); g.moveTo(sp.x - cx, sp.y - cy); g.lineTo(sp.x + cx, sp.y + cy); g.stroke();
+      g.beginPath(); g.arc(sp.x, sp.y, 4, 0, 7); g.fillStyle = "#e7f5ff"; g.fill();
+    }
+    if (see(WORLD)) { g.fillStyle = "#ffd43b"; g.fillRect(W / 2 - gap, WORLD - 3, gap * 2, 3); } // 결승 구멍
     g.textAlign = "center"; g.textBaseline = "middle"; g.font = `${Math.round(R * .95)}px "Wanted Sans", sans-serif`;
     for (const b of balls) {
-      if (b.out || b.y < -R) continue;
+      if (b.out || !see(b.y)) continue;
       g.beginPath(); g.arc(b.x, b.y, R, 0, 7); g.fillStyle = b.c; g.fill();
       g.fillStyle = "#1f2433"; g.fillText(b.label, b.x, b.y + 1);
     }
+    g.restore();
+    // 오른쪽 가장자리 작은 지도: 코스 전체에서 구슬들이 어디쯤 있는지
+    g.fillStyle = "rgba(255, 255, 255, .15)"; g.fillRect(W - 6, 4, 2, H - 8);
+    g.fillStyle = "rgba(255, 255, 255, .35)"; g.fillRect(W - 8, 4 + Math.max(0, camY) / WORLD * (H - 8), 6, H / WORLD * (H - 8));
+    for (const b of balls) if (!b.out) { g.fillStyle = b.c; g.fillRect(W - 9, 4 + Math.max(0, Math.min(1, b.y / WORLD)) * (H - 8), 8, 2); }
   };
   const frame = now => {
     const dt = Math.min(.25, (now - last) / 1000), n = Math.ceil(dt * 240); last = now; // 화면이 느려도 실제 시간만큼 굴러감
     elapsed += dt;
-    for (let k = 0; k < n; k++) step(dt / n); // 잘게 나눠 계산해야 빠른 구슬이 못을 뚫고 지나가지 않음
+    for (let k = 0; k < n; k++) step(dt / n); // 잘게 나눠 계산해야 빠른 구슬이 장애물을 뚫고 지나가지 않음
     for (const q of bumpers) q.lit -= dt;
+    const lead = Math.max(...balls.filter(b => !b.out).map(b => b.y), -Infinity); // 화면은 맨 앞 구슬을 따라 내려감
+    if (lead > -Infinity) camY += (Math.max(-H * .3, Math.min(WORLD - H + R * 2, lead - H * .6)) - camY) * Math.min(1, dt * 4);
     draw();
-    if (order.length < balls.length && elapsed < 60) { requestAnimationFrame(frame); return; }
-    balls.filter(b => !b.out).sort((a, b) => b.y - a.y).forEach(b => { b.out = true; finish(b); }); // 1분이 지나도 안 나온 구슬은 아래 있는 순서로
+    if (order.length < balls.length && elapsed < 120) { requestAnimationFrame(frame); return; }
+    balls.filter(b => !b.out).sort((a, b) => b.y - a.y).forEach(b => { b.out = true; finish(b); }); // 2분이 지나도 안 나온 구슬은 더 내려간 순서로
     setTimeout(() => { pk.order = order; pkSave(); pickGo.disabled = false; pickInfo(); melody([523, 659, 784, 1047], .1, "triangle", .3); }, 1500);
   };
   draw();
