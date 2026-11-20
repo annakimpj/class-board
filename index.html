@@ -58,6 +58,7 @@
   .board:not(.free) .card-grip { display: none; }
   .card .card-full { right: 34px; }
   .card:fullscreen { border-radius: 0; } /* 전체 화면에선 닫기·크기 조절 없이 */
+  .card:fullscreen > .card-full { right: 12px; top: 8px; padding: 6px 14px; font-size: 15px; opacity: 1; background: rgba(255, 255, 255, .92); color: var(--ink); border-radius: 999px; }
   .card:fullscreen > .card-down:not(.card-full), .card:fullscreen > .card-grip { display: none; }
   .label { display: flex; align-items: center; gap: 6px; font-size: 20px; color: var(--accent); }
   /* 카드마다 색: 포인트 색(--accent)과 바탕(--card), 테두리(--line) */
@@ -261,7 +262,7 @@
   /* 순서 뽑기 핀볼: 왼쪽은 구슬이 굴러떨어지는 판, 오른쪽은 들어온 순서 */
   .race { width: 100%; height: 100%; display: grid; grid-template-columns: minmax(0, 1fr) 34%; gap: 8px; font-size: 14px; }
   .race canvas { display: block; width: 100%; height: 100%; min-height: 0; border-radius: 10px; background: #1f2433; }
-  .race ol { min-height: 0; margin: 0; padding: 4px 0; list-style: none; overflow-y: auto; font-size: 13px; line-height: 1.5; }
+  .race ol { min-height: 0; margin: 0; padding: 4px 0; list-style: none; overflow-y: auto; font-size: 19px; line-height: 1.45; }
   .race li { display: flex; gap: 6px; align-items: baseline; animation: rank-in .35s ease-out; }
   @keyframes rank-in { from { opacity: 0; transform: translateY(-6px); } }
   .race li:first-child { font-size: 1.2em; }
@@ -322,7 +323,9 @@
   /* 명단 표: 번호 | 이름 | 지우기 */
   .roster-table { border-collapse: collapse; margin-bottom: 8px; }
   .roster-table th { font-weight: normal; color: var(--muted); font-size: 14px; text-align: left; padding: 0 4px 4px; }
-  .roster-table td { padding: 2px 4px; }
+  .roster-table td { padding: 2px 4px; position: relative; }
+  .fill-handle { position: absolute; right: 0; bottom: 0; width: 9px; height: 9px; background: var(--accent); border: 2px solid #fff; cursor: crosshair; touch-action: none; }
+  .roster-table tr.filling .n { background: #fff4ea; border-color: var(--accent); }
   .roster-table input { font: 17px "Wanted Sans", "Malgun Gothic", sans-serif; padding: 4px 8px; border: 1.5px solid var(--line); border-radius: 8px; background: #fff; box-sizing: border-box; }
   .roster-table .n { width: 64px; text-align: center; }
   .roster-table .nm { width: min(240px, 50vw); }
@@ -1086,6 +1089,10 @@ function cardChrome(k) { // 카드마다 ⛶ 전체 화면, ✕ 닫기(아래쪽
   const c = card(k), full = document.createElement("button"), down = document.createElement("button"), grip = document.createElement("span");
   full.className = "card-down card-full"; full.textContent = "⛶"; full.title = "전체 화면 (Esc로 돌아와요)"; full.setAttribute("aria-label", "전체 화면");
   full.onclick = () => document.fullscreenElement ? document.exitFullscreen() : c.requestFullscreen().catch(() => {});
+  document.addEventListener("fullscreenchange", () => { // 전체 화면일 때는 '작게'라고 보여서 돌아가는 법을 알 수 있게
+    const on = document.fullscreenElement === c;
+    full.textContent = on ? "↙ 작게" : "⛶"; full.title = on ? "원래 크기로 (Esc)" : "전체 화면 (Esc로 돌아와요)";
+  });
   down.className = "card-down"; down.textContent = "✕"; down.title = "닫기 (아래쪽 바에서 다시 띄울 수 있어요)"; down.setAttribute("aria-label", "닫기");
   down.onclick = () => extras.includes(k) ? removeCard(k) : setLayout(k, { mode: "popup" });
   grip.className = "card-grip"; grip.title = "끌어서 크기 조절";
@@ -1416,11 +1423,10 @@ function rosterTable() {
 }
 function rosterRow(n, name) {
   const tr = document.createElement("tr"), num = document.createElement("input"), nm = document.createElement("input"), del = document.createElement("button");
-  num.className = "n"; num.type = "number"; num.min = 1; num.value = n; num.setAttribute("aria-label", "번호");
+  num.className = "n"; num.inputMode = "numeric"; num.value = n; num.setAttribute("aria-label", "번호"); // 숫자 칸(type=number)은 위아래 화살표가 숫자를 바꿔서 글자 칸으로
   nm.className = "nm"; nm.value = name; nm.setAttribute("aria-label", "이름");
-  del.textContent = "✕"; del.title = "이 줄 지우기"; del.onclick = () => { tr.remove(); rosterSync(true); };
+  del.textContent = "✕"; del.title = "이 줄 지우기"; del.tabIndex = -1; del.onclick = () => { tr.remove(); rosterSync(true); };
   for (const inp of [num, nm]) { inp.oninput = () => rosterSync(false); inp.onchange = () => rosterSync(true); }
-  nm.onkeydown = e => { if (e.key === "Enter") rosterAdd(); }; // Enter로 다음 사람
   const td = x => { const c = document.createElement("td"); c.append(x); return c; };
   tr.append(td(num), td(nm), td(del));
   return tr;
@@ -1430,6 +1436,40 @@ function rosterSync(done) {
   roster.dispatchEvent(new Event("input"));
   if (done) roster.dispatchEvent(new Event("change"));
 }
+// 엑셀처럼: ↑↓는 위아래 칸, ←→는 글자 끝에서 옆 칸, Enter는 아래 칸(마지막 줄이면 한 명 더하기)
+rosterRows.addEventListener("keydown", e => {
+  const inp = e.target;
+  if (inp.tagName !== "INPUT") return;
+  const rows = [...rosterRows.children], ri = rows.indexOf(inp.closest("tr")), col = inp.classList.contains("n") ? 0 : 1;
+  const go = (r, c) => { const t = rows[r]?.querySelectorAll("input")[c]; if (!t) return false; e.preventDefault(); t.focus(); t.select(); return true; };
+  const s0 = inp.selectionStart, s1 = inp.selectionEnd;
+  if (e.key === "ArrowUp") go(ri - 1, col);
+  else if (e.key === "ArrowDown") go(ri + 1, col);
+  else if (e.key === "ArrowLeft" && col === 1 && s0 === 0 && s1 === 0) go(ri, 0);
+  else if (e.key === "ArrowRight" && col === 0 && s0 === inp.value.length && s1 === s0) go(ri, 1);
+  else if (e.key === "Enter" && !go(ri + 1, col)) { e.preventDefault(); rosterAdd(); }
+});
+const rosterFill = document.createElement("span"); // 번호 칸 채우기 손잡이
+rosterFill.className = "fill-handle"; rosterFill.title = "아래로 끌어서 번호 이어 채우기";
+rosterRows.addEventListener("focusin", e => { if (e.target.classList.contains("n")) e.target.parentElement.append(rosterFill); });
+rosterFill.addEventListener("pointerdown", e => {
+  const rows = [...rosterRows.children], si = rows.indexOf(rosterFill.closest("tr")), n0 = parseInt(rows[si].querySelector(".n").value) || 1;
+  let ti = si;
+  rosterFill.setPointerCapture(e.pointerId); e.preventDefault();
+  const move = ev => {
+    const tr = document.elementFromPoint(ev.clientX, ev.clientY)?.closest("#roster-rows tr");
+    if (tr) ti = Math.max(si, rows.indexOf(tr)); // 아래로만
+    rows.forEach((r, i) => r.classList.toggle("filling", i > si && i <= ti));
+  };
+  const up = () => {
+    rosterFill.removeEventListener("pointermove", move); rosterFill.removeEventListener("pointerup", up);
+    rows.forEach(r => r.classList.remove("filling"));
+    if (ti === si) return;
+    for (let i = si + 1; i <= ti; i++) rows[i].querySelector(".n").value = n0 + i - si; // 1, 2, 3 … 처럼 하나씩 늘려 채움
+    rosterSync(true);
+  };
+  rosterFill.addEventListener("pointermove", move); rosterFill.addEventListener("pointerup", up);
+});
 function rosterAdd() {
   const nums = [...rosterRows.querySelectorAll(".n")].map(i => +i.value || 0), tr = rosterRow(String(Math.max(0, ...nums) + 1), "");
   rosterRows.append(tr); tr.querySelector(".nm").focus();
@@ -1544,11 +1584,13 @@ function pickRace(all) {
   const wrap = document.createElement("div"), cv = document.createElement("canvas"), list = document.createElement("ol");
   wrap.className = "race"; wrap.append(cv, list); pickName.replaceChildren(wrap);
   // 세계 크기는 화면의 1/Z배로 넓게 잡고 그릴 때 줄여서, 코스가 더 많이 보이게(멀리서 보듯). Z가 작을수록 멀리
-  const box = cv.getBoundingClientRect(), Z = .6, W = box.width / Z, H = box.height / Z, g = cv.getContext("2d");
+  const box = cv.getBoundingClientRect(), Z = .45, W = box.width / Z, H = box.height / Z, g = cv.getContext("2d");
   const R = Math.max(5, Math.min(12, W / 24, Math.sqrt(W * H / all.length) / 6)); // 구슬 반지름: 판 크기와 사람 수에 맞춤
   const GRAV = H * 1.4, VMAX = R * 150, rnd = (a, b) => a + Math.random() * (b - a);
   const pegs = [], bumpers = [], segs = [], spinners = [];
-  const pegField = (y0, h, step) => { for (let y = y0, row = 0; y < y0 + h; y += step * .85, row++) for (let x = row % 2 ? step / 2 : step; x < W - R; x += step) pegs.push({ x, y, r: R * .35 }); };
+  const pegField = (y0, h, step) => { // 벽과 못 사이는 구슬이 지나갈 만큼 띄움 (좁으면 끼어서 못 내려감)
+    for (let y = y0, row = 0; y < y0 + h; y += step * .85, row++) for (let x = row % 2 ? step / 2 : step; x < W - R * 2.8; x += step) if (x > R * 2.8) pegs.push({ x, y, r: R * .35 });
+  };
   // 코스 쌓기 (y는 위에서 아래로 늘어남)
   let y = R * 4;
   pegField(y, H * .7, R * 4.4); y += H * .8;
@@ -1594,7 +1636,10 @@ function pickRace(all) {
       if (b.out) continue;
       b.vy += GRAV * dt;
       // 엎치락뒤치락: 무리보다 한참 앞서면 바람을 맞아 느려지고, 한참 뒤처지면 뒷바람을 받음 (선두가 자주 바뀌게)
-      if (b.y > mid + H * .5) b.vy *= 1 - 1.6 * dt; else if (b.y < mid - H * .5) b.vy += GRAV * .35 * dt;
+      // 앞설수록 더 세게 붙잡혀서 한 명만 멀리 달아나지 못함 → 다 같이 비슷하게 들어옴
+      const ahead = (b.y - mid) / H;
+      if (ahead > .25) { b.vy *= 1 - Math.min(.9, 4 * (ahead - .25)) * dt * 6; b.vy = Math.min(b.vy, GRAV * Math.max(.05, .6 - ahead)); }
+      else if (ahead < -.4) b.vy += GRAV * Math.min(1, -ahead) * dt;
       const v = Math.hypot(b.vx, b.vy); if (v > VMAX) { b.vx *= VMAX / v; b.vy *= VMAX / v; } // 너무 빠르면 장애물을 뚫으니 제한
       b.x += b.vx * dt; b.y += b.vy * dt;
       if (b.x < R) { b.x = R; b.vx = Math.abs(b.vx) * .5; } if (b.x > W - R) { b.x = W - R; b.vx = -Math.abs(b.vx) * .5; }
@@ -1617,7 +1662,7 @@ function pickRace(all) {
         }
       }
       // 끼어서 안 움직이면 살짝 흔들어 줌
-      if (Math.hypot(b.vx, b.vy) < R * 2) { if ((b.still += dt) > 1.2) { b.vx += rnd(-.5, .5) * H; b.vy -= H * .3; b.still = 0; } } else b.still = 0;
+      if (Math.hypot(b.vx, b.vy) < R * 2) { if ((b.still += dt) > 1.2) { b.vx += (b.x < W / 2 ? 1 : -1) * rnd(.2, .5) * H; b.vy -= H * .3; b.still = 0; } } else b.still = 0; // 가운데 쪽으로
       if (b.y > WORLD + R) { b.out = true; finish(b); }
     }
     // 구슬끼리 부딪힘
@@ -1687,10 +1732,10 @@ function pickRace(all) {
     leadFlash -= dt;
     const act = balls.filter(b => !b.out).sort((a, b) => b.y - a.y);
     if (act.length) {
-      mid = act[Math.floor(act.length / 2)].y;
+      const ys = balls.map(b => b.out ? WORLD : b.y).sort((a, b) => a - b); mid = ys[Math.floor(ys.length / 2)]; // 이미 들어온 구슬도 결승선에 있다고 쳐야 꼴찌들이 뒷바람을 받음
       if (act[0] !== leader && elapsed > 1.5) { if (leader && !leader.out) { leadFlash = .7; tone(880, 0, .07, "square", .09); tone(1320, .07, .1, "square", .09); } leader = act[0]; } // 선두 바뀜: 띠링
       else if (!leader) leader = act[0];
-      camY += (Math.max(-VH * .3, Math.min(WORLD - VH + R * 2, act[0].y - VH * .6)) - camY) * Math.min(1, dt * 4); // 화면은 맨 앞 구슬을 따라 내려감
+      camY += (Math.max(-VH * .3, Math.min(WORLD - VH + R * 2, act[0].y - VH * .65)) - camY) * Math.min(1, dt * 7); // 화면은 맨 앞 구슬을 바짝 따라 내려감
     }
     draw();
     if (order.length < balls.length && elapsed < 120) { requestAnimationFrame(frame); return; }
