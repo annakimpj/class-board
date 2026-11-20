@@ -218,8 +218,9 @@
   .tt-right .note { font-size: 22px; }
   /* Tt 버튼: 줄을 따로 차지하지 않게 칸 오른쪽 아래에 띄움 (크기 조절 모서리 옆) */
   .note-tools { position: absolute; right: 22px; bottom: 6px; z-index: 2; opacity: 0; transition: opacity .15s; }
-  .tt-right { position: relative; }
-  .tt-right .note-tools { right: 4px; bottom: 0; }
+  .tt-box { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 4px; position: relative; } /* 준비물·숙제 칸 */
+  .tt-box + .tt-box { border-top: 2px dashed var(--line); padding-top: 6px; }
+  .tt-box .note-tools { right: 4px; bottom: 0; }
   .card:hover .note-tools, .card:focus-within .note-tools { opacity: 1; }
   .note-tools button, .note-pop button { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); background: #fff; color: var(--ink);
                        border-radius: 6px; padding: 0 6px; height: 22px; cursor: pointer; }
@@ -252,6 +253,8 @@
   @keyframes blink { to { background: #ffd9cc; } }
   /* 뽑기: 뽑을 대상마다 이름 카드. 불빛이 카드 사이를 옮겨 다니다 느려지며 한 장에 멈춤 */
   #pick-name.cards { display: flex; flex-wrap: wrap; align-content: center; justify-content: center; gap: .35em; overflow-y: auto; padding: 4px; line-height: 1.2; }
+  .pick-card small { display: block; font-size: .6em; opacity: .7; text-align: center; }
+  .pick-card b { display: block; font-weight: normal; font-size: 1.15em; text-align: center; }
   .pick-card { padding: .3em .6em; border-radius: .4em; background: #fff; border: 2px solid var(--line); color: var(--ink); white-space: nowrap;
                transition: transform .08s, background .08s; }
   .pick-card.done { background: #eceff3; border-color: #eceff3; color: #b4bac4; text-decoration: line-through; } /* 이미 뽑힘 */
@@ -286,15 +289,23 @@
   #panel li .date { border: 0; background: none; padding: 0 2px; color: var(--accent); text-decoration: underline dotted; border-radius: 4px; }
   #panel li .date:hover { background: var(--line); }
   #panel .row { display: flex; gap: 6px; }
-  #panel .roster { display: block; box-sizing: border-box; width: min(420px, 100%); height: 60vh; font: 18px/1.5 "Wanted Sans", "Malgun Gothic", sans-serif;
-                   padding: 8px 12px; border: 1.5px solid var(--line); border-radius: 8px; background: #fff; resize: none; }
+  /* 명단 표: 번호 | 이름 | 지우기 */
+  .roster-table { border-collapse: collapse; margin-bottom: 8px; }
+  .roster-table th { font-weight: normal; color: var(--muted); font-size: 14px; text-align: left; padding: 0 4px 4px; }
+  .roster-table td { padding: 2px 4px; }
+  .roster-table input { font: 17px "Wanted Sans", "Malgun Gothic", sans-serif; padding: 4px 8px; border: 1.5px solid var(--line); border-radius: 8px; background: #fff; box-sizing: border-box; }
+  .roster-table .n { width: 64px; text-align: center; }
+  .roster-table .nm { width: min(240px, 50vw); }
+  #panel .roster-table button { border: 0; background: none; color: var(--muted); padding: 2px 8px; }
   #panel input:not([type]) { flex: 1; font: inherit; padding: 4px 10px; border: 1.5px solid var(--line); border-radius: 8px; background: #fff; }
   #panel .danger { background: var(--accent); border-color: var(--accent); color: #fff; }
   #panel h3 { font-weight: normal; font-size: 19px; color: var(--accent); margin: 14px 0 4px; }
   /* 글꼴 위아래가 잘리지 않게 줄 높이와 높이를 넉넉히 */
   #panel select { font: inherit; line-height: 1.4; height: 36px; padding: 0 28px 0 10px; border: 1.5px solid var(--line); border-radius: 8px; background: #fff; }
   .tt-bells { display: grid; grid-template-columns: max-content; gap: 4px; }
-  .tt-bells label { display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+  .tt-bells > div { display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+  .tt-bells .off { margin-left: 6px; color: var(--muted); font-size: 14px; }
+  .tt-bells input:disabled { opacity: .45; }
   .tt-bells input, .tt-grid input { font: 15px "Wanted Sans", "Malgun Gothic", sans-serif; padding: 2px 4px; border: 1.5px solid var(--line); border-radius: 6px; background: #fff; }
   .tt-grid { display: grid; grid-template-columns: 52px repeat(5, minmax(0, 72px)); gap: 4px; margin-top: 8px; }
   .tt-grid b { font-weight: normal; text-align: center; color: var(--muted); }
@@ -500,8 +511,14 @@
         <div class="tt-today" id="tt-today"></div>
       </div>
       <div class="tt-right">
-        <p class="sub">🎒 준비물</p>
-        <div class="note" data-key="supplies" contenteditable="true" spellcheck="false" role="textbox" aria-multiline="true" aria-label="준비물"></div>
+        <div class="tt-box">
+          <p class="sub">🎒 준비물</p>
+          <div class="note" data-key="supplies" contenteditable="true" spellcheck="false" role="textbox" aria-multiline="true" aria-label="준비물"></div>
+        </div>
+        <div class="tt-box">
+          <p class="sub">📚 숙제</p>
+          <div class="note" data-key="homework" contenteditable="true" spellcheck="false" role="textbox" aria-multiline="true" aria-label="숙제"></div>
+        </div>
       </div>
     </div>
   </section>
@@ -541,13 +558,15 @@
     <div class="tt-grid" id="tt-grid"></div>
   </section>
   <section id="tab-roster" hidden>
-    <p class="sum">뽑기에 쓰는 우리 반 명단이에요. 한 줄에 한 명씩 '번호 이름'으로 쓰세요(예: 1 김하늘). 번호 없이 이름만 쓰면 위에서부터 1번, 2번… 으로 붙여요. 숫자만 쓰면(예: 25) 1번부터 그 번호까지 뽑아요. 한글·PDF 명렬표 파일에서 가져올 수도 있어요. 쓰는 대로 저장돼요.</p>
+    <p class="sum">뽑기에 쓰는 우리 반 명단이에요. 한글·PDF 명렬표 파일에서 가져오거나, 아래 표에 번호와 이름을 직접 쓰세요. 가져온 뒤에도 표에서 바로 고칠 수 있어요. 이름 없이 번호만 써도 번호로 뽑아요. 쓰는 대로 저장돼요.</p>
     <div class="row">
       <button onclick="document.getElementById('roster-file').click()">파일에서 가져오기 (.hwp · .pdf)</button>
       <input type="file" id="roster-file" accept=".hwp,.pdf" hidden>
     </div>
     <p class="sum" id="roster-msg"></p>
-    <textarea id="roster" class="roster" spellcheck="false" aria-label="명단"></textarea>
+    <textarea id="roster" hidden></textarea><!-- 저장용: "번호 이름" 한 줄씩. 보이는 건 아래 표 -->
+    <table class="roster-table"><thead><tr><th>번호</th><th>이름</th><th></th></tr></thead><tbody id="roster-rows"></tbody></table>
+    <button class="roster-add" onclick="rosterAdd()">+ 한 명 더하기</button>
   </section>
   <section id="tab-history" hidden></section>
   <section id="tab-share" hidden>
@@ -1075,8 +1094,10 @@ board.addEventListener("pointerdown", e => {
   const move = ev => {
     const dx = (ev.clientX - sx) / B.width, dy = (ev.clientY - sy) / B.height;
     const [mw, mh] = minOf(k); // 이보다 작게는 못 줄임
-    if (grip) { r.w = Math.min(1 - r.x, Math.max(mw / B.width, r0.w + dx)); r.h = Math.min(1 - r.y, Math.max(mh / B.height, r0.h + dy)); }
-    else { r.x = Math.min(Math.max(0, r0.x + dx), 1 - r.w); r.y = Math.min(Math.max(0, r0.y + dy), 1 - r.h); } // 화면 밖으로 못 나감
+    // 배경 점(18px 간격)에 카드 가장자리를 맞춤: 줄 맞추기 쉽게 조금씩 끊어서 움직임
+    const snapX = v => (Math.round((B.left + v * B.width) / 18) * 18 - B.left) / B.width, snapY = v => (Math.round((B.top + v * B.height) / 18) * 18 - B.top) / B.height;
+    if (grip) { r.w = Math.min(1 - r.x, Math.max(mw / B.width, snapX(r.x + r0.w + dx) - r.x)); r.h = Math.min(1 - r.y, Math.max(mh / B.height, snapY(r.y + r0.h + dy) - r.y)); }
+    else { r.x = Math.min(Math.max(0, snapX(r0.x + dx)), 1 - r.w); r.y = Math.min(Math.max(0, snapY(r0.y + dy)), 1 - r.h); } // 화면 밖으로 못 나감
     [r.x, r.y, r.w, r.h].forEach((v, i) => c.style[POS[i]] = v * 100 + "%");
   };
   const up = () => { t.removeEventListener("pointermove", move); t.removeEventListener("pointerup", up); layout[k] = l; saveLayout(); };
@@ -1336,7 +1357,38 @@ const lines = v => [...new Set(v.split("\n").map(s => s.trim()).filter(Boolean))
 function people() { // "1번 김하늘"처럼 번호와 이름을 붙여서. 번호가 없으면 줄 순서로
   const v = roster.value.trim();
   if (/^\d+$/.test(v)) return Array.from({ length: Math.min(+v, 200) }, (_, i) => (i + 1) + "번");
-  return lines(v).map((l, i) => { const m = l.match(/^(\d+)\s*(?:번|\.|\)|-)?\s*(.+)$/); return m ? `${m[1]}번 ${m[2]}` : `${i + 1}번 ${l}`; });
+  return lines(v).map((l, i) => {
+    if (/^\d+$/.test(l)) return l + "번"; // 이름 없이 번호만
+    const m = l.match(/^(\d+)\s*(?:번|\.|\)|-)?\s*(.+)$/); return m ? `${m[1]}번 ${m[2]}` : `${i + 1}번 ${l}`;
+  });
+}
+// 설정 → 명단 표: 줄마다 번호·이름 칸. 고치면 저장용 글(roster)을 다시 만들어 저장
+const rosterRows = document.getElementById("roster-rows");
+function rosterTable() {
+  let v = roster.value.trim();
+  if (/^\d+$/.test(v)) v = Array.from({ length: Math.min(+v, 200) }, (_, i) => i + 1).join("\n"); // 예전 "25" 같은 번호만 명단
+  rosterRows.replaceChildren(...lines(v).map(l => { const m = l.match(/^(\d+)\s*(?:번|\.|\)|-)?\s*(.*)$/); return rosterRow(m ? m[1] : "", m ? m[2] : l); }));
+  if (!rosterRows.children.length) rosterRows.append(rosterRow("1", ""));
+}
+function rosterRow(n, name) {
+  const tr = document.createElement("tr"), num = document.createElement("input"), nm = document.createElement("input"), del = document.createElement("button");
+  num.className = "n"; num.type = "number"; num.min = 1; num.value = n; num.setAttribute("aria-label", "번호");
+  nm.className = "nm"; nm.value = name; nm.setAttribute("aria-label", "이름");
+  del.textContent = "✕"; del.title = "이 줄 지우기"; del.onclick = () => { tr.remove(); rosterSync(true); };
+  for (const inp of [num, nm]) { inp.oninput = () => rosterSync(false); inp.onchange = () => rosterSync(true); }
+  nm.onkeydown = e => { if (e.key === "Enter") rosterAdd(); }; // Enter로 다음 사람
+  const td = x => { const c = document.createElement("td"); c.append(x); return c; };
+  tr.append(td(num), td(nm), td(del));
+  return tr;
+}
+function rosterSync(done) {
+  roster.value = [...rosterRows.children].map(tr => { const [n, nm] = tr.querySelectorAll("input"); return `${n.value.trim()} ${nm.value.trim()}`.trim(); }).filter(Boolean).join("\n");
+  roster.dispatchEvent(new Event("input"));
+  if (done) roster.dispatchEvent(new Event("change"));
+}
+function rosterAdd() {
+  const nums = [...rosterRows.querySelectorAll(".n")].map(i => +i.value || 0), tr = rosterRow(String(Math.max(0, ...nums) + 1), "");
+  rosterRows.append(tr); tr.querySelector(".nm").focus();
 }
 // 명렬표(한글·PDF)에서 "번호 이름" 짝을 찾아 명단으로. 한 줄에 여러 명(번호 이름 번호 이름…)이 있어도 됨
 function parseRoster(rows) {
@@ -1359,8 +1411,8 @@ document.getElementById("roster-file").addEventListener("change", async e => {
     const buf = await f.arrayBuffer(), list = parseRoster(/\.pdf$/i.test(f.name) ? await readPdfRows(buf) : await readHwpTables(buf));
     if (!list.length) { msg.textContent = "번호와 이름을 찾지 못했어요. 번호·이름 칸이 있는 명렬표인지 확인해 주세요."; return; }
     if (roster.value.trim() && !confirm(`${list.length}명을 가져왔어요. 지금 명단을 바꿀까요?`)) { msg.textContent = ""; return; }
-    roster.value = list.join("\n"); roster.dispatchEvent(new Event("input")); roster.dispatchEvent(new Event("change"));
-    msg.textContent = `${list.length}명을 가져왔어요. 아래에서 확인하고 고칠 수 있어요.`;
+    roster.value = list.join("\n"); roster.dispatchEvent(new Event("input")); roster.dispatchEvent(new Event("change")); rosterTable();
+    msg.textContent = `${list.length}명을 가져왔어요. 아래 표에서 번호와 이름을 바로 고칠 수 있어요.`;
   } catch (err) { msg.textContent = "이 파일은 읽지 못했어요. 파일을 열어 명단을 복사해 붙여넣어 주세요."; }
 });
 function candidates(mode = pk.mode) {
@@ -1384,7 +1436,10 @@ function pickInfo() {
   if (!all.length) { pickName.textContent = "?"; return left; }
   pickName.replaceChildren(...all.map(p => {
     const c = document.createElement("span");
-    c.className = "pick-card" + (p === pkWin ? " win" : done.includes(p) ? " done" : ""); c.textContent = p;
+    c.className = "pick-card" + (p === pkWin ? " win" : done.includes(p) ? " done" : ""); c.dataset.p = p;
+    const m = p.match(/^(\d+번) (.+)$/); // "1번 김하늘": 번호는 윗줄에 작게, 이름은 아랫줄에 크게
+    if (m) { const n = document.createElement("small"), b = document.createElement("b"); n.textContent = m[1]; b.textContent = m[2]; c.append(n, b); }
+    else c.textContent = p;
     return c;
   }));
   if (pickName.clientHeight) for (let f = 30; f >= 10; f -= 2) { pickName.style.fontSize = f + "px"; if (pickName.scrollHeight <= pickName.clientHeight) break; }
@@ -1408,7 +1463,7 @@ function pickOne() {
   const winner = pick(left);
   pkWin = null; pickInfo(); // 지난번 강조를 '뽑힘'으로 돌려놓고 시작
   // 아직 안 뽑힌 카드 사이로 불빛이 옮겨 다니다 점점 느려지며 당첨 카드에서 멈춤 (따르르르… 짠!)
-  const cards = [...pickName.children], pool = cards.filter(c => left.includes(c.textContent)), last = cards.find(c => c.textContent === winner);
+  const cards = [...pickName.children], pool = cards.filter(c => left.includes(c.dataset.p)), last = cards.find(c => c.dataset.p === winner);
   let n = 0, wait = 55, hot = null;
   pickGo.disabled = true;
   const step = () => {
@@ -1421,7 +1476,7 @@ function pickOne() {
     }
     pkWin = winner; (pk.picked[pk.mode] = pk.picked[pk.mode] || []).push(winner); pkSave();
     pickGo.disabled = false; pickInfo();
-    const w = [...pickName.children].find(c => c.textContent === winner);
+    const w = [...pickName.children].find(c => c.dataset.p === winner);
     if (w) { w.classList.add("fresh"); pkShow(w); }
     melody([523, 659, 784, 1047], .1, "triangle", .3);
   };
@@ -1442,7 +1497,7 @@ function renderChecks() {
   }));
 }
 function toggleEdit(open = pickEdit.hidden) {
-  if (pk.mode === "all") { if (open) { togglePanel(true); openTab("roster"); roster.focus(); } return; } // 명단은 설정에서
+  if (pk.mode === "all") { if (open) { togglePanel(true); openTab("roster"); rosterRows.querySelector(".nm")?.focus(); } return; } // 명단은 설정에서
   pickEdit.hidden = !open; pickName.hidden = open;
   document.querySelector(".pick-bottom .acts").style.visibility = open ? "hidden" : ""; // 고르는 동안 뽑기·처음부터 숨김
   pickEdit.querySelectorAll("[data-edit]").forEach(el => el.hidden = el.dataset.edit !== pk.mode);
@@ -1463,10 +1518,10 @@ roster.addEventListener("input", () => { try { localStorage.setItem("roster", ro
 roster.addEventListener("change", () => { pkPrune("all"); pkPrune("select"); pickInfo(); });
 groupsInp.addEventListener("input", pickInfo);
 groupsInp.addEventListener("change", () => { try { localStorage.setItem("pick-groups", groupsInp.value); } catch (e) {} pkPrune("group"); pickInfo(); });
-pickInfo();
+rosterTable(); pickInfo();
 
 // ───── 시간표 ─────
-// 저장 형태: { bells: [{s:"09:00", e:"09:40"} ×7], base: 월~금 [과목 ×7], weeks: [{start, end, days: 월~금 [과목…]}] }
+// 저장 형태: { bells: [{s:"09:00", e:"09:40", off(6·7교시 미사용)} ×7], base: 월~금 [과목 ×7], weeks: [{start, end, days: 월~금 [과목…]}] }
 const DAYS = ["월", "화", "수", "목", "금"];
 const SUBJECT = { 국: "국어", 수: "수학", 사: "사회", 과: "과학", 영: "영어", 음: "음악", 미: "미술", 체: "체육", 도: "도덕",
   자: "창체", 동: "동아리", 봉: "봉사", 진: "진로", 실: "실과", 바: "바른 생활", 슬: "슬기로운 생활", 즐: "즐거운 생활", 안: "안전한 생활" };
@@ -1788,7 +1843,7 @@ function ttRender() {
   today.replaceChildren();
   if (!has) { when.textContent = ""; main.innerHTML = "<small>설정 → 시간표에서<br>시간표를 넣어 주세요</small>"; time.textContent = ""; return; }
   const plan = dayPlan(now) || [];
-  const slots = tt.bells.map((b, i) => ({ i, subj: plan[i] || "", s: toMin(b.s), e: toMin(b.e), b })).filter(x => x.subj);
+  const slots = tt.bells.map((b, i) => ({ i, subj: plan[i] || "", s: toMin(b.s), e: toMin(b.e), b })).filter(x => x.subj && !x.b.off);
   const cur = slots.find(x => x.s <= mins && mins < x.e);
   const next = slots.find(x => x.s > mins);
   for (const x of slots) {
@@ -1808,7 +1863,7 @@ function ttRender() {
     when.textContent = plan.length ? "오늘 수업 끝" : "오늘은 수업이 없어요";
     for (let k = 1; k <= 14; k++) { // 다음 수업 있는 날 찾기
       const d = new Date(now); d.setDate(d.getDate() + k);
-      const p = dayPlan(d), i = p ? p.findIndex(Boolean) : -1;
+      const p = dayPlan(d), i = p ? p.findIndex((x, j) => x && !tt.bells[j]?.off) : -1;
       if (i < 0) continue;
       big(`${d.getMonth() + 1}/${d.getDate()}(${DAYS[d.getDay() - 1]}) 첫 시간`, { i, subj: p[i] });
       time.textContent = `${tt.bells[i].s} 시작`;
@@ -1824,14 +1879,19 @@ ttRender();
 function ttEditor() {
   const bells = document.getElementById("tt-bells");
   bells.replaceChildren(...tt.bells.map((b, i) => {
-    const l = document.createElement("label");
+    const l = document.createElement("div");
     l.append(`${i + 1}교시 `);
     for (const k of ["s", "e"]) {
       const inp = document.createElement("input");
-      inp.type = "time"; inp.value = b[k]; inp.setAttribute("aria-label", `${i + 1}교시 ${k === "s" ? "시작" : "끝"}`);
+      inp.type = "time"; inp.value = b[k]; inp.disabled = !!b.off; inp.setAttribute("aria-label", `${i + 1}교시 ${k === "s" ? "시작" : "끝"}`);
       inp.onchange = () => { if (inp.value) { b[k] = inp.value; ttSave(); } };
       l.append(inp);
       if (k === "s") l.append("~");
+    }
+    if (i >= 5) { // 6·7교시는 안 쓰는 학교·학년이 있어서 끌 수 있게
+      const off = document.createElement("label"), c = document.createElement("input");
+      c.type = "checkbox"; c.checked = !!b.off; c.onchange = () => { b.off = c.checked; ttSave(); ttEditor(); };
+      off.className = "off"; off.append(c, "미사용"); l.append(off);
     }
     return l;
   }));
@@ -1848,6 +1908,7 @@ function ttGrid() {
   const grid = document.getElementById("tt-grid");
   const cells = [document.createElement("b"), ...DAYS.map(d => { const b = document.createElement("b"); b.textContent = d; return b; })];
   for (let i = 0; i < 7; i++) {
+    if (tt.bells[i].off) continue; // 미사용 교시는 고치기 표에서도 뺌
     const b = document.createElement("b"); b.textContent = `${i + 1}교시`; cells.push(b);
     DAYS.forEach((_, k) => {
       const inp = document.createElement("input");
