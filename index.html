@@ -33,7 +33,7 @@
   .dock button i { font-style: normal; font-size: 22px; line-height: 1.1; }
   .dock button:hover { transform: translateY(-2px); }
   .dock button.on { background: var(--accent); color: #fff; }
-  .dock .sound { --accent: #8b7b6e; --card: #fff; --line: #e6dccf; min-width: 0; }
+  .dock:not(:has(button)) { display: none; } /* 닫은 카드가 없으면 바도 숨김 */
 
   /* 카드 보드 */
   .board { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: minmax(0, 1fr);
@@ -180,12 +180,18 @@
   .tt-right { border-left: 2px dashed var(--line); padding-left: 12px; }
   .tt-right .sub { text-align: left; font-size: 15px; color: var(--accent); }
   .tt-right .note { font-size: 22px; }
-  .note-tools { display: flex; align-items: center; gap: 4px; height: 24px; opacity: 0; transition: opacity .15s; }
+  .note-tools { display: flex; justify-content: flex-end; height: 24px; opacity: 0; transition: opacity .15s; }
   .card:hover .note-tools, .card:focus-within .note-tools { opacity: 1; }
-  .note-tools button { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); background: #fff; color: var(--ink);
+  .note-tools button, .note-pop button { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); background: #fff; color: var(--ink);
                        border-radius: 6px; padding: 0 6px; height: 22px; cursor: pointer; }
-  .note-tools .dot { width: 18px; height: 18px; padding: 0; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px var(--line); }
-  .note-tools .dot.on { box-shadow: 0 0 0 2px var(--ink); }
+  /* 글씨 크기·색 팝업: 버튼 하나를 누르면 그 아래에 뜸 */
+  .note-pop { inset: auto; margin: 0; padding: 8px; border: 1.5px solid var(--line); border-radius: 10px; background: #fff;
+              box-shadow: 0 8px 24px rgba(60, 40, 20, .18); }
+  .note-pop:popover-open { display: grid; grid-template-columns: repeat(5, auto); gap: 6px; align-items: center; }
+  .note-pop .size { grid-column: span 5; display: flex; gap: 4px; }
+  .note-pop small { grid-column: span 5; font: 12px "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--muted); }
+  .note-pop .dot { width: 22px; height: 22px; padding: 0; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px var(--line); }
+  .note-pop .dot.on { box-shadow: 0 0 0 2px var(--ink); }
   .tt-big { flex: 1; display: grid; place-items: center; text-align: center; font-size: clamp(18px, min(7cqw, 14cqh), 42px); line-height: 1.2; min-height: 0; }
   .tt-big small { display: block; font-size: .5em; color: var(--muted); }
   .tt-today { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
@@ -274,7 +280,6 @@
   .dock button i { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 12px; background: var(--card); font-size: 21px; }
   .dock button:hover { transform: none; background: var(--card); }
   .dock button:hover i { background: var(--accent); }
-  .dock .sound { border-left: 1.5px solid #eee6da; border-radius: 0 14px 14px 0; }
 
   /* 미세먼지 */
   [data-card="dust"]  { --accent: #6b7f99; --card: #eef2f7; --line: #d3dbe6; }
@@ -439,8 +444,7 @@
     </div>
   </section>
 </div>
-<nav class="dock" aria-label="필요할 때 띄우는 도구"><span id="launch" style="display:contents"></span>
-  <button class="sound" id="sound-btn" onclick="toggleSound()" title="효과음 켜기/끄기"><i>🔊</i>소리</button></nav>
+<nav class="dock" aria-label="필요할 때 띄우는 도구"><span id="launch" style="display:contents"></span></nav>
 <button class="gear" onclick="togglePanel(true)" title="설정" aria-label="설정">
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true">
     <path d="M10.06,4.24L10.52,1.50L13.48,1.50L13.94,4.24L16.12,5.14L18.38,3.53L20.47,5.62L18.86,7.88L19.76,10.06L22.50,10.52L22.50,13.48L19.76,13.94L18.86,16.12L20.47,18.38L18.38,20.47L16.12,18.86L13.94,19.76L13.48,22.50L10.52,22.50L10.06,19.76L7.88,18.86L5.62,20.47L3.53,18.38L5.14,16.12L4.24,13.94L1.50,13.48L1.50,10.52L4.24,10.06L5.14,7.88L3.53,5.62L5.62,3.53L7.88,5.14Z"/>
@@ -496,7 +500,7 @@
       <li><b>화이트보드</b> ✏️ 펜으로 그리고, T 글상자는 누른 뒤 보드를 클릭해 써요. 사진은 복사해서 Ctrl+V(또는 끌어다 놓기). 옮기기에서 사진·글상자를 끌어 옮기고, 오른쪽 아래 파란 점으로 크기를 바꾸고, Delete로 지워요. 글상자는 두 번 클릭하면 고치고, 고른 채로 색 점을 누르면 글씨 색이 바뀌어요. Ctrl+Z로 되돌려요. 오른쪽 1~4 버튼으로 화이트보드를 4개까지 따로 써요.</li>
       <li><b>시간표</b> 설정 → 시간표에서 연간시간표(한글 파일 또는 표 붙여넣기)와 시정표를 넣으면, 지금 몇 교시인지와 다음 시간을 알려 줘요. 표에 없는 주는 '매주 기본 시간표'를 써요.</li>
       <li><b>보드 카드</b> 제목을 끌어 옮기고, 오른쪽 아래 모서리로 크기를 바꿔요. 옮긴 자리와 크기는 앱을 껐다 켜도 그대로예요. ✕를 누르면 보드에서 닫히고 아래쪽 바로 들어가요. 닫아도 적어 둔 내용은 남아요.</li>
-      <li><b>아래쪽 바</b> 보드에서 닫은 카드가 들어가요. 누르면 보드에 다시 나와요. 🔊 버튼으로 효과음을 끄고 켜요.</li>
+      <li><b>아래쪽 바</b> 보드에서 닫은 카드가 들어가요. 누르면 보드에 다시 나와요.</li>
       <li><b>준비물</b> 시간표 카드 오른쪽 칸에 쓰면 저장돼요.</li>
       <li><b>창 옮기기</b> 맨 위 줄을 잡고 끌어요. 창 크기는 모서리를 끌어 조절해요. 창이 좁으면 카드가 아래로 쌓여요.</li>
       <li><b>앱 설치 (Edge)</b> 이 주소를 Edge로 열고 주소창 오른쪽 설치 아이콘을 눌러요. 안 보이면 … 메뉴 → 앱 → '이 사이트를 앱으로 설치'.</li>
@@ -899,7 +903,7 @@ document.getElementById("today").textContent =
 // 처음엔 칸 맞춤으로 자리를 잡아 그 위치를 기억하고, 그다음부터는 제목을 끌어 옮기고 오른쪽 아래 모서리로 크기를 바꿈
 // [이름, 표시, 처음 위치(board 보드 | popup 아래쪽 바), 처음 크기(칸), 최소 크기 px [가로, 세로]]
 const CARDS = [["topic", "✏️ 오늘의 주제", "board", "2", [340, 200]], ["timetable", "🕘 시간표", "board", "2", [320, 190]],
-  ["memo", "📝 메모", "board", "1", [210, 180]], ["rules", "📌 우리반 규칙", "board", "1", [210, 180]],
+  ["memo", "📝 메모", "board", "1", [210, 180]], ["rules", "📌 우리반 규칙", "board", "1", [260, 230]],
   ["photo", "🖼️ 사진", "popup", "1", [200, 170]], ["timer", "⏱️ 타이머", "popup", "1", [240, 240]], ["picker", "🎲 뽑기", "popup", "1", [240, 250]],
   ["whiteboard", "🖍️ 화이트보드", "popup", "4", [420, 320]], ["dust", "😷 미세먼지", "board", "1", [260, 270]], ["noise", "🔉 소음 측정", "popup", "1", [240, 270]]];
 const minOf = k => CARDS.find(c => c[0] === k)[4];
@@ -1034,7 +1038,7 @@ document.querySelectorAll(".note[data-key]").forEach(ta => {
   try { st = JSON.parse(localStorage.getItem(key)) || {}; } catch (e) {}
   const apply = () => {
     ta.style.fontSize = st.fs ? st.fs + "px" : ""; ta.style.color = st.color || "";
-    bar.querySelectorAll(".dot").forEach(d => d.classList.toggle("on", d.dataset.c === (st.color || NOTE_COLORS[0])));
+    pop.querySelectorAll(".dot").forEach(d => d.classList.toggle("on", d.dataset.c === (st.color || NOTE_COLORS[0])));
     try { localStorage.setItem(key, JSON.stringify(st)); } catch (e) {}
   };
   const btn = (txt, title, fn) => { // 누를 때 고른 글자가 풀리지 않게 mousedown 막음
@@ -1046,11 +1050,19 @@ document.querySelectorAll(".note[data-key]").forEach(ta => {
     else { st.color = c; apply(); }
   };
   const size = d => { st.fs = Math.max(14, Math.min(64, (st.fs || parseFloat(getComputedStyle(ta).fontSize)) + d)); apply(); };
-  const bar = document.createElement("div");
-  bar.className = "note-tools";
-  bar.append(btn("가−", "글씨 작게", () => size(-2)), btn("가+", "글씨 크게", () => size(2)),
-    ...NOTE_COLORS.map(c => { const b = btn("", "글씨 색 (글자를 골라 두면 그 글자만)", () => color(c)); b.className = "dot"; b.dataset.c = c; b.style.background = c; b.setAttribute("aria-label", "글씨 색"); return b; }));
-  ta.before(bar); apply();
+  const bar = document.createElement("div"), pop = document.createElement("div"), sizes = document.createElement("div"), tip = document.createElement("small");
+  bar.className = "note-tools"; pop.className = "note-pop"; pop.popover = "auto"; sizes.className = "size";
+  sizes.append(btn("가−", "글씨 작게", () => size(-2)), btn("가+", "글씨 크게", () => size(2)));
+  tip.textContent = "글자를 골라 두면 그 글자만 색이 바뀌어요";
+  pop.append(sizes, ...NOTE_COLORS.map(c => { const b = btn("", "글씨 색", () => color(c)); b.className = "dot"; b.dataset.c = c; b.style.background = c; b.setAttribute("aria-label", "글씨 색"); return b; }), tip);
+  const open = btn("가 글씨 ▾", "글씨 크기·색", () => {});
+  open.popoverTargetElement = pop;
+  pop.addEventListener("beforetoggle", e => { // 버튼 바로 아래, 화면 밖으로 안 나가게
+    if (e.newState !== "open") return;
+    const r = open.getBoundingClientRect();
+    pop.style.top = r.bottom + 4 + "px"; pop.style.left = Math.max(8, Math.min(r.right - 200, innerWidth - 220)) + "px";
+  });
+  bar.append(open); ta.before(bar); document.body.append(pop); apply();
 });
 
 // 사진: 긴 변 1600px JPEG로 줄여서 이 컴퓨터에 저장
@@ -1133,17 +1145,8 @@ function timerTick() {
   timerDraw();
 }
 function timerReset() { timerStop(); tLeft = tTotal; timerCard.classList.remove("done"); timerDraw(); }
-// 효과음: 파일 없이 브라우저에서 바로 만든 소리. 🔊 버튼으로 끄고 켬
-let muted = false;
-try { muted = localStorage.getItem("mute") === "1"; } catch (e) {}
-function toggleSound() {
-  muted = !muted;
-  try { localStorage.setItem("mute", muted ? "1" : ""); } catch (e) {}
-  showSound(); if (!muted) tone(880, 0, .15);
-}
-function showSound() { const b = document.getElementById("sound-btn"); b.firstChild.textContent = muted ? "🔇" : "🔊"; b.lastChild.textContent = muted ? "소리 꺼짐" : "소리"; }
+// 효과음: 파일 없이 브라우저에서 바로 만든 소리
 function tone(freq, at, dur, type = "sine", vol = .25) {
-  if (muted) return;
   try {
     actx = actx || new AudioContext(); actx.resume();
     const t0 = actx.currentTime + at, o = actx.createOscillator(), g = actx.createGain();
@@ -1154,7 +1157,6 @@ function tone(freq, at, dur, type = "sine", vol = .25) {
 }
 const melody = (notes, step, type, vol) => notes.forEach((f, i) => tone(f, i * step, step * 1.6, type, vol));
 function beep() { melody([784, 988, 1175, 1568, 0, 784, 988, 1175, 1568], .14, "triangle", .3); } // 타이머 끝: 띠로리 ×2
-showSound();
 timerDraw();
 
 // 뽑기: 전체(명단) · 선택(명단 중 고른 사람) · 모둠 · 직접(그때그때 입력)
