@@ -112,9 +112,16 @@
   /* ✕·크기 점은 모서리에 반쯤 걸치게: 짧은 글상자에서도 둘이 안 겹치고, 보드 가장자리에서도 반은 보임 */
   .wb-obj .grip { display: none; position: absolute; right: -7px; bottom: -7px; width: 14px; height: 14px; background: #3a78d4;
                   border: 2px solid #fff; border-radius: 50%; cursor: nwse-resize; }
-  .wb-obj .del { display: none; position: absolute; right: -11px; top: -11px; width: 22px; height: 22px; border-radius: 50%; border: 0;
+  .wb-selbox .del { position: absolute; right: -11px; top: -11px; width: 22px; height: 22px; border-radius: 50%; border: 0; pointer-events: auto;
                  background: #e2643f; color: #fff; font-size: 12px; cursor: pointer; padding: 0; }
-  .wb[data-tool="select"] .wb-obj.sel .grip, .wb[data-tool="select"] .wb-obj.sel .del { display: block; }
+  .wb[data-tool="select"] .wb-obj.one .grip { display: block; } /* 크기 조절은 하나만 골랐을 때 */
+  /* 고른 것 둘레: 점선 상자, 오른쪽 위 ✕, 위쪽에 묶기·풀기 (위에 자리가 없으면 아래) */
+  .wb-selbox { position: absolute; z-index: 2; border: 2px dashed #3a78d4; border-radius: 6px; pointer-events: none; }
+  .wb-selbox[hidden] { display: none; }
+  .wb-selacts { position: absolute; left: -2px; bottom: 100%; margin-bottom: 4px; display: flex; gap: 4px; }
+  .wb-selbox.low .wb-selacts { bottom: auto; top: 100%; margin: 4px 0 0; }
+  .wb-selacts button { pointer-events: auto; font: 12px "Wanted Sans", "Malgun Gothic", sans-serif; border: 0; border-radius: 6px; background: #3a78d4; color: #fff; padding: 3px 8px; cursor: pointer; }
+  .wb-selacts button[hidden] { display: none; }
 
   /* 오늘의 주제 카드: 왼쪽 띠 */
   .topic-card { border-top-width: 1.5px; border-left: 8px solid var(--accent); padding-left: 22px; container-type: inline-size; }
@@ -465,10 +472,9 @@
     <p class="label">🖍️ 화이트보드</p>
     <span class="wb-pages" aria-label="화이트보드 고르기"></span>
     <div class="wb-tools" role="toolbar" aria-label="화이트보드 도구">
-      <button data-tool="select" title="고르기·옮기기 (사진·글상자를 끌어 옮기고, 모서리로 크기 조절)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3l14 8-6 1.5L10 19z" fill="currentColor"/></svg>옮기기</button>
+      <button data-tool="select" title="고르기·옮기기 (끌어 옮기고, 모서리로 크기 조절. Shift+클릭으로 여러 개 고르기)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3l14 8-6 1.5L10 19z" fill="currentColor"/></svg>옮기기</button>
       <button data-tool="pen" title="펜 (누르면 색·굵기 고르기)">✏️ 펜 <i class="pen-dot"></i></button>
       <button data-tool="text" title="글상자: 누른 뒤 보드를 클릭">T 글상자</button>
-      <button data-tool="erase" title="지우개: 펜 선을 지워요"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 3.5l6 6L11 19H6l-3-3z" fill="#f4a3b4" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 9l6 6" stroke="currentColor" stroke-width="1.6"/><path d="M11 19h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>지우개</button>
       <button class="wb-tt" title="글상자 글씨 크기·색 (고른 글상자, 없으면 새로 만들 글상자)" aria-label="글상자 글씨 크기·색"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h11M8.5 5v14M13 11h8M17 11v8" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
       <button onclick="wbUndo()" title="되돌리기 (Ctrl+Z)">↶</button>
       <button onclick="wbClear()" title="모두 지우기">🗑️</button>
@@ -477,6 +483,10 @@
     <div class="wb" id="wb" tabindex="0" aria-label="화이트보드. 사진은 Ctrl+V로 붙여넣기">
       <div class="wb-objs" id="wb-objs"></div>
       <canvas id="wb-canvas"></canvas>
+      <div class="wb-selbox" id="wb-selbox" hidden>
+        <span class="wb-selacts"><button id="wb-group" onclick="wbGroup(true)">묶기</button><button id="wb-ungroup" onclick="wbGroup(false)">풀기</button></span>
+        <button class="del" onclick="wbDelete()" title="지우기 (Delete)" aria-label="지우기">✕</button>
+      </div>
     </div>
     <div class="wb-pop" id="wb-pop" popover><div class="wb-sizes"></div><div class="wb-colors"></div><div class="wb-widths"></div></div>
   </section>
@@ -554,7 +564,7 @@
       <li><b>뽑기</b> <u>전체</u>: 설정 → 명단에 우리 반 이름을 한 줄에 하나씩(숫자만 쓰면 번호로). <u>선택</u>: 오른쪽 아래 '✎ 고르기'로 뽑을 사람만 골라요. <u>모둠</u>: 오른쪽 아래에 모둠 수를 정해요. <u>직접입력</u>: 오른쪽 아래 '✎ 쓰기'로 그때그때 뽑을 것을 써요. 한 번 뽑힌 것은 모두 뽑힐 때까지 다시 나오지 않고, '처음부터'로 다시 시작해요.</li>
       <li><b>미세먼지</b> '지역 설정'에서 '지금 위치로'를 누르거나 시·군 이름(예: 수원시)으로 찾으세요. Open-Meteo(무료 공개 자료)의 예보값이라 에어코리아 측정소 값과 조금 다를 수 있어요. 30분마다 새로 받아요.</li>
       <li><b>소음 측정</b> '측정 시작'을 누르고 마이크를 허락하면 소리 크기를 막대로 보여 줘요. 기준(검은 선)을 1초 넘게 넘으면 경고음이 나고 오늘 경고 횟수가 쌓여요. '🔔 경고'로 직접 경고를 줄 수도 있어요. 소리는 이 컴퓨터 안에서만 재고, 녹음하거나 보내지 않아요.</li>
-      <li><b>화이트보드</b> ✏️ 펜을 누르면 색과 굵기를 골라 그려요. T 글상자는 누른 뒤 보드(사진 위도 돼요)를 클릭해 써요. 사진은 복사해서 Ctrl+V(또는 끌어다 놓기). 옮기기에서 사진·글상자·펜 선을 끌어 옮기고, 오른쪽 아래 파란 점으로 크기를 바꾸고(글상자는 글씨도 같이 커져요), Delete로 지워요. 글상자는 두 번 클릭하면 고치고, Tt로 글씨 크기·색을 바꿔요(고른 글상자가 없으면 새로 만들 글상자에 적용). ↶나 Ctrl+Z로 되돌려요. 제목 줄 오른쪽 1~4 버튼으로 화이트보드를 4개까지 따로 써요.</li>
+      <li><b>화이트보드</b> ✏️ 펜을 누르면 색과 굵기를 골라 그려요. T 글상자는 누른 뒤 보드(사진 위도 돼요)를 클릭해 써요. 사진은 복사해서 Ctrl+V(또는 끌어다 놓기). 옮기기에서 사진·글상자·펜 선을 끌어 옮기고, 오른쪽 아래 파란 점으로 크기를 바꾸고(글상자는 글씨도 같이 커져요), 오른쪽 위 ✕나 Delete로 지워요. Shift를 누른 채 여러 개를 누르면 함께 골라지고, '묶기'로 한 덩어리로 묶어요('풀기'로 다시 나눠요). 글상자는 두 번 클릭하면 고치고, Tt로 글씨 크기·색을 바꿔요(고른 글상자가 없으면 새로 만들 글상자에 적용). ↶나 Ctrl+Z로 되돌려요. 제목 줄 오른쪽 1~4 버튼으로 화이트보드를 4개까지 따로 써요.</li>
       <li><b>시간표</b> 설정 → 시간표에서 연간시간표(한글 파일 또는 표 붙여넣기)와 시정표를 넣으면, 지금 몇 교시인지와 다음 시간을 알려 줘요. 표에 없는 주는 '매주 기본 시간표'를 써요.</li>
       <li><b>보드 카드</b> 제목을 끌어 옮기고, 오른쪽 아래 모서리로 크기를 바꿔요. 옮긴 자리와 크기는 앱을 껐다 켜도 그대로예요. ✕를 누르면 보드에서 닫히고 아래쪽 바로 들어가요. 닫아도 적어 둔 내용은 남아요.</li>
       <li><b>아래쪽 바</b> 보드에서 닫은 카드가 들어가요. 누르면 보드에 다시 나와요.</li>
@@ -1862,7 +1872,7 @@ ttEditor();
 // 사진이 여러 장이면 localStorage(약 5MB)를 넘기 쉬워서 IndexedDB에 저장
 const wb = document.getElementById("wb"), wbObjs = document.getElementById("wb-objs"), wbCv = document.getElementById("wb-canvas");
 const WB_COLORS = ["#2b1d14", "#e2643f", "#3a78d4", "#2e9a63", "#c98a00", "#7a5cc7"];
-let wbData = { objs: [], strokes: [] }, wbTool = "pen", wbColor = WB_COLORS[0], wbWidth = .004, wbTextC = WB_COLORS[0], wbTextFs = 7, wbSel = null, wbSelS = null, wbHist = [], wbSaveT = 0, wbPage = 0;
+let wbData = { objs: [], strokes: [] }, wbTool = "pen", wbColor = WB_COLORS[0], wbWidth = .004, wbTextC = WB_COLORS[0], wbTextFs = 7, wbSel = null, wbHist = [], wbSaveT = 0, wbPage = 0;
 try { wbPage = Math.min(3, +localStorage.getItem("wb-page") || 0); } catch (e) {}
 const wbKey = p => p ? "whiteboard-" + (p + 1) : "whiteboard"; // 화이트보드 4개. 1번은 예전 저장 이름 그대로
 function idb(mode, fn) {
@@ -1896,11 +1906,11 @@ function wbUndo() {
   let s;
   do s = wbHist.pop(); while (s && wbSame(s, wbData));
   if (!s) return;
-  wbData = s; wbSel = wbSelS = null; wbRender(); wbDraw(); wbSave();
+  wbData = s; wbRender(); wbPick([]); wbSave();
 }
 function wbClear() {
   if (!confirm("화이트보드를 모두 지울까요? (↶로 되돌릴 수 있어요)")) return;
-  wbSnap(); wbData = { objs: [], strokes: [] }; wbSel = null; wbRender(); wbDraw(); wbSave();
+  wbSnap(); wbData = { objs: [], strokes: [] }; wbRender(); wbPick([]); wbSave();
 }
 function wbFont(d) { // 고른 글상자가 있으면 그것, 없으면 새로 만들 글상자 글씨 크기
   if (wbSel && wbSel.type === "text") { wbSnap(); wbSel.fs = Math.max(2, Math.min(60, wbSel.fs + d)); wbRender(); wbSave(); }
@@ -1955,7 +1965,7 @@ wbPages.append(...[0, 1, 2, 3].map(p => {
   return b;
 }));
 function wbLoad(p) {
-  wbPage = p; wbData = { objs: [], strokes: [] }; wbHist = []; wbSel = wbSelS = null; wbRender(); wbDraw();
+  wbPage = p; wbData = { objs: [], strokes: [] }; wbHist = []; wbRender(); wbPick([]);
   try { localStorage.setItem("wb-page", p); } catch (e) {}
   wbPages.querySelectorAll("button").forEach((b, i) => b.classList.toggle("on", i === p));
   idb("readonly", s => s.get(wbKey(p))).then(d => {
@@ -1963,29 +1973,70 @@ function wbLoad(p) {
     const { hist = [], srcs = {}, ...data } = d;
     wbData = data;
     wbHist = hist.map(x => ({ strokes: x.strokes, objs: x.objs.map(o => o.type === "img" && !o.src ? { ...o, src: srcs[o.id] } : o) }));
-    wbRender(); wbDraw();
+    wbRender(); wbPick([]);
   }).catch(() => {});
 }
-function wbSelect(o) {
-  wbSel = o;
-  if (wbSelS) { wbSelS = null; wbDraw(); } // 고른 펜 선 풀기
-  wbObjs.querySelectorAll(".wb-obj").forEach(el => el.classList.toggle("sel", !!o && el.dataset.id === o.id));
+// 고르기: 글상자·사진·펜 선을 함께 고를 수 있음 (Shift+클릭으로 더하기·빼기). 묶인 것(g가 같은 것)은 늘 함께 골라짐
+let wbSet = new Set();
+const wbMembers = it => it.g ? [...wbData.objs, ...wbData.strokes].filter(x => x.g === it.g) : [it];
+function wbPick(items) {
+  wbSet = new Set(items);
+  wbSel = wbSet.size === 1 && items[0].type ? items[0] : null; // 하나만 고른 글상자·사진: 크기 조절·Tt 대상
+  wbObjs.querySelectorAll(".wb-obj").forEach(el => {
+    const o = wbData.objs.find(x => x.id === el.dataset.id);
+    el.classList.toggle("sel", wbSet.has(o)); el.classList.toggle("one", o === wbSel);
+  });
+  wbDraw(); wbBox();
 }
+function wbSelect(o) { wbPick(o ? wbMembers(o) : []); }
 function wbRender() {
   wbObjs.replaceChildren(...wbData.objs.map(o => {
     const el = document.createElement("div");
-    el.className = `wb-obj ${o.type}${o === wbSel ? " sel" : ""}`; el.dataset.id = o.id;
+    el.className = `wb-obj ${o.type}${wbSet.has(o) ? " sel" : ""}${o === wbSel ? " one" : ""}`; el.dataset.id = o.id;
     Object.assign(el.style, { left: o.x * 100 + "%", top: o.y * 100 + "%", width: o.w * 100 + "%", height: o.h * 100 + "%" });
     if (o.type === "img") { const im = new Image(); im.src = o.src; im.alt = ""; el.append(im); }
     else { el.textContent = o.text; el.style.color = o.c || ""; el.style.fontSize = o.fs + "cqh"; el.style.height = "auto"; el.style.minHeight = o.h * 100 + "%"; } // 글이 많으면 아래로 늘어남
-    const grip = document.createElement("span"), del = document.createElement("button");
-    grip.className = "grip"; del.className = "del"; del.textContent = "✕"; del.title = "지우기"; del.contentEditable = "false";
-    del.onclick = e => { e.stopPropagation(); wbRemove(o); };
-    el.append(grip, del);
+    const grip = document.createElement("span");
+    grip.className = "grip"; el.append(grip);
     return el;
   }));
+  wbBox();
 }
-function wbRemove(o) { wbSnap(); wbData.objs = wbData.objs.filter(x => x !== o); wbSel = null; wbRender(); wbSave(); }
+const wbBoxEl = document.getElementById("wb-selbox"), wbGroupBtn = document.getElementById("wb-group"), wbUngroupBtn = document.getElementById("wb-ungroup");
+function wbBox() { // 고른 것 둘레 상자 자리 맞추기
+  if (!wbSet.size || wbTool !== "select") { wbBoxEl.hidden = true; return; }
+  const r = wb.getBoundingClientRect();
+  let x1 = Infinity, y1 = Infinity, x2 = -Infinity, y2 = -Infinity;
+  const add = (a, b, c, d) => { x1 = Math.min(x1, a); y1 = Math.min(y1, b); x2 = Math.max(x2, c); y2 = Math.max(y2, d); };
+  for (const it of wbSet) {
+    if (it.pts) {
+      const p = it.w * r.width / 2;
+      for (let i = 0; i < it.pts.length; i += 2) add(it.pts[i] * r.width - p, it.pts[i + 1] * r.height - p, it.pts[i] * r.width + p, it.pts[i + 1] * r.height + p);
+    } else {
+      const e = wbEl(it)?.getBoundingClientRect();
+      if (e) add(e.left - r.left, e.top - r.top, e.right - r.left, e.bottom - r.top);
+    }
+  }
+  if (x1 === Infinity) { wbBoxEl.hidden = true; return; }
+  wbBoxEl.hidden = false;
+  Object.assign(wbBoxEl.style, { left: x1 - 5 + "px", top: y1 - 5 + "px", width: x2 - x1 + 10 + "px", height: y2 - y1 + 10 + "px" });
+  wbBoxEl.classList.toggle("low", y1 < 34);
+  const items = [...wbSet], g = items[0].g;
+  wbGroupBtn.hidden = items.length < 2 || items.every(x => x.g && x.g === g); // 이미 한 묶음이면 묶기 숨김
+  wbUngroupBtn.hidden = !items.some(x => x.g);
+}
+function wbDelete() {
+  if (!wbSet.size) return;
+  wbSnap(); wbData.objs = wbData.objs.filter(x => !wbSet.has(x)); wbData.strokes = wbData.strokes.filter(x => !wbSet.has(x));
+  wbRender(); wbPick([]); wbSave();
+}
+function wbGroup(on) { // 묶기·풀기. 새 것으로 바꿔 끼워 되돌리기 기록과 안 섞이게
+  wbSnap();
+  const g = String(Date.now()), items = [];
+  const mark = x => { if (!wbSet.has(x)) return x; const n = { ...x }; if (on) n.g = g; else delete n.g; items.push(n); return n; };
+  wbData.objs = wbData.objs.map(mark); wbData.strokes = wbData.strokes.map(mark);
+  wbRender(); wbPick(items); wbSave();
+}
 const wbEl = o => wbObjs.querySelector(`[data-id="${o.id}"]`);
 function wbEditText(o) {
   const el = wbEl(o);
@@ -2009,45 +2060,58 @@ wbObjs.addEventListener("pointerdown", e => {
     wbData.objs.push(o); setTool("select"); wbRender(); wbSelect(o); wbEditText(o);
     e.preventDefault(); return;
   }
-  if (!el) { wbSelect(null); if (wbTool === "select") wbGrabStroke(e, r); return; }
-  const o = wbData.objs.find(x => x.id === el.dataset.id);
-  if (wbTool === "text" && o.type === "text") { setTool("select"); wbSelect(o); wbEditText(o); e.preventDefault(); return; }
-  if (wbTool !== "select" || e.target.classList.contains("del")) return;
-  wbSelect(o);
-  const resize = e.target.classList.contains("grip"), sx = e.clientX, sy = e.clientY, o0 = { ...o };
-  let moved = false;
-  el.setPointerCapture(e.pointerId);
-  const move = ev => {
-    const dx = (ev.clientX - sx) / r.width, dy = (ev.clientY - sy) / r.height;
-    if (!moved) { moved = true; wbSnap(); }
-    if (resize) {
-      o.w = Math.max(.04, o0.w + dx);
-      if (o.type === "img") o.h = o.w * r.width / o.ar / r.height; // 사진은 비율 유지
-      else { const k = o.w / o0.w; o.h = o0.h * k; o.fs = Math.max(2, Math.min(60, o0.fs * k)); el.style.fontSize = o.fs + "cqh"; } // 글상자는 글씨도 같이 커짐
-    } else { o.x = o0.x + dx; o.y = o0.y + dy; }
-    Object.assign(el.style, { left: o.x * 100 + "%", top: o.y * 100 + "%", width: o.w * 100 + "%" });
-    el.style[o.type === "img" ? "height" : "minHeight"] = o.h * 100 + "%";
-  };
-  const up = () => { el.removeEventListener("pointermove", move); el.removeEventListener("pointerup", up); if (moved) wbSave(); };
-  el.addEventListener("pointermove", move); el.addEventListener("pointerup", up);
-  e.preventDefault();
-});
-// 옮기기에서 펜 선을 눌러 고르고 끌어 옮김 (Delete로 지움)
-function wbGrabStroke(e, r) {
+  const o = el && wbData.objs.find(x => x.id === el.dataset.id);
+  if (wbTool === "text" && o) { setTool("select"); wbSelect(o); wbEditText(o); e.preventDefault(); return; }
+  if (wbTool !== "select") return;
+  if (o && e.target.classList.contains("grip")) { wbResize(e, el, o, r); return; }
   const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
-  const s0 = wbData.strokes.findLast(s => wbHit(s, x, y, r, 10 + s.w * r.width / 2));
-  if (!s0) return;
-  wbSelS = s0; wbDraw();
-  const sx = e.clientX, sy = e.clientY;
-  let s = null;
+  const it = o || wbData.strokes.findLast(s => wbHit(s, x, y, r, 10 + s.w * r.width / 2));
+  if (!it) { if (!e.shiftKey) wbPick([]); return; }
+  const mem = wbMembers(it);
+  if (e.shiftKey) { // 더하기·빼기
+    const on = wbSet.has(it), next = new Set(wbSet);
+    mem.forEach(m => on ? next.delete(m) : next.add(m));
+    wbPick([...next]); e.preventDefault(); return;
+  }
+  if (!wbSet.has(it)) wbPick(mem);
+  wbDrag(e, r);
+});
+function wbDrag(e, r) { // 고른 것을 함께 옮김
+  const sx = e.clientX, sy = e.clientY, start = [...wbSet].map(it => [it, it.pts || [it.x, it.y]]);
+  let moved = null;
   wbObjs.setPointerCapture(e.pointerId);
   const move = ev => {
     const dx = (ev.clientX - sx) / r.width, dy = (ev.clientY - sy) / r.height;
-    if (!s) { wbSnap(); s = { ...s0 }; wbData.strokes[wbData.strokes.indexOf(s0)] = wbSelS = s; } // 새 선으로 바꿔 끼워 되돌리기 기록과 안 섞임
-    s.pts = s0.pts.map((v, j) => v + (j % 2 ? dy : dx)); wbDraw();
+    if (!moved) { // 처음 움직일 때 기록. 선은 새 선으로 바꿔 끼워 되돌리기 기록과 안 섞이게
+      wbSnap();
+      moved = start.map(([it, p]) => { if (!it.pts) return [it, p]; const n = { ...it }; wbData.strokes[wbData.strokes.indexOf(it)] = n; return [n, p]; });
+      wbSet = new Set(moved.map(([it]) => it));
+    }
+    for (const [it, p] of moved) {
+      if (it.pts) { it.pts = p.map((v, j) => v + (j % 2 ? dy : dx)); continue; }
+      it.x = p[0] + dx; it.y = p[1] + dy;
+      Object.assign(wbEl(it).style, { left: it.x * 100 + "%", top: it.y * 100 + "%" });
+    }
+    wbDraw(); wbBox();
   };
-  const up = () => { wbObjs.removeEventListener("pointermove", move); wbObjs.removeEventListener("pointerup", up); if (s) wbSave(); };
+  const up = () => { wbObjs.removeEventListener("pointermove", move); wbObjs.removeEventListener("pointerup", up); if (moved) wbSave(); };
   wbObjs.addEventListener("pointermove", move); wbObjs.addEventListener("pointerup", up);
+  e.preventDefault();
+}
+function wbResize(e, el, o, r) { // 오른쪽 아래 파란 점: 사진은 비율 유지, 글상자는 글씨도 같이 커짐
+  const sx = e.clientX, o0 = { ...o };
+  let moved = false;
+  el.setPointerCapture(e.pointerId);
+  const move = ev => {
+    if (!moved) { moved = true; wbSnap(); }
+    o.w = Math.max(.04, o0.w + (ev.clientX - sx) / r.width);
+    if (o.type === "img") o.h = o.w * r.width / o.ar / r.height;
+    else { const k = o.w / o0.w; o.h = o0.h * k; o.fs = Math.max(2, Math.min(60, o0.fs * k)); el.style.fontSize = o.fs + "cqh"; }
+    el.style.width = o.w * 100 + "%"; el.style[o.type === "img" ? "height" : "minHeight"] = o.h * 100 + "%";
+    wbBox();
+  };
+  const up = () => { el.removeEventListener("pointermove", move); el.removeEventListener("pointerup", up); if (moved) wbSave(); };
+  el.addEventListener("pointermove", move); el.addEventListener("pointerup", up);
   e.preventDefault();
 }
 // (x, y)에서 px 픽셀 안으로 선이 지나가는지. 점 사이 선분까지 봐서 빠르게 그은 선도 잡힘
@@ -2064,21 +2128,18 @@ wbObjs.addEventListener("dblclick", e => {
   const el = e.target.closest(".wb-obj.text");
   if (el && wbTool === "select") wbEditText(wbData.objs.find(x => x.id === el.dataset.id));
 });
-// 펜·지우개
+// 펜
 function wbDraw() {
   const g = wbCv.getContext("2d"), W = wbCv.width, H = wbCv.height;
   g.clearRect(0, 0, W, H); g.lineCap = g.lineJoin = "round";
-  for (const s of wbData.strokes) {
-    g.strokeStyle = s.c; g.lineWidth = s.w * W; g.beginPath();
+  const path = s => {
+    g.beginPath();
     for (let i = 0; i < s.pts.length; i += 2) i ? g.lineTo(s.pts[i] * W, s.pts[i + 1] * H) : g.moveTo(s.pts[0] * W, s.pts[1] * H);
     if (s.pts.length === 2) g.lineTo(s.pts[0] * W + .5, s.pts[1] * H); // 점 하나도 보이게
-    g.stroke();
-  }
-  if (wbSelS && wbData.strokes.includes(wbSelS)) { // 고른 펜 선: 파란 점선 상자
-    const xs = wbSelS.pts.filter((_, i) => i % 2 === 0), ys = wbSelS.pts.filter((_, i) => i % 2), p = wbSelS.w * W / 2 + 6;
-    g.save(); g.setLineDash([6, 4]); g.strokeStyle = "#3a78d4"; g.lineWidth = 2;
-    g.strokeRect(Math.min(...xs) * W - p, Math.min(...ys) * H - p, (Math.max(...xs) - Math.min(...xs)) * W + 2 * p, (Math.max(...ys) - Math.min(...ys)) * H + 2 * p);
-    g.restore();
+  };
+  for (const s of wbData.strokes) {
+    if (wbSet.has(s)) { path(s); g.strokeStyle = "rgba(58, 120, 212, .35)"; g.lineWidth = s.w * W + 10; g.stroke(); } // 고른 선은 파란 테두리
+    path(s); g.strokeStyle = s.c; g.lineWidth = s.w * W; g.stroke();
   }
 }
 function wbSize() {
@@ -2090,19 +2151,9 @@ new ResizeObserver(wbSize).observe(wb);
 wbCv.addEventListener("pointerdown", e => {
   const r = wb.getBoundingClientRect(), pt = ev => [(ev.clientX - r.left) / r.width, (ev.clientY - r.top) / r.height];
   wbCv.setPointerCapture(e.pointerId); wbSnap(); wb.focus();
-  let move;
-  if (wbTool === "pen") {
-    const s = { c: wbColor, w: wbWidth, pts: pt(e) };
-    wbData.strokes.push(s); wbDraw();
-    move = ev => { s.pts.push(...pt(ev)); wbDraw(); };
-  } else { // 지우개: 지나간 자리에 닿은 선을 통째로 지움
-    move = ev => {
-      const [x, y] = pt(ev), n = wbData.strokes.length;
-      wbData.strokes = wbData.strokes.filter(s => !wbHit(s, x, y, r, 14));
-      if (wbData.strokes.length !== n) wbDraw();
-    };
-    move(e);
-  }
+  const s = { c: wbColor, w: wbWidth, pts: pt(e) };
+  wbData.strokes.push(s); wbDraw();
+  const move = ev => { s.pts.push(...pt(ev)); wbDraw(); };
   const up = () => { wbCv.removeEventListener("pointermove", move); wbCv.removeEventListener("pointerup", up); wbSave(); };
   wbCv.addEventListener("pointermove", move); wbCv.addEventListener("pointerup", up);
 });
@@ -2140,10 +2191,7 @@ wb.addEventListener("drop", e => {
 document.addEventListener("keydown", e => {
   if (!wbShown() || e.target.closest("input, textarea, [contenteditable='true']")) return;
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") { e.preventDefault(); wbUndo(); }
-  else if ((e.key === "Delete" || e.key === "Backspace") && wbSel) { e.preventDefault(); wbRemove(wbSel); }
-  else if ((e.key === "Delete" || e.key === "Backspace") && wbSelS) {
-    e.preventDefault(); wbSnap(); wbData.strokes = wbData.strokes.filter(s => s !== wbSelS); wbSelS = null; wbDraw(); wbSave();
-  }
+  else if ((e.key === "Delete" || e.key === "Backspace") && wbSet.size) { e.preventDefault(); wbDelete(); }
 });
 setTool("pen");
 wbLoad(wbPage);
