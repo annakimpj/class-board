@@ -233,19 +233,17 @@
   #timer-card.done { animation: blink .5s 6 alternate; }
   #timer-card.done .big { color: var(--accent); }
   @keyframes blink { to { background: #ffd9cc; } }
-  /* 뽑기 슬롯머신: 위아래는 흐리게, 가운데 줄에 테두리 */
-  #pick-name { position: relative; }
-  #pick-name.rolling::after { content: ""; position: absolute; left: 4%; right: 4%; top: 33.33%; height: 33.33%; pointer-events: none;
-                              border-block: 3px solid var(--accent); box-shadow: 0 0 14px var(--accent), inset 0 0 14px var(--line); border-radius: 6px;
-                              animation: reel-glow .3s infinite alternate; }
-  @keyframes reel-glow { to { box-shadow: 0 0 4px var(--accent), inset 0 0 4px var(--line); } }
-  .reel { position: absolute; inset: 0; overflow: hidden; mask-image: linear-gradient(transparent, #000 30%, #000 70%, transparent); }
-  .strip div { display: grid; place-items: center; font-size: .6em; white-space: nowrap; }
-  /* 당첨: 크게 튀어나왔다가 자리 잡고, 빛나며 카드가 번쩍 */
-  #pick-name.win { color: var(--accent); animation: win-pop .7s cubic-bezier(.2, 1.6, .4, 1), win-glow .5s .7s 4 alternate; }
-  @keyframes win-pop { from { transform: scale(2.2) rotate(-6deg); opacity: 0; } }
-  @keyframes win-glow { to { text-shadow: 0 0 18px var(--accent), 0 0 4px #fff; } }
-  .tool-card:has(#pick-name.win) { animation: win-flash .25s 4 alternate; }
+  /* 뽑기: 뽑을 대상마다 이름 카드. 불빛이 카드 사이를 옮겨 다니다 느려지며 한 장에 멈춤 */
+  #pick-name.cards { display: flex; flex-wrap: wrap; align-content: center; justify-content: center; gap: .35em; overflow-y: auto; padding: 4px; line-height: 1.2; }
+  .pick-card { padding: .3em .6em; border-radius: .4em; background: #fff; border: 2px solid var(--line); color: var(--ink); white-space: nowrap;
+               transition: transform .08s, background .08s; }
+  .pick-card.done { background: #eceff3; border-color: #eceff3; color: #b4bac4; text-decoration: line-through; } /* 이미 뽑힘 */
+  .pick-card.hot { background: #ffd43b; border-color: #f59f00; color: #2b1d14; transform: scale(1.15); box-shadow: 0 0 14px #ffd43b; }
+  .pick-card.win { background: var(--accent); border-color: var(--accent); color: #fff; transform: scale(1.25); z-index: 1; }
+  .pick-card.win.fresh { animation: win-pop .6s cubic-bezier(.2, 1.6, .4, 1), win-glow .45s .6s 6 alternate; } /* 막 뽑혔을 때만 */
+  @keyframes win-pop { from { transform: scale(2) rotate(-8deg); } }
+  @keyframes win-glow { to { box-shadow: 0 0 22px var(--accent), 0 0 6px #fff; } }
+  .tool-card:has(.pick-card.win.fresh) { animation: win-flash .25s 4 alternate; }
   @keyframes win-flash { to { background: var(--line); } }
 
   /* 설정 버튼: 오른쪽 위, 창 버튼(─ □ ✕) 바로 왼쪽. 브라우저에서는 오른쪽 위 모서리 */
@@ -1251,12 +1249,27 @@ function pickInfo() {
   document.querySelectorAll(".modes [data-mode]").forEach(b => b.classList.toggle("on", b.dataset.mode === pk.mode));
   editBtn.hidden = pk.mode === "group"; groupsRow.hidden = pk.mode !== "group";
   editBtn.textContent = pickEdit.hidden ? EDIT_LABEL[pk.mode] : "✓ 완료";
+  if (pickGo.disabled) return left; // 뽑는 중에는 카드를 다시 그리지 않음
+  // 이름 카드: 뽑힌 건 회색 줄긋기, 방금 뽑힌 건 강조. 다 보이도록 글씨를 줄여 맞춤
+  pickName.classList.toggle("cards", !!all.length);
+  pickName.style.fontSize = "";
+  if (!all.length) { pickName.textContent = "?"; return left; }
+  pickName.replaceChildren(...all.map(p => {
+    const c = document.createElement("span");
+    c.className = "pick-card" + (p === pkWin ? " win" : done.includes(p) ? " done" : ""); c.textContent = p;
+    return c;
+  }));
+  if (pickName.clientHeight) for (let f = 30; f >= 10; f -= 2) { pickName.style.fontSize = f + "px"; if (pickName.scrollHeight <= pickName.clientHeight) break; }
   return left;
 }
+let pkWin = null; // 방금 뽑힌 것
+const pkShow = c => pickName.scrollTop += c.getBoundingClientRect().top - pickName.getBoundingClientRect().top - pickName.clientHeight / 2; // 이름 칸 안에서만 스크롤 (보드는 안 움직임)
 function setMode(mode) {
+  if (pickGo.disabled) return; // 뽑는 중에는 방법을 못 바꿈
   if (!pickEdit.hidden) toggleEdit(false);
-  pk.mode = mode; pkSave(); pickName.textContent = "?"; pickInfo();
+  pk.mode = mode; pkWin = null; pkSave(); pickInfo();
 }
+new ResizeObserver(() => pickInfo()).observe(pickName); // 카드를 띄우거나 크기를 바꾸면 이름 카드 글씨 크기 다시 맞춤
 document.querySelectorAll(".modes [data-mode]").forEach(b => b.onclick = () => setMode(b.dataset.mode));
 function pickOne() {
   if (!pickEdit.hidden) toggleEdit(false);
@@ -1265,33 +1278,28 @@ function pickOne() {
   let left = pickInfo();
   if (!left.length) { pk.picked[pk.mode] = []; left = all; } // 모두 뽑혔으면 처음부터
   const winner = pick(left);
-  // 슬롯머신: 이름 줄이 위로 빠르게 돌다가 점점 느려져 가운데 칸에 멈춤 (따르르르… 짠!)
-  const N = 30, seq = Array.from({ length: N }, () => pick(all)); seq[N - 2] = winner; // 마지막 칸은 당첨 아래로 살짝 보이는 줄
-  const reel = document.createElement("div"), strip = document.createElement("div");
-  reel.className = "reel"; strip.className = "strip";
-  strip.append(...seq.map(t => { const d = document.createElement("div"); d.textContent = t; return d; }));
-  reel.append(strip);
-  pickGo.disabled = true; pickName.classList.remove("win"); pickName.classList.add("rolling"); pickName.replaceChildren(reel);
-  const h = reel.clientHeight / 3; // 세 줄이 보이고 가운데 줄이 당첨 자리
-  strip.querySelectorAll("div").forEach(d => d.style.height = h + "px");
-  const timing = { duration: 4200, easing: "cubic-bezier(.1, .7, .12, 1)", fill: "forwards" };
-  const spin = strip.animate([{ transform: "translateY(0)" }, { transform: `translateY(${-(N - 3) * h}px)` }], timing);
-  strip.animate([{ filter: "blur(3px)" }, { filter: "blur(0)" }], timing);
-  let row = 0;
-  const tick = () => { // 한 칸 지날 때마다 딸깍. 뒤로 갈수록 높은 소리
-    const r = Math.round(-new DOMMatrix(getComputedStyle(strip).transform).m42 / h);
-    if (r !== row) { row = r; tone(700 + r * 25, 0, .035, "square", .07); }
-    if (spin.playState === "running") requestAnimationFrame(tick);
-  };
-  requestAnimationFrame(tick);
-  spin.finished.then(() => {
-    pickName.textContent = winner; pickName.classList.remove("rolling"); void pickName.offsetWidth; pickName.classList.add("win");
+  pkWin = null; pickInfo(); // 지난번 강조를 '뽑힘'으로 돌려놓고 시작
+  // 아직 안 뽑힌 카드 사이로 불빛이 옮겨 다니다 점점 느려지며 당첨 카드에서 멈춤 (따르르르… 짠!)
+  const cards = [...pickName.children], pool = cards.filter(c => left.includes(c.textContent)), last = cards.find(c => c.textContent === winner);
+  let n = 0, wait = 55, hot = null;
+  pickGo.disabled = true;
+  const step = () => {
+    if (hot) hot.classList.remove("hot");
+    if (n++ < 20) {
+      hot = pool.length > 1 ? pick(pool.filter(c => c !== hot)) : pool[0];
+      if (n === 20) hot = last; // 마지막 한 번은 당첨 카드에 불이 들어옴
+      hot.classList.add("hot"); pkShow(hot); tone(700 + n * 30, 0, .04, "square", .08); // 이름이 너무 많아 넘치면 불 들어온 카드가 보이게
+      setTimeout(step, wait *= 1.1); return;
+    }
+    pkWin = winner; (pk.picked[pk.mode] = pk.picked[pk.mode] || []).push(winner); pkSave();
+    pickGo.disabled = false; pickInfo();
+    const w = [...pickName.children].find(c => c.textContent === winner);
+    if (w) { w.classList.add("fresh"); pkShow(w); }
     melody([523, 659, 784, 1047], .1, "triangle", .3);
-    (pk.picked[pk.mode] = pk.picked[pk.mode] || []).push(winner); pkSave(); pickInfo();
-    pickGo.disabled = false;
-  });
+  };
+  step();
 }
-function pickReset() { pk.picked[pk.mode] = []; pkSave(); pickName.textContent = "?"; pickInfo(); }
+function pickReset() { pk.picked[pk.mode] = []; pkWin = null; pkSave(); pickInfo(); }
 function renderChecks() {
   const ps = people();
   if (!ps.length) { checks.textContent = "먼저 설정 → 명단에 이름을 넣어 주세요."; return; }
