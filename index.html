@@ -59,7 +59,8 @@
   .card .card-down:hover { opacity: 1; background: rgba(255, 255, 255, .25); }
   .board:not(.free) .card-grip { display: none; }
   .card .card-full { right: 34px; }
-  .card:fullscreen { border-radius: 0; } /* 전체 화면에선 크기 조절 모서리 없이 */
+  .card:fullscreen { border-radius: 0; app-region: no-drag; -webkit-app-region: no-drag; } /* 전체 화면에선 크기 조절 모서리 없이.
+     no-drag: 설치한 앱은 맨 위 줄이 '창 끌기' 자리라, 전체 화면 카드 위쪽 버튼(줄이기·닫기)이 눌리지 않던 것을 막음 */
   .card:fullscreen > .card-down { opacity: 1; }
   .card:fullscreen > .card-grip { display: none; }
   .label { display: flex; align-items: center; gap: 6px; font-size: 20px; color: var(--accent); }
@@ -1887,6 +1888,13 @@ function pickRace(all) {
     g.textAlign = "center"; g.textBaseline = "middle";
     const lf = Math.round(br * S * 1.1);
     if (lf >= 7) { g.font = `${lf}px "GalmuriMono9", "Galmuri9", monospace`; g.fillStyle = COL.bg; for (const b of balls) if (!b.out && see(b.y)) g.fillText(b.label, toX(b.x), toY(b.y) + S * .5); }
+    // 공 밑에 이름: 그림일 뿐이라 장애물·충돌에는 아무 영향 없음. 남색 테두리로 어디서나 읽히게
+    g.font = `${Math.round(13 * dpr)}px "Galmuri11", sans-serif`; g.lineWidth = 3 * dpr; g.strokeStyle = COL.bg; g.lineJoin = "round";
+    for (const b of balls) if (!b.out && see(b.y)) {
+      const nm = b.p.match(/^\d+번 (.+)$/)?.[1] || b.p, hw = g.measureText(nm).width / 2 + 6 * dpr;
+      const x = Math.max(hw, Math.min(SW * dpr - hw - 16 * dpr, toX(b.x))), y = toY(b.y) + (br + 1) * S + 9 * dpr; // 벽 쪽에서도 이름이 잘리지 않게
+      g.strokeText(nm, x, y); g.fillStyle = b === leader ? COL.yel : COL.white; g.fillText(nm, x, y);
+    }
     for (const f of fx) if (f.txt && see(f.y)) { g.font = `${Math.round(14 * dpr)}px "Galmuri11", sans-serif`; g.fillStyle = COL.pur; g.fillText(f.txt, toX(f.x) + 2 * dpr, toY(f.y) + 2 * dpr); g.fillStyle = COL.yel; g.fillText(f.txt, toX(f.x), toY(f.y)); }
     // 오른쪽 지도: 코스 전체에서 구슬들이 어디쯤 있는지 (보고 있는 구간은 밝은 칸)
     const mh = SH * dpr - 24 * dpr, mx = SW * dpr - 14 * dpr, my = 12 * dpr;
@@ -2634,8 +2642,9 @@ function wbEditText(o) {
 }
 // 옮기기·크기 조절·글상자 만들기
 wbObjs.addEventListener("pointerdown", e => {
-  const el = e.target.closest(".wb-obj"), r = wb.getBoundingClientRect();
+  const el = e.target.closest(".wb-obj"), r = wb.getBoundingClientRect(), editing = wbObjs.querySelector('.wb-obj[contenteditable="true"]');
   if (el && el.isContentEditable) return; // 글 고치는 중
+  if (editing) { editing.blur(); setTool("select"); e.preventDefault(); return; } // 글 쓰다가 다른 곳을 누르면 글쓰기를 끝내고 옮기기로
   if (wbTool === "text" && (!el || !el.classList.contains("text"))) { // 빈 곳이나 사진 위에 새 글상자
     wbSnap();
     const o = { id: String(Date.now()), type: "text", x: (e.clientX - r.left) / r.width, y: (e.clientY - r.top) / r.height, w: .4, h: .1, text: "", fs: wbTextFs, c: wbTextC };
