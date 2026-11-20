@@ -7,7 +7,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#fbf3e4">
 <link rel="icon" href="icon-192.png">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Brush+Script&display=swap"><!-- 급훈 붓글씨 -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap"><!-- 급훈 명조 -->
 <style>
   /* 원티드 산스 Regular (무료 폰트, jsDelivr CDN). 첫 실행 때 한 번 받고 이후엔 캐시 사용 */
   @font-face { font-family: "Wanted Sans"; font-display: swap;
@@ -144,12 +144,14 @@
   /* 메모·규칙·준비물: 몇 글자만 색을 바꿀 수 있게 textarea 대신 contenteditable */
   .card .note { flex: 1; min-height: 0; overflow-y: auto; outline: none; color: var(--ink); white-space: pre-wrap; word-break: keep-all;
                 font: 26px/1.5 "Wanted Sans", "Malgun Gothic", sans-serif; }
-  /* 급훈: 교실 칠판 위에 거는 액자. 나무 테두리 + 한지 + 붓글씨, 카드 크기에 맞춰 글씨 크기 조절 */
+  /* 급훈: 교실 칠판 위에 거는 액자. 나무 테두리 + 한지 + 또렷한 명조, 카드 크기에 맞춰 글씨 크기 조절 */
   .motto-frame { flex: 1; min-height: 0; display: grid; padding: 10px; border-radius: 6px; background: linear-gradient(135deg, #8a5a2b, #5e3b1a 50%, #8a5a2b);
                  box-shadow: inset 0 0 0 2px #c9975c, 0 4px 10px rgba(60, 40, 20, .25); container-type: size; }
   .motto { display: grid; place-items: center; text-align: center; outline: none; padding: 4px 12px; overflow: hidden; word-break: keep-all;
            background: #fdf8ec radial-gradient(circle at 30% 20%, #fffdf6, transparent 70%); box-shadow: inset 0 0 12px rgba(138, 90, 43, .25);
-           font: clamp(24px, min(16cqw, 55cqh), 140px)/1.15 "Nanum Brush Script", "Wanted Sans", serif; color: #1d1410; letter-spacing: .04em; }
+           font: 800 clamp(22px, min(12cqw, 50cqh), 120px)/1.2 "Nanum Myeongjo", "Wanted Sans", serif; color: #1d1410; letter-spacing: .06em; }
+  .note-pop .weights { grid-column: span 5; display: flex; gap: 4px; }
+  .note-pop .weights button.on { background: var(--ink); border-color: var(--ink); color: #fff; }
   .motto:empty::before { content: "여기를 눌러 급훈을 쓰세요"; font: 16px "Wanted Sans", "Malgun Gothic", sans-serif; color: #b9a98f; }
   /* 우리반 규칙: 한 줄씩 번호 붙은 목록. Enter를 치면 다음 번호 */
   .rule-list { margin: 0; padding: 0; list-style: none; counter-reset: rule; }
@@ -524,7 +526,12 @@
     <div class="tt-grid" id="tt-grid"></div>
   </section>
   <section id="tab-roster" hidden>
-    <p class="sum">뽑기에 쓰는 우리 반 명단이에요. 한 줄에 한 명씩 쓰세요. 숫자만 쓰면(예: 25) 1번부터 그 번호까지 뽑아요. 쓰는 대로 저장돼요.</p>
+    <p class="sum">뽑기에 쓰는 우리 반 명단이에요. 한 줄에 한 명씩 '번호 이름'으로 쓰세요(예: 1 김하늘). 번호 없이 이름만 쓰면 위에서부터 1번, 2번… 으로 붙여요. 숫자만 쓰면(예: 25) 1번부터 그 번호까지 뽑아요. 한글·PDF 명렬표 파일에서 가져올 수도 있어요. 쓰는 대로 저장돼요.</p>
+    <div class="row">
+      <button onclick="document.getElementById('roster-file').click()">파일에서 가져오기 (.hwp · .pdf)</button>
+      <input type="file" id="roster-file" accept=".hwp,.pdf" hidden>
+    </div>
+    <p class="sum" id="roster-msg"></p>
     <textarea id="roster" class="roster" spellcheck="false" aria-label="명단"></textarea>
   </section>
   <section id="tab-history" hidden></section>
@@ -1074,13 +1081,41 @@ document.querySelectorAll(".note[data-key]").forEach(el => {
   el.addEventListener("paste", e => { e.preventDefault(); document.execCommand("insertText", false, e.clipboardData.getData("text/plain")); }); // 붙여넣기는 글자만
   el.addEventListener("drop", e => e.preventDefault());
 });
-// 급훈: 글자만 저장
+const NOTE_COLORS = ["#2b1d14", "#e03131", "#1c7ed6", "#2f9e44", "#7048e8"]; // 메모·규칙·준비물·급훈 글씨 색
+// 급훈: 글자만 저장. 색·굵기는 Tt 팝업에서 (급훈 전체에 적용)
 const motto = document.getElementById("motto");
-try { motto.textContent = localStorage.getItem("motto") || ""; } catch (e) {}
-motto.addEventListener("input", () => { try { localStorage.setItem("motto", motto.textContent); } catch (e) {} });
+let mottoSt = {};
+try { motto.textContent = localStorage.getItem("motto") || ""; mottoSt = JSON.parse(localStorage.getItem("motto-style")) || {}; } catch (e) {}
+function fitMotto() { // 액자 안에 다 들어가는 가장 큰 글씨로
+  if (!motto.clientHeight) return;
+  for (let f = 120; f >= 14; f -= 2) { motto.style.fontSize = f + "px"; if (motto.scrollHeight <= motto.clientHeight && motto.scrollWidth <= motto.clientWidth) break; }
+}
+motto.addEventListener("input", () => { try { localStorage.setItem("motto", motto.textContent); } catch (e) {} fitMotto(); });
+new ResizeObserver(fitMotto).observe(motto.parentElement);
+document.fonts.addEventListener("loadingdone", fitMotto); // 명조 글꼴이 늦게 오면 폭이 달라짐
+{
+  const bar = document.createElement("div"), pop = document.createElement("div"), open = document.createElement("button");
+  const weights = document.createElement("div"), mk = (txt, fn) => { const b = document.createElement("button"); b.textContent = txt; b.onclick = fn; return b; };
+  bar.className = "note-tools"; pop.className = "note-pop"; pop.popover = "auto"; weights.className = "weights";
+  const apply = () => {
+    motto.style.color = mottoSt.c || ""; motto.style.fontWeight = mottoSt.w || ""; fitMotto(); // 굵기에 따라 글자 폭이 바뀜
+    pop.querySelectorAll(".dot").forEach(d => d.classList.toggle("on", d.dataset.c === (mottoSt.c || NOTE_COLORS[0])));
+    weights.querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.w === String(mottoSt.w || 800)));
+    try { localStorage.setItem("motto-style", JSON.stringify(mottoSt)); } catch (e) {}
+  };
+  weights.append(...[["보통", 400], ["굵게", 700], ["아주 굵게", 800]].map(([t, w]) => { const b = mk(t, () => { mottoSt.w = w; apply(); }); b.dataset.w = w; return b; }));
+  pop.append(weights, ...NOTE_COLORS.map(c => { const b = mk("", () => { mottoSt.c = c; apply(); }); b.className = "dot"; b.dataset.c = c; b.style.background = c; b.title = "글씨 색"; b.setAttribute("aria-label", "글씨 색"); return b; }));
+  open.className = "tt"; open.title = "글씨 색·굵기"; open.setAttribute("aria-label", "글씨 색·굵기"); open.popoverTargetElement = pop;
+  open.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h11M8.5 5v14M13 11h8M17 11v8" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>';
+  pop.addEventListener("beforetoggle", e => {
+    if (e.newState !== "open") return;
+    const r = open.getBoundingClientRect();
+    pop.style.top = r.bottom + 4 + "px"; pop.style.left = Math.max(8, Math.min(r.right - 200, innerWidth - 220)) + "px";
+  });
+  bar.append(open); motto.closest(".card").append(bar); document.body.append(pop); apply();
+}
 // 메모·규칙·준비물 글씨 크기와 색: 카드에 마우스를 올리면 나오는 작은 도구줄. 칸마다 따로 저장
 // 색은 글자를 골라 두면 그 글자만, 안 골랐으면 칸 전체
-const NOTE_COLORS = ["#2b1d14", "#e03131", "#1c7ed6", "#2f9e44", "#7048e8"];
 document.querySelectorAll(".note[data-key]").forEach(ta => {
   const key = "note-style-" + ta.dataset.key;
   let st = {};
@@ -1230,11 +1265,36 @@ try {
 } catch (e) {}
 const pkSave = () => { try { localStorage.setItem("pick", JSON.stringify(pk)); } catch (e) {} };
 const lines = v => [...new Set(v.split("\n").map(s => s.trim()).filter(Boolean))];
-function people() {
+function people() { // "1번 김하늘"처럼 번호와 이름을 붙여서. 번호가 없으면 줄 순서로
   const v = roster.value.trim();
   if (/^\d+$/.test(v)) return Array.from({ length: Math.min(+v, 200) }, (_, i) => (i + 1) + "번");
-  return lines(v);
+  return lines(v).map((l, i) => { const m = l.match(/^(\d+)\s*(?:번|\.|\)|-)?\s*(.+)$/); return m ? `${m[1]}번 ${m[2]}` : `${i + 1}번 ${l}`; });
 }
+// 명렬표(한글·PDF)에서 "번호 이름" 짝을 찾아 명단으로. 한 줄에 여러 명(번호 이름 번호 이름…)이 있어도 됨
+function parseRoster(rows) {
+  const found = new Map();
+  for (const row of rows) {
+    const t = row.join(" ").split(/\s+/).filter(Boolean);
+    for (let i = 0; i + 1 < t.length; i++) {
+      const n = t[i].match(/^(\d{1,2})(?:번|\.)?$/);
+      if (n && /^[가-힣]{2,5}$/.test(t[i + 1]) && +n[1] >= 1 && !found.has(+n[1])) { found.set(+n[1], t[i + 1]); i++; }
+    }
+  }
+  return [...found].sort((a, b) => a[0] - b[0]).map(([n, name]) => `${n} ${name}`);
+}
+document.getElementById("roster-file").addEventListener("change", async e => {
+  const f = e.target.files[0]; e.target.value = "";
+  if (!f) return;
+  const msg = document.getElementById("roster-msg");
+  msg.textContent = "읽는 중…";
+  try {
+    const buf = await f.arrayBuffer(), list = parseRoster(/\.pdf$/i.test(f.name) ? await readPdfRows(buf) : await readHwpTables(buf));
+    if (!list.length) { msg.textContent = "번호와 이름을 찾지 못했어요. 번호·이름 칸이 있는 명렬표인지 확인해 주세요."; return; }
+    if (roster.value.trim() && !confirm(`${list.length}명을 가져왔어요. 지금 명단을 바꿀까요?`)) { msg.textContent = ""; return; }
+    roster.value = list.join("\n"); roster.dispatchEvent(new Event("input")); roster.dispatchEvent(new Event("change"));
+    msg.textContent = `${list.length}명을 가져왔어요. 아래에서 확인하고 고칠 수 있어요.`;
+  } catch (err) { msg.textContent = "이 파일은 읽지 못했어요. 파일을 열어 명단을 복사해 붙여넣어 주세요."; }
+});
 function candidates(mode = pk.mode) {
   if (mode === "select") return people().filter(p => pk.chosen.includes(p));
   if (mode === "group") return Array.from({ length: Math.max(2, Math.min(20, +groupsInp.value || 6)) }, (_, i) => (i + 1) + "모둠");
