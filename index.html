@@ -321,7 +321,9 @@
         color: var(--ink); overflow: hidden; white-space: nowrap; cursor: grab; touch-action: none; }
   .sd i { font-style: normal; font-size: .55em; color: var(--accent); }
   .sd.empty { background: #eef1f2; border-color: #eef1f2; cursor: default; }
-  .sd.fixed::after { content: "🔒"; position: absolute; top: 1px; right: 3px; font-size: .5em; } /* 선생님 모드에서만 */
+  .sd .lk { position: absolute; top: 2px; right: 3px; color: var(--accent); } .sd .lk svg { width: .55em; height: .55em; } /* 미리 지정: 선생님 모드에서만 */
+  .ic { display: inline-flex; vertical-align: -3px; } .ic svg { width: 16px; height: 16px; } /* 자리배치 아이콘: 모두 같은 크기·선 굵기 */
+  [data-ic] { display: inline-flex; align-items: center; gap: 5px; }
   .sd.drop { outline: 2.5px dashed var(--accent); }
   .sd.pop { animation: seat-pop .45s ease-out; }
   @keyframes seat-pop { from { transform: scale(1.3); background: #ffd43b; } }
@@ -361,7 +363,8 @@
   @media (max-width: 820px) { .st-body { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1.2fr) minmax(0, 1fr); } }
   /* 자리배치도 설정 창 */
   .se-form { margin: auto; padding: 18px 22px; border: 0; border-radius: 16px; background: #fff; color: var(--ink); box-shadow: 0 12px 40px rgba(60, 40, 20, .2);
-             font: 15px/1.5 "Wanted Sans", "Malgun Gothic", sans-serif; width: min(760px, 94vw); max-height: 92vh; overflow-y: auto; box-sizing: border-box; }
+             font: 15px/1.5 "Wanted Sans", "Malgun Gothic", sans-serif; width: min(760px, 94vw); max-height: 92vh; overflow-y: auto; box-sizing: border-box;
+             app-region: no-drag; -webkit-app-region: no-drag; } /* 설치한 앱에서 맨 위 '창 끌기' 띠에 겹쳐도 눌리게 */
   .se-form:popover-open { display: flex; flex-direction: column; gap: 14px; }
   .se-form button, .se-form input:not([type]) { font: inherit; border: 1.5px solid #e6dccf; background: #fff; color: var(--ink); border-radius: 10px; padding: 6px 12px; cursor: pointer; }
   .se-form .x { border: 0; font-size: 20px; padding: 0 6px; }
@@ -386,8 +389,6 @@
   .sf-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px; }
   .se-form .sf-grid button { height: 18px; padding: 0; border: 0; border-radius: 3px; background: #eef1f2; }
   .se-form .sf-grid button.on { background: #2f7d8c; }
-  .sf-fx { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; border: 1.5px solid #eee6da; border-radius: 12px; padding: 12px 16px; }
-  .sf-fx label { display: flex; align-items: center; gap: 6px; }
   .se-form .sf-make { align-self: center; padding: 10px 60px; border-radius: 999px; background: #2f7d8c; border-color: #2f7d8c; color: #fff; font-size: 16px; }
   .se-form .sum { margin: 6px 0 0; color: var(--muted); font-size: 13px; }
   @media (max-width: 640px) { .sf-box { grid-template-columns: 1fr; } .sf-box .sf-opt + .sf-opt { border-left: 0; padding-left: 0; } }
@@ -428,6 +429,10 @@
   .roster-table .n { width: 64px; text-align: center; }
   .roster-table .nm { width: min(240px, 50vw); }
   #panel .roster-table button { border: 0; background: none; color: var(--muted); padding: 2px 8px; }
+  .roster-table .gx { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  #panel .roster-table .gx button { border-radius: 0; padding: 4px 10px; }
+  #panel .roster-table .gx button.on[data-g="M"] { background: #1c7ed6; color: #fff; }
+  #panel .roster-table .gx button.on[data-g="F"] { background: #e03131; color: #fff; }
   #panel input:not([type]) { flex: 1; font: inherit; padding: 4px 10px; border: 1.5px solid var(--line); border-radius: 8px; background: #fff; }
   #panel .danger { background: var(--accent); border-color: var(--accent); color: #fff; }
   #panel h3 { font-weight: normal; font-size: 17px; color: var(--ink); margin: 22px 0 4px; padding-top: 18px; border-top: 1px solid #f1e9dd; }
@@ -544,7 +549,7 @@
     <p class="label">🪑 자리배치</p>
     <div class="seat-bar">
       <select id="seat-hist" aria-label="저장한 자리배치도"></select>
-      <span class="seat-tools"><button onclick="sePrint()" title="출력">🖨</button><button onclick="seSaveToday()" title="오늘 날짜로 지금 자리 저장">💾</button><button onclick="seFormOpen()" title="자리배치도 설정 (대형·짝꿍·효과)" aria-label="자리배치도 설정">⚙</button><button class="seat-star" onclick="seTeachOpen()" title="선생님 모드" aria-label="선생님 모드">★</button><button class="main" onclick="seRandom()">🎲 자동 자리배치</button></span>
+      <span class="seat-tools"><button data-ic="print" onclick="sePrint()" title="출력" aria-label="출력"></button><button data-ic="save" onclick="seSaveToday()" title="오늘 날짜로 지금 자리 저장" aria-label="저장"></button><button data-ic="set" onclick="seFormOpen()" title="자리배치도 설정 (대형·짝꿍)" aria-label="자리배치도 설정"></button><button class="seat-star" data-ic="star" onclick="seTeachOpen()" title="선생님 모드" aria-label="선생님 모드"></button><button class="main" data-ic="shuffle" onclick="seRandom()">자동 자리배치</button></span>
     </div>
     <div class="seat-mini" id="seat-mini"></div>
     <p class="sub" id="seat-msg"></p>
@@ -674,20 +679,20 @@
 </button>
 <div id="seat-ed" hidden>
   <div class="st-head">
-    <div><b>★ 선생님 모드</b><p class="sum">원하는 학생을 원하는 자리에 미리 지정하고, 떨어뜨릴 학생·분리 그룹·성별을 정해요. 이 화면의 설정은 학생 화면과 출력에 나오지 않아요.</p></div>
+    <div><b data-ic="star">선생님 모드</b><p class="sum">원하는 학생을 원하는 자리에 미리 지정하고, 떨어뜨릴 학생·분리 그룹·성별을 정해요. 이 화면의 설정은 학생 화면과 출력에 나오지 않아요.</p></div>
     <button onclick="seTeachClose()">나가기</button>
   </div>
   <div class="st-body">
     <div class="st-map" id="st-map"></div>
     <div class="se-side">
-      <div class="se-tabs" id="st-tabs"><button data-t="fix">🔒 미리 지정</button><button data-t="pair">떨어뜨리기</button><button data-t="group">분리 그룹</button><button data-t="gender">성별</button><button data-t="hist">기록</button></div>
+      <div class="se-tabs" id="st-tabs"><button data-t="fix" data-ic="lock">미리 지정</button><button data-t="pair">떨어뜨리기</button><button data-t="group">분리 그룹</button><button data-t="hist">기록</button></div>
       <div class="se-pane" id="st-pane"></div>
       <div class="se-msg" id="st-msg"></div>
     </div>
   </div>
   <div class="st-foot">
-    <p class="sum">미리 지정(🔒)한 학생이 있으면 랜덤 섞기 때 그 학생을 뺀 나머지만 자리가 바뀌어요.<br><span class="warn-tag">주의</span> ⚙ 설정에서 대형을 바꾸면 미리 지정이 풀려요.</p>
-    <button class="main" onclick="seRandom(true)">🎲 랜덤 섞기</button>
+    <p class="sum">미리 지정한 학생이 있으면 랜덤 섞기 때 그 학생을 뺀 나머지만 자리가 바뀌어요.<br><span class="warn-tag">주의</span> 설정에서 대형을 바꾸면 미리 지정이 풀려요.</p>
+    <button class="main" data-ic="shuffle" onclick="seRandom(true)">랜덤 섞기</button>
   </div>
 </div>
 <div id="se-form" class="se-form" popover="manual">
@@ -705,9 +710,8 @@
     </div>
     <div class="sf-opt"><p class="sf-t">짝꿍 설정</p><div class="sf-tiles" id="sf-gmode"><button data-v="random">랜덤</button><button data-v="mixed">이성끼리</button><button data-v="same">동성끼리</button><button data-v="balance">성별 고르게</button></div>
       <label class="sf-chk"><input type="checkbox" id="sf-noprev"> 이전 짝꿍과 같이 안 앉기</label>
-      <p class="sum">성별은 ★ 선생님 모드의 '성별'에서 정해요.</p></div>
+      <p class="sum">성별은 설정 → 명단에서 이름과 함께 정해요.</p></div>
   </div>
-  <div class="sf-fx">결과 보기 효과 <label><input type="radio" name="sf-fx" value="one"> 한 명씩 보기</label><label><input type="radio" name="sf-fx" value="all"> 한 번에 보기</label></div>
   <button class="main sf-make" onclick="seFormApply()">만들기</button>
 </div>
 <div id="panel" hidden>
@@ -740,14 +744,14 @@
     <div class="tt-grid" id="tt-grid"></div>
   </section>
   <section id="tab-roster" hidden>
-    <p class="sum">뽑기에 쓰는 우리 반 명단이에요. 한글·PDF 명렬표 파일에서 가져오거나, 아래 표에 번호와 이름을 직접 쓰세요. 가져온 뒤에도 표에서 바로 고칠 수 있어요. 이름 없이 번호만 써도 번호로 뽑아요. 쓰는 대로 저장돼요.</p>
+    <p class="sum">뽑기와 자리배치에 쓰는 우리 반 명단이에요. 성별(남·여)은 자리배치의 짝꿍 조건에 써요. 한글·PDF 명렬표 파일에서 가져오거나, 아래 표에 번호와 이름을 직접 쓰세요. 가져온 뒤에도 표에서 바로 고칠 수 있어요. 이름 없이 번호만 써도 번호로 뽑아요. 쓰는 대로 저장돼요.</p>
     <div class="row">
       <button onclick="document.getElementById('roster-file').click()">파일에서 가져오기 (한글 · 워드 · PDF)</button>
       <input type="file" id="roster-file" accept=".hwp,.hwpx,.doc,.docx,.pdf" hidden>
     </div>
     <p class="sum" id="roster-msg"></p>
     <textarea id="roster" hidden></textarea><!-- 저장용: "번호 이름" 한 줄씩. 보이는 건 아래 표 -->
-    <table class="roster-table"><thead><tr><th>번호</th><th>이름</th><th></th></tr></thead><tbody id="roster-rows"></tbody></table>
+    <table class="roster-table"><thead><tr><th>번호</th><th>이름</th><th>성별</th><th></th></tr></thead><tbody id="roster-rows"></tbody></table>
     <button class="roster-add" onclick="rosterAdd()">+ 한 명 더하기</button>
   </section>
   <section id="tab-history" hidden></section>
@@ -769,7 +773,7 @@
       <li><b>시간표</b> 설정 → 시간표에서 연간시간표(한글 파일 또는 표 붙여넣기)와 시정표를 넣으면, 지금 몇 교시인지와 다음 시간을 알려 줘요. 표에 없는 주는 '매주 기본 시간표'를 써요.</li>
       <li><b>보드 카드</b> 제목을 끌어 옮기고, 오른쪽 아래 모서리로 크기를 바꿔요. 옮긴 자리와 크기는 앱을 껐다 켜도 그대로예요. ✕를 누르면 보드에서 닫히고 아래쪽 바로 들어가요. 닫아도 적어 둔 내용은 남아요.</li>
       <li><b>아래쪽 바</b> 보드에서 닫은 카드가 들어가요. 누르면 보드에 다시 나와요.</li>
-      <li><b>자리배치</b> 처음 한 번 ⚙ 설정에서 대형(분단형: 1열·2열과 분단 수 / 모둠형: 모둠 인원 / 자유형: 쓸 자리 고르기)과 짝꿍 조건(랜덤·이성끼리·동성끼리·성별 고르게, 이전 짝꿍과 같이 안 앉기), 결과 보기 효과를 정하면 계속 유지돼요. 평소에는 '🎲 자동 자리배치', 💾(오늘 날짜로 저장), 🖨(출력)만 누르면 돼요. 이름을 끌어 다른 자리에 놓으면 자리를 바꾸고, 칠판의 ⇅로 위아래를 바꿔요. 오른쪽 작은 ★는 선생님 모드예요(자리 미리 지정, 떨어뜨리기, 분리 그룹, 성별, 기록).</li>
+      <li><b>자리배치</b> 처음 한 번 설정 버튼에서 대형(분단형: 1열·2열과 분단 수 / 모둠형: 모둠 인원 / 자유형: 쓸 자리 고르기)과 짝꿍 조건(랜덤·이성끼리·동성끼리·성별 고르게, 이전 짝꿍과 같이 안 앉기)을 정하면 계속 유지돼요. 성별은 설정 → 명단에서 이름과 함께 정해요. 평소에는 '자동 자리배치'(한 자리씩 나타나요), 저장(오늘 날짜로), 출력만 누르면 돼요. 이름을 끌어 다른 자리에 놓으면 자리를 바꾸고, 칠판 옆 '상하전환'으로 위아래를 바꿔요. 오른쪽 작은 별은 선생님 모드예요(자리 미리 지정, 떨어뜨리기, 분리 그룹, 기록).</li>
       <li><b>로그인</b> 설정 → 로그인에서 구글로 로그인하면 보드가 서버에 저장되고, 다른 컴퓨터에서 같은 계정으로 로그인하면 같은 보드가 나와요.</li>
       <li><b>준비물</b> 시간표 카드 오른쪽 칸에 쓰면 저장돼요.</li>
       <li><b>창 옮기기</b> 맨 위 줄을 잡고 끌어요. 창 크기는 모서리를 끌어 조절해요. 창이 좁으면 카드가 아래로 쌓여요.</li>
@@ -1565,26 +1569,42 @@ function people() { // "1번 김하늘"처럼 번호와 이름을 붙여서. 번
     const m = l.match(/^(\d+)\s*(?:번|\.|\)|-)?\s*(.+)$/); return m ? `${m[1]}번 ${m[2]}` : `${i + 1}번 ${l}`;
   });
 }
-// 설정 → 명단 표: 줄마다 번호·이름 칸. 고치면 저장용 글(roster)을 다시 만들어 저장
+// 설정 → 명단 표: 줄마다 번호·이름·성별 칸. 고치면 저장용 글(roster)과 성별(gender: {"1번 김하늘": "M"|"F"})을 다시 만들어 저장
 const rosterRows = document.getElementById("roster-rows");
+let gender = {};
+try { gender = JSON.parse(localStorage.getItem("gender")) || {}; } catch (e) {}
 function rosterTable() {
   let v = roster.value.trim();
   if (/^\d+$/.test(v)) v = Array.from({ length: Math.min(+v, 200) }, (_, i) => i + 1).join("\n"); // 예전 "25" 같은 번호만 명단
-  rosterRows.replaceChildren(...lines(v).map(l => { const m = l.match(/^(\d+)\s*(?:번|\.|\)|-)?\s*(.*)$/); return rosterRow(m ? m[1] : "", m ? m[2] : l); }));
+  const ppl = people();
+  rosterRows.replaceChildren(...lines(v).map((l, i) => { const m = l.match(/^(\d+)\s*(?:번|\.|\)|-)?\s*(.*)$/); return rosterRow(m ? m[1] : "", m ? m[2] : l, gender[ppl[i]]); }));
   if (!rosterRows.children.length) rosterRows.append(rosterRow("1", ""));
 }
-function rosterRow(n, name) {
+function rosterRow(n, name, g = "") {
   const tr = document.createElement("tr"), num = document.createElement("input"), nm = document.createElement("input"), del = document.createElement("button");
   num.className = "n"; num.inputMode = "numeric"; num.value = n; num.setAttribute("aria-label", "번호"); // 숫자 칸(type=number)은 위아래 화살표가 숫자를 바꿔서 글자 칸으로
   nm.className = "nm"; nm.value = name; nm.setAttribute("aria-label", "이름");
   del.textContent = "✕"; del.title = "이 줄 지우기"; del.tabIndex = -1; del.onclick = () => { tr.remove(); rosterSync(true); };
   for (const inp of [num, nm]) { inp.oninput = () => rosterSync(false); inp.onchange = () => rosterSync(true); }
+  const gx = document.createElement("span"); // 성별: 남·여 둘 중 하나를 누름
+  gx.className = "gx"; tr.dataset.g = g;
+  for (const [v, t] of [["M", "남"], ["F", "여"]]) {
+    const b = document.createElement("button");
+    b.textContent = t; b.dataset.g = v; b.tabIndex = -1; b.classList.toggle("on", g === v);
+    b.onclick = () => { tr.dataset.g = v; gx.querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b)); rosterSync(true); };
+    gx.append(b);
+  }
   const td = x => { const c = document.createElement("td"); c.append(x); return c; };
-  tr.append(td(num), td(nm), td(del));
+  tr.append(td(num), td(nm), td(gx), td(del));
   return tr;
 }
 function rosterSync(done) {
-  roster.value = [...rosterRows.children].map(tr => { const [n, nm] = tr.querySelectorAll("input"); return `${n.value.trim()} ${nm.value.trim()}`.trim(); }).filter(Boolean).join("\n");
+  const rows = [...rosterRows.children].map(tr => { const [n, nm] = tr.querySelectorAll("input"); return [`${n.value.trim()} ${nm.value.trim()}`.trim(), tr.dataset.g]; }).filter(r => r[0]);
+  roster.value = rows.map(r => r[0]).join("\n");
+  const ppl = people();
+  for (const k in gender) delete gender[k]; // 자리배치도 같은 gender를 씀
+  rows.forEach((r, i) => { if (r[1] && ppl[i]) gender[ppl[i]] = r[1]; });
+  try { localStorage.setItem("gender", JSON.stringify(gender)); } catch (e) {}
   roster.dispatchEvent(new Event("input"));
   if (done) roster.dispatchEvent(new Event("change"));
 }
@@ -1633,10 +1653,13 @@ function parseRoster(rows) {
     const t = row.join(" ").split(/\s+/).filter(Boolean);
     for (let i = 0; i + 1 < t.length; i++) {
       const n = t[i].match(/^(\d{1,2})(?:번|\.)?$/);
-      if (n && /^[가-힣]{2,5}$/.test(t[i + 1]) && +n[1] >= 1 && !found.has(+n[1])) { found.set(+n[1], t[i + 1]); i++; }
+      if (n && /^[가-힣]{2,5}$/.test(t[i + 1]) && +n[1] >= 1 && !found.has(+n[1])) {
+        const g = (t[i + 2] || "").match(/^(남|여)(자)?$/)?.[1]; // 이름 바로 뒤 성별 칸이 있으면
+        found.set(+n[1], { name: t[i + 1], g: g === "남" ? "M" : g === "여" ? "F" : "" }); i += g ? 2 : 1;
+      }
     }
   }
-  return [...found].sort((a, b) => a[0] - b[0]).map(([n, name]) => `${n} ${name}`);
+  return [...found].sort((a, b) => a[0] - b[0]).map(([n, x]) => ({ n, ...x }));
 }
 document.getElementById("roster-file").addEventListener("change", async e => {
   const f = e.target.files[0]; e.target.value = "";
@@ -1647,8 +1670,12 @@ document.getElementById("roster-file").addEventListener("change", async e => {
     const list = parseRoster(await readTables(f));
     if (!list.length) { msg.textContent = "번호와 이름을 찾지 못했어요. 번호·이름 칸이 있는 명렬표인지 확인해 주세요."; return; }
     if (roster.value.trim() && !confirm(`${list.length}명을 가져왔어요. 지금 명단을 바꿀까요?`)) { msg.textContent = ""; return; }
-    roster.value = list.join("\n"); roster.dispatchEvent(new Event("input")); roster.dispatchEvent(new Event("change")); rosterTable();
-    msg.textContent = `${list.length}명을 가져왔어요. 아래 표에서 번호와 이름을 바로 고칠 수 있어요.`;
+    roster.value = list.map(x => `${x.n} ${x.name}`).join("\n");
+    for (const k in gender) delete gender[k];
+    list.forEach(x => { if (x.g) gender[`${x.n}번 ${x.name}`] = x.g; });
+    try { localStorage.setItem("gender", JSON.stringify(gender)); } catch (e) {}
+    roster.dispatchEvent(new Event("input")); roster.dispatchEvent(new Event("change")); rosterTable();
+    msg.textContent = `${list.length}명을 가져왔어요${list.some(x => x.g) ? " (성별 포함)" : ""}. 아래 표에서 번호·이름·성별을 바로 고칠 수 있어요.`;
   } catch (err) { msg.textContent = fileError(err, "명단"); }
 });
 function candidates(mode = pk.mode) {
@@ -3012,7 +3039,6 @@ const jget = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) || d; 
 const jset = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
 let seat = jget("seat", { cur: { name: "", desks: [], seats: {} }, hist: [] });
 let seatSec = jget("seat-secret", { fixed: {}, histFixed: {}, pairs: [], groups: [] });
-let gender = jget("gender", {});
 const sc = () => seat.cur, $s = id => document.getElementById(id);
 const seName = p => p.replace(/^\d+번 /, ""), seNum = p => (p.match(/^(\d+)번/) || [])[1] || "";
 const seId = () => "d" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -3025,6 +3051,7 @@ const h = (tag, attrs = {}, ...kids) => {
   return el;
 };
 const stOpen = () => !$s("seat-ed").hidden;
+let seBusy = false; // 자리 공개 연출 중에는 끌기·다시 그리기 막음
 function seatStore() { jset("seat", seat); jset("seat-secret", seatSec); jset("gender", gender); seRedraw(); }
 function seRedraw() { seDraw($s("seat-mini"), "home"); seHistSelect(); if (stOpen()) { seDraw($s("st-map"), "teach"); seTeachSide(); } }
 // 명단에서 빠진 학생·없어진 책상의 배정은 정리. 고정은 '그 책상에 그 학생이 앉아 있을 때'만 유효
@@ -3068,22 +3095,22 @@ function seLayout(flip) {
 }
 // 자리표 그리기. home = 보드 카드(공개: 고정 표시 없음), teach = 선생님 모드(🔒 보임)
 function seDraw(box, mode) {
-  if (!box) return;
+  if (!box || seBusy) return; // 한 자리씩 나타나는 중에는 다시 그리지 않음 (끝나면 다시 그림)
   const c = sc();
   if (!c.desks.length) return box.replaceChildren(mode === "home" ? h("div", { class: "seat-guide" }, h("b", {}, "자리배치 이렇게 써요"), h("ol", {},
-    h("li", {}, "⚙ 설정에서 대형(분단형·모둠형·자유형)과 짝꿍 조건을 정하고 '만들기'를 눌러요. 처음 한 번이면 계속 유지돼요."),
-    h("li", {}, "'🎲 자동 자리배치'를 누르면 학생들이 무작위로 앉아요. 명단은 설정 → 명단에서 넣어요."),
+    h("li", {}, "설정 버튼에서 대형(분단형·모둠형·자유형)과 짝꿍 조건을 정하고 '만들기'를 눌러요. 처음 한 번이면 계속 유지돼요."),
+    h("li", {}, "'자동 자리배치'를 누르면 학생들이 한 자리씩 앉아요. 명단과 성별은 설정 → 명단에서 넣어요."),
     h("li", {}, "이름을 끌어 다른 자리에 놓으면 서로 자리를 바꿔요."),
-    h("li", {}, "💾로 오늘 날짜 기록을 남기고, 🖨로 인쇄해요."))) : "");
+    h("li", {}, "저장 버튼으로 오늘 날짜 기록을 남기고, 출력 버튼으로 인쇄해요."))) : "");
   const L = seLayout(!!seat.flip), cw = box.clientWidth, ch = box.clientHeight, u = Math.min(cw / L.W, ch / L.H), ox = (cw - L.W * u) / 2, oy = (ch - L.H * u) / 2;
   const at = (el, x, y, w, hh) => { Object.assign(el.style, { left: ox + x * u + "px", top: oy + y * u + "px", width: w * u + "px", height: hh * u + "px" }); return el; };
-  const board = at(h("div", { class: "sb" }, h("span", {}, "칠판"), h("button", { class: "sb-flip", title: "칠판을 위·아래로 (상하 반전)", onclick: seFlip }, "⇅ 상하전환")), L.board.x, L.board.y, L.board.w, L.board.h);
+  const board = at(h("div", { class: "sb" }, h("span", {}, "칠판"), h("button", { class: "sb-flip", title: "칠판을 위·아래로 (상하 반전)", onclick: seFlip }, ic("flip"), "상하전환")), L.board.x, L.board.y, L.board.w, L.board.h);
   board.style.fontSize = Math.max(12, u * .3) + "px";
   const kids = [board];
   for (const b of L.boxes) { const el = at(h("div", { class: "sg" }, h("span", {}, b.label)), b.x, b.y, b.w, b.h); el.style.fontSize = Math.max(10, u * .17) + "px"; kids.push(el); }
   for (const t of L.desks) {
-    const p = t.person, el = at(h("div", { class: `sd${p ? "" : " empty"}${mode === "teach" && seatSec.fixed[t.d.id] ? " fixed" : ""}`, "data-id": t.d.id },
-      p ? [h("i", {}, seNum(p)), h("b", {}, seName(p))] : ""), t.x + .03, t.y + .03, DW - .06, DH - .06);
+    const p = t.person, el = at(h("div", { class: `sd${p ? "" : " empty"}`, "data-id": t.d.id },
+      p ? [h("i", {}, seNum(p)), h("b", {}, seName(p))] : "", mode === "teach" && seatSec.fixed[t.d.id] ? ic("lock", "lk") : null), t.x + .03, t.y + .03, DW - .06, DH - .06);
     el.style.fontSize = Math.max(9, u * .26) + "px"; kids.push(el);
   }
   box.replaceChildren(...kids);
@@ -3092,6 +3119,17 @@ new ResizeObserver(() => seDraw($s("seat-mini"), "home")).observe($s("seat-mini"
 new ResizeObserver(() => stOpen() && seDraw($s("st-map"), "teach")).observe($s("st-map"));
 function seFlip(e) { e?.stopPropagation(); seat.flip = !seat.flip; seatStore(); }
 function seMsg(text, warn) { const m = $s(stOpen() ? "st-msg" : "seat-msg"); if (m) { m.textContent = text; m.classList.toggle("warn", !!warn); } }
+
+// 단순한 선 아이콘 (24칸, 선 굵기 같음)
+const ICON = {
+  print: '<path d="M6 9V3h12v6M6 18H4V10h16v8h-2M6 14h12v7H6z"/>', save: '<path d="M5 3h11l3 3v15H5zM8 3v5h7V3M8 21v-7h8v7"/>',
+  set: '<path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/>',
+  star: '<path d="M12 3l2.6 5.6 6.1.6-4.6 4.1 1.3 6L12 16.2l-5.4 3.1 1.3-6-4.6-4.1 6.1-.6z"/>',
+  shuffle: '<path d="M3 7h3c4 0 6 10 10 10h5M3 17h3c1.5 0 2.7-1.4 3.8-3M14.2 10C15.3 8.4 16.5 7 18 7h3M18 4l3 3-3 3M18 14l3 3-3 3"/>',
+  flip: '<path d="M8 20V4M4 8l4-4 4 4M16 4v16M12 16l4 4 4-4"/>', lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>'
+};
+function ic(name, cls = "ic") { const s = document.createElement("span"); s.className = cls; s.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[name]}</svg>`; return s; }
+document.querySelectorAll("[data-ic]").forEach(el => el.prepend(ic(el.dataset.ic)));
 
 // ── 손가락·마우스 공용 끌기: 이름표가 따라다니다가 놓은 곳의 요소를 알려 줌 (안 움직이고 떼면 null)
 function seDrag(e, label, onDrop) {
@@ -3122,7 +3160,6 @@ function seAssign(person, to, from, lock) {
   if (lock) seatSec.fixed[to] = person;
   seClean(); seatStore();
 }
-let seBusy = false; // 자리 공개 연출 중에는 끌기 막음
 function seMapDown(e, mode) {
   const el = e.target.closest(".sd"), id = el?.dataset.id, p = id && sc().seats[id];
   if (!p || seBusy) return;
@@ -3196,14 +3233,14 @@ function seAuto() {
   seClean();
   const mode = seatSec.gmode || "random", c = sc(), G = seGeo(), fixed = seatSec.fixed, fixedP = new Set(Object.values(fixed));
   const free = c.desks.map(d => d.id).filter(id => !fixed[id]), movers = people().filter(p => !fixedP.has(p));
-  if (!c.desks.length) return { text: "먼저 ⚙ 설정에서 대형을 만들어 주세요." };
+  if (!c.desks.length) return { text: "먼저 설정 버튼에서 대형을 만들어 주세요." };
   if (!people().length) return { text: "설정 → 명단에 학생을 먼저 넣어 주세요." };
-  if (movers.length > free.length) return { text: `책상이 ${movers.length - free.length}개 모자라요. ⚙ 설정에서 대형을 다시 만들어 주세요.` };
+  if (movers.length > free.length) return { text: `책상이 ${movers.length - free.length}개 모자라요. 설정 버튼에서 대형을 다시 만들어 주세요.` };
   const prev = seatSec.noPrev ? new Set(G.pairs.filter(([x, y]) => c.seats[x] && c.seats[y]).map(([x, y]) => pairKey(c.seats[x], c.seats[y]))) : null; // 지금 짝 = 이전 짝꿍
   const pre = []; // 해 보기 전에 알 수 있는 충돌
   const nz = new Set(Object.values(G.zone)).size;
   if (!G.solo) seatSec.groups.forEach((g, i) => { if (g.length > nz) pre.push(`분리 그룹 ${GL(i)}은(는) ${g.length}명인데 모둠(짝)은 ${nz}개뿐이라 같은 모둠을 피할 수 없어요.`); });
-  if (mode !== "random") { const un = people().filter(p => !gender[p]).length; if (un) pre.push(`성별을 정하지 않은 학생 ${un}명은 짝꿍 조건에서 빠져요. ('성별' 탭에서 정할 수 있어요)`); }
+  if (mode !== "random") { const un = people().filter(p => !gender[p]).length; if (un) pre.push(`성별을 정하지 않은 학생 ${un}명은 짝꿍 조건에서 빠져요. (설정 → 명단에서 정할 수 있어요)`); }
   if (mode === "mixed") { const m = people().filter(p => gender[p] === "M").length, f = people().filter(p => gender[p] === "F").length; if (Math.abs(m - f) > 1) pre.push(`남학생 ${m}명, 여학생 ${f}명이라 모든 짝을 이성끼리 할 수는 없어요.`); }
   const seatOf = S => { const w = {}; for (const k in S) if (S[k]) w[S[k]] = k; return w; };
   const swap = (S, a, b) => { const t = S[a]; if (S[b]) S[a] = S[b]; else delete S[a]; if (t) S[b] = t; else delete S[b]; };
@@ -3239,33 +3276,24 @@ function seRandom(teach) {
   if (!r.ok) return seMsg(r.text, true);
   seatStore();
   seMsg(teach ? r.text : r.bad ? "자리를 바꿨어요. (★ 선생님 모드에서 확인할 것이 있어요)" : "자리를 바꿨어요.", r.bad > 0); // 공개 화면에는 조건 내용을 안 보임
-  const els = [...(teach ? $s("st-map") : $s("seat-mini")).querySelectorAll(".sd[data-id]")], S = sc().seats, names = people().map(seName);
+  const els = [...(teach ? $s("st-map") : $s("seat-mini")).querySelectorAll(".sd[data-id]")], S = sc().seats;
   const fill = el => { const p = S[el.dataset.id]; el.replaceChildren(...(p ? [h("i", {}, seNum(p)), h("b", {}, seName(p))] : [])); el.classList.toggle("empty", !p); };
   if (!els.length) return;
   seBusy = true;
-  if ((seat.fx || "one") === "one") {
-    const order = els.filter(el => S[el.dataset.id]).sort((a, b) => (+seNum(S[a.dataset.id]) || 0) - (+seNum(S[b.dataset.id]) || 0));
-    els.forEach(el => { el.replaceChildren(); el.classList.add("empty"); });
-    let i = 0;
-    const next = () => {
-      if (i >= order.length) { seBusy = false; els.forEach(fill); melody([523, 659, 784, 1047], .09, "triangle", .25); return; }
-      const el = order[i++]; fill(el); el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); tone(700 + i * 15, 0, .05, "triangle", .12);
-      setTimeout(next, Math.max(70, 1800 / order.length));
-    };
-    next();
-  } else {
-    const t0 = performance.now();
-    const spin = () => {
-      if (performance.now() - t0 < 1300) { els.forEach(el => { if (S[el.dataset.id]) el.replaceChildren(h("b", {}, names[Math.floor(Math.random() * names.length)])); }); tone(1000 + Math.random() * 400, 0, .03, "square", .04); setTimeout(spin, 80); return; }
-      els.forEach(el => { fill(el); el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); });
-      seBusy = false; melody([523, 659, 784, 1047], .09, "triangle", .25);
-    };
-    spin();
-  }
+  // 한 자리씩 나타나게: 칠판에서 가까운 줄부터, 같은 줄은 왼쪽부터
+  const order = els.filter(el => S[el.dataset.id]).sort((a, b) => ((seat.flip ? -1 : 1) * (a.offsetTop - b.offsetTop)) || a.offsetLeft - b.offsetLeft);
+  els.forEach(el => { el.replaceChildren(); el.classList.add("empty"); });
+  let i = 0;
+  const next = () => {
+    if (i >= order.length) { seBusy = false; seRedraw(); melody([523, 659, 784, 1047], .09, "triangle", .25); return; }
+    const el = order[i++]; fill(el); el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); tone(700 + i * 15, 0, .05, "triangle", .12);
+    setTimeout(next, Math.max(90, 2400 / order.length));
+  };
+  next();
 }
 // 저장: 오늘 날짜로 (같은 날 다시 저장하면 그날 기록을 바꿈). 위쪽 목록에서 불러오기
 function seSaveToday() {
-  if (!sc().desks.length) return seMsg("먼저 ⚙ 설정에서 대형을 만들어 주세요.", true);
+  if (!sc().desks.length) return seMsg("먼저 설정 버튼에서 대형을 만들어 주세요.", true);
   const now = new Date(), date = iso(now), name = `${sc().name || "자리배치도"} (${now.getMonth() + 1}/${now.getDate()})`, old = seat.hist.findIndex(x => x.date === date);
   const id = old >= 0 ? seat.hist[old].id : seId(), rec = { ...clone(sc()), name, id, date };
   if (old >= 0) seat.hist[old] = rec; else seat.hist.unshift(rec);
@@ -3287,7 +3315,7 @@ let sf = null; // 창에서 고르는 중인 값
 function seFormOpen() {
   const f = sc().form || { type: "col", w: 1, k: 4 }, now = new Date();
   sf = { name: sc().name || `${now.getMonth() + 1}월 자리배치도`, type: f.type, w: f.w || 1, k: f.k || 4, size: f.size || 4, merge: f.merge ?? true, cells: new Set(f.cells || []),
-    gmode: seatSec.gmode || "random", noPrev: !!seatSec.noPrev, fx: seat.fx || "one" };
+    gmode: seatSec.gmode || "random", noPrev: !!seatSec.noPrev };
   $s("sf-name").value = sf.name; seFormDraw(); $s("se-form").showPopover();
 }
 function seFormDraw() {
@@ -3296,7 +3324,6 @@ function seFormDraw() {
   for (const t of ["col", "group", "free"]) $s("sf-" + t).hidden = sf.type !== t;
   sf.k = Math.max(1, Math.min(sf.w === 2 ? 5 : 8, sf.k)); $s("sf-k").textContent = sf.k;
   $s("sf-merge").checked = sf.merge; $s("sf-noprev").checked = sf.noPrev;
-  document.querySelectorAll('[name="sf-fx"]').forEach(r => r.checked = r.value === sf.fx);
   $s("sf-grid").replaceChildren(...Array.from({ length: 56 }, (_, i) => { const key = `${Math.floor(i / 8)},${i % 8}`; return h("button", { class: sf.cells.has(key) ? "on" : "", title: "이 자리 쓰기", onclick: () => { sf.cells.has(key) ? sf.cells.delete(key) : sf.cells.add(key); seFormDraw(); } }); }));
   $s("sf-count").textContent = `${sf.cells.size} / 56`;
 }
@@ -3306,25 +3333,25 @@ document.querySelectorAll("#sf-size [data-v]").forEach(b => b.onclick = () => { 
 document.querySelectorAll("#sf-gmode [data-v]").forEach(b => b.onclick = () => { sf.gmode = b.dataset.v; seFormDraw(); });
 function sfK(d) { sf.k += d; seFormDraw(); }
 function seFormApply() {
-  sf.name = $s("sf-name").value.trim(); sf.merge = $s("sf-merge").checked; sf.noPrev = $s("sf-noprev").checked; sf.fx = document.querySelector('[name="sf-fx"]:checked')?.value || "one";
+  sf.name = $s("sf-name").value.trim(); sf.merge = $s("sf-merge").checked; sf.noPrev = $s("sf-noprev").checked;
   const form = sf.type === "col" ? { type: "col", w: sf.w, k: sf.k } : sf.type === "group" ? { type: "group", size: sf.size, merge: sf.merge } : { type: "free", cells: [...sf.cells].sort() };
   if (form.type === "free" && !form.cells.length) return alert("쓸 자리를 한 칸 이상 골라 주세요.");
   const c = sc(), changed = JSON.stringify(form) !== JSON.stringify(c.form) || !c.desks.length;
   if (changed && Object.keys(c.seats).length && !confirm("대형을 바꾸면 지금 자리와 미리 지정(고정)이 풀려요. 만들까요?")) return;
-  c.name = sf.name; seatSec.gmode = sf.gmode; seatSec.noPrev = sf.noPrev; seat.fx = sf.fx;
+  c.name = sf.name; seatSec.gmode = sf.gmode; seatSec.noPrev = sf.noPrev;
   if (changed) { c.form = form; c.desks = seBuild(form, people().length || 24); c.seats = {}; seatSec.fixed = {}; }
   $s("se-form").hidePopover(); seatStore();
-  seMsg(changed ? "대형을 만들었어요. '🎲 자동 자리배치'를 눌러 보세요." : "설정을 바꿨어요.");
+  seMsg(changed ? "대형을 만들었어요. '자동 자리배치'를 눌러 보세요." : "설정을 바꿨어요.");
 }
 
-// ── 선생님 모드: 자리 미리 지정(🔒), 두 학생 떨어뜨리기, 분리 그룹, 성별, 기록. 학생 화면·출력에는 안 나옴
+// ── 선생님 모드: 자리 미리 지정(🔒), 두 학생 떨어뜨리기, 분리 그룹, 기록. 학생 화면·출력에는 안 나옴
 let stTab = "fix", sePick = new Set();
 function seTeachOpen() { seClean(); $s("seat-ed").hidden = false; seMsg(""); seDraw($s("st-map"), "teach"); seTeachSide(); }
 function seTeachClose() { $s("seat-ed").hidden = true; seRedraw(); }
 document.querySelectorAll("#st-tabs [data-t]").forEach(b => b.onclick = () => { stTab = b.dataset.t; seTeachSide(); });
 function seStudentChip(p, pick) {
   const seated = Object.values(sc().seats).includes(p), fixedP = Object.values(seatSec.fixed).includes(p);
-  const chip = h("span", { class: `se-chip${seated ? " seated" : ""}${pick && sePick.has(p) ? " pick" : ""}`, title: "끌어서 자리나 분리 그룹에 놓기" }, (fixedP ? "🔒 " : "") + seName(p));
+  const chip = h("span", { class: `se-chip${seated ? " seated" : ""}${pick && sePick.has(p) ? " pick" : ""}`, title: "끌어서 자리나 분리 그룹에 놓기" }, fixedP ? ic("lock") : null, seName(p));
   chip.onpointerdown = e => seDrag(e, seName(p), t => {
     if (!t) { if (pick) { sePick.has(p) ? sePick.delete(p) : sePick.add(p); seTeachSide(); } return; } // 그냥 누르면 고르기
     const desk = t.closest(".sd"), grp = t.closest(".se-group");
@@ -3338,8 +3365,8 @@ function seTeachSide() {
   const pane = $s("st-pane"), ppl = people(), re = () => { seatStore(); };
   if (!ppl.length) return pane.replaceChildren(h("p", { class: "sum" }, "설정 → 명단에 학생을 먼저 넣어 주세요."));
   let kids = [];
-  if (stTab === "fix") kids = [h("p", { class: "sum" }, "이름을 자리로 끌어 놓으면 그 자리에 미리 지정(🔒)돼요. 자리 위 이름을 다른 자리로 끌어도 돼요. 🔒 자리를 누르면 풀려요."),
-    h("div", { class: "row" }, h("button", { onclick: () => { seatSec.fixed = {}; re(); } }, "미리 지정 모두 풀기"), h("span", { class: "sum" }, `🔒 ${Object.keys(seatSec.fixed).length}명`)),
+  if (stTab === "fix") kids = [h("p", { class: "sum" }, "이름을 자리로 끌어 놓으면 그 자리에 미리 지정(자물쇠)돼요. 자리 위 이름을 다른 자리로 끌어도 돼요. 자물쇠 자리를 누르면 풀려요."),
+    h("div", { class: "row" }, h("button", { onclick: () => { seatSec.fixed = {}; re(); } }, "미리 지정 모두 풀기"), h("span", { class: "sum" }, ic("lock"), ` ${Object.keys(seatSec.fixed).length}명`)),
     h("div", { class: "se-chips" }, ppl.map(p => seStudentChip(p)))];
   if (stTab === "pair") {
     const sel = id => h("select", { id }, h("option", { value: "" }, "학생 고르기"), ppl.map(p => h("option", { value: p }, seName(p))));
@@ -3358,14 +3385,11 @@ function seTeachSide() {
     seatSec.groups.map((g, gi) => h("div", { class: "se-group", "data-group": gi }, h("b", {}, "그룹 " + GL(gi)),
       g.map(p => h("span", { class: "se-chip" }, seName(p), h("button", { class: "x", title: "그룹에서 빼기", onclick: () => { g.splice(g.indexOf(p), 1); seatSec.groups = seatSec.groups.filter(x => x.length); re(); } }, "✕"))),
       h("button", { class: "x", title: "그룹 지우기", onclick: () => { seatSec.groups.splice(gi, 1); re(); } }, "그룹 지우기")))];
-  if (stTab === "gender") kids = [h("p", { class: "sum" }, "짝꿍 조건(⚙ 설정의 이성끼리·동성끼리·성별 고르게)에 써요. 눌러서 남 → 여 → 미정으로 바꿔요."),
-    h("div", { class: "se-chips" }, ppl.map(p => h("button", { class: "se-chip g " + (gender[p] || ""), onclick: () => { gender[p] = { "": "M", M: "F", F: "" }[gender[p] || ""]; if (!gender[p]) delete gender[p]; re(); } },
-      `${seName(p)} ${{ M: "남", F: "여" }[gender[p]] || "－"}`)))];
-  if (stTab === "hist") kids = [h("p", { class: "sum" }, "저장한 자리 기록이에요. 미리 지정(🔒)도 함께 저장돼요."), seat.hist.length ? null : h("p", { class: "sum" }, "아직 저장한 자리가 없어요. 보드의 💾로 저장해요."),
+  if (stTab === "hist") kids = [h("p", { class: "sum" }, "저장한 자리 기록이에요. 미리 지정도 함께 저장돼요."), seat.hist.length ? null : h("p", { class: "sum" }, "아직 저장한 자리가 없어요. 보드의 저장 버튼으로 저장해요."),
     seat.hist.map((x, i) => h("div", { class: "row" }, h("span", {}, `${x.name} · ${Object.keys(x.seats).length}명`),
       h("button", { onclick: () => { if (!confirm(`'${x.name}'을(를) 불러올까요?`)) return; const { id, date, ...rest } = clone(x); seat.cur = rest; seatSec.fixed = clone(seatSec.histFixed[x.id] || {}); seClean(); re(); } }, "불러오기"),
       h("button", { class: "x", onclick: () => { if (!confirm(`'${x.name}' 기록을 지울까요?`)) return; seat.hist.splice(i, 1); delete seatSec.histFixed[x.id]; re(); } }, "삭제"))),
-    h("div", { class: "row" }, h("button", { onclick: () => seImage() }, "🖼 지금 자리 이미지로 저장"))];
+    h("div", { class: "row" }, h("button", { onclick: () => seImage() }, "지금 자리 이미지로 저장"))];
   pane.replaceChildren(...kids.flat());
 }
 
@@ -3375,7 +3399,7 @@ function seOutItems(u) {
   return { L, items: [...L.boxes.map(b => ({ kind: "box", ...b })), ...L.desks.map(t => ({ kind: "desk", x: t.x, y: t.y, person: t.person }))] };
 }
 function sePrint() {
-  if (!sc().desks.length) return seMsg("먼저 ⚙ 설정에서 대형을 만들어 주세요.", true);
+  if (!sc().desks.length) return seMsg("먼저 설정 버튼에서 대형을 만들어 주세요.", true);
   const u = 64, { L, items } = seOutItems(), w = window.open("", "_blank");
   if (!w) return seMsg("새 창이 막혀 있어요. 브라우저에서 팝업을 허용해 주세요.", true);
   const d = w.document, el = (tag, css, text = "") => { const x = d.createElement(tag); x.style.cssText = css; x.textContent = text; return x; };
