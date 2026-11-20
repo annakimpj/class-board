@@ -179,6 +179,11 @@
   .tt-today span { font-size: 15px; min-width: 26px; text-align: center; padding: 2px 6px; border-radius: 8px; background: #fff; border: 1.5px solid var(--line); }
   .tt-today span.past { color: #cdbba6; }
   .tt-today span.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  /* 타이머 시작·다시: 시간 고르는 동그란 버튼과 달리 큼직한 네모 버튼 */
+  #timer-card .acts button { border-radius: 10px; padding: 7px 22px; font-size: 16px; border-width: 2px; }
+  #timer-card .acts .again { background: #fff; border-color: var(--accent); color: var(--accent); }
+  .sec-in { display: flex; align-items: center; gap: 3px; font: 14px "GangwonEdu", "Malgun Gothic", sans-serif; }
+  .sec-in input { width: 52px; font: inherit; padding: 3px 6px; border: 1.5px solid var(--line); border-radius: 999px; text-align: center; background: #fff; }
   #timer-card.done { animation: blink .5s 6 alternate; }
   #timer-card.done .big { color: var(--accent); }
   @keyframes blink { to { background: #ffd9cc; } }
@@ -332,11 +337,12 @@
     <div class="big" id="timer-time" role="timer" aria-live="off">05:00</div>
     <div class="bar"><i id="timer-bar"></i></div>
     <div class="chips">
-      <button onclick="timerSet(1)">1분</button><button onclick="timerSet(3)">3분</button>
+      <button onclick="timerSet(.5)">30초</button><button onclick="timerSet(1)">1분</button><button onclick="timerSet(3)">3분</button>
       <button onclick="timerSet(5)">5분</button><button onclick="timerSet(10)">10분</button><button onclick="timerAdd(1)" title="1분 더하기">+1</button>
+      <label class="sec-in"><input type="number" min="1" max="5999" inputmode="numeric" aria-label="직접 초 입력" onchange="timerSetSec(this)">초</label>
     </div>
     <div class="acts">
-      <button class="main" id="timer-go" onclick="timerToggle()">시작</button><button onclick="timerReset()">다시</button>
+      <button class="main" id="timer-go" onclick="timerToggle()">시작</button><button class="again" onclick="timerReset()">↺ 다시</button>
     </div>
   </section>
   <section class="card tool-card" data-card="picker">
@@ -1062,6 +1068,11 @@ function timerDraw() {
 }
 function timerStop() { clearInterval(tTick); tEnd = 0; }
 function timerSet(min) { timerStop(); tTotal = tLeft = min * 60000; timerCard.classList.remove("done"); timerDraw(); }
+function timerSetSec(input) { // 직접 쓴 초. 1초~99분59초만
+  const s = Math.round(+input.value);
+  if (s >= 1 && s <= 5999) timerSet(s / 60);
+  input.value = "";
+}
 function timerAdd(min) {
   tTotal += min * 60000;
   if (tEnd) tEnd += min * 60000; else tLeft += min * 60000;
@@ -1084,6 +1095,7 @@ function timerTick() {
   tLeft = Math.max(0, tEnd - Date.now());
   const sec = Math.ceil(tLeft / 1000);
   if (sec && sec <= 3 && sec !== tLastSec) tone(1000, 0, .08, "square", .08); // 마지막 3초 똑딱
+  else if (sec && sec !== tLastSec) tone(sec % 2 ? 1500 : 1100, 0, .03, "square", .03); // 그 전엔 1초마다 작게 째깍짹깍
   tLastSec = sec;
   if (!tLeft) {
     timerStop(); timerCard.classList.add("done"); beep();
