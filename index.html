@@ -304,7 +304,12 @@
 
   /* ───── 자리배치 ───── 학급 보드와 같은 색·글꼴·버튼 모양을 그대로 씀 */
   .seat-mini { flex: 1; min-height: 0; position: relative; overflow: hidden; }
-  .card .card-edit { right: 60px; font-size: 15px; }
+  .seat-acts { position: relative; padding: 0 28px; } /* ★는 오른쪽 끝에 작고 흐리게 (학생들 눈에 잘 안 띄게) */
+  .tool-card .seat-acts .seat-star { position: absolute; right: 0; bottom: 0; border: 0; background: none; color: var(--muted); opacity: .35; padding: 4px 6px; }
+  .tool-card .seat-acts .seat-star:hover { opacity: 1; }
+  .seat-guide { margin: 0 auto; max-width: 30em; padding: 6px 4px; font-size: 14px; line-height: 1.6; color: var(--ink); }
+  .seat-guide b { font-weight: normal; color: var(--accent); }
+  .seat-guide ol { margin: 6px 0 0; padding-left: 1.4em; }
   #seat-msg:empty { display: none; }
   /* 대형 배치 창 */
   .se-form { margin: auto; padding: 18px 22px; border: 0; border-radius: 14px; background: #fff; color: var(--ink); box-shadow: 0 12px 40px rgba(60, 40, 20, .2);
@@ -322,7 +327,7 @@
   .seat-mini .sm-desk, .seat-mini .sm-board { position: absolute; box-sizing: border-box; display: grid; place-items: center; overflow: hidden; white-space: nowrap; }
   .seat-mini .sm-desk { background: #fff; border: 1px solid var(--line); border-radius: 4px; color: var(--ink); }
   .seat-mini .sm-desk.empty { color: var(--muted); background: transparent; border-style: dashed; }
-  .seat-mini .sm-board { background: #3c6e4f; color: #fff; border-radius: 4px; font-size: 11px; }
+  .seat-mini .sm-board { background: #3c6e4f; color: #fff; border-radius: 4px; letter-spacing: .3em; }
   #seat-ed:not([hidden]) { position: fixed; inset: 0; z-index: 7; display: grid; grid-template-rows: auto minmax(0, 1fr); background: var(--bg); color: var(--ink);
        font: 15px/1.5 "Wanted Sans", "Malgun Gothic", sans-serif; padding: calc(env(titlebar-area-height, 0px) + 10px) 14px 14px; gap: 10px; app-region: no-drag; -webkit-app-region: no-drag; }
   #seat-ed button, #seat-ed select, #seat-ed input:not([type=checkbox]) { font: inherit; font-size: 14px; border: 1px solid #e6dccf; background: #fff; color: var(--ink); border-radius: 8px; padding: 4px 10px; }
@@ -523,11 +528,11 @@
   </section>
   <section class="card tool-card" data-card="seat">
     <p class="label">🪑 자리배치</p>
-    <button class="card-down card-edit" onclick="seatOpen(false)" title="자리배치 편집 (책상 옮기기·학생 직접 앉히기)" aria-label="자리배치 편집">✎</button>
     <div class="seat-mini" id="seat-mini"></div>
     <p class="sub" id="seat-msg"></p>
-    <div class="acts">
-      <button onclick="seFormOpen()" title="짝꿍형·시험대형·모둠형 등 책상 대형 정하기 (처음 한 번 정하면 계속 그대로)">대형 배치</button><button onclick="seatOpen(true)" title="선생님 모드: 분리 조건·비밀 고정·성별 조건">★</button><button class="main" onclick="seRandom()">🎲 랜덤 배치</button><button onclick="seSaveToday()" title="오늘 날짜로 지금 자리 저장">💾 자리 저장</button><button onclick="sePrint({ flip: seat.view === 'teacher', names: true })">🖨 출력</button>
+    <div class="acts seat-acts">
+      <button onclick="seFormOpen()" title="짝꿍형·시험대형·모둠형 등 책상 대형 정하기 (처음 한 번 정하면 계속 그대로)">대형 배치</button><button onclick="seatOpen(false)" title="자리배치 편집 (책상 옮기기·학생 직접 앉히기)" aria-label="자리배치 편집">✎</button><button class="main" onclick="seRandom()">🎲 랜덤 배치</button><button onclick="seSaveToday()" title="오늘 날짜로 지금 자리 저장">💾 자리 저장</button><button onclick="sePrint({ flip: seat.view === 'teacher', names: true })">🖨 출력</button>
+      <button class="seat-star" onclick="seatOpen(true)" title="선생님 모드" aria-label="선생님 모드">★</button>
     </div>
   </section>
   <section class="card" data-card="motto">
@@ -673,7 +678,7 @@
     </div>
   </div>
 </div>
-<div id="se-form" class="se-form" popover>
+<div id="se-form" class="se-form" popover="manual">
   <h4>대형 배치</h4>
   <label>모양 <select id="sf-kind" onchange="seFormKind()"><option value="pair">짝꿍형</option><option value="exam">시험대형</option><option value="group">모둠형</option><option value="232">2-3-2</option><option value="u">ㄷ자</option></select></label>
   <label id="sf-k-row"><span id="sf-k-label">분단 수</span> <input type="number" id="sf-k" min="1" max="12"></label>
@@ -3018,10 +3023,17 @@ function seLayout(flip, fit) {
 function seatMini() {
   const box = $s("seat-mini"); if (!box) return;
   const L = seLayout(seat.view === "teacher", true), cw = box.clientWidth, ch = box.clientHeight;
-  if (!sc().desks.length) { box.replaceChildren(h("p", { class: "sub" }, "처음 한 번 '대형 배치'로 책상 대형을 정해 주세요")); return; }
+  if (!sc().desks.length) return box.replaceChildren(h("div", { class: "seat-guide" }, h("b", {}, "자리배치 이렇게 써요"), h("ol", {},
+    h("li", {}, "'대형 배치'로 책상 모양(짝꿍형·시험대형·모둠형…)과 분단·모둠 수를 정해요. 처음 한 번이면 계속 유지돼요."),
+    h("li", {}, "'🎲 랜덤 배치'를 누르면 학생들이 무작위로 앉아요. 명단은 설정 → 명단에서 넣어요."),
+    h("li", {}, "'💾 자리 저장'으로 오늘 날짜 기록을 남기고, '🖨 출력'으로 인쇄해요."),
+    h("li", {}, "✎로 책상을 옮기거나 학생을 직접 끌어 앉혀요."),
+    h("li", {}, "오른쪽 끝 작은 ★는 선생님 모드예요. 떨어뜨릴 학생, 분리 그룹, 성별 조건, 비밀 고정을 정해요. 학생 화면에는 보이지 않아요."))));
   const u = Math.min(cw / L.W, ch / L.H), ox = (cw - L.W * u) / 2;
   const at = (el, x, y, w, hh) => { Object.assign(el.style, { left: ox + x * u + "px", top: y * u + "px", width: w * u + "px", height: hh * u + "px" }); return el; };
-  box.replaceChildren(at(h("div", { class: "sm-board" }, "칠판"), L.board.x, L.board.y, L.board.w, L.board.h),
+  const bd = at(h("div", { class: "sm-board" }, "칠판"), L.board.x, L.board.y, L.board.w, L.board.h);
+  bd.style.fontSize = Math.max(12, u * .34) + "px";
+  box.replaceChildren(bd,
     ...L.desks.map(t => { const el = at(h("div", { class: "sm-desk" + (t.person ? "" : " empty") }, t.person ? seName(t.person) : ""), t.x, t.y, DW, DH); el.style.fontSize = Math.max(8, u * .26) + "px"; return el; }));
 }
 new ResizeObserver(seatMini).observe($s("seat-mini"));
@@ -3449,6 +3461,7 @@ function seImage({ flip, names }) {
 }
 // 편집 화면 단축키
 document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && $s("se-form").matches(":popover-open")) return $s("se-form").hidePopover(); // 대형 배치 창은 Esc로 닫기
   if ($s("seat-ed").hidden || e.target.closest("input, textarea, select, [contenteditable='true']")) return;
   const k = e.key.toLowerCase();
   if ((e.ctrlKey || e.metaKey) && k === "z") { e.preventDefault(); e.shiftKey ? seRedo() : seUndo(); }
