@@ -54,13 +54,14 @@
   .card-grip { position: absolute; right: 2px; bottom: 2px; width: 16px; height: 16px; cursor: nwse-resize; touch-action: none;
                background: linear-gradient(135deg, transparent 50%, var(--line) 50% 60%, transparent 60% 70%, var(--line) 70% 80%, transparent 80%); }
   .card .card-down { position: absolute; top: 6px; right: 8px; border: 0; background: none; color: #fff; font-size: 14px; line-height: 1;
-                     padding: 4px 6px; border-radius: 6px; cursor: pointer; opacity: .7; }
+                     padding: 4px 6px; border-radius: 6px; cursor: pointer; opacity: .7; z-index: 3; }
+  .card .card-down svg { display: block; width: 14px; height: 14px; }
   .card .card-down:hover { opacity: 1; background: rgba(255, 255, 255, .25); }
   .board:not(.free) .card-grip { display: none; }
   .card .card-full { right: 34px; }
-  .card:fullscreen { border-radius: 0; } /* 전체 화면에선 닫기·크기 조절 없이 */
-  .card:fullscreen > .card-full { right: 12px; top: 8px; padding: 6px 14px; font-size: 15px; opacity: 1; background: rgba(255, 255, 255, .92); color: var(--ink); border-radius: 999px; }
-  .card:fullscreen > .card-down:not(.card-full), .card:fullscreen > .card-grip { display: none; }
+  .card:fullscreen { border-radius: 0; } /* 전체 화면에선 크기 조절 모서리 없이 */
+  .card:fullscreen > .card-down { opacity: 1; }
+  .card:fullscreen > .card-grip { display: none; }
   .label { display: flex; align-items: center; gap: 6px; font-size: 20px; color: var(--accent); }
   /* 카드마다 색: 포인트 색(--accent)과 바탕(--card), 테두리(--line) */
   [data-card="topic"]     { --accent: #e2643f; --card: #fff4ea; --line: #f3d6c2; }
@@ -80,7 +81,7 @@
                      height: 26px; display: inline-flex; align-items: center; gap: 4px; line-height: 1; } /* 이모지·글자 버튼 높이를 맞춤 */
   .wb-tools svg { width: 14px; height: 14px; flex: none; }
   /* 화이트보드 1~4: 제목 줄 오른쪽 (⛶ ✕ 왼쪽) */
-  .wb-card > .wb-pages { position: absolute; top: 7px; right: 62px; display: flex; gap: 3px; z-index: 1; }
+  .wb-card > .wb-pages { position: absolute; top: 7px; right: 70px; display: flex; gap: 3px; z-index: 1; }
   .wb-pages button { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; width: 24px; height: 24px; padding: 0; border: 0; border-radius: 6px; cursor: pointer;
                      background: rgba(255, 255, 255, .18); color: #fff; }
   .wb-pages button.on { background: #fff; color: var(--accent); }
@@ -266,8 +267,10 @@
   /* 오른쪽 순위: 오락실 점수판 (남색 판, 보라 픽셀 테두리, 노란 등수, 픽셀 글꼴) */
   .race ol { min-height: 0; margin: 0; padding: 8px 10px; list-style: none; overflow-y: auto; font: 19px/1.5 "Galmuri11", "Wanted Sans", sans-serif;
              background: #0b1033; color: #e8eaff; border: 4px solid #7c5cff; box-shadow: inset 0 0 0 2px #3d5afe; }
-  .race li { display: flex; gap: 6px; align-items: baseline; animation: rank-in .35s ease-out; }
-  @keyframes rank-in { from { opacity: 0; transform: translateY(-6px); } }
+  .race ol { overflow-x: hidden; }
+  .race li { display: flex; gap: 6px; align-items: baseline; padding: 0 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } /* 좁으면 이름 끝을 …로 */
+  .race li.run, .race li.run span { color: #8ea2ff; } /* 아직 달리는 중: 지금 자리 순서 */
+  .race li.fresh, .race li.fresh span { background: #ffd43b; color: #0b1033; } /* 방금 들어옴 */
   .race li:first-child { font-size: 1.2em; }
   .race li span { color: #ffd43b; min-width: 2.6em; }
   /* 순서 결과: 1등부터 세로로 쭉. 길면 옆 칸으로 이어짐 */
@@ -1090,14 +1093,19 @@ function removeCard(k) { // 더 만든 카드는 닫으면 내용과 함께 없�
 }
 function cardChrome(k) { // 카드마다 ⛶ 전체 화면, ✕ 닫기(아래쪽 바로), 크기 조절 모서리
   const c = card(k), full = document.createElement("button"), down = document.createElement("button"), grip = document.createElement("span");
-  full.className = "card-down card-full"; full.textContent = "⛶"; full.title = "전체 화면 (Esc로 돌아와요)"; full.setAttribute("aria-label", "전체 화면");
+  full.className = "card-down card-full";
+  const showFull = on => { // 넓히기: 네 모서리가 바깥으로, 줄이기: 안쪽으로
+    full.innerHTML = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="${on ? "M6 1v5H1M10 1v5h5M6 15v-5H1M10 15v-5h5" : "M1 6V1h5M15 6V1h-5M1 10v5h5M15 10v5h-5"}"/></svg>`;
+    full.title = on ? "원래 크기로 (Esc)" : "전체 화면 (Esc로 돌아와요)"; full.setAttribute("aria-label", on ? "원래 크기로" : "전체 화면");
+  };
+  showFull(false);
   full.onclick = () => document.fullscreenElement ? document.exitFullscreen() : c.requestFullscreen().catch(() => {});
-  document.addEventListener("fullscreenchange", () => { // 전체 화면일 때는 '작게'라고 보여서 돌아가는 법을 알 수 있게
-    const on = document.fullscreenElement === c;
-    full.textContent = on ? "↙ 작게" : "⛶"; full.title = on ? "원래 크기로 (Esc)" : "전체 화면 (Esc로 돌아와요)";
-  });
+  document.addEventListener("fullscreenchange", () => showFull(document.fullscreenElement === c));
   down.className = "card-down"; down.textContent = "✕"; down.title = "닫기 (아래쪽 바에서 다시 띄울 수 있어요)"; down.setAttribute("aria-label", "닫기");
-  down.onclick = () => extras.includes(k) ? removeCard(k) : setLayout(k, { mode: "popup" });
+  down.onclick = async () => {
+    if (document.fullscreenElement === c) await document.exitFullscreen().catch(() => {}); // 전체 화면이면 먼저 빠져나와서 닫음
+    extras.includes(k) ? removeCard(k) : setLayout(k, { mode: "popup" });
+  };
   grip.className = "card-grip"; grip.title = "끌어서 크기 조절";
   c.append(full, down, grip);
 }
@@ -1682,10 +1690,21 @@ function pickRace(all) {
       if (vn < 0) { const k = vn * .8; A.vx += k * nx; A.vy += k * ny; B.vx -= k * nx; B.vy -= k * ny; }
     }
   };
+  // 오른쪽 목록: 들어온 사람은 '1등'처럼 고정, 아직 달리는 사람은 지금 더 아래 있는 순서로 (그림만, 순서 정하기와 무관)
+  let listT = 0, lastIn = 0;
+  const renderList = () => {
+    listT = performance.now();
+    const running = balls.filter(b => !b.out).sort((a, b) => b.y - a.y).map(b => b.p);
+    list.replaceChildren(...[...order, ...running].map((p, i) => {
+      const li = document.createElement("li"), n = document.createElement("span"), m = p.match(/^\d+번 (.+)$/), done = i < order.length;
+      n.textContent = (i + 1) + (done ? "등" : "");
+      li.className = !done ? "run" : i === order.length - 1 && listT - lastIn < 800 ? "fresh" : "";
+      li.append(n, m ? m[1] : p);
+      return li;
+    }));
+  };
   const finish = b => {
-    order.push(b.p);
-    const li = document.createElement("li"), n = document.createElement("span"), m = b.p.match(/^\d+번 (.+)$/);
-    n.textContent = order.length + "등"; li.append(n, m ? m[1] : b.p); list.append(li); list.scrollTop = list.scrollHeight;
+    order.push(b.p); lastIn = performance.now(); renderList();
     tone(500 + Math.max(0, 14 - order.length) * 70, 0, .12, "triangle", .2);
     burst(W / 2, WORLD - R, 10, ["#ffd43b", "#fff6c8", "#8ea2ff"]); fx.push({ x: W / 2, y: WORLD - R * 3, vx: 0, vy: -R * 6, life: .9, txt: order.length + "등!" });
   };
@@ -1703,6 +1722,7 @@ function pickRace(all) {
   const draw = () => {
     const dpr = devicePixelRatio || 1, SW = cv.clientWidth, SH = cv.clientHeight, k = SW / W, now = performance.now(), fdt = Math.min(.05, (now - fxT) / 1000);
     fxT = now;
+    if (now - listT > 200) renderList(); // 순위 목록은 0.2초마다 새로
     if (cv.width !== Math.round(SW * dpr) || cv.height !== Math.round(SH * dpr)) { cv.width = Math.round(SW * dpr); cv.height = Math.round(SH * dpr); } // 화면 픽셀 그대로 그려서 안 깨지게
     VH = SH / k;
     const LW = Math.ceil(SW / PIX), LH = Math.ceil(SH / PIX), sc = k / PIX; // 세계 좌표 → 작은 캔버스 픽셀
