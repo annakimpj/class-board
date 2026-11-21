@@ -388,6 +388,10 @@
   .sf-prev .pd { cursor: grab; } .sf-prev .pd.bad { background: #ffe3e3; border-color: #e03131; }
   .sf-prev .pd.sel { border-color: var(--accent); background: #e9f5f7; box-shadow: 0 0 0 2px var(--accent); }
   .sf-prev .psel { position: absolute; border: 1.5px dashed var(--accent); background: rgba(47, 125, 140, .08); pointer-events: none; }
+  .sf-toggle { display: flex; justify-content: center; } .sf-toggle[hidden] { display: none; }
+  .sf-toggle span { display: inline-flex; padding: 3px; gap: 2px; border-radius: 999px; background: #eef1f2; }
+  .se-form .sf-toggle button { border: 0; background: none; color: var(--muted); padding: 5px 16px; }
+  .se-form .sf-toggle button.on { background: var(--accent); color: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, .12); }
   .sf-right { display: flex; flex-direction: column; gap: 8px; min-width: 0; } .sf-right .sf-prev { flex: 1; }
   .sf-grp { display: flex; flex-direction: column; gap: 6px; } .se-form .sf-grp button:disabled { opacity: .4; cursor: default; }
   /* 자리 대형 만들기 창: 왼쪽은 고르기, 오른쪽은 미리보기 (직접 그리기는 미리보기 칸을 눌러 고름) */
@@ -734,7 +738,6 @@
         <label class="sf-chk"><input type="checkbox" id="sf-merge"> 한 명만 남으면 기존 모둠에 합하기</label>
       </div>
       <div id="sf-free">
-        <div class="sf-row"><span>누르면</span><span class="pills" id="sf-tool"><button data-v="pick">자리 고르기</button><button data-v="rot">방향 돌리기</button></span></div>
         <p class="sum" id="sf-count"></p>
       </div>
       <div id="sf-pair">
@@ -743,7 +746,7 @@
       </div>
       <p class="sum" id="sf-note"></p>
     </div>
-    <div class="sf-right"><div class="sf-prev" id="sf-prev"></div><div class="sf-grp" id="sf-grp"></div></div>
+    <div class="sf-right"><div class="sf-toggle" id="sf-toggle"><span id="sf-tool"><button data-v="pick">자리 고르기</button><button data-v="rot">방향 돌리기</button></span></div><div class="sf-prev" id="sf-prev"></div><div class="sf-grp" id="sf-grp"></div></div>
   </div>
   <button class="sf-make" onclick="seFormApply()">만들기</button>
 </div>
@@ -3159,8 +3162,15 @@ function seRenumber(D) {
   const num = new Map(gs.map((g, i) => [g, i]));
   for (const d of D) if (d.g !== undefined) d.g = num.get(d.g);
 }
-// 간격 맞추기: 모둠(묶이지 않은 책상은 하나씩)을 가로·세로 줄로 나눠 줄 사이 간격을 똑같이 (가로 cg, 세로 rg). 모둠 안 책상 모양은 그대로
-function seTidy(D, cg, rg) {
+// 간격 맞추기: 먼저 모둠 안 책상을 칸에 맞추고(가로는 붙여서, 세로는 rp 간격), 모둠(묶이지 않은 책상은 하나씩)을 가로·세로 줄로 나눠 줄 사이 간격을 똑같이 (가로 cg, 세로 rg)
+function seTidy(D, cg, rg, rp = DH + .15) {
+  const slot = (vals, th) => { const idx = new Map(); let k = -1, last = -1e9; for (const v of [...new Set(vals)].sort((a, b) => a - b)) { if (v - last > th) k++; idx.set(v, k); last = v; } return idx; };
+  const inner = {};
+  D.forEach((d, i) => (inner[d.g !== undefined ? "g" + d.g : "s" + i] ||= []).push(d));
+  for (const m of Object.values(inner)) {
+    const x0 = Math.min(...m.map(d => d.x)), y0 = Math.min(...m.map(d => d.y)), cx = slot(m.map(d => d.x), .5), ry = slot(m.map(d => d.y), .35);
+    m.forEach(d => { const c = cx.get(d.x), r = ry.get(d.y); d.x = +(x0 + c * DW).toFixed(2); d.y = +(y0 + r * rp).toFixed(2); });
+  }
   const U = Object.values(D.reduce((m, d, i) => ((m[d.g !== undefined ? "g" + d.g : "s" + i] ||= []).push(d), m), {})).map(m => {
     const x0 = Math.min(...m.map(d => d.x)), y0 = Math.min(...m.map(d => d.y));
     return { m, x0, y0, w: Math.max(...m.map(d => d.x + dWd(d))) - x0, h: Math.max(...m.map(d => d.y + dHd(d))) - y0 };
@@ -3466,7 +3476,7 @@ function seFormDraw() {
   $s("sf-count").textContent = sf.warn || `${sf.cells.size} / ${n}자리 골랐어요 (명단 인원만큼). '방향 돌리기'로 ㄷ자처럼 옆을 보게 할 수 있어요.`;
   $s("sf-count").style.color = sf.warn ? "#e03131" : "";
   const box = $s("sf-prev"), bar = h("div", { class: "pb" }), ns = sf.sel.size, dis = !ns && { disabled: "" }; // 칠판
-  $s("sf-grp").hidden = sf.type === "free";
+  $s("sf-grp").hidden = sf.type === "free"; $s("sf-toggle").hidden = sf.type !== "free";
   $s("sf-grp").replaceChildren(h("p", { class: "sum" }, "처음엔 많이 쓰는 모둠으로 묶여요(혼자 앉기는 한 줄, 짝꿍은 4~6명). 책상이나 모둠을 끌어 옮기고 '간격 맞추기'를 누르면 줄과 간격이 똑같이 맞춰져요. 모둠을 바꾸려면 책상을 누르거나(Shift로 여러 개) 빈 곳을 끌어 네모로 고른 뒤 묶어요."),
     h("div", { class: "pills" }, h("button", { onclick: sfTidy }, "간격 맞추기"), h("button", { onclick: sfGroup, ...dis }, `고른 ${ns}개 모둠으로 묶기`), h("button", { onclick: () => sfUngroup(false), ...dis }, "모둠에서 빼기"),
       h("button", { onclick: () => sfUngroup(true) }, "모둠 모두 풀기")));
@@ -3560,7 +3570,7 @@ function sfRegroup(fn) {
   sf.sel.clear(); seFormDraw();
 }
 const sfGroup = () => sfRegroup(D => { const g = Math.max(-1, ...D.map(d => d.g ?? -1)) + 1; sf.sel.forEach(i => D[i].g = g); });
-const sfTidy = () => { seTidy(sf.desks, sf.type === "group" ? 1.1 : .9, sf.type === "group" ? 1.1 : .4); seRenumber(sf.desks); seFormDraw(); };
+const sfTidy = () => { const gr = sf.type === "group"; seTidy(sf.desks, gr ? 1.1 : .9, gr ? 1.1 : .4, gr ? DH : DH + .15); seRenumber(sf.desks); seFormDraw(); };
 const sfUngroup = all => sfRegroup(D => D.forEach((d, i) => { if (all || sf.sel.has(i)) delete d.g; }));
 for (const [id, key, num] of [["sf-type", "type"], ["sf-w", "w", 1], ["sf-size", "size", 1], ["sf-gmode", "gmode"], ["sf-tool", "tool"]])
   document.querySelectorAll(`#${id} [data-v]`).forEach(b => b.onclick = () => {
