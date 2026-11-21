@@ -307,8 +307,10 @@
   .seat-bar select { font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink); padding: 3px 8px; max-width: 45%; }
   .seat-tools { margin-left: auto; display: flex; gap: 4px; align-items: center; }
   .tool-card .seat-tools button { border-radius: 8px; padding: 4px 9px; }
-  .tool-card .seat-tools .seat-star { border: 0; background: none; color: var(--muted); opacity: .35; } /* 학생 눈에 잘 안 띄게 */
-  .tool-card .seat-tools .seat-star:hover { opacity: 1; }
+  .tool-card .seat-bar .seat-star { border: 0; background: none; color: var(--muted); opacity: .35; padding: 4px 6px; } /* 학생 눈에 잘 안 띄게 */
+  .tool-card .seat-bar .seat-star:hover { opacity: 1; }
+  .sg span { cursor: text; border-radius: 4px; padding: 0 .3em; } .sg span:hover { background: rgba(255, 255, 255, .85); }
+  .sg span[contenteditable="true"] { background: #fff; outline: 1.5px solid var(--accent); color: var(--ink); }
   #seat-msg:empty { display: none; }
   .seat-mini, .st-map { flex: 1; min-height: 0; position: relative; overflow: hidden; touch-action: none; user-select: none; }
   .sb, .sg, .sd { position: absolute; box-sizing: border-box; }
@@ -335,8 +337,9 @@
   .seat-guide ol { margin: 6px 0 0; padding-left: 1.4em; }
   .se-ghost { position: fixed; z-index: 9; pointer-events: none; transform: translate(-50%, -120%); padding: 3px 12px; border-radius: 999px; background: #2f7d8c; color: #fff; font: 14px "Wanted Sans", sans-serif; }
   /* 선생님 모드 화면 */
-  #seat-ed:not([hidden]) { --accent: #2f7d8c; --line: #c3e1e6; position: fixed; inset: 0; z-index: 7; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 10px; background: var(--bg); color: var(--ink);
-       font: 15px/1.5 "Wanted Sans", "Malgun Gothic", sans-serif; padding: calc(env(titlebar-area-height, 0px) + 12px) 16px 14px; app-region: no-drag; -webkit-app-region: no-drag; }
+  #seat-ed:not([hidden]) { --accent: #2f7d8c; --line: #c3e1e6; position: fixed; inset: 0; margin: auto; z-index: 7; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 10px; background: var(--bg); color: var(--ink);
+       width: min(1100px, calc(100vw - 32px)); height: min(760px, calc(100vh - 32px)); box-sizing: border-box; border-radius: 16px; box-shadow: 0 0 0 100vmax rgba(40, 30, 20, .35), 0 12px 40px rgba(40, 30, 20, .25);
+       font: 15px/1.5 "Wanted Sans", "Malgun Gothic", sans-serif; padding: 14px 16px; app-region: no-drag; -webkit-app-region: no-drag; }
   #seat-ed button, #seat-ed select { font: inherit; font-size: 14px; border: 1px solid #e6dccf; background: #fff; color: var(--ink); border-radius: 8px; padding: 4px 10px; cursor: pointer; }
   #seat-ed button.on, #seat-ed button.main { background: #2f7d8c; border-color: #2f7d8c; color: #fff; }
   #seat-ed .sum { margin: 0; color: var(--muted); font-size: 13px; }
@@ -569,8 +572,8 @@
   <section class="card tool-card" data-card="seat">
     <p class="label">🪑 자리배치</p>
     <div class="seat-bar">
-      <select id="seat-hist" aria-label="저장한 자리배치도"></select>
-      <span class="seat-tools"><button data-ic="print" onclick="sePrint()" title="출력" aria-label="출력"></button><button data-ic="save" onclick="seSaveToday()" title="오늘 날짜로 지금 자리 저장" aria-label="저장"></button><button data-ic="set" onclick="seFormOpen()" title="자리 대형 만들기 (모양·짝꿍)" aria-label="자리 대형 만들기"></button><button class="seat-star" data-ic="star" onclick="seTeachOpen()" title="선생님 모드" aria-label="선생님 모드"></button><button class="main" data-ic="shuffle" onclick="seRandom()">자동 자리배치</button></span>
+      <select id="seat-hist" aria-label="저장한 자리배치도"></select><button class="seat-star" data-ic="star" onclick="seTeachAsk()" title="선생님 모드" aria-label="선생님 모드"></button>
+      <span class="seat-tools"><button data-ic="print" onclick="sePrint()" title="출력" aria-label="출력"></button><button data-ic="save" onclick="seSaveToday()" title="오늘 날짜로 지금 자리 저장" aria-label="저장"></button><button data-ic="set" onclick="seFormOpen()" title="자리 대형 만들기 (모양·짝꿍)" aria-label="자리 대형 만들기"></button><button class="main" data-ic="shuffle" onclick="seRandom()">자동 자리배치</button></span>
     </div>
     <div class="seat-mini" id="seat-mini"></div>
     <p class="sub" id="seat-msg"></p>
@@ -700,7 +703,7 @@
 </button>
 <div id="seat-ed" hidden>
   <div class="st-head">
-    <div><b data-ic="star">선생님 모드</b><p class="sum">원하는 학생을 원하는 자리에 고정하고, 떨어뜨릴 학생을 분리 그룹으로 묶어요. 이 화면의 내용은 학생 화면과 출력에 나오지 않아요.</p></div>
+    <div><b data-ic="star">선생님 모드</b></div>
     <button onclick="seTeachClose()">나가기</button>
   </div>
   <div class="st-body">
@@ -712,7 +715,7 @@
     </div>
   </div>
   <div class="st-foot">
-    <p class="sum">미리 지정한 학생이 있으면 랜덤 섞기 때 그 학생을 뺀 나머지만 자리가 바뀌어요.<br><span class="warn-tag">주의</span> 설정에서 대형을 바꾸면 미리 지정이 풀려요.</p>
+    <p></p>
     <button class="main" data-ic="shuffle" onclick="seRandom(true)">랜덤 섞기</button>
   </div>
 </div>
@@ -803,7 +806,7 @@
       <li><b>시간표</b> 설정 → 시간표에서 연간시간표(한글 파일 또는 표 붙여넣기)와 시정표를 넣으면, 지금 몇 교시인지와 다음 시간을 알려 줘요. 표에 없는 주는 '매주 기본 시간표'를 써요.</li>
       <li><b>보드 카드</b> 제목을 끌어 옮기고, 오른쪽 아래 모서리로 크기를 바꿔요. 옮긴 자리와 크기는 앱을 껐다 켜도 그대로예요. ✕를 누르면 보드에서 닫히고 아래쪽 바로 들어가요. 닫아도 적어 둔 내용은 남아요.</li>
       <li><b>아래쪽 바</b> 보드에서 닫은 카드가 들어가요. 누르면 보드에 다시 나와요.</li>
-      <li><b>자리배치</b> 처음 한 번 설정 버튼에서 모양(분단: 혼자·짝꿍과 앉기와 분단 수 / 모둠: 모둠 인원 / 직접 그리기: 명단 인원만큼 자리를 고르고, 필요하면 '방향 돌리기'로 ㄷ자처럼 옆을 보게)과 짝꿍 조건(상관없이·이성끼리·동성끼리·성별 고르게, 이전 짝꿍과 같이 안 앉기)을 정하면 계속 유지돼요. 성별은 설정 → 명단에서 이름과 함께 정해요. 평소에는 '자동 자리배치'(한 자리씩 나타나요), 저장(오늘 날짜로), 출력만 누르면 돼요. 이름을 끌어 다른 자리에 놓으면 자리를 바꾸고, 칠판 옆 '상하전환'으로 위아래를 바꿔요. 대형을 만들면 많이 쓰는 공개 모둠으로 묶여요(혼자 앉기는 한 줄, 짝꿍은 4~6명). 미리보기에서 책상이나 모둠을 끌어 옮기고 '간격 맞추기'로 줄과 간격을 똑같이 맞춰요. 모둠을 바꾸려면 책상을 고르고(Shift+누르기, 빈 곳을 끌어 네모로) '모둠으로 묶기'를 눌러요. 혼자 앉기에서는 짝꿍 대신 모둠 성별 조건(상관없이·성별 고르게)을 골라요. 오른쪽 작은 별은 선생님 모드예요(고정, 분리, 기록). 분리에서 같이 앉으면 안 되는 학생을 비밀 그룹으로 묶고 1~4순위를 정해요(1순위를 가장 먼저 떨어뜨려요). 같은 그룹은 짝꿍·앞뒤·좌우·같은 모둠으로 앉지 않아요. 다 지킬 수 없으면 바로 앉히지 않고 먼저 물어봐요.</li>
+      <li><b>자리배치</b> 처음 한 번 설정 버튼에서 모양(분단: 혼자·짝꿍과 앉기와 분단 수 / 모둠: 모둠 인원 / 직접 그리기: 명단 인원만큼 자리를 고르고, 필요하면 '방향 돌리기'로 ㄷ자처럼 옆을 보게)과 짝꿍 조건(상관없이·이성끼리·동성끼리·성별 고르게, 이전 짝꿍과 같이 안 앉기)을 정하면 계속 유지돼요. 성별은 설정 → 명단에서 이름과 함께 정해요. 평소에는 '자동 자리배치'(한 자리씩 나타나요), 저장(오늘 날짜로), 출력만 누르면 돼요. 이름을 끌어 다른 자리에 놓으면 자리를 바꾸고, 칠판 옆 '상하전환'으로 위아래를 바꿔요. 대형을 만들면 많이 쓰는 공개 모둠으로 묶여요(혼자 앉기는 한 줄, 짝꿍은 4~6명). 미리보기에서 책상이나 모둠을 끌어 옮기고 '간격 맞추기'로 줄과 간격을 똑같이 맞춰요. 모둠을 바꾸려면 책상을 고르고(Shift+누르기, 빈 곳을 끌어 네모로) '모둠으로 묶기'를 눌러요. 혼자 앉기에서는 짝꿍 대신 모둠 성별 조건(상관없이·성별 고르게)을 골라요. 모둠 상자 아래 이름(1모둠…)을 누르면 이름을 바꿀 수 있어요. 자리배치도 이름 옆 작은 별은 선생님 모드예요(고정, 분리, 기록). 분리에서 같이 앉으면 안 되는 학생을 비밀 그룹으로 묶고 1~4순위를 정해요(1순위를 가장 먼저 떨어뜨려요). 같은 그룹은 짝꿍·앞뒤·좌우·같은 모둠으로 앉지 않아요. 다 지킬 수 없으면 바로 앉히지 않고 먼저 물어봐요.</li>
       <li><b>로그인</b> 설정 → 로그인에서 구글로 로그인하면 보드가 서버에 저장되고, 다른 컴퓨터에서 같은 계정으로 로그인하면 같은 보드가 나와요.</li>
       <li><b>준비물</b> 시간표 카드 오른쪽 칸에 쓰면 저장돼요.</li>
       <li><b>창 옮기기</b> 맨 위 줄을 잡고 끌어요. 창 크기는 모서리를 끌어 조절해요. 창이 좁으면 카드가 아래로 쌓여요.</li>
@@ -3126,7 +3129,18 @@ function seBuild(form, n) {
   }
   return D;
 }
-const seBoxLabel = g => `${g + 1}모둠`;
+const seBoxLabel = g => sc().gnames?.[g] || `${g + 1}모둠`;
+function seGroupRename(e, g) {
+  const el = e.currentTarget, old = el.textContent;
+  if (el.isContentEditable || seBusy) return;
+  el.contentEditable = "true"; el.focus(); getSelection().selectAllChildren(el);
+  el.onkeydown = ev => { ev.stopPropagation(); if (ev.key === "Enter") { ev.preventDefault(); el.blur(); } if (ev.key === "Escape") { el.textContent = old; el.blur(); } };
+  el.onblur = () => {
+    el.contentEditable = "false"; const c = sc(), name = el.textContent.trim().slice(0, 20);
+    c.gnames ||= {}; if (!name || name === `${g + 1}모둠`) delete c.gnames[g]; else c.gnames[g] = name;
+    seatStore();
+  };
+}
 // 짝꿍 분단의 기본 모둠: 분단(g)마다 앞에서부터 두 줄(4명)씩, 한 줄이 남으면 앞 모둠에 붙여 6명
 function seColGroups(D) {
   const by = {}; D.forEach(d => (by[d.g] ||= []).push(d));
@@ -3173,7 +3187,7 @@ function seLayout(flip) {
   const boxes = {};
   for (const t of desks) if (t.d.g !== undefined) { const b = boxes[t.d.g] ||= { g: t.d.g, x0: 1e9, y0: 1e9, x1: -1e9, y1: -1e9 }; b.x0 = Math.min(b.x0, t.x); b.y0 = Math.min(b.y0, t.y); b.x1 = Math.max(b.x1, t.x + t.w); b.y1 = Math.max(b.y1, t.y + t.h); }
   return { W, H: Hd + 1.2, board: { x: W / 2 - bw / 2, y: flip ? Hd + .45 : .25, w: bw, h: .55 }, desks,
-    boxes: Object.values(boxes).map(b => ({ label: seBoxLabel(b.g), x: b.x0 - .12, y: b.y0 - .12, w: b.x1 - b.x0 + .24, h: b.y1 - b.y0 + .52 })) };
+    boxes: Object.values(boxes).map(b => ({ g: b.g, label: seBoxLabel(b.g), x: b.x0 - .12, y: b.y0 - .12, w: b.x1 - b.x0 + .24, h: b.y1 - b.y0 + .52 })) };
 }
 // 자리표 그리기. home = 보드 카드(공개: 고정 표시 없음), teach = 선생님 모드(🔒 보임)
 function seDraw(box, mode) {
@@ -3189,7 +3203,7 @@ function seDraw(box, mode) {
   const board = at(h("div", { class: "sb" }, h("span", {}, "칠판"), h("button", { class: "sb-flip", title: "칠판을 위·아래로 (상하 반전)", onclick: seFlip }, ic("flip"), "상하전환")), L.board.x, L.board.y, L.board.w, L.board.h);
   board.style.fontSize = Math.max(12, u * .3) + "px";
   const kids = [board];
-  for (const b of L.boxes) { const el = at(h("div", { class: "sg" }, h("span", {}, b.label)), b.x, b.y, b.w, b.h); el.style.fontSize = Math.max(10, u * .17) + "px"; kids.push(el); }
+  for (const b of L.boxes) { const el = at(h("div", { class: "sg" }, h("span", { title: "눌러서 모둠 이름 바꾸기", onclick: e => seGroupRename(e, b.g) }, b.label)), b.x, b.y, b.w, b.h); el.style.fontSize = Math.max(10, u * .17) + "px"; kids.push(el); }
   for (const t of L.desks) {
     const p = t.person, el = at(h("div", { class: `sd${p ? "" : " empty"}${t.d.rot ? " f" + t.face : ""}`, "data-id": t.d.id },
       p ? [h("i", {}, seNum(p)), h("b", {}, seName(p))] : "", mode === "teach" && seatSec.fixed[t.d.id] ? ic("lock", "lk") : null), t.x + .03, t.y + .03, t.w - .06, t.h - .06);
@@ -3386,9 +3400,9 @@ async function seRandom(teach) {
   if (!r.best) return seMsg(r.text, true);
   seatSec.issue = r.sepBad ? r.text : ""; jset("seat-secret", seatSec);
   if (r.sepBad && !await seConfirm(host, teach ? r.text + "\n\n그래도 이 자리로 앉힐까요?" : "정해 둔 조건을 모두 지키는 자리를 찾지 못했어요.\n선생님 모드에서 확인해 주세요.", "그래도 앉히기"))
-    return seMsg(teach ? "자리를 바꾸지 않았어요." : "자리를 바꾸지 않았어요. 선생님 모드에서 확인해 주세요.", true);
+    return;
   sc().seats = r.best; seClean(); seatStore();
-  seMsg(teach ? r.text : r.bad ? "자리를 바꿨어요. (선생님이 확인할 것이 있어요)" : "자리를 바꿨어요.", r.bad > 0); // 공개 화면에는 조건 내용을 안 보임
+  seMsg(teach && r.bad ? r.text : "", true); // 선생님 모드에서만 못 지킨 조건을 보여 줌
   const els = [...(teach ? $s("st-map") : $s("seat-mini")).querySelectorAll(".sd[data-id]")], S = sc().seats;
   const fill = el => { const p = S[el.dataset.id]; el.replaceChildren(...(p ? [h("i", {}, seNum(p)), h("b", {}, seName(p))] : [])); el.classList.toggle("empty", !p); };
   if (!els.length) return;
@@ -3411,7 +3425,7 @@ function seSaveToday() {
   const id = old >= 0 ? seat.hist[old].id : seId(), rec = { ...clone(sc()), name, id, date };
   if (old >= 0) seat.hist[old] = rec; else seat.hist.unshift(rec);
   seatSec.histFixed[id] = clone(seatSec.fixed); seatStore();
-  seMsg(`'${name}'으로 저장했어요.`);
+  seMsg("");
 }
 function seHistSelect() {
   const sel = $s("seat-hist");
@@ -3558,9 +3572,9 @@ async function seFormApply() {
   const changed = !keep || JSON.stringify(D) !== JSON.stringify(c.desks);
   c.name = sf.name; seatSec.gmode = sf.gmode; seatSec.noPrev = !sfNoPair() && sf.noPrev; c.form = form; c.gv = 1;
   if (changed) c.desks = D;
-  if (!keep) { c.seats = {}; seatSec.fixed = {}; }
+  if (!keep) { c.seats = {}; seatSec.fixed = {}; delete c.gnames; }
   fm.hidePopover(); seatStore();
-  seMsg(!keep ? "대형을 만들었어요. '자동 자리배치'를 눌러 보세요." : changed ? "책상 자리를 바꿨어요." : "설정을 바꿨어요.");
+  seMsg("");
 }
 // 전체 화면이 바뀌면 떠 있던 창은 닫고, 선생님 모드 화면은 따라 옮김
 document.addEventListener("fullscreenchange", () => {
@@ -3570,6 +3584,7 @@ document.addEventListener("fullscreenchange", () => {
 
 // ── 선생님 모드: 자리 미리 지정(🔒), 두 학생 떨어뜨리기, 분리 그룹, 기록. 학생 화면·출력에는 안 나옴
 let stTab = "fix", sePick = new Set();
+async function seTeachAsk() { if (await seConfirm(card("seat"), "선생님만 보고 계신가요?", "네, 열기")) seTeachOpen(); }
 function seTeachOpen() { seClean(); seHost($s("seat-ed")); $s("seat-ed").hidden = false; seMsg(""); seDraw($s("st-map"), "teach"); seTeachSide(); }
 function seTeachClose() { $s("seat-ed").hidden = true; seRedraw(); }
 document.querySelectorAll("#st-tabs [data-t]").forEach(b => b.onclick = () => { stTab = b.dataset.t; seTeachSide(); });
