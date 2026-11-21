@@ -572,8 +572,8 @@
   <section class="card tool-card" data-card="seat">
     <p class="label">🪑 자리배치</p>
     <div class="seat-bar">
-      <select id="seat-hist" aria-label="저장한 자리배치도"></select><button class="seat-star" data-ic="star" onclick="seTeachAsk()" title="선생님 모드" aria-label="선생님 모드"></button>
-      <span class="seat-tools"><button data-ic="print" onclick="sePrint()" title="출력" aria-label="출력"></button><button data-ic="save" onclick="seSaveToday()" title="오늘 날짜로 지금 자리 저장" aria-label="저장"></button><button data-ic="set" onclick="seFormOpen()" title="자리 대형 만들기 (모양·짝꿍)" aria-label="자리 대형 만들기"></button><button class="main" data-ic="shuffle" onclick="seRandom()">자동 자리배치</button></span>
+      <select id="seat-hist" aria-label="저장한 자리배치도"></select>
+      <span class="seat-tools"><button class="seat-star" data-ic="star" onclick="seTeachAsk()" title="선생님 모드" aria-label="선생님 모드"></button><button data-ic="print" onclick="sePrint()" title="출력" aria-label="출력"></button><button data-ic="save" onclick="seSaveToday()" title="오늘 날짜로 지금 자리 저장" aria-label="저장"></button><button data-ic="set" onclick="seFormOpen()" title="자리 대형 만들기 (모양·짝꿍)" aria-label="자리 대형 만들기"></button><button class="main" data-ic="shuffle" onclick="seRandom()">자동 자리배치</button></span>
     </div>
     <div class="seat-mini" id="seat-mini"></div>
     <p class="sub" id="seat-msg"></p>
@@ -3527,7 +3527,8 @@ $s("sf-prev").addEventListener("pointerdown", e => {
   const li = +el.dataset.i, lead = D[li];
   if (e.shiftKey) { sf.sel.has(li) ? sf.sel.delete(li) : sf.sel.add(li); sf.view = null; return seFormDraw(); }
   const grp = lead.g !== undefined;
-  const mv = new Set(sf.sel.has(li) && sf.sel.size > 1 ? sf.sel : D.map((_, i) => i).filter(i => i === li || grp && D[i].g === lead.g));
+  const picked = sf.sel.has(li); // 고른 책상을 끌면 고른 책상만, 아니면 모둠째
+  const mv = new Set(picked ? sf.sel : D.map((_, i) => i).filter(i => i === li || grp && D[i].g === lead.g));
   const start = D.map(d => ({ x: d.x, y: d.y })), others = D.filter((_, i) => !mv.has(i));
   const xs = others.flatMap(d => [d.x, d.x - DW, d.x + DW]), ys = others.flatMap(d => [d.y, d.y - DH, d.y + DH, d.y - DH - .15, d.y + DH + .15]);
   const snap = (v, keys) => { let b = null; for (const k of keys) if (Math.abs(k - v) < .3 && (b === null || Math.abs(k - v) < Math.abs(b - v))) b = k; return b ?? Math.round(v * 10) / 10; };
@@ -3542,6 +3543,13 @@ $s("sf-prev").addEventListener("pointerdown", e => {
   }, () => {
     if (sf.bad) mv.forEach(i => Object.assign(D[i], start[i]));
     if (!moved) sf.sel = new Set([li]); // 끌지 않고 누르기만 하면 그 책상만 고름
+    else if (picked && !sf.bad) { // 고른 책상만 옮겼으면 모둠을 다시 짬: 다른 모둠 책상에 붙여 놓으면 그 모둠으로, 떨어뜨려 놓으면 새 모둠
+      const cx = [...mv].reduce((a, i) => a + D[i].x, 0) / mv.size, cy = [...mv].reduce((a, i) => a + D[i].y, 0) / mv.size;
+      const near = others.filter(o => o.g !== undefined && [...mv].some(i => Math.abs(o.x - D[i].x) <= DW + .25 && Math.abs(o.y - D[i].y) <= DH + .25))
+        .sort((a, b) => Math.hypot(a.x - cx, a.y - cy) - Math.hypot(b.x - cx, b.y - cy))[0];
+      const g = near ? near.g : Math.max(-1, ...D.map(d => d.g ?? -1)) + 1;
+      sfRegroup(() => mv.forEach(i => D[i].g = g));
+    }
     sf.bad = false; sf.mv = null;
   });
 });
@@ -3584,7 +3592,7 @@ document.addEventListener("fullscreenchange", () => {
 
 // ── 선생님 모드: 자리 미리 지정(🔒), 두 학생 떨어뜨리기, 분리 그룹, 기록. 학생 화면·출력에는 안 나옴
 let stTab = "fix", sePick = new Set();
-async function seTeachAsk() { if (await seConfirm(card("seat"), "선생님만 보고 계신가요?", "네, 열기")) seTeachOpen(); }
+async function seTeachAsk() { if (await seConfirm(card("seat"), "경고! 모드를 바꿀 준비되셨나요?", "네, 바꾸기")) seTeachOpen(); }
 function seTeachOpen() { seClean(); seHost($s("seat-ed")); $s("seat-ed").hidden = false; seMsg(""); seDraw($s("st-map"), "teach"); seTeachSide(); }
 function seTeachClose() { $s("seat-ed").hidden = true; seRedraw(); }
 document.querySelectorAll("#st-tabs [data-t]").forEach(b => b.onclick = () => { stTab = b.dataset.t; seTeachSide(); });
