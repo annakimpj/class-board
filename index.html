@@ -728,7 +728,7 @@
       </div>
       <div id="sf-group">
         <div class="sf-row"><span>모둠 인원</span><span class="pills" id="sf-size"><button data-v="3">3명</button><button data-v="4">4명</button><button data-v="5">5명</button><button data-v="6">6명</button></span></div>
-        <label class="sf-chk"><input type="checkbox" id="sf-merge"> 남는 학생은 기존 모둠에 합하기</label>
+        <label class="sf-chk"><input type="checkbox" id="sf-merge"> 한 명만 남으면 기존 모둠에 합하기</label>
       </div>
       <div id="sf-free">
         <div class="sf-row"><span>누르면</span><span class="pills" id="sf-tool"><button data-v="pick">자리 고르기</button><button data-v="rot">방향 돌리기</button></span></div>
@@ -3114,9 +3114,9 @@ function seBuild(form, n) {
     }
     if (form.w === 2) { seColGroups(D); seTidy(D, .9, .4); } // 기본 공개 모둠: 혼자 앉기는 한 줄(분단)이 한 모둠, 짝꿍은 4~6명
   }
-  if (form.type === "group") { // 남는 학생은 기존 모둠에 합하거나(merge) 따로 작은 모둠으로
-    const m = form.merge ? Math.max(1, Math.floor(n / form.size)) : Math.ceil(n / form.size), cols = m <= 4 ? m : Math.ceil(m / 2);
-    const sizes = Array.from({ length: m }, (_, g) => form.merge ? Math.floor(n / m) + (g < n % m ? 1 : 0) : Math.min(form.size, n - g * form.size));
+  if (form.type === "group") { // 모둠 수 = 올림(n / 인원), 고르게 나눔 (14명·4명 → 4·4·3·3). merge: 한 명만 남으면 기존 모둠에 합함 (13명·4명 → 5·4·4)
+    const m = form.merge && n % form.size === 1 && n > form.size ? Math.floor(n / form.size) : Math.max(1, Math.ceil(n / form.size)), cols = m <= 4 ? m : Math.ceil(m / 2);
+    const sizes = Array.from({ length: m }, (_, g) => Math.floor(n / m) + (g < n % m ? 1 : 0));
     const rowsMax = Math.ceil(Math.max(...sizes) / 2);
     sizes.forEach((cnt, g) => { for (let j = 0; j < cnt; j++) add((g % cols) * (2 * DW + 1.1) + (j % 2) * DW, Math.floor(g / cols) * (rowsMax * DH + 1.1) + Math.floor(j / 2) * DH, g, g); });
   }
