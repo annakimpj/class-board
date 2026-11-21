@@ -379,6 +379,10 @@
   .se-chip i.dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-left: 3px; vertical-align: middle; }
   .sep-issue { background: #fff4ea; color: #a5431c; border-radius: 8px; padding: 8px 12px; white-space: pre-line; font-size: 14px; }
   .sf-prev .pd { cursor: grab; } .sf-prev .pd.bad { background: #ffe3e3; border-color: #e03131; }
+  .sf-prev .pd.sel { border-color: var(--accent); background: #e9f5f7; box-shadow: 0 0 0 2px var(--accent); }
+  .sf-prev .psel { position: absolute; border: 1.5px dashed var(--accent); background: rgba(47, 125, 140, .08); pointer-events: none; }
+  .sf-right { display: flex; flex-direction: column; gap: 8px; min-width: 0; } .sf-right .sf-prev { flex: 1; }
+  .sf-grp { display: flex; flex-direction: column; gap: 6px; } .se-form .sf-grp button:disabled { opacity: .4; cursor: default; }
   /* 자리 대형 만들기 창: 왼쪽은 고르기, 오른쪽은 미리보기 (직접 그리기는 미리보기 칸을 눌러 고름) */
   .se-form { margin: auto; padding: 18px 22px; border: 0; border-radius: 16px; background: #fff; color: var(--ink); box-shadow: 0 12px 40px rgba(60, 40, 20, .2);
              font: 15px/1.5 "Wanted Sans", "Malgun Gothic", sans-serif; width: min(820px, 94vw); max-height: 92vh; overflow-y: auto; box-sizing: border-box;
@@ -732,7 +736,7 @@
       </div>
       <p class="sum" id="sf-note"></p>
     </div>
-    <div class="sf-prev" id="sf-prev"></div>
+    <div class="sf-right"><div class="sf-prev" id="sf-prev"></div><div class="sf-grp" id="sf-grp"></div></div>
   </div>
   <button class="sf-make" onclick="seFormApply()">만들기</button>
 </div>
@@ -797,7 +801,7 @@
       <li><b>시간표</b> 설정 → 시간표에서 연간시간표(한글 파일 또는 표 붙여넣기)와 시정표를 넣으면, 지금 몇 교시인지와 다음 시간을 알려 줘요. 표에 없는 주는 '매주 기본 시간표'를 써요.</li>
       <li><b>보드 카드</b> 제목을 끌어 옮기고, 오른쪽 아래 모서리로 크기를 바꿔요. 옮긴 자리와 크기는 앱을 껐다 켜도 그대로예요. ✕를 누르면 보드에서 닫히고 아래쪽 바로 들어가요. 닫아도 적어 둔 내용은 남아요.</li>
       <li><b>아래쪽 바</b> 보드에서 닫은 카드가 들어가요. 누르면 보드에 다시 나와요.</li>
-      <li><b>자리배치</b> 처음 한 번 설정 버튼에서 모양(분단: 혼자·짝꿍과 앉기와 분단 수 / 모둠: 모둠 인원 / 직접 그리기: 명단 인원만큼 자리를 고르고, 필요하면 '방향 돌리기'로 ㄷ자처럼 옆을 보게)과 짝꿍 조건(상관없이·이성끼리·동성끼리·성별 고르게, 이전 짝꿍과 같이 안 앉기)을 정하면 계속 유지돼요. 성별은 설정 → 명단에서 이름과 함께 정해요. 평소에는 '자동 자리배치'(한 자리씩 나타나요), 저장(오늘 날짜로), 출력만 누르면 돼요. 이름을 끌어 다른 자리에 놓으면 자리를 바꾸고, 칠판 옆 '상하전환'으로 위아래를 바꿔요. 미리보기에서 책상(모둠은 모둠째)을 끌어 옮기면 가까운 줄에 맞춰져요. 오른쪽 작은 별은 선생님 모드예요(자리 미리 지정, 기록). 설정 → 학생 분리에서 같이 앉으면 안 되는 학생을 비밀 그룹으로 묶고 우선순위(높음·보통·낮음)를 정해요. 같은 그룹은 짝꿍·앞뒤·좌우·같은 모둠(시험 대형은 같은 분단)으로 앉지 않아요. 다 지킬 수 없으면 바로 앉히지 않고 먼저 물어봐요.</li>
+      <li><b>자리배치</b> 처음 한 번 설정 버튼에서 모양(분단: 혼자·짝꿍과 앉기와 분단 수 / 모둠: 모둠 인원 / 직접 그리기: 명단 인원만큼 자리를 고르고, 필요하면 '방향 돌리기'로 ㄷ자처럼 옆을 보게)과 짝꿍 조건(상관없이·이성끼리·동성끼리·성별 고르게, 이전 짝꿍과 같이 안 앉기)을 정하면 계속 유지돼요. 성별은 설정 → 명단에서 이름과 함께 정해요. 평소에는 '자동 자리배치'(한 자리씩 나타나요), 저장(오늘 날짜로), 출력만 누르면 돼요. 이름을 끌어 다른 자리에 놓으면 자리를 바꾸고, 칠판 옆 '상하전환'으로 위아래를 바꿔요. 미리보기에서 책상(모둠은 모둠째)을 끌어 옮기면 가까운 줄에 맞춰져요. 그다음 책상을 고르고(Shift+누르기, 빈 곳을 끌어 네모로) '모둠으로 묶기'로 공개 모둠을 정해요. 오른쪽 작은 별은 선생님 모드예요(자리 미리 지정, 기록). 설정 → 학생 분리에서 같이 앉으면 안 되는 학생을 비밀 그룹으로 묶고 우선순위(높음·보통·낮음)를 정해요. 같은 그룹은 짝꿍·앞뒤·좌우·같은 모둠(시험 대형은 같은 분단)으로 앉지 않아요. 다 지킬 수 없으면 바로 앉히지 않고 먼저 물어봐요.</li>
       <li><b>로그인</b> 설정 → 로그인에서 구글로 로그인하면 보드가 서버에 저장되고, 다른 컴퓨터에서 같은 계정으로 로그인하면 같은 보드가 나와요.</li>
       <li><b>준비물</b> 시간표 카드 오른쪽 칸에 쓰면 저장돼요.</li>
       <li><b>창 옮기기</b> 맨 위 줄을 잡고 끌어요. 창 크기는 모서리를 끌어 조절해요. 창이 좁으면 카드가 아래로 쌓여요.</li>
@@ -3119,7 +3123,7 @@ function seBuild(form, n) {
   }
   return D;
 }
-const seBoxLabel = g => sc().form?.type === "group" ? `${g + 1}모둠` : `${g + 1}분단`;
+const seBoxLabel = g => `${g + 1}${sc().glabel || (sc().form?.type === "group" ? "모둠" : "분단")}`; // glabel: 대형 만들기에서 직접 묶은 모둠
 // 화면 배치: 칠판은 늘 책상들 한가운데 정면. 상하 반전이면 칠판이 아래로 가고 앞줄도 아래로 (좌우는 그대로)
 function seLayout(flip) {
   const c = sc(), D = c.desks, off = flip ? 0 : 1.2, hasG = D.some(d => d.g !== undefined), pad = hasG ? .5 : 0;
@@ -3232,9 +3236,9 @@ function seGeo() {
   const solo = Object.values(zs).every(n => n === 1); // 1열 분단형처럼 모둠이 없으면 분리 그룹은 '붙지 않기'로
   const pairs = [];
   for (let i = 0; i < D.length; i++) for (let j = i + 1; j < D.length; j++) if (seRel(D[i], D[j]).pair) pairs.push([D[i].id, D[j].id]);
-  const f = sc().form, exam = f?.type === "col" && f.w === 1; // 시험 대형(혼자 앉는 분단)은 분단이 모둠
-  const sep = exam ? Object.fromEntries(D.map(d => [d.id, "g" + d.g])) : zone;
-  return { byId, zone, zs, solo, pairs, sep, seps: seZoneSizes(sep), sepKind: exam ? "분단" : f?.type === "col" ? "짝" : "모둠" };
+  const f = sc().form, exam = f?.type === "col" && f.w === 1, byG = exam || sc().glabel === "모둠"; // 시험 대형(혼자 앉는 분단)은 분단이 모둠
+  const sep = byG ? Object.fromEntries(D.map(d => [d.id, d.g !== undefined ? "g" + d.g : "s" + d.id])) : zone;
+  return { byId, zone, zs, solo, pairs, sep, seps: seZoneSizes(sep), sepKind: sc().glabel === "모둠" || f?.type === "group" ? "모둠" : exam ? "분단" : "짝" };
 }
 const pairKey = (a, b) => [a, b].sort().join("|");
 // 어긴 조건 목록 [{who: [학생…], text}]
@@ -3387,7 +3391,7 @@ const seHost = el => { const at = document.fullscreenElement || document.body; i
 function seFormOpen() {
   const f = sc().form || { type: "col", w: 2, k: 3 }, now = new Date();
   sf = { name: sc().name || `${now.getMonth() + 1}월 자리`, type: f.type, w: f.w || 2, k: f.k || 3, size: f.size || 4, merge: f.merge ?? true, cells: new Set(f.cells || []), rot: { ...(f.rot || {}) },
-    tool: "pick", gmode: seatSec.gmode || "random", noPrev: !!seatSec.noPrev, warn: "", desks: f.type !== "free" && sc().desks.length ? clone(sc().desks) : null };
+    tool: "pick", gmode: seatSec.gmode || "random", noPrev: !!seatSec.noPrev, warn: "", desks: f.type !== "free" && sc().desks.length ? clone(sc().desks) : null, glabel: sc().glabel, sel: new Set() };
   $s("sf-name").value = sf.name; seFormDraw(); seHost($s("se-form")); $s("se-form").showPopover();
 }
 const sfForm = () => sf.type === "col" ? { type: "col", w: sf.w, k: sf.k } : sf.type === "group" ? { type: "group", size: sf.size, merge: sf.merge }
@@ -3402,11 +3406,15 @@ function seFormDraw() {
   $s("sf-merge").checked = sf.merge; $s("sf-noprev").checked = sf.noPrev;
   $s("sf-pair").classList.toggle("off", sfNoPair());
   $s("sf-note").textContent = sf.type === "free" ? "옆으로 붙은 자리끼리 짝꿍이 돼요." : (sfNoPair() ? "혼자 앉는 분단은 짝꿍이 없어서 짝꿍 조건은 쓰지 않아요. " : "")
-    + `미리보기에서 ${sf.type === "group" ? "모둠" : "책상"}을 끌어 옮길 수 있어요. 가까운 줄에 저절로 맞춰져요.`;
+    + `미리보기에서 ${sf.type === "group" || sf.glabel ? "모둠" : "책상"}을 끌어 옮길 수 있어요. 가까운 줄에 저절로 맞춰져요.`;
   const n = people().length || 24;
   $s("sf-count").textContent = sf.warn || `${sf.cells.size} / ${n}자리 골랐어요 (명단 인원만큼). '방향 돌리기'로 ㄷ자처럼 옆을 보게 할 수 있어요.`;
   $s("sf-count").style.color = sf.warn ? "#e03131" : "";
-  const box = $s("sf-prev"), bar = h("div", { class: "pb" }); // 칠판
+  const box = $s("sf-prev"), bar = h("div", { class: "pb" }), ns = sf.sel.size, dis = !ns && { disabled: "" }; // 칠판
+  $s("sf-grp").hidden = sf.type === "free";
+  $s("sf-grp").replaceChildren(h("p", { class: "sum" }, "책상을 옮긴 뒤 공개 모둠을 정해요. 책상을 누르면 하나, Shift를 누른 채 누르면 여러 개, 빈 곳을 끌면 네모 안의 책상이 골라져요."),
+    h("div", { class: "pills" }, h("button", { onclick: sfGroup, ...dis }, `고른 ${ns}개 모둠으로 묶기`), h("button", { onclick: () => sfUngroup(false), ...dis }, "모둠에서 빼기"),
+      h("button", { onclick: () => sfUngroup(true) }, "모둠 모두 풀기")));
   if (sf.type === "free") { // 칸을 눌러 자리 고르기 / 방향 돌리기 (화살표 = 보는 쪽)
     Object.assign(bar.style, { left: "30%", width: "40%", top: "12px", height: "14px" });
     box.replaceChildren(bar, h("div", { class: "sf-grid" }, Array.from({ length: 56 }, (_, i) => {
@@ -3422,7 +3430,8 @@ function seFormDraw() {
     })));
     return;
   }
-  const D = sf.desks ||= seBuild(sfForm(), n), cw = box.clientWidth || 340, ch = box.clientHeight || 260;
+  if (!sf.desks) { sf.desks = seBuild(sfForm(), n); sf.glabel = undefined; sf.sel.clear(); } // 모양이 바뀌면 직접 묶은 모둠도 처음부터
+  const D = sf.desks, cw = box.clientWidth || 340, ch = box.clientHeight || 260;
   let V = sf.view; // 끄는 동안은 크기·위치를 그대로 둬서 책상이 손을 따라오게
   if (!V) {
     const x0 = Math.min(...D.map(d => d.x)), y0 = Math.min(...D.map(d => d.y)), x1 = Math.max(...D.map(d => d.x + DW)), y1 = Math.max(...D.map(d => d.y + DH));
@@ -3435,31 +3444,63 @@ function seFormDraw() {
   for (const d of D) if (d.g !== undefined) { const g = groups[d.g] ||= [1e9, 1e9, -1e9, -1e9]; g[0] = Math.min(g[0], d.x); g[1] = Math.min(g[1], d.y); g[2] = Math.max(g[2], d.x + DW); g[3] = Math.max(g[3], d.y + DH); }
   const pos = (el, x, y, w, hh) => { Object.assign(el.style, { left: ox + x * u + "px", top: oy + y * u + "px", width: w * u + "px", height: hh * u + "px" }); return el; };
   box.replaceChildren(bar, ...Object.values(groups).map(([a, b, c, d]) => pos(h("div", { class: "pg" }), a - .12, b - .12, c - a + .24, d - b + .24)),
-    ...D.map((d, i) => pos(h("div", { class: "pd" + (sf.bad && sf.mv?.has(i) ? " bad" : ""), "data-i": i }), d.x + .04, d.y + .04, DW - .08, DH - .08)));
+    ...D.map((d, i) => pos(h("div", { class: "pd" + (sf.bad && sf.mv?.has(i) ? " bad" : "") + (sf.sel.has(i) ? " sel" : ""), "data-i": i }), d.x + .04, d.y + .04, DW - .08, DH - .08)));
 }
-// 미리보기 책상 끌기: 분단은 책상 하나, 모둠은 모둠째. 다른 책상 줄(같은 줄·바로 옆·한 줄 앞뒤)에 0.3칸 안이면 맞춤, 아니면 0.1칸 단위. 겹치면 제자리로
+// 미리보기: 책상 끌기(고른 책상들 → 함께, 모둠 책상 → 모둠째, 아니면 하나). 다른 책상 줄(같은 줄·바로 옆·한 줄 앞뒤)에 0.3칸 안이면 맞춤, 아니면 0.1칸 단위. 겹치면 제자리로
+// 고르기: 누르면 하나, Shift+누르기로 더하기·빼기, 빈 곳을 끌면 네모 안에 통째로 들어온 책상
 $s("sf-prev").addEventListener("pointerdown", e => {
-  const el = e.target.closest(".pd");
-  if (!el || !sf?.desks || sf.type === "free") return;
-  const D = sf.desks, li = +el.dataset.i, lead = D[li], mv = new Set(D.map((_, i) => i).filter(i => sf.type === "group" ? D[i].g === lead.g : i === li));
-  const start = D.map(d => ({ x: d.x, y: d.y })), others = D.filter((_, i) => !mv.has(i)), sx = e.clientX, sy = e.clientY;
-  sf.view = sf.lastView; sf.mv = mv;
+  if (!sf?.desks || sf.type === "free") return;
+  const box = $s("sf-prev"), R = box.getBoundingClientRect(), D = sf.desks, el = e.target.closest(".pd"), sx = e.clientX, sy = e.clientY;
+  e.preventDefault(); sf.view = sf.lastView;
+  const V = sf.view, toU = (cx, cy) => ({ x: (cx - R.left - V.ox) / V.u, y: (cy - R.top - V.oy) / V.u });
+  const track = (move, done) => {
+    const up = ev => { removeEventListener("pointermove", move); removeEventListener("pointerup", up); removeEventListener("pointercancel", up); done(ev); sf.view = null; seFormDraw(); };
+    addEventListener("pointermove", move); addEventListener("pointerup", up); addEventListener("pointercancel", up);
+  };
+  if (!el) { // 빈 곳: 네모로 고르기
+    const base = new Set(e.shiftKey ? sf.sel : []), rect = h("div", { class: "psel" });
+    let moved = false; box.append(rect);
+    track(ev => {
+      moved ||= Math.hypot(ev.clientX - sx, ev.clientY - sy) > 4;
+      if (moved) Object.assign(rect.style, { left: Math.min(sx, ev.clientX) - R.left + "px", top: Math.min(sy, ev.clientY) - R.top + "px", width: Math.abs(ev.clientX - sx) + "px", height: Math.abs(ev.clientY - sy) + "px" });
+    }, ev => {
+      const a = toU(sx, sy), b = toU(ev.clientX, ev.clientY), x0 = Math.min(a.x, b.x), x1 = Math.max(a.x, b.x), y0 = Math.min(a.y, b.y), y1 = Math.max(a.y, b.y);
+      sf.sel = moved ? new Set([...base, ...D.map((_, i) => i).filter(i => D[i].x >= x0 && D[i].x + DW <= x1 && D[i].y >= y0 && D[i].y + DH <= y1)]) : base;
+    });
+    return;
+  }
+  const li = +el.dataset.i, lead = D[li];
+  if (e.shiftKey) { sf.sel.has(li) ? sf.sel.delete(li) : sf.sel.add(li); sf.view = null; return seFormDraw(); }
+  const grp = (sf.type === "group" || sf.glabel) && lead.g !== undefined;
+  const mv = new Set(sf.sel.has(li) && sf.sel.size > 1 ? sf.sel : D.map((_, i) => i).filter(i => i === li || grp && D[i].g === lead.g));
+  const start = D.map(d => ({ x: d.x, y: d.y })), others = D.filter((_, i) => !mv.has(i));
   const xs = others.flatMap(d => [d.x, d.x - DW, d.x + DW]), ys = others.flatMap(d => [d.y, d.y - DH, d.y + DH, d.y - DH - .15, d.y + DH + .15]);
   const snap = (v, keys) => { let b = null; for (const k of keys) if (Math.abs(k - v) < .3 && (b === null || Math.abs(k - v) < Math.abs(b - v))) b = k; return b ?? Math.round(v * 10) / 10; };
-  const move = ev => {
-    const dx = snap(start[li].x + (ev.clientX - sx) / sf.view.u, xs) - start[li].x, dy = snap(start[li].y + (ev.clientY - sy) / sf.view.u, ys) - start[li].y;
+  let moved = false; sf.mv = mv;
+  track(ev => {
+    moved ||= Math.hypot(ev.clientX - sx, ev.clientY - sy) > 4;
+    if (!moved) return;
+    const dx = snap(start[li].x + (ev.clientX - sx) / V.u, xs) - start[li].x, dy = snap(start[li].y + (ev.clientY - sy) / V.u, ys) - start[li].y;
     mv.forEach(i => { D[i].x = +(start[i].x + dx).toFixed(2); D[i].y = +(start[i].y + dy).toFixed(2); });
     sf.bad = [...mv].some(i => others.some(o => Math.abs(o.x - D[i].x) < DW - .05 && Math.abs(o.y - D[i].y) < DH - .05));
     seFormDraw();
-  };
-  const up = () => {
-    removeEventListener("pointermove", move); removeEventListener("pointerup", up); removeEventListener("pointercancel", up);
+  }, () => {
     if (sf.bad) mv.forEach(i => Object.assign(D[i], start[i]));
-    sf.bad = false; sf.mv = sf.view = null; seFormDraw();
-  };
-  addEventListener("pointermove", move); addEventListener("pointerup", up); addEventListener("pointercancel", up);
-  e.preventDefault();
+    if (!moved) sf.sel = new Set([li]); // 끌지 않고 누르기만 하면 그 책상만 고름
+    sf.bad = false; sf.mv = null;
+  });
 });
+// 공개 모둠 묶기·풀기. 번호는 앞줄 왼쪽부터 1모둠, 2모둠… (모둠 모양이면 같은 모둠 = 같은 z)
+function sfRegroup(fn) {
+  const D = sf.desks; fn(D);
+  const key = g => { const m = D.filter(d => d.g === g); return [Math.min(...m.map(d => d.y)), Math.min(...m.map(d => d.x))]; };
+  const gs = [...new Set(D.filter(d => d.g !== undefined).map(d => d.g))].sort((a, b) => { const A = key(a), B = key(b); return Math.abs(A[0] - B[0]) > .35 ? A[0] - B[0] : A[1] - B[1]; });
+  const num = new Map(gs.map((g, i) => [g, i]));
+  for (const d of D) { if (d.g !== undefined) d.g = num.get(d.g); if (sf.type === "group") { if (d.g !== undefined) d.z = d.g; else delete d.z; } }
+  sf.glabel = "모둠"; sf.sel.clear(); seFormDraw();
+}
+const sfGroup = () => sfRegroup(D => { if (!sf.glabel && sf.type === "col") D.forEach(d => delete d.g); /* 분단에서 처음 묶을 땐 분단 상자를 지우고 묶은 것만 모둠 */ const g = Math.max(-1, ...D.map(d => d.g ?? -1)) + 1; sf.sel.forEach(i => D[i].g = g); });
+const sfUngroup = all => sfRegroup(D => D.forEach((d, i) => { if (all || sf.sel.has(i)) delete d.g; }));
 for (const [id, key, num] of [["sf-type", "type"], ["sf-w", "w", 1], ["sf-size", "size", 1], ["sf-gmode", "gmode"], ["sf-tool", "tool"]])
   document.querySelectorAll(`#${id} [data-v]`).forEach(b => b.onclick = () => {
     const v = num ? +b.dataset.v : b.dataset.v;
@@ -3477,6 +3518,7 @@ async function seFormApply() {
   if (!keep && Object.keys(c.seats).length && !await seConfirm(fm, "대형을 바꾸면 지금 자리와 미리 지정(고정)이 풀려요.\n만들까요?", "만들기")) return;
   const changed = !keep || JSON.stringify(D) !== JSON.stringify(c.desks);
   c.name = sf.name; seatSec.gmode = sfNoPair() ? "random" : sf.gmode; seatSec.noPrev = !sfNoPair() && sf.noPrev; c.form = form;
+  if (form.type !== "free" && sf.glabel) c.glabel = sf.glabel; else delete c.glabel;
   if (changed) c.desks = D;
   if (!keep) { c.seats = {}; seatSec.fixed = {}; }
   fm.hidePopover(); seatStore();
