@@ -728,7 +728,8 @@
   .kid-code { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin: 4px 0 8px; font-size: 14px; } .kid-code b { font: 700 40px "Wanted Sans", "Malgun Gothic", sans-serif; letter-spacing: .12em; color: var(--accent); }
   .kid-url { display: flex; gap: 6px; align-items: center; font-size: 14px; margin-bottom: 8px; } .kid-url code { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; background: #fff; border: 1.5px solid var(--line); border-radius: 6px; padding: 4px 8px; }
   .kid-tb { width: 100%; border-collapse: collapse; font-size: 18px; } .kid-tb th { font-size: 13px; font-weight: normal; color: var(--muted); text-align: left; }
-  .kid-tb td, .kid-tb th { border-bottom: 1px solid var(--line); padding: 4px 6px; } .kid-tb .pin { font-weight: 700; font-size: 22px; letter-spacing: .1em; font-variant-numeric: tabular-nums; }
+  .kid-tb td, .kid-tb th { border-bottom: 1px solid var(--line); padding: 4px 6px; } .kid-tb .none { color: var(--muted); font-size: 14px; } .kid-status { margin: 0 0 8px; } .kid-code button { font-size: 13px; padding: 2px 10px; border-radius: 8px; }
+  .kid-tb .pin { font-weight: 700; font-size: 22px; letter-spacing: .1em; font-variant-numeric: tabular-nums; }
   .tool-card .kid-tb button, .tool-card .kid-acts button, .tool-card .kid-url button { font-size: 13px; padding: 2px 10px; border-radius: 8px; } .kid-acts { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
   .rw-bar, .rw-foot { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; } .rw-bar .sp, .rw-foot .sp { flex: 1; }
   .tool-card .rw-bar button { font-size: 13px; padding: 3px 10px; border-radius: 8px; }
@@ -764,9 +765,8 @@
   .rw-tile.sel .rw-pt { bottom: 34px; }
   .rw-av { position: absolute; right: 6px; bottom: 5px; width: 55px; height: 72px; border-radius: 8px; overflow: hidden; } .rw-av svg { width: 100%; height: 100%; display: block; }
   .rw-av:hover { transform: scale(1.06); }
-  .rw-pm { position: absolute; top: 6px; right: 6px; display: flex; gap: 3px; }
-  .tool-card .rw-pm button { width: 26px; height: 26px; padding: 0; border-radius: 50%; font-size: 16px; line-height: 1; display: grid; place-items: center; }
-  .tool-card .rw-pm .p { background: var(--accent); border-color: var(--accent); color: #fff; } .tool-card .rw-pm .m { color: #d9480f; border-color: #ffc078; }
+  .rw-av { cursor: pointer; } .rw-menu h5 { margin: 8px 8px 2px; font-size: 13px; font-weight: 600; color: #3b82f6; } .rw-menu h5.neg { color: #e8590c; }
+  .rw-menu .own .m { background: #fff; color: #e8590c; border: 1.5px solid #ffc078; }
   .rw-tile.bump { animation: rw-bump .5s ease-out; } @keyframes rw-bump { 30% { transform: scale(1.06); } }
   .rw-cheer { position: absolute; inset: 0; z-index: 25; display: grid; place-content: center; gap: 6px; text-align: center; background: rgba(255, 255, 255, .82); border-radius: inherit; font-family: "Wanted Sans", "Malgun Gothic", sans-serif; animation: rw-in .25s ease-out; cursor: pointer; }
   .rw-cheer b { font-size: clamp(34px, 9cqw, 64px); color: var(--accent); } .rw-cheer.try b { color: #e8590c; }
@@ -776,7 +776,7 @@
   .rw-menu h4 { margin: 4px 6px 6px; font-weight: normal; font-size: 13px; color: var(--muted); }
   .rw-menu button { display: flex; width: 100%; align-items: center; gap: 8px; border: 0; background: none; padding: 8px; border-radius: 8px; font: inherit; color: inherit; cursor: pointer; text-align: left; }
   .rw-menu button:hover { background: #eef4ff; } .rw-menu button span { flex: 1; } .rw-menu button b { font-weight: 700; color: #3b82f6; } .rw-menu button b.neg { color: #e8590c; }
-  .rw-menu .own { display: flex; gap: 6px; padding: 6px 8px; align-items: center; } .rw-menu .own input { width: 64px; font: inherit; border: 1.5px solid #cddcfb; border-radius: 6px; padding: 3px 6px; }
+  .rw-menu .own { display: flex; gap: 6px; padding: 6px 8px; align-items: center; white-space: nowrap; } .rw-menu .own input { width: 52px; font: inherit; border: 1.5px solid #cddcfb; border-radius: 6px; padding: 3px 6px; }
   .rw-menu .own button { width: auto; background: #3b82f6; color: #fff; padding: 4px 12px; }
   .rw-rows { display: grid; grid-template-columns: minmax(0, 1fr) 70px auto; gap: 4px 6px; align-items: center; font-size: 13px; }
   .rw-rows input, .rw-unit { font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); border-radius: 6px; padding: 3px 6px; min-width: 0; }
@@ -3533,6 +3533,7 @@ setInterval(ckDraw, 1000); ckDraw();
 const RW_REASONS = [{ t: "숙제를 잘했어요", pt: 1 }, { t: "발표를 잘했어요", pt: 1 }, { t: "친구를 도와줬어요", pt: 2 }, { t: "정리를 잘했어요", pt: 1 }, { t: "수업 시간에 떠들었어요", pt: -1 }, { t: "숙제를 안 했어요", pt: -1 }];
 let reward = { unit: "포인트", reasons: RW_REASONS, st: {}, log: [], prices: {} }; // prices: { 물건 id: 교사가 정한 가격 }
 try { reward = Object.assign(reward, JSON.parse(localStorage.getItem("reward")) || {}); } catch (e) {}
+if (reward.cls && reward.cls.v !== 2) reward.cls = { code: reward.cls.code || "", pins: {}, v: 2 }; // 예전: 교사가 만든 비밀번호 → 학생이 직접 정하게
 let rwPick = new Set();
 const rwCard = document.getElementById("rw-card");
 const rwStore = () => { try { localStorage.setItem("reward", JSON.stringify(reward)); } catch (e) {} setTimeout(kidSoon); }; // 학생 화면에도 (아래 로그인·동기화 쪽)
@@ -3556,9 +3557,9 @@ function rwDraw() {
   $s("rw-grid").replaceChildren(...ppl.map(p => {
     const s = rwSt(p), t = h("div", { class: "rw-tile" + (rwPick.has(p) ? " sel" : ""), "data-p": p, title: `${seName(p)} · ${s.pt} ${unit}` },
       h("div", { class: "n" }, seNum(p) || ""), h("span", { class: "nm" }, seName(p)),
-      h("span", { class: "rw-pt" }, String(s.pt)),
-      h("div", { class: "rw-pm" }, h("button", { class: "p", title: "칭찬해요", onclick: e => { e.stopPropagation(); rwMenu(e.currentTarget, 1, [p]); } }, "+"), h("button", { class: "m", title: "노력해요", onclick: e => { e.stopPropagation(); rwMenu(e.currentTarget, -1, [p]); } }, "−")));
-    const av = h("div", { class: "rw-av" }); av.innerHTML = avSvg(s.av, rwWear(p, s.wear));
+      h("span", { class: "rw-pt" }, String(s.pt)));
+    const av = h("div", { class: "rw-av", title: "누르면 칭찬해요·노력해요" }); av.innerHTML = avSvg(s.av, rwWear(p, s.wear));
+    av.onclick = e => { e.stopPropagation(); rwMenu(av, 0, [p]); }; // 아바타: 이 학생에게 점수. 빈 곳: 고르기
     t.append(av); t.oncontextmenu = e => { e.preventDefault(); rwAvatar(p); };
     t.onclick = () => { rwPick.has(p) ? rwPick.delete(p) : rwPick.add(p); t.classList.toggle("sel", rwPick.has(p)); rwCount(); };
     return t;
@@ -3575,15 +3576,17 @@ function rwGiveSel(btn, sign) {
   if (!rwPick.size) return seConfirm(rwCard, "학생 카드를 눌러 먼저 골라요. (전체 선택도 돼요)", "확인", null);
   rwMenu(btn, sign, [...rwPick]);
 }
-// 이유 목록 (칭찬해요는 +, 노력해요는 −) + 직접 쓰기
+// 이유 목록 (칭찬해요는 +, 노력해요는 −, sign 0이면 둘 다) + 직접 쓰기
 function rwMenu(btn, sign, who) {
   const d = btn.ownerDocument, W = d.defaultView, unit = reward.unit.trim() || "점";
   d.querySelector(".rw-menu")?.remove();
-  const list = reward.reasons.filter(r => Math.sign(r.pt) === sign);
   const own = h("input", { type: "number", min: "1", max: "100", value: "1", "aria-label": "점수" });
-  const m = h("div", { class: "rw-menu", popover: "auto" }, h("h4", {}, `${sign > 0 ? "칭찬해요" : "노력해요"} · ${who.length === 1 ? seName(who[0]) : who.length + "명"}`),
-    ...list.map(r => h("button", { onclick: () => { m.hidePopover(); rwApply(who, r.pt, r.t); } }, h("span", {}, r.t), h("b", { class: r.pt < 0 ? "neg" : "" }, `${r.pt > 0 ? "+" : ""}${r.pt}`))),
-    h("div", { class: "own" }, h("span", {}, sign > 0 ? "+" : "−"), own, unit, h("button", { onclick: () => { const v = Math.max(1, Math.round(+own.value || 1)); m.hidePopover(); rwApply(who, sign * v, ""); } }, "주기")));
+  const rows = sg => reward.reasons.filter(r => Math.sign(r.pt) === sg).map(r => h("button", { onclick: () => { m.hidePopover(); rwApply(who, r.pt, r.t); } }, h("span", {}, r.t), h("b", { class: r.pt < 0 ? "neg" : "" }, `${r.pt > 0 ? "+" : ""}${r.pt}`)));
+  const give = sg => h("button", { class: sg < 0 ? "m" : "", onclick: () => { const v = Math.max(1, Math.round(+own.value || 1)); m.hidePopover(); rwApply(who, sg * v, ""); } }, sg > 0 ? "+ 주기" : "− 빼기");
+  const name = who.length === 1 ? seName(who[0]) : who.length + "명";
+  const m = h("div", { class: "rw-menu", popover: "auto" }, h("h4", {}, sign ? `${sign > 0 ? "칭찬해요" : "노력해요"} · ${name}` : name),
+    ...(sign ? rows(sign) : [h("h5", {}, "칭찬해요"), ...rows(1), h("h5", { class: "neg" }, "노력해요"), ...rows(-1)]),
+    h("div", { class: "own" }, ...(sign ? [h("span", {}, sign > 0 ? "+" : "−"), own, unit, give(sign)] : [own, unit, give(1), give(-1)])));
   d.body.append(m); m.addEventListener("toggle", e => { if (e.newState === "closed") m.remove(); }); m.showPopover();
   const r = btn.getBoundingClientRect();
   m.style.left = Math.max(8, Math.min(r.left, W.innerWidth - m.offsetWidth - 8)) + "px";
@@ -3644,7 +3647,7 @@ function rwSettings() {
         h("button", { class: "rw-add", onclick: () => { list.push({ t: "", pt: 1 }); drawRows(); rows.querySelectorAll("input")[rows.querySelectorAll("input").length - 2]?.focus(); } }, "+ 이유 추가"));
       return;
     }
-    const its = AV_ITEMS.filter(it => it.price && (rwShopTab === "acc" ? ["head", "face", "neck"].includes(it.slot) : it.slot === rwShopTab));
+    const its = AV_ITEMS.filter(it => it.price && (rwShopTab === "acc" ? AV_ACC.includes(it.slot) : it.slot === rwShopTab));
     const cats = h("div", { class: "rw-tabs sm" }, AV_TABS.map(([k, t]) => h("button", { class: rwShopTab === k ? "on" : "", onclick: () => { rwShopTab = k; draw(); } }, t)));
     const all = h("input", { type: "checkbox" }); all.checked = its.length && its.every(it => chosen.has(it.id));
     all.onchange = () => { its.forEach(it => all.checked ? chosen.add(it.id) : chosen.delete(it.id)); draw(); };
@@ -3696,7 +3699,7 @@ function rwAvatar(p) {
     const sw = (list, key, label) => h("div", { class: "rw-pick" }, h("span", {}, label), ...list.map((c, i) => h("button", { class: "sw" + (d.av[key] === i ? " on" : ""), style: `background:${c[0]}`, "aria-label": label, onclick: () => { d.av[key] = i; draw(); } })));
     me.append(h("div", {}, h("b", {}, seName(p)), h("br"), h("span", { class: "rw-pt" }, `${d.pt} ${unit}`), sw(AV_SKIN, "skin", "피부"), sw(AV_HAIR, "hair", "머리색")));
     const tabs = h("div", { class: "rw-tabs" }, AV_TABS.map(([k, t]) => h("button", { class: rwTab === k ? "on" : "", onclick: () => { rwTab = k; draw(); } }, t)));
-    const items = AV_ITEMS.filter(it => rwTab === "acc" ? ["head", "face", "neck"].includes(it.slot) : it.slot === rwTab);
+    const items = AV_ITEMS.filter(it => rwTab === "acc" ? AV_ACC.includes(it.slot) : it.slot === rwTab);
     const shop = h("div", { class: "rw-shop" }, items.map(it => {
       const cost = avPrice(it), has = !cost || d.own.includes(it.id), must = it.slot in AV_REQ, worn = (d.wear[it.slot] || AV_REQ[it.slot]) === it.id, bg = it.slot === "bg";
       const pic = h("div"); pic.innerHTML = avSvg(d.av, { ...d.wear, [it.slot]: it.id, ...(bg ? {} : { bg: "bg-none" }), ...(rwTab === "hair" ? { head: "" } : {}) });
@@ -5861,7 +5864,7 @@ const TOURS = {
     { at: "#nt-hist", text: "지난 알림장을 불러오거나 ✕로 지워요. 칠판에 떠 있는 날 것을 지우면 칠판 글도 지워져요." },
     { text: "번호는 첫 줄의 '1.'만 붙어요. 한 내용을 두 줄로 쓸 수 있게 나머지 번호는 직접 써요." }] },
   reward: { name: "🏅 우리반 점수", steps: [
-    { at: ".rw-tile", text: "학생 카드를 누르면 골라져요. 오른쪽 위 +·−로 그 학생에게 바로 줄 수도 있어요." },
+    { at: ".rw-tile", text: "학생 카드의 빈 곳을 누르면 골라져요. 아바타를 누르면 그 학생에게 바로 칭찬해요·노력해요." },
     { at: ".rw-sel", text: "전체 선택 · 선택 반전 · 선택 해제" },
     { at: [".rw-plus", ".rw-minus"], text: "고른 학생에게 칭찬해요(+)·노력해요(−). 이유를 고르면 소리와 함께 크게 보여요." },
     { at: ".rw-dress", text: "👕 꾸미기: 학생 아바타를 꾸며요 (학생 카드를 오른쪽 클릭해도 돼요). 머리·옷·장신구·배경은 점수로 사요." },
@@ -6146,52 +6149,71 @@ async function syncPull(d) {
   lsSet("sync-at", String(d.updatedAt)); lsDel("sync-dirty");
   location.reload();
 }
-// ───── 학생 화면(student.html): 반 코드 + 번호 + 비밀번호 4자리로 들어와 자기 아바타를 꾸미고 점수로 물건을 바로 삼
+// ───── 학생 화면(student.html): 반 코드 + 번호 + 비밀번호 4자리. 반 코드는 교사가, 비밀번호는 학생이 처음 들어올 때 직접 정함
 // 서버: classes/{반 코드} = { owner(교사 uid), unit, prices, at }
+//       classes/{반 코드}/claim/{번호} = { open, name }  ← 비밀번호를 아직 안 정한 학생. 학생이 pin을 써 넣으면 교사 보드가 받아 kids 문서를 만들고 지움
 //       classes/{반 코드}/kids/{번호}-{비밀번호} = { p, n, name, pt, av, wear, own, buys: [{ id, at }], kidAt }
 //   점수·이름은 교사 보드만 씀. 학생은 av·wear·own·buys·kidAt만 바꿀 수 있음(서버 규칙). 학생이 산 것(buys)은 교사 보드가 받아서 점수를 빼고 비움
-//   비밀번호는 reward.cls.pins에 (교사가 보고 새로 바꿀 수 있음). 문서 이름에 비밀번호가 들어 있어서 알아야만 열림
-const KID_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // 헷갈리는 0·O·1·I 빼고
+//   reward.cls = { code, pins: { 학생: "1234" } }  (교사는 비밀번호를 보고 지울 수 있음 → 학생이 다시 정함)
 const kidUrl = () => new URL("student.html", location.href).href;
-const kidKey = p => `${seNum(p) || 0}-${reward.cls.pins[p]}`;
-const kidRef = key => fb.doc(fb.db, "classes", reward.cls.code, "kids", key);
-let kidSeen = {}, kidT = 0, kidUnsub = null, kidClsSent = "", kidReady = false; // kidReady: 서버 것을 한 번 받은 뒤에만 올림 (학생이 바꾼 걸 덮지 않게)
+const kidNum = p => String(parseInt(seNum(p), 10) || 0);
+const kidKey = p => `${kidNum(p)}-${reward.cls.pins[p]}`;
+const kidDoc = (...path) => fb.doc(fb.db, "classes", reward.cls.code, ...path);
+let kidSeen = {}, kidClaims = {}, kidT = 0, kidUnsubs = [], kidClsSent = "", kidReady = 0, kidStatus = "", kidRetry = 0;
 const kidBusy = new Set();
-function kidPins() { // 명단 학생마다 비밀번호 (없는 학생만 새로 만듦)
-  const ppl = people(), pins = reward.cls.pins ||= {};
-  ppl.forEach(p => pins[p] ||= String(1000 + Math.floor(Math.random() * 9000)));
-  for (const p in pins) if (!ppl.includes(p)) delete pins[p];
-}
-function kidSoon() { if (reward.cls?.code && fbUser) { clearTimeout(kidT); kidT = setTimeout(() => kidPush().catch(() => {}), 1500); } }
+const kidOn = () => !!(reward.cls?.code && fbUser);
+function kidSay(t) { kidStatus = t; const el = rwCard.querySelector(".kid-status"); if (el) el.textContent = t; }
+function kidSoon() { if (kidOn()) { clearTimeout(kidT); kidT = setTimeout(() => kidPush().catch(e => kidSay("⚠️ 서버에 올리지 못했어요. 인터넷 연결이나 Firestore 규칙을 확인해 주세요.")), 1500); } }
 async function kidPush() { // 교사 쪽에서 바뀐 것만 올림 (서버에 있는 것과 같으면 안 씀)
-  if (!reward.cls?.code || !fbUser || !kidReady) return;
-  kidPins();
+  if (!kidOn() || kidReady < 2) return; // kids·claim 두 목록을 한 번씩 받은 뒤에만 (학생이 바꾼 걸 덮지 않게)
+  const pins = reward.cls.pins ||= {};
   const cls = { owner: fbUser.uid, unit: reward.unit, prices: reward.prices || {} }, cj = JSON.stringify(cls);
   if (kidClsSent !== cj) { await fb.setDoc(fb.doc(fb.db, "classes", reward.cls.code), { ...cls, at: Date.now() }); kidClsSent = cj; }
-  const live = new Set();
+  const live = new Set(), open = new Set();
   for (const p of people()) {
+    if (!pins[p]) { // 아직 비밀번호 없음: 정할 수 있게 열어 둠
+      open.add(kidNum(p));
+      if (!kidClaims[kidNum(p)]) { await fb.setDoc(kidDoc("claim", kidNum(p)), { open: true, name: seName(p) }); kidClaims[kidNum(p)] = { open: true }; }
+      continue;
+    }
     const s = rwSt(p), key = kidKey(p), was = kidSeen[key] || {}; live.add(key);
     if (kidBusy.has(key)) continue; // 학생 것을 받는 중
-    const now = { p, n: seNum(p) || "", name: seName(p), pt: s.pt, av: s.av, wear: rwWear(p, s.wear), own: s.own };
+    const now = { p, n: kidNum(p), name: seName(p), pt: s.pt, av: s.av, wear: rwWear(p, s.wear), own: s.own };
     const diff = Object.fromEntries(Object.entries(now).filter(([k, v]) => JSON.stringify(v) !== JSON.stringify(was[k])));
-    if (!Object.keys(diff).length) continue;
-    await fb.setDoc(kidRef(key), diff, { merge: true }); kidSeen[key] = { ...was, ...diff };
+    if (Object.keys(diff).length) { await fb.setDoc(kidDoc("kids", key), diff, { merge: true }); kidSeen[key] = { ...was, ...diff }; }
   }
-  for (const key in kidSeen) if (!live.has(key)) { delete kidSeen[key]; await fb.deleteDoc(kidRef(key)).catch(() => {}); } // 명단에서 빠졌거나 비밀번호를 바꿈
+  for (const key in kidSeen) if (!live.has(key)) { delete kidSeen[key]; await fb.deleteDoc(kidDoc("kids", key)).catch(() => {}); } // 명단에서 빠졌거나 비밀번호를 지움
+  for (const n in kidClaims) if (!open.has(n)) { delete kidClaims[n]; await fb.deleteDoc(kidDoc("claim", n)).catch(() => {}); }
+  kidSay(`✅ 서버와 연결됐어요. 비밀번호를 정한 학생 ${live.size}명 · 아직 안 정한 학생 ${open.size}명`);
 }
-function kidListen() { // 학생이 꾸미거나 산 것을 받아 옴
-  kidUnsub?.(); kidUnsub = null; kidSeen = {}; kidClsSent = ""; kidReady = false;
-  if (!reward.cls?.code || !fbUser) return;
-  kidUnsub = fb.onSnapshot(fb.collection(fb.db, "classes", reward.cls.code, "kids"), snap => {
-    kidPins();
-    const who = new Map(people().map(p => [kidKey(p), p]));
+function kidListen() { // 학생이 정한 비밀번호, 꾸미거나 산 것을 받아 옴
+  kidUnsubs.forEach(u => u()); kidUnsubs = []; kidSeen = {}; kidClaims = {}; kidClsSent = ""; kidReady = 0; clearTimeout(kidRetry);
+  if (!kidOn()) return;
+  kidSay("서버와 연결하는 중…");
+  const fail = () => { kidSay("⚠️ 서버에 연결하지 못했어요. Firestore 규칙을 게시했는지 확인해 주세요. 잠시 뒤 다시 해 볼게요."); kidUnsubs.forEach(u => u()); kidUnsubs = []; kidRetry = setTimeout(kidListen, 20000); };
+  let gotK = false, gotC = false;
+  kidUnsubs.push(fb.onSnapshot(fb.collection(fb.db, "classes", reward.cls.code, "kids"), snap => {
+    const who = new Map(people().filter(p => reward.cls.pins?.[p]).map(p => [kidKey(p), p]));
+    kidSeen = {};
     snap.docs.forEach(d => {
       const v = d.data(), p = who.get(d.id);
       kidSeen[d.id] = v;
       if (p && ((v.buys || []).length || (v.kidAt || 0) > (rwSt(p).kidAt || 0))) kidTake(p, d.ref);
     });
-    kidReady = true; kidSoon();
-  }, () => {});
+    if (!gotK) { gotK = true; kidReady++; } kidSoon();
+  }, fail));
+  kidUnsubs.push(fb.onSnapshot(fb.collection(fb.db, "classes", reward.cls.code, "claim"), snap => {
+    const byNum = new Map(people().map(p => [kidNum(p), p])), pins = reward.cls.pins ||= {};
+    kidClaims = {};
+    let got = false;
+    snap.docs.forEach(d => {
+      const v = d.data(), p = byNum.get(d.id);
+      kidClaims[d.id] = v;
+      if (p && !pins[p] && /^\d{4}$/.test(v.pin || "")) { pins[p] = v.pin; got = true; } // 학생이 비밀번호를 정함
+    });
+    if (got) { rwStore(); rwSettingsRedraw?.(); }
+    if (!gotC) { gotC = true; kidReady++; } kidSoon();
+  }, fail));
 }
 async function kidTake(p, ref) { // 학생이 산 것: 교사 보드 가격으로 점수를 빼고 기록. 꾸민 것: 그대로 받음
   if (kidBusy.has(ref.id)) return;
@@ -6213,42 +6235,59 @@ async function kidTake(p, ref) { // 학생이 산 것: 교사 보드 가격으�
     rwStore(); rwDraw();
   } catch (e) {} finally { kidBusy.delete(ref.id); }
 }
-function kidPanel(ed, redraw) { // 점수 설정 → 학생 입장
-  const box = h("div");
+async function kidClear(code) { // 서버에서 이 반 지우기
+  const all = [...Object.keys(kidSeen).map(k => ["kids", k]), ...Object.keys(kidClaims).map(n => ["claim", n])];
+  kidUnsubs.forEach(u => u()); kidUnsubs = []; clearTimeout(kidRetry);
+  await Promise.all(all.map(([c, k]) => fb.deleteDoc(fb.doc(fb.db, "classes", code, c, k)).catch(() => {})));
+  await fb.deleteDoc(fb.doc(fb.db, "classes", code)).catch(() => {});
+  kidSeen = {}; kidClaims = {};
+}
+async function kidSetCode(host, redraw) { // 반 코드 정하기·바꾸기 (4글자 이상, 겹치면 안 됨)
+  const v = await seAskText(host, "반 코드를 정해 주세요.\n영어·숫자 4~10글자 (예: HANUL3, 2026A)", reward.cls?.code || "", "정하기");
+  if (v == null) return;
+  const code = v.trim().toUpperCase();
+  if (!/^[A-Z0-9]{4,10}$/.test(code)) { await seConfirm(host, "반 코드는 영어·숫자로 4~10글자예요.", "확인", null); return kidSetCode(host, redraw); }
+  if (code === reward.cls?.code) return;
+  try {
+    const snap = await fb.getDoc(fb.doc(fb.db, "classes", code));
+    if (snap.exists() && snap.data().owner !== fbUser.uid) { await seConfirm(host, `'${code}'은(는) 다른 반이 쓰고 있어요.\n다른 코드로 정해 주세요.`, "확인", null); return kidSetCode(host, redraw); }
+    await fb.setDoc(fb.doc(fb.db, "classes", code), { owner: fbUser.uid, unit: reward.unit, prices: reward.prices || {}, at: Date.now() });
+  } catch (e) { return seConfirm(host, "서버에 연결하지 못했어요.\nFirestore 규칙을 게시했는지, 인터넷이 되는지 확인해 주세요.", "확인", null); }
+  if (reward.cls?.code) await kidClear(reward.cls.code);
+  reward.cls = { code, pins: reward.cls?.pins || {}, v: 2 };
+  rwStore(); kidListen(); redraw();
+}
+let rwSettingsRedraw = null;
+function kidPanel(host, redraw) { // 점수 설정 → 학생 입장
+  rwSettingsRedraw = redraw;
   if (!fbUser) return h("p", { class: "rw-h" }, "학생 화면은 로그인해야 쓸 수 있어요. ⚙ 설정 → 계정에서 구글로 로그인해 주세요.");
-  if (!reward.cls?.code) return h("div", {}, h("p", { class: "rw-h" }, "학생이 태블릿·노트북에서 반 코드 + 번호 + 비밀번호(4자리)로 들어와 자기 아바타를 꾸미고, 모은 점수로 물건을 사요. 비밀번호는 여기서 보고 다시 만들 수 있어요."),
-    h("button", { class: "main", onclick: () => {
-      reward.cls = { code: Array.from({ length: 5 }, () => KID_CHARS[Math.floor(Math.random() * KID_CHARS.length)]).join(""), pins: {} };
-      kidPins(); rwStore(); kidListen(); redraw();
-    } }, "학생 입장 켜기"));
-  kidPins();
-  const url = kidUrl(), copy = h("button", { onclick: () => { navigator.clipboard?.writeText(url); copy.textContent = "복사했어요"; setTimeout(() => copy.textContent = "주소 복사", 1500); } }, "주소 복사");
-  box.append(h("div", { class: "kid-code" }, "반 코드", h("b", {}, reward.cls.code)), h("div", { class: "kid-url" }, "학생 주소", h("code", {}, url), copy),
-    h("div", { class: "kid-acts" }, h("button", { onclick: kidPrint }, "🖨️ 입장 카드 출력"), h("button", { class: "danger", onclick: async () => {
-      if (!await seConfirm(ed, "학생 입장을 끌까요?\n학생 화면에서 더 들어갈 수 없어요. (점수·아바타는 그대로)", "끄기")) return;
-      const code = reward.cls.code; kidUnsub?.(); kidUnsub = null;
-      try { await Promise.all(Object.keys(kidSeen).map(k => fb.deleteDoc(fb.doc(fb.db, "classes", code, "kids", k)))); await fb.deleteDoc(fb.doc(fb.db, "classes", code)); } catch (e) {}
-      kidSeen = {}; reward.cls = null; rwStore(); redraw();
+  if (!reward.cls?.code) return h("div", {}, h("p", { class: "rw-h" }, "학생이 태블릿·노트북에서 반 코드 + 번호 + 비밀번호(4자리)로 들어와 자기 아바타를 꾸미고, 모은 점수로 물건을 사요. 비밀번호는 학생이 처음 들어올 때 직접 정하고, 여기서 보고 지울 수 있어요."),
+    h("button", { class: "main", onclick: () => kidSetCode(host, redraw) }, "반 코드 정하고 시작하기"));
+  const pins = reward.cls.pins ||= {}, url = kidUrl(), copy = h("button", { onclick: () => { navigator.clipboard?.writeText(url); copy.textContent = "복사했어요"; setTimeout(() => copy.textContent = "주소 복사", 1500); } }, "주소 복사");
+  return h("div", {}, h("div", { class: "kid-code" }, "반 코드", h("b", {}, reward.cls.code), h("button", { onclick: () => kidSetCode(host, redraw) }, "바꾸기")),
+    h("div", { class: "kid-url" }, "학생 주소", h("code", {}, url), copy), h("p", { class: "kid-status rw-h" }, kidStatus),
+    h("div", { class: "kid-acts" }, h("button", { onclick: kidPrint }, "🖨️ 입장 안내 출력"), h("button", { class: "danger", onclick: async () => {
+      if (!await seConfirm(host, "학생 입장을 끌까요?\n학생 화면에서 더 들어갈 수 없어요. (점수·아바타·비밀번호는 그대로)", "끄기")) return;
+      await kidClear(reward.cls.code); reward.cls.code = ""; rwStore(); redraw();
     } }, "학생 입장 끄기")),
     h("table", { class: "kid-tb" }, h("tr", {}, h("th", {}, "번호"), h("th", {}, "이름"), h("th", {}, "비밀번호"), h("th")),
-      ...people().map(p => h("tr", {}, h("td", {}, seNum(p) || ""), h("td", {}, seName(p)), h("td", { class: "pin" }, reward.cls.pins[p]),
-        h("td", {}, h("button", { title: "잊어버렸을 때: 새 비밀번호를 만들어요. 그 학생은 새 비밀번호로 다시 들어와요.", onclick: async () => {
-          if (!await seConfirm(ed, `${seName(p)}의 비밀번호를 새로 만들까요?\n전 비밀번호로는 더 못 들어가요.`, "새로 만들기")) return;
-          delete reward.cls.pins[p]; kidPins(); rwStore(); redraw();
-        } }, "새 비밀번호"))))));
-  return box;
+      ...people().map(p => h("tr", {}, h("td", {}, kidNum(p)), h("td", {}, seName(p)), h("td", { class: pins[p] ? "pin" : "none" }, pins[p] || "아직 안 정함"),
+        h("td", {}, pins[p] ? h("button", { title: "잊어버렸을 때: 지우면 학생이 다음에 들어올 때 새로 정해요", onclick: async () => {
+          if (!await seConfirm(host, `${seName(p)}의 비밀번호(${pins[p]})를 지울까요?\n다음에 들어올 때 새로 정해요.`, "지우기")) return;
+          delete pins[p]; rwStore(); redraw();
+        } }, "지우기") : "")))));
 }
-function kidPrint() { // A4에 입장 카드 (가위로 잘라 나눠 줌)
+function kidPrint() { // A4 한 장: 학생 주소 + 반 코드 + 들어오는 방법 (칠판에 붙이거나 나눠 줌)
   const esc = t => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;"), url = kidUrl();
-  const cards = people().map(p => `<div class="c"><h3>우리반 보드 · 내 아바타</h3><p class="u">${esc(url)}</p><dl><dt>반 코드</dt><dd>${esc(reward.cls.code)}</dd><dt>번호</dt><dd>${esc(seNum(p) || "")} <small>${esc(seName(p))}</small></dd><dt>비밀번호</dt><dd>${esc(reward.cls.pins[p])}</dd></dl></div>`).join("");
   const w = window.open("", "_blank");
   if (!w) return seConfirm(rwCard, "출력 창을 열지 못했어요. 주소창 오른쪽에서 팝업을 허용해 주세요.", "확인", null);
-  w.document.write(`<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>입장 카드</title><style>
-    @page { size: A4 portrait; margin: 10mm; } body { margin: 0; font-family: "Wanted Sans", "Malgun Gothic", sans-serif; color: #222; }
-    .g { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; } .c { border: 1.5px dashed #999; border-radius: 4mm; padding: 4mm 6mm; break-inside: avoid; }
-    h3 { margin: 0 0 1mm; font-size: 13pt; } .u { margin: 0 0 2mm; font-size: 8.5pt; color: #666; word-break: break-all; }
-    dl { display: grid; grid-template-columns: auto 1fr; gap: 1mm 4mm; margin: 0; align-items: baseline; } dt { font-size: 10pt; color: #666; } dd { margin: 0; font-size: 20pt; font-weight: 700; letter-spacing: .08em; } dd small { font-size: 11pt; font-weight: 400; letter-spacing: 0; color: #444; }
-  </style></head><body><div class="g">${cards}</div></body></html>`);
+  w.document.write(`<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>내 아바타 들어가기</title><style>
+    @page { size: A4 portrait; margin: 16mm; } body { margin: 0; font-family: "Wanted Sans", "Malgun Gothic", sans-serif; color: #222; text-align: center; }
+    h1 { font-size: 30pt; margin: 10mm 0 6mm; } .u { font-size: 15pt; word-break: break-all; border: 2px solid #333; border-radius: 4mm; padding: 4mm; margin: 0 0 8mm; }
+    .c { font-size: 16pt; color: #555; } .c b { display: block; font-size: 60pt; letter-spacing: .15em; color: #222; margin: 2mm 0 10mm; }
+    ol { text-align: left; font-size: 17pt; line-height: 1.8; margin: 0 auto; max-width: 150mm; }
+  </style></head><body><h1>🏅 내 아바타 꾸미기</h1><div class="u">${esc(url)}</div><div class="c">반 코드<b>${esc(reward.cls.code)}</b></div>
+  <ol><li>위 주소로 들어가요.</li><li>반 코드와 내 번호를 써요.</li><li>처음이면 비밀번호 숫자 4자리를 직접 정해요. <b>꼭 기억해요!</b></li><li>다음부터는 정한 비밀번호로 들어와요. 잊어버리면 선생님께 말해요.</li></ol></body></html>`);
   w.document.close(); w.focus(); w.print();
 }
 syncShow();

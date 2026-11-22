@@ -27,6 +27,8 @@
   .login input:focus { outline: none; border-color: var(--accent); }
   .login .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .login button { font-size: 22px; padding: 12px; }
+  .who { margin: 0; text-align: center; font-size: 22px; } .who small { display: block; font-size: 16px; color: var(--muted); margin-top: 4px; }
+  #login-back { font-size: 16px; padding: 6px; border: 0; background: none; color: var(--muted); }
   .err { margin: 0; color: var(--warn); text-align: center; font-size: 17px; } .err:empty { display: none; }
   /* 꾸미기 */
   .app { max-width: 1100px; margin: 0 auto; padding: 14px 16px 40px; }
@@ -67,14 +69,19 @@
 <div class="login" id="login" hidden>
   <form id="login-form" autocomplete="off">
     <h1>🏅 내 아바타</h1>
-    <p class="sub">선생님이 준 입장 카드를 보고 써요</p>
-    <label>반 코드<input id="in-code" maxlength="8" autocapitalize="characters" spellcheck="false" required></label>
-    <div class="row">
-      <label>번호<input id="in-num" inputmode="numeric" pattern="[0-9]*" maxlength="3" required></label>
-      <label>비밀번호<input id="in-pin" inputmode="numeric" pattern="[0-9]*" maxlength="4" type="password" required></label>
+    <p class="sub">반 코드와 내 번호를 써요</p>
+    <div id="step1">
+      <div class="row"><label>반 코드<input id="in-code" maxlength="10" autocapitalize="characters" spellcheck="false"></label>
+      <label>번호<input id="in-num" inputmode="numeric" maxlength="3"></label></div>
+    </div>
+    <div id="step2" hidden>
+      <p class="who" id="who"></p>
+      <label id="pin-l">비밀번호 (숫자 4자리)<input id="in-pin" inputmode="numeric" maxlength="4" type="password" autocomplete="off"></label>
+      <label id="pin2-l" hidden>한 번 더 써요<input id="in-pin2" inputmode="numeric" maxlength="4" type="password" autocomplete="off"></label>
     </div>
     <p class="err" id="login-err"></p>
-    <button class="main" id="login-go">들어가기</button>
+    <button class="main" id="login-go">다음</button>
+    <button type="button" id="login-back" hidden>처음으로</button>
   </form>
 </div>
 <div class="app" id="app" hidden>
@@ -133,7 +140,7 @@ function draw() {
   $("save").disabled = $("undo").disabled = !dirty;
   $("note").textContent = dirty ? "저장하기를 눌러야 바뀌어요." : "";
   $("tabs").replaceChildren(...AV_TABS.map(([k, t]) => el("button", { class: tab === k ? "on" : "", onclick: () => { tab = k; draw(); } }, t)));
-  const items = AV_ITEMS.filter(it => tab === "acc" ? ["head", "face", "neck"].includes(it.slot) : it.slot === tab);
+  const items = AV_ITEMS.filter(it => tab === "acc" ? AV_ACC.includes(it.slot) : it.slot === tab);
   $("shop").replaceChildren(...items.map(it => {
     const has = owns(it), must = it.slot in AV_REQ, worn = (d.wear[it.slot] || AV_REQ[it.slot]) === it.id, bg = it.slot === "bg", cost = price(it);
     const pic = el("div"); pic.innerHTML = avSvg(d.av, { ...d.wear, [it.slot]: it.id, ...(bg ? {} : { bg: "bg-none" }), ...(tab === "hair" ? { head: "" } : {}) });
@@ -162,32 +169,64 @@ async function save() {
 function logout(msg) {
   unsubs.forEach(u => u()); unsubs = []; me = d = null; dirty = false;
   try { localStorage.removeItem("kid-login"); } catch (e) {}
-  $("login-err").textContent = msg || ""; $("in-pin").value = ""; show("login");
+  stepTo(1); $("login-err").textContent = msg || ""; show("login");
 }
 function enter(l) { // 내 문서와 반 설정을 계속 들음 (점수가 바뀌면 바로 보임)
   unsubs.forEach(u => u()); unsubs = [];
   unsubs.push(fs.onSnapshot(fs.doc(db, "classes", l.code), s => { if (!s.exists()) return logout("학생 입장이 꺼졌어요. 선생님께 물어보세요."); cls = s.data(); if (me) draw(); }, () => {}));
   unsubs.push(fs.onSnapshot(kidRef(l), s => {
-    if (!s.exists()) return logout("비밀번호가 바뀌었어요. 선생님께 새 비밀번호를 물어보세요.");
+    if (!s.exists()) return logout("비밀번호가 지워졌어요. 다시 들어와서 새 비밀번호를 정해요.");
     me = s.data();
     if (!d || !dirty) d = { av: { skin: 0, hair: 0, ...me.av }, wear: { ...me.wear } };
     show("app"); draw();
   }, () => logout("들어가지 못했어요. 다시 해 볼까요?")));
 }
+// 들어가기: ① 반 코드·번호 → ② 처음이면 비밀번호 정하기(두 번), 아니면 비밀번호 쓰기
+let step = 1, cur = null; // cur = { code, n, name?, first }
+function stepTo(n, info) {
+  step = n; cur = info || null;
+  $("step1").hidden = n !== 1; $("step2").hidden = n !== 2; $("login-back").hidden = n !== 2;
+  $("pin2-l").hidden = !(n === 2 && cur.first);
+  $("in-pin").value = $("in-pin2").value = "";
+  if (n === 2) {
+    $("who").replaceChildren(cur.first ? `${cur.name || cur.n + "번"}, 처음 왔네요!` : `${cur.n}번`, el("small", {}, cur.first ? "비밀번호 숫자 4자리를 직접 정해요. 꼭 기억해요!" : "내 비밀번호를 써요"));
+    $("pin-l").firstChild.textContent = cur.first ? "새 비밀번호 (숫자 4자리)" : "비밀번호 (숫자 4자리)";
+    setTimeout(() => $("in-pin").focus());
+  }
+  $("login-go").textContent = n === 1 ? "다음" : cur.first ? "이걸로 정하기" : "들어가기";
+}
+const err = t => $("login-err").textContent = t;
+function waitKid(l, ms) { // 선생님 보드가 비밀번호를 받아 내 문서를 만들 때까지
+  return new Promise(res => { const t = setTimeout(() => { u(); res(false); }, ms), u = fs.onSnapshot(kidRef(l), s => { if (s.exists()) { clearTimeout(t); u(); res(true); } }, () => {}); });
+}
 $("login-form").onsubmit = async e => {
-  e.preventDefault();
-  const code = $("in-code").value.trim().toUpperCase(), n = +$("in-num").value.trim(), pin = $("in-pin").value.trim();
-  if (!code || !n || !/^\d{4}$/.test(pin)) return $("login-err").textContent = "반 코드, 번호, 비밀번호 4자리를 모두 써요.";
-  $("login-go").disabled = true; $("login-err").textContent = "";
+  e.preventDefault(); err("");
+  $("login-go").disabled = true;
   try {
-    if (!(await fs.getDoc(fs.doc(db, "classes", code))).exists()) return $("login-err").textContent = "반 코드를 찾을 수 없어요. 다시 확인해 봐요.";
-    const l = { code, key: `${n}-${pin}` };
-    if (!(await fs.getDoc(kidRef(l))).exists()) return $("login-err").textContent = "번호나 비밀번호가 맞지 않아요. 선생님께 물어보세요.";
+    if (step === 1) {
+      const code = $("in-code").value.trim().toUpperCase(), n = String(parseInt($("in-num").value, 10) || "");
+      if (code.length < 4 || !n) return err("반 코드와 번호를 써요.");
+      if (!(await fs.getDoc(fs.doc(db, "classes", code))).exists()) return err("반 코드를 찾을 수 없어요. 다시 확인해 봐요.");
+      let claim = null;
+      try { const c = await fs.getDoc(fs.doc(db, "classes", code, "claim", n)); if (c.exists()) claim = c.data(); } catch (er) {} // 이미 정했으면 못 읽음
+      return stepTo(2, { code, n, name: claim?.name, first: !!claim });
+    }
+    const pin = $("in-pin").value.trim();
+    if (!/^\d{4}$/.test(pin)) return err("비밀번호는 숫자 4자리예요.");
+    const l = { code: cur.code, key: `${cur.n}-${pin}` };
+    if (cur.first) {
+      if ($("in-pin2").value.trim() !== pin) return err("두 번 쓴 비밀번호가 달라요. 다시 써요.");
+      await fs.updateDoc(fs.doc(db, "classes", cur.code, "claim", cur.n), { pin, at: Date.now() });
+      err("선생님 보드에 알리는 중…");
+      if (!await waitKid(l, 20000)) return err("선생님 보드가 켜져 있어야 처음 들어올 수 있어요. 선생님께 말하고 다시 해 봐요.");
+      err("");
+    } else if (!(await fs.getDoc(kidRef(l))).exists()) return err("비밀번호가 맞지 않아요. 잊어버렸으면 선생님께 말해요.");
     try { localStorage.setItem("kid-login", JSON.stringify(l)); } catch (er) {}
-    enter(l);
-  } catch (er) { $("login-err").textContent = "연결하지 못했어요. 인터넷 연결을 확인해 주세요."; }
+    stepTo(1); enter(l);
+  } catch (er) { err("연결하지 못했어요. 인터넷 연결을 확인해 주세요."); }
   finally { $("login-go").disabled = false; }
 };
+$("login-back").onclick = () => { err(""); stepTo(1); };
 $("in-code").oninput = e => e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
 $("save").onclick = save;
 $("undo").onclick = () => { d = { av: { skin: 0, hair: 0, ...me.av }, wear: { ...me.wear } }; dirty = false; draw(); };
