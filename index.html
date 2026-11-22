@@ -107,7 +107,7 @@
   .wb canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; }
   .wb[data-tool="select"] canvas, .wb[data-tool="text"] canvas { pointer-events: none; }
   .wb[data-tool="text"] { cursor: text; }
-  .wb-objs { position: absolute; inset: 0; }
+  .wb-objs { position: absolute; inset: 0; z-index: 0; } .wb-obj.text { z-index: 1; } /* 글상자는 늘 사진 위, 펜 선(캔버스)은 그 위 */
   .wb-obj { position: absolute; box-sizing: border-box; touch-action: none; }
   .wb[data-tool="select"] .wb-obj { cursor: move; }
   .wb-obj img { width: 100%; height: 100%; object-fit: fill; display: block; pointer-events: none; user-select: none; }
@@ -309,6 +309,8 @@
   .tool-card .seat-tools button { border-radius: 8px; padding: 4px 9px; }
   .tool-card .seat-bar .seat-star { border: 0; background: none; color: var(--muted); opacity: .35; padding: 4px 6px; } /* 학생 눈에 잘 안 띄게 */
   .tool-card .seat-bar .seat-star:hover { opacity: 1; }
+  .seat-mains { display: flex; flex-direction: column; gap: 4px; }
+  .tool-card .seat-mains .save { background: #e0873a; border-color: #e0873a; }
   .tool-card .seat-bar .seat-star.set { color: #e8a200; opacity: .9; } /* 고정한 자리가 있을 때 */
   .sd.pick { outline: 3px solid var(--accent); background: #fff3bf; } /* 눌러서 고른 자리 (한 번 더 다른 자리를 누르면 바꿈) */
   .sg span { cursor: text; border-radius: 4px; padding: 0 .3em; } .sg span:hover { background: rgba(255, 255, 255, .85); }
@@ -516,6 +518,42 @@
   .dock button:hover { transform: none; background: var(--card); }
   .dock button:hover i { background: var(--accent); }
 
+  /* 학급 온도계 */
+  [data-card="thermo"] { --accent: #e03131; --card: #fff0f0; --line: #f5c6c6; }
+  .th-main { flex: 1; min-height: 0; display: flex; align-items: stretch; justify-content: center; gap: 18px; }
+  .th-tube { position: relative; width: 22px; margin: 4px 0 22px; border-radius: 14px; background: #fff; border: 3px solid var(--line); }
+  .th-tube i { position: absolute; left: 3px; right: 3px; bottom: 0; border-radius: 9px; background: linear-gradient(to top, #e03131, #ff8787); transition: height .4s; }
+  .th-bulb { position: absolute; left: 50%; bottom: -24px; width: 34px; height: 34px; transform: translateX(-50%); border-radius: 50%; background: #e03131; border: 3px solid var(--line); }
+  .th-info { display: flex; flex-direction: column; justify-content: center; gap: 6px; min-width: 0; }
+  .tool-card .th-info .big { flex: none; color: var(--accent); font-size: clamp(28px, min(18cqw, 20cqh), 72px); }
+  .th-goal { font: 14px/1.4 "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--muted); text-align: center; }
+  #th-reward { display: inline-block; min-width: 4em; color: var(--ink); font-size: 16px; outline: none; border-bottom: 1.5px dashed var(--line); cursor: text; }
+  #th-reward:empty::before { content: "보상 쓰기"; color: #d9a3a3; }
+  #thermo-card.full .th-info .big { animation: th-pop .6s ease-in-out 3; }
+  @keyframes th-pop { 50% { transform: scale(1.25); } }
+  /* QR 만들기 */
+  [data-card="qr"] { --accent: #495057; --card: #f1f3f5; --line: #dee2e6; }
+  #qr-in { font: 15px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); border-radius: 8px; padding: 6px 10px; background: #fff; color: var(--ink); min-width: 0; }
+  .qr-box { flex: 1; min-height: 0; position: relative; display: grid; place-items: center; }
+  #qr-cv { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); image-rendering: pixelated; }
+  /* 서랍: 아래쪽 바에서 고른 버튼을 넣어 두는 곳 */
+  .drawer { inset: auto; left: 50%; bottom: 84px; transform: translateX(-50%); margin: 0; padding: 12px; border: 0; border-radius: 18px; background: #fff; color: var(--ink);
+            width: min(440px, calc(100vw - 24px)); box-sizing: border-box; box-shadow: 0 10px 34px rgba(60, 40, 20, .22); font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; }
+  .drawer-items { display: flex; flex-wrap: wrap; gap: 4px; }
+  .drawer-items:empty::before { content: "서랍이 비어 있어요. 아래에서 넣을 버튼을 고르세요."; color: var(--muted); font-size: 13px; padding: 4px; }
+  .drawer-items button { border: 0; background: none; display: flex; flex-direction: column; align-items: center; gap: 1px; min-width: 70px; padding: 4px 8px; border-radius: 14px;
+                         cursor: pointer; font: inherit; color: var(--ink); }
+  .drawer-items button i { font-style: normal; display: grid; place-items: center; width: 38px; height: 38px; border-radius: 12px; background: var(--card); font-size: 21px; }
+  .drawer-items button:hover { background: var(--card); }
+  .drawer-h { margin: 12px 0 6px; padding-top: 10px; border-top: 1.5px dashed #e6dccf; font-size: 13px; color: var(--muted); }
+  .drawer-pick { display: flex; flex-wrap: wrap; gap: 4px; }
+  .drawer-pick label { border: 1.5px solid #e6dccf; border-radius: 999px; padding: 2px 10px; cursor: pointer; font-size: 13px; }
+  .drawer-pick label:has(:checked) { background: #4a5568; border-color: #4a5568; color: #fff; }
+  .drawer-pick label:has(:focus-visible) { outline: 2px solid #4a5568; outline-offset: 1px; }
+  .drawer-pick input { position: absolute; opacity: 0; width: 0; height: 0; }
+  /* 타이머 효과음 켜기·끄기: 제목 줄 오른쪽 */
+  #timer-card .sfx { position: absolute; top: 7px; right: 66px; z-index: 3; border: 0; border-radius: 6px; background: rgba(255, 255, 255, .2); color: #fff; font-size: 12px; padding: 3px 8px; }
+  #timer-card .sfx.off { opacity: .6; text-decoration: line-through; }
   /* 미세먼지 */
   [data-card="dust"]  { --accent: #6b7f99; --card: #eef2f7; --line: #d3dbe6; }
   [data-card="noise"] { --accent: #f97316; --card: #fff2e8; --line: #fbd6bb; }
@@ -579,7 +617,7 @@
     <p class="label">🪑 자리배치</p>
     <div class="seat-bar">
       <select id="seat-hist" aria-label="저장한 자리배치도"></select>
-      <span class="seat-tools"><button class="seat-star" data-ic="star" onclick="seTeachAsk()" title="선생님 모드" aria-label="선생님 모드"></button><button data-ic="print" onclick="sePrint()" title="출력" aria-label="출력"></button><button data-ic="save" onclick="seSaveToday()" title="오늘 날짜로 지금 자리 저장" aria-label="저장"></button><button data-ic="set" onclick="seFormOpen()" title="자리 대형 만들기 (모양·짝꿍)" aria-label="자리 대형 만들기"></button><button class="main" data-ic="shuffle" onclick="seRandom()">자동 자리배치</button></span>
+      <span class="seat-tools"><button class="seat-star" data-ic="star" onclick="seTeachAsk()" title="선생님 모드" aria-label="선생님 모드"></button><button data-ic="print" onclick="sePrint()" title="출력" aria-label="출력"></button><button data-ic="set" onclick="seFormOpen()" title="자리 대형 만들기 (모양·짝꿍)" aria-label="자리 대형 만들기"></button><span class="seat-mains"><button class="main" data-ic="shuffle" onclick="seRandom()">자동 자리배치</button><button class="main save" data-ic="save" id="seat-save" onclick="seSaveToday()">오늘 날짜로 저장</button></span></span>
     </div>
     <div class="seat-mini" id="seat-mini"></div>
     <p class="sub" id="seat-msg"></p>
@@ -599,6 +637,7 @@
   </section>
   <section class="card tool-card" data-card="timer" id="timer-card">
     <p class="label">⏱️ 타이머</p>
+    <button class="sfx" id="timer-sfx" onclick="timerSfx()" title="시작·멈춤·째깍 소리 켜기/끄기 (마지막 3초와 끝날 때 소리는 늘 나요)"></button>
     <div class="big" id="timer-time" role="timer" aria-live="off" title="눌러서 시간 바꾸기 (예: 3:30)">05:00</div>
     <div class="bar"><i id="timer-bar"></i></div>
     <div class="chips">
@@ -656,6 +695,19 @@
       <button class="main" id="noise-go" onclick="noiseToggle()">측정 시작</button><button onclick="noiseWarn()" title="직접 경고 주기 (횟수에 더해져요)">🔔 경고</button><button onclick="noiseResetCount()" title="경고 횟수를 0으로">↻ 초기화</button>
     </div>
   </section>
+  <section class="card tool-card" data-card="thermo" id="thermo-card">
+    <p class="label">🌡️ 학급 온도계</p>
+    <div class="th-main">
+      <div class="th-tube" aria-hidden="true"><i id="th-fill"></i><b class="th-bulb"></b></div>
+      <div class="th-info"><div class="big" id="th-val" aria-live="polite">0°</div><p class="th-goal">100°가 되면<br><span id="th-reward" contenteditable="plaintext-only" spellcheck="false" role="textbox" aria-label="100도가 되면 받을 보상"></span></p></div>
+    </div>
+    <div class="acts"><button class="main" onclick="thAdd(1)">+1°</button><button onclick="thAdd(5)">+5°</button><button onclick="thAdd(-1)">−1°</button><button onclick="thReset()" title="0°로 되돌리기">↻</button></div>
+  </section>
+  <section class="card tool-card" data-card="qr">
+    <p class="label">🔳 QR 만들기</p>
+    <input id="qr-in" placeholder="주소나 글을 넣으세요" aria-label="QR로 만들 주소나 글" spellcheck="false" autocomplete="off">
+    <div class="qr-box"><canvas id="qr-cv" hidden></canvas><p class="sub" id="qr-msg"></p></div>
+  </section>
   <section class="card wb-card" data-card="whiteboard">
     <p class="label">🖍️ 화이트보드</p>
     <span class="wb-pages" aria-label="화이트보드 고르기"></span>
@@ -689,7 +741,7 @@
       </div>
       <div class="tt-right">
         <div class="tt-box">
-          <p class="sub">🎒 준비물</p>
+          <p class="sub" data-ic="bag">준비물</p>
           <div class="note" data-key="supplies" contenteditable="true" spellcheck="false" role="textbox" aria-multiline="true" aria-label="준비물"></div>
         </div>
         <div class="tt-box">
@@ -700,7 +752,8 @@
     </div>
   </section>
 </div>
-<nav class="dock" aria-label="필요할 때 띄우는 도구"><span id="launch" style="display:contents"></span></nav>
+<nav class="dock" aria-label="필요할 때 띄우는 도구"><span id="launch" style="display:contents"></span><button id="drawer-btn" popovertarget="drawer" title="서랍 (자주 안 쓰는 버튼을 넣어 두는 곳)"><i>🗄️</i>서랍</button></nav>
+<div id="drawer" class="drawer" popover><div class="drawer-items" id="drawer-items"></div><p class="drawer-h">아래쪽 바에서 서랍에 넣을 버튼</p><div class="drawer-pick" id="drawer-pick"></div></div>
 <button class="gear" onclick="togglePanel(true)" title="설정" aria-label="설정">
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true">
     <path d="M10.06,4.24L10.52,1.50L13.48,1.50L13.94,4.24L16.12,5.14L18.38,3.53L20.47,5.62L18.86,7.88L19.76,10.06L22.50,10.52L22.50,13.48L19.76,13.94L18.86,16.12L20.47,18.38L18.38,20.47L16.12,18.86L13.94,19.76L13.48,22.50L10.52,22.50L10.06,19.76L7.88,18.86L5.62,20.47L3.53,18.38L5.14,16.12L4.24,13.94L1.50,13.48L1.50,10.52L4.24,10.06L5.14,7.88L3.53,5.62L5.62,3.53L7.88,5.14Z"/>
@@ -803,15 +856,17 @@
       <li><b>오늘의 주제</b> ↻로 다른 주제를 뽑아요. 쓴 주제는 '사용 체크'하면 다시 나오지 않아요. '2줄 이상 쓰기'는 더블클릭해서 고쳐요.</li>
       <li><b>메모 · 우리반 규칙</b> 카드를 눌러 바로 쓰면 저절로 저장돼요. 글자를 끌어서 고른 뒤 오른쪽 아래 Tt에서 색을 고르면 그 글자만 바뀌어요. 메모는 아래쪽 바 버튼을 누를 때마다 한 장씩 더 생겨요(더 만든 메모는 닫으면 지워져요).</li>
       <li><b>사진</b> '사진 넣기'로 사진을 고르세요. 사진 위에 마우스를 올리면 바꾸기·지우기 버튼이 나와요. 아래쪽 바 버튼을 누를 때마다 사진 카드가 한 장씩 더 생겨요.</li>
-      <li><b>타이머</b> 30초·1·3·5·10분을 고르거나, 가운데 시간(00:00)을 눌러 3:30처럼 직접 쓰고 '시작'. +1은 1분 더하기예요. 시간이 끝나면 소리가 나고 카드가 깜빡여요.</li>
+      <li><b>타이머</b> 30초·1·3·5·10분을 고르거나, 가운데 시간(00:00)을 눌러 3:30처럼 직접 쓰고 '시작'. +1은 1분 더하기예요. 시간이 끝나면 소리가 나고 카드가 깜빡여요. 제목 줄 '🔊 효과음'으로 시작·멈춤·째깍 소리를 끄고 켜요(마지막 3초와 끝날 때 소리는 늘 나요).</li>
       <li><b>뽑기</b> <u>전체</u>: 설정 → 명단에 우리 반 이름을 한 줄에 하나씩(숫자만 쓰면 번호로). <u>선택</u>: 오른쪽 아래 '✎ 고르기'로 뽑을 사람만 골라요. <u>모둠</u>: 오른쪽 아래에 모둠 수를 정해요. <u>직접입력</u>: 오른쪽 아래 '✎ 쓰기'로 그때그때 뽑을 것을 써요. <u>순서</u>: 명단 전체가 이름 구슬이 되어 긴 핀볼 코스(경사로·범퍼·도는 막대·쐐기)를 굴러 내려가요. 화면은 맨 앞 구슬을 따라 내려가고, 맨 아래 구멍으로 빠진 순서대로 1등부터 정해요. 한 번 뽑힌 것은 모두 뽑힐 때까지 다시 나오지 않고, '처음부터'로 다시 시작해요.</li>
       <li><b>미세먼지</b> '지역 설정'에서 '지금 위치로'를 누르거나 시·군 이름(예: 수원시)으로 찾으세요. Open-Meteo(무료 공개 자료)의 예보값이라 에어코리아 측정소 값과 조금 다를 수 있어요. 30분마다 새로 받아요.</li>
       <li><b>소음 측정</b> '측정 시작'을 누르고 마이크를 허락하면 소리 크기를 막대로 보여 줘요. 기준(검은 선)을 1초 넘게 넘으면 경고음이 나고 오늘 경고 횟수가 쌓여요. '🔔 경고'로 직접 경고를 줄 수도 있어요. 소리는 이 컴퓨터 안에서만 재고, 녹음하거나 보내지 않아요.</li>
       <li><b>화이트보드</b> ✏️ 펜을 누르면 색과 굵기를 골라 그려요. T 글상자는 누른 뒤 보드(사진 위도 돼요)를 클릭해 써요. 사진은 복사해서 Ctrl+V(또는 끌어다 놓기). 옮기기에서 사진·글상자·펜 선을 끌어 옮기고, 오른쪽 아래 파란 점으로 크기를 바꾸고(글상자는 글씨도 같이 커져요), 오른쪽 위 ✕나 Delete로 지워요. 빈 곳에서 끌어 네모를 그리면 그 안에 통째로 들어온 것이 함께 골라지고(조금 걸친 건 빠져요), Shift를 누른 채 여러 개를 눌러도 골라져요. '묶기'로 한 덩어리로 묶어요('풀기'로 다시 나눠요). 글상자는 두 번 클릭하면 고치고, 글상자를 고르면 위에 나오는 Tt로 글씨 크기·색을 바꿔요. 여러 개나 묶음은 점선 상자 오른쪽 아래 파란 점으로 한꺼번에 크기를 바꿔요. ↶나 Ctrl+Z로 되돌려요. 제목 줄 오른쪽 1~4 버튼으로 화이트보드를 4개까지 따로 써요.</li>
       <li><b>시간표</b> 설정 → 시간표에서 연간시간표(한글 파일 또는 표 붙여넣기)와 시정표를 넣으면, 지금 몇 교시인지와 다음 시간을 알려 줘요. 표에 없는 주는 '매주 기본 시간표'를 써요.</li>
       <li><b>보드 카드</b> 제목을 끌어 옮기고, 오른쪽 아래 모서리로 크기를 바꿔요. 옮긴 자리와 크기는 앱을 껐다 켜도 그대로예요. ✕를 누르면 보드에서 닫히고 아래쪽 바로 들어가요. 닫아도 적어 둔 내용은 남아요.</li>
-      <li><b>아래쪽 바</b> 보드에서 닫은 카드가 들어가요. 누르면 보드에 다시 나와요.</li>
-      <li><b>자리배치</b> 처음 한 번 설정 버튼에서 모양(분단: 혼자·짝꿍과 앉기와 분단 수 / 모둠: 모둠 인원 / 직접 그리기: 명단 인원만큼 자리를 고르고, 필요하면 '방향 돌리기'로 ㄷ자처럼 옆을 보게)과 짝꿍 조건(상관없이·이성끼리·동성끼리·성별 고르게, 이전 짝꿍과 같이 안 앉기)을 정하면 계속 유지돼요. 성별은 설정 → 명단에서 이름과 함께 정해요. 평소에는 '자동 자리배치'(한 자리씩 나타나요), 저장(오늘 날짜로), 출력만 누르면 돼요. 이름을 끌어 다른 자리에 놓거나, 이름을 누른 뒤 다른 자리를 누르면 서로 자리를 바꾸고, 칠판 옆 '상하전환'으로 위아래를 바꿔요. 대형을 만들면 많이 쓰는 공개 모둠으로 묶여요(혼자 앉기는 한 줄, 짝꿍은 4~6명). 미리보기에서 책상이나 모둠을 끌어 옮기고 '간격 맞추기'로 줄과 간격을 똑같이 맞춰요. 모둠을 바꾸려면 책상을 고르고(Shift+누르기, 빈 곳을 끌어 네모로) '모둠으로 묶기'를 눌러요. 혼자 앉기에서는 짝꿍 대신 모둠 성별 조건(상관없이·성별 고르게)을 골라요. 모둠 상자 아래 이름(1모둠…)을 누르면 이름을 바꿀 수 있어요. 자리배치도 이름 옆 작은 별은 선생님 모드예요(고정, 분리, 기록). 분리에서 같이 앉으면 안 되는 학생을 비밀 그룹으로 묶고 1~4순위를 정해요(1순위를 가장 먼저 떨어뜨려요). 같은 그룹은 짝꿍·앞뒤·좌우·같은 모둠으로 앉지 않아요. 다 지킬 수 없으면 바로 앉히지 않고 먼저 물어봐요.</li>
+      <li><b>아래쪽 바</b> 보드에서 닫은 카드가 들어가요. 누르면 보드에 다시 나와요. 자주 안 쓰는 버튼은 오른쪽 끝 '서랍'을 눌러 아래 목록에서 골라 넣어 두면 서랍 안에서 꺼내 써요.</li>
+      <li><b>학급 온도계</b> +1°, +5°로 반 온도를 올리고 −1°로 내려요. 100°가 되면 소리와 함께 축하해요. '100°가 되면' 아래를 눌러 보상을 써 두세요. ↻는 0°로 되돌려요.</li>
+      <li><b>QR 만들기</b> 칸에 주소나 글을 넣으면 바로 QR이 생겨요. ⛶ 전체 화면으로 크게 띄워 학생들이 찍게 하세요. 인터넷 없이 이 컴퓨터에서 만들어요.</li>
+      <li><b>자리배치</b> 처음 한 번 설정 버튼에서 모양(분단: 혼자·짝꿍과 앉기와 분단 수 / 모둠: 모둠 인원 / 직접 그리기: 명단 인원만큼 자리를 고르고, 필요하면 '방향 돌리기'로 ㄷ자처럼 옆을 보게)과 짝꿍 조건(상관없이·이성끼리·동성끼리·성별 고르게, 이전 짝꿍과 같이 안 앉기)을 정하면 계속 유지돼요. 성별은 설정 → 명단에서 이름과 함께 정해요. 평소에는 '자동 자리배치'(한 자리씩 나타나요), 그 아래 '오늘 날짜로 저장', 출력만 누르면 돼요. 출력은 학생 시점(칠판이 위)·교사 시점(칠판이 아래)·둘 다 중에서 골라 A4 가로로 크게 나와요. 이름을 끌어 다른 자리에 놓거나, 이름을 누른 뒤 다른 자리를 누르면 서로 자리를 바꾸고, 칠판 옆 '상하전환'으로 위아래를 바꿔요. 대형을 만들면 많이 쓰는 공개 모둠으로 묶여요(혼자 앉기는 한 줄, 짝꿍은 4~6명). 미리보기에서 책상이나 모둠을 끌어 옮기고 '간격 맞추기'로 줄과 간격을 똑같이 맞춰요. 모둠을 바꾸려면 책상을 고르고(Shift+누르기, 빈 곳을 끌어 네모로) '모둠으로 묶기'를 눌러요. 혼자 앉기에서는 짝꿍 대신 모둠 성별 조건(상관없이·성별 고르게)을 골라요. 모둠 상자 아래 이름(1모둠…)을 누르면 이름을 바꿀 수 있어요. 자리배치도 이름 옆 작은 별은 선생님 모드예요(고정, 분리, 기록). 분리에서 같이 앉으면 안 되는 학생을 비밀 그룹으로 묶고 1~4순위를 정해요(1순위를 가장 먼저 떨어뜨려요). 같은 그룹은 짝꿍·앞뒤·좌우·같은 모둠으로 앉지 않아요. 다 지킬 수 없으면 바로 앉히지 않고 먼저 물어봐요.</li>
       <li><b>로그인</b> 설정 → 로그인에서 구글로 로그인하면 보드가 서버에 저장되고, 다른 컴퓨터에서 같은 계정으로 로그인하면 같은 보드가 나와요.</li>
       <li><b>준비물</b> 시간표 카드 오른쪽 칸에 쓰면 저장돼요.</li>
       <li><b>창 옮기기</b> 맨 위 줄을 잡고 끌어요. 창 크기는 모서리를 끌어 조절해요. 창이 좁으면 카드가 아래로 쌓여요.</li>
@@ -836,6 +891,12 @@
     <button class="danger" onclick="resetAll()">주제 기록 초기화</button>
     <p style="margin-top:16px">보드 카드의 자리와 크기를 처음처럼 되돌려요. 적어 둔 내용은 그대로예요.</p>
     <button onclick="resetPlaces()">카드 자리 처음처럼</button>
+    <p style="margin-top:16px">명단(이름·성별)과 뽑기 기록, 자리배치의 앉힌 자리·고정·분리 그룹을 지워요. 자리 대형과 저장한 자리배치도는 남아요.</p>
+    <button class="danger" onclick="resetRoster()">명단 초기화</button>
+    <p style="margin-top:16px">가져온 연간시간표, 시정표, 매주 기본 시간표를 지우고 처음처럼 돌려요. 준비물·숙제는 남아요.</p>
+    <button class="danger" onclick="resetTimetable()">시간표 초기화</button>
+    <p style="margin-top:16px">이 컴퓨터에 저장된 보드의 모든 것(메모·규칙·급훈·명단·시간표·자리배치·사진·화이트보드·카드 배치)을 지우고 처음 상태로 돌려요. 로그인해 두었다면 로그아웃되고, 서버에 저장된 보드는 남아요.</p>
+    <button class="danger" onclick="resetEverything()">모든 데이터 초기화</button>
   </section>
 </div>
 <script>
@@ -1215,6 +1276,29 @@ function resetAll() {
   try { localStorage.removeItem(KEY); localStorage.removeItem("current"); } catch (e) {}
   location.reload();
 }
+function resetRoster() {
+  if (!confirm("명단을 모두 지울까요?\n성별, 뽑기 기록, 자리배치의 앉힌 자리·고정·분리 그룹도 함께 지워져요. 되돌릴 수 없어요.")) return;
+  try {
+    ["roster", "gender", "pick"].forEach(k => localStorage.removeItem(k));
+    const st = JSON.parse(localStorage.getItem("seat")), sec = JSON.parse(localStorage.getItem("seat-secret"));
+    if (st?.cur) { st.cur.seats = {}; localStorage.setItem("seat", JSON.stringify(st)); }
+    if (sec) { Object.assign(sec, { fixed: {}, histFixed: {}, groups: [], issue: "" }); localStorage.setItem("seat-secret", JSON.stringify(sec)); }
+  } catch (e) {}
+  location.reload();
+}
+function resetTimetable() {
+  if (!confirm("시간표를 모두 지울까요?\n연간시간표, 시정표, 매주 기본 시간표가 처음처럼 돌아가요. 되돌릴 수 없어요.")) return;
+  try { localStorage.removeItem("timetable"); } catch (e) {}
+  location.reload();
+}
+async function resetEverything() {
+  if (!confirm("이 컴퓨터에 저장된 보드의 모든 데이터를 지울까요?\n메모·규칙·급훈·명단·시간표·자리배치·사진·화이트보드가 모두 지워지고 되돌릴 수 없어요.")) return;
+  if (!confirm("정말 모두 지울까요?")) return;
+  try { if (fbUser) await fb.signOut(fb.auth); } catch (e) {}
+  try { await idb("readwrite", st => st.clear()); } catch (e) {}
+  try { localStorage.clear(); } catch (e) {}
+  location.reload();
+}
 document.addEventListener("keydown", e => { if (e.key === "Escape" && !panel.hidden) togglePanel(false); });
 
 // 맨 위 날짜
@@ -1227,8 +1311,20 @@ document.getElementById("today").textContent =
 const CARDS = [["topic", "✏️ 오늘의 주제", "board", "2", [340, 200]], ["timetable", "🕘 시간표", "board", "2", [320, 190]],
   ["memo", "📝 메모", "board", "1", [210, 180]], ["rules", "📌 우리반 규칙", "board", "1", [260, 230]], ["motto", "🏫 급훈", "popup", "2", [320, 170]], ["seat", "🪑 자리배치", "popup", "4", [480, 380]],
   ["photo", "🖼️ 사진", "popup", "1", [200, 170]], ["timer", "⏱️ 타이머", "popup", "1", [240, 240]], ["picker", "🎲 뽑기", "popup", "1", [300, 260]],
-  ["whiteboard", "🖍️ 화이트보드", "popup", "4", [420, 320]], ["dust", "😷 미세먼지", "board", "1", [260, 270]], ["noise", "🔉 소음 측정", "popup", "1", [240, 270]]];
-const minOf = k => CARDS.find(c => c[0] === k)[4];
+  ["whiteboard", "🖍️ 화이트보드", "popup", "4", [420, 320]], ["dust", "😷 미세먼지", "board", "1", [260, 270]], ["noise", "🔉 소음 측정", "popup", "1", [240, 270]],
+  ["thermo", "🌡️ 학급 온도계", "popup", "1", [240, 260]], ["qr", "🔳 QR 만들기", "popup", "1", [240, 280]]];
+const minOf = k => { const m = CARDS.find(c => c[0] === k)[4]; return k === "rules" ? [m[0], Math.max(m[1], rulesNeed())] : m; };
+function rulesNeed() { // 규칙이 스크롤 없이 다 보이는 카드 높이(px)
+  const c = card("rules"), n = c.querySelector(".note");
+  if (c.hidden || !c.offsetHeight) return 0;
+  return Math.ceil(c.offsetHeight - n.clientHeight + [...n.children].reduce((t, li) => t + li.offsetHeight, 0));
+}
+function rulesFit() {
+  const l = layout.rules, c = card("rules"), B = board.clientHeight, need = rulesNeed();
+  if (!l?.rect || l.mode !== "board" || !board.classList.contains("free") || !need || !B) return;
+  c.style.minHeight = need + "px";
+  if (l.rect.h * B < need - 1) { l.rect.h = Math.min(1, need / B); l.rect.y = Math.min(l.rect.y, 1 - l.rect.h); c.style.top = l.rect.y * 100 + "%"; c.style.height = l.rect.h * 100 + "%"; saveLayout(); }
+}
 const board = document.querySelector(".board");
 let layout = {}, zTop = 1;
 try {
@@ -1348,17 +1444,26 @@ board.addEventListener("pointerdown", e => {
   const up = () => { t.removeEventListener("pointermove", move); t.removeEventListener("pointerup", up); layout[k] = l; saveLayout(); };
   t.addEventListener("pointermove", move); t.addEventListener("pointerup", up);
 });
+let drawer = []; // 서랍에 넣은 카드 이름
+try { drawer = JSON.parse(localStorage.getItem("drawer")) || []; } catch (e) {}
 function applyLayout() {
-  const launch = document.getElementById("launch");
-  launch.replaceChildren();
+  const launch = document.getElementById("launch"), dIn = document.getElementById("drawer-items");
+  launch.replaceChildren(); dIn.replaceChildren();
+  document.getElementById("drawer-pick").replaceChildren(...CARDS.filter(([k]) => !extras.includes(k)).map(([k, name]) => {
+    const inp = document.createElement("input"), lb = document.createElement("label");
+    inp.type = "checkbox"; inp.checked = drawer.includes(k);
+    inp.onchange = () => { drawer = inp.checked ? [...drawer, k] : drawer.filter(x => x !== k); try { localStorage.setItem("drawer", JSON.stringify(drawer)); } catch (e) {} applyLayout(); };
+    lb.append(inp, name); return lb;
+  }));
   CARDS.forEach(([k, name], i) => {
     const c = card(k), l = lay(k);
     c.style.order = i; c.dataset.size = l.size;
     c.hidden = l.mode !== "board";
     if (l.mode === "popup" || MULTI[k]) { // 메모·사진 버튼은 늘 있음 (여러 장 띄우기)
       const b = document.createElement("button"), [icon, ...label] = name.split(" "), ic = document.createElement("i");
-      ic.textContent = icon; b.append(ic, label.join(" ")); b.dataset.card = k; b.onclick = () => showCard(k);
-      launch.append(b);
+      ic.textContent = icon; b.append(ic, label.join(" ")); b.dataset.card = k;
+      b.onclick = () => { showCard(k); document.getElementById("drawer").hidePopover(); };
+      (drawer.includes(k.split("-")[0]) ? dIn : launch).append(b);
     }
   });
   placeCards();
@@ -1390,7 +1495,8 @@ function initNote(el) {
     else if (old) el.textContent = old;
   } catch (e) {}
   fill();
-  el.addEventListener("input", () => { fill(); try { localStorage.setItem(key, el.innerHTML); } catch (e) {} });
+  el.addEventListener("input", () => { fill(); try { localStorage.setItem(key, el.innerHTML); } catch (e) {} if (rules) rulesFit(); });
+  if (rules) new ResizeObserver(() => rulesFit()).observe(el.closest(".card"));
   el.addEventListener("paste", e => { e.preventDefault(); document.execCommand("insertText", false, e.clipboardData.getData("text/plain")); }); // 붙여넣기는 글자만
   el.addEventListener("drop", e => e.preventDefault());
 }
@@ -1437,6 +1543,7 @@ function initNoteTools(ta) {
   try { st = JSON.parse(localStorage.getItem(key)) || {}; } catch (e) {}
   const apply = () => {
     ta.style.fontSize = st.fs ? st.fs + "px" : ""; ta.style.color = st.color || "";
+    if (ta.dataset.key === "rules") rulesFit(); // 글씨가 커지면 카드도
     pop.querySelectorAll(".dot").forEach(d => d.classList.toggle("on", d.dataset.c === (st.color || NOTE_COLORS[0])));
     try { localStorage.setItem(key, JSON.stringify(st)); } catch (e) {}
   };
@@ -1546,10 +1653,11 @@ function timerAdd(min) {
   tEnd ? timerTick() : timerDraw();
 }
 function timerToggle() {
-  if (tEnd) { tLeft = Math.max(0, tEnd - Date.now()); timerStop(); tone(440, 0, .15); }
+  if (tEnd) { tLeft = Math.max(0, tEnd - Date.now()); timerStop(); if (tSfx) tone(440, 0, .15); }
   else {
     if (!tLeft) tLeft = tTotal; // 끝난 뒤 다시 누르면 처음 시간으로 다시 시작
-    melody([660, 880], .09, "sine", .2); // 시작 소리 (버튼을 누를 때 소리를 켜 둬야 끝날 때도 남)
+    if (tSfx) melody([660, 880], .09, "sine", .2); // 시작 소리 (버튼을 누를 때 소리를 켜 둬야 끝날 때도 남)
+    else try { actx = actx || new AudioContext(); actx.resume(); } catch (e) {} // 효과음을 꺼도 끝 소리는 나게
     tEnd = Date.now() + tLeft;
     tTick = setInterval(timerTick, 250);
     timerCard.classList.remove("done");
@@ -1561,7 +1669,7 @@ function timerTick() {
   tLeft = Math.max(0, tEnd - Date.now());
   const sec = Math.ceil(tLeft / 1000);
   if (sec && sec <= 3 && sec !== tLastSec) tone(1000, 0, .08, "square", .08); // 마지막 3초 똑딱
-  else if (sec && sec !== tLastSec) tone(sec % 2 ? 1500 : 1100, 0, .03, "square", .03); // 그 전엔 1초마다 작게 째깍짹깍
+  else if (tSfx && sec && sec !== tLastSec) tone(sec % 2 ? 1500 : 1100, 0, .03, "square", .03); // 그 전엔 1초마다 작게 째깍짹깍
   tLastSec = sec;
   if (!tLeft) {
     timerStop(); timerCard.classList.add("done"); beep();
@@ -1569,6 +1677,13 @@ function timerTick() {
   }
   timerDraw();
 }
+let tSfx = true;
+try { tSfx = localStorage.getItem("timer-sfx") !== "off"; } catch (e) {}
+function timerSfx(flip) {
+  if (flip !== false) { tSfx = !tSfx; try { localStorage.setItem("timer-sfx", tSfx ? "on" : "off"); } catch (e) {} }
+  const b = document.getElementById("timer-sfx"); b.textContent = "🔊 효과음"; b.classList.toggle("off", !tSfx);
+}
+timerSfx(false);
 function timerReset() { timerStop(); tLeft = tTotal; timerCard.classList.remove("done"); timerDraw(); }
 // 효과음: 파일 없이 브라우저에서 바로 만든 소리
 function tone(freq, at, dur, type = "sine", vol = .25) {
@@ -2549,6 +2664,127 @@ function ttClearWeeks() {
 }
 ttEditor();
 
+// ───── 학급 온도계: 0~100°. 100°가 되면 축하 소리. { t: 온도, reward: 보상 글 }
+let thermo = {};
+try { thermo = JSON.parse(localStorage.getItem("thermo")) || {}; } catch (e) {}
+thermo.t ||= 0;
+const thReward = document.getElementById("th-reward");
+thReward.textContent = thermo.reward || "";
+thReward.addEventListener("input", () => { thermo.reward = thReward.textContent; thSave(); });
+thReward.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); thReward.blur(); } });
+function thSave() { try { localStorage.setItem("thermo", JSON.stringify(thermo)); } catch (e) {} }
+function thDraw() {
+  document.getElementById("th-fill").style.height = thermo.t + "%";
+  document.getElementById("th-val").textContent = thermo.t + "°";
+  document.getElementById("thermo-card").classList.toggle("full", thermo.t >= 100);
+}
+function thAdd(d) {
+  const was = thermo.t;
+  thermo.t = Math.max(0, Math.min(100, thermo.t + d)); thSave(); thDraw();
+  if (thermo.t === 100 && was < 100) melody([523, 659, 784, 1047, 0, 784, 1047], .13, "triangle", .3);
+}
+function thReset() { if (!thermo.t || !confirm("온도를 0°로 되돌릴까요?")) return; thermo.t = 0; thSave(); thDraw(); }
+thDraw();
+
+// ───── QR 만들기: 넣은 글을 바로 QR로 (인터넷 없이 이 컴퓨터에서 만듦)
+// 바이트 모드, 오류 정정 M, 1~25버전. 반환: 칸 배열(true = 검정), 너무 길면 null
+function qrMake(text) {
+  const data = [...new TextEncoder().encode(text)];
+  const ECC = [0, 10, 16, 26, 18, 24, 16, 18, 22, 22, 26, 30, 22, 22, 24, 24, 28, 28, 26, 26, 26, 26, 28, 28, 28, 28];
+  const NB = [0, 1, 1, 1, 2, 2, 4, 4, 4, 5, 5, 5, 8, 9, 9, 10, 10, 11, 13, 14, 16, 17, 17, 18, 20, 21];
+  const raw = v => { let r = (16 * v + 128) * v + 64; if (v >= 2) { const a = Math.floor(v / 7) + 2; r -= (25 * a - 10) * a - 55; if (v >= 7) r -= 36; } return r; };
+  let ver = 1, cap = 0;
+  for (; ver <= 25; ver++) { cap = Math.floor(raw(ver) / 8) - ECC[ver] * NB[ver]; if (4 + (ver < 10 ? 8 : 16) + data.length * 8 <= cap * 8) break; }
+  if (ver > 25) return null;
+  // 글 → 비트 → 바이트
+  const bits = [], put = (v, n) => { for (let i = n - 1; i >= 0; i--) bits.push(v >>> i & 1); };
+  put(4, 4); put(data.length, ver < 10 ? 8 : 16); data.forEach(b => put(b, 8));
+  put(0, Math.min(4, cap * 8 - bits.length)); put(0, (8 - bits.length % 8) % 8);
+  for (let pad = 0xEC; bits.length < cap * 8; pad ^= 0xEC ^ 0x11) put(pad, 8);
+  const cw = [];
+  for (let i = 0; i < bits.length; i += 8) cw.push(parseInt(bits.slice(i, i + 8).join(""), 2));
+  // 리드-솔로몬 오류 정정 + 블록 섞기
+  const mul = (x, y) => { let z = 0; for (let i = 7; i >= 0; i--) { z = (z << 1) ^ ((z >>> 7) * 0x11D); z ^= ((y >>> i) & 1) * x; } return z; };
+  const deg = ECC[ver], div = Array(deg).fill(0);
+  div[deg - 1] = 1;
+  for (let i = 0, root = 1; i < deg; i++, root = mul(root, 2)) for (let j = 0; j < deg; j++) { div[j] = mul(div[j], root); if (j + 1 < deg) div[j] ^= div[j + 1]; }
+  const rem = d => { const r = Array(deg).fill(0); for (const b of d) { const f = b ^ r.shift(); r.push(0); div.forEach((c, i) => r[i] ^= mul(c, f)); } return r; };
+  const nb = NB[ver], total = Math.floor(raw(ver) / 8), nShort = nb - total % nb, sLen = Math.floor(total / nb), blocks = [];
+  for (let i = 0, k = 0; i < nb; i++) { const d = cw.slice(k, k += sLen - deg + (i < nShort ? 0 : 1)), e = rem(d); if (i < nShort) d.push(0); blocks.push(d.concat(e)); }
+  const all = [];
+  for (let i = 0; i < blocks[0].length; i++) blocks.forEach((b, j) => { if (i !== sLen - deg || j >= nShort) all.push(b[i]); });
+  // 칸 그리기: 찾기 무늬·타이밍·정렬 무늬·버전 → 데이터 → 마스크
+  const n = ver * 4 + 17, M = Array.from({ length: n }, () => Array(n).fill(false)), F = M.map(r => r.map(() => false));
+  const set = (x, y, v) => { M[y][x] = v; F[y][x] = true; };
+  for (let i = 0; i < n; i++) { set(6, i, i % 2 === 0); set(i, 6, i % 2 === 0); }
+  for (const [cx, cy] of [[3, 3], [n - 4, 3], [3, n - 4]])
+    for (let dy = -4; dy <= 4; dy++) for (let dx = -4; dx <= 4; dx++) { const x = cx + dx, y = cy + dy, d = Math.max(Math.abs(dx), Math.abs(dy)); if (x >= 0 && x < n && y >= 0 && y < n) set(x, y, d !== 2 && d !== 4); }
+  if (ver > 1) {
+    const na = Math.floor(ver / 7) + 2, step = Math.ceil((ver * 4 + 4) / (na * 2 - 2)) * 2, pos = [6];
+    for (let q = n - 7; pos.length < na; q -= step) pos.splice(1, 0, q);
+    pos.forEach((a, i) => pos.forEach((b, j) => {
+      if (i === 0 && j === 0 || i === 0 && j === na - 1 || i === na - 1 && j === 0) return;
+      for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) set(a + dx, b + dy, Math.max(Math.abs(dx), Math.abs(dy)) !== 1);
+    }));
+  }
+  const fmt = mask => { // 오류 정정 M(00) + 마스크 번호
+    let r = mask; for (let i = 0; i < 10; i++) r = (r << 1) ^ ((r >>> 9) * 0x537);
+    const b = (mask << 10 | r) ^ 0x5412, g = i => (b >>> i & 1) === 1;
+    for (let i = 0; i <= 5; i++) set(8, i, g(i));
+    set(8, 7, g(6)); set(8, 8, g(7)); set(7, 8, g(8));
+    for (let i = 9; i < 15; i++) set(14 - i, 8, g(i));
+    for (let i = 0; i < 8; i++) set(n - 1 - i, 8, g(i));
+    for (let i = 8; i < 15; i++) set(8, n - 15 + i, g(i));
+    set(8, n - 8, true);
+  };
+  if (ver >= 7) {
+    let r = ver; for (let i = 0; i < 12; i++) r = (r << 1) ^ ((r >>> 11) * 0x1F25);
+    const b = ver << 12 | r;
+    for (let i = 0; i < 18; i++) { const v = (b >>> i & 1) === 1, a = n - 11 + i % 3, c = Math.floor(i / 3); set(a, c, v); set(c, a, v); }
+  }
+  fmt(0);
+  for (let right = n - 1, i = 0; right >= 1; right -= 2) {
+    if (right === 6) right = 5;
+    for (let v = 0; v < n; v++) for (let j = 0; j < 2; j++) {
+      const x = right - j, y = ((right + 1) & 2) === 0 ? n - 1 - v : v;
+      if (!F[y][x] && i < all.length * 8) { M[y][x] = (all[i >>> 3] >>> (7 - (i & 7)) & 1) === 1; i++; }
+    }
+  }
+  const MASK = [(x, y) => (x + y) % 2 === 0, (x, y) => y % 2 === 0, x => x % 3 === 0, (x, y) => (x + y) % 3 === 0, (x, y) => (Math.floor(x / 3) + Math.floor(y / 2)) % 2 === 0,
+    (x, y) => x * y % 2 + x * y % 3 === 0, (x, y) => (x * y % 2 + x * y % 3) % 2 === 0, (x, y) => ((x + y) % 2 + x * y % 3) % 2 === 0];
+  const flip = m => { for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) if (!F[y][x] && MASK[m](x, y)) M[y][x] = !M[y][x]; };
+  const penalty = () => { // 읽기 어려운 무늬가 적은 마스크를 고름
+    let pen = 0, dark = 0;
+    for (let y = 0; y < n; y++) for (const l of [M[y].map(v => +v).join(""), M.map(r => +r[y]).join("")]) {
+      for (const run of l.match(/0+|1+/g)) if (run.length >= 5) pen += run.length - 2;
+      pen += 40 * (l.match(/(?=10111010000|00001011101)/g) || []).length;
+    }
+    for (let y = 0; y < n - 1; y++) for (let x = 0; x < n - 1; x++) { const c = M[y][x]; if (c === M[y][x + 1] && c === M[y + 1][x] && c === M[y + 1][x + 1]) pen += 3; }
+    M.forEach(r => r.forEach(v => dark += v));
+    return pen + 10 * Math.floor(Math.abs(dark * 20 - n * n * 10) / (n * n));
+  };
+  let best = 0, low = Infinity;
+  for (let m = 0; m < 8; m++) { flip(m); fmt(m); const pn = penalty(); if (pn < low) { low = pn; best = m; } flip(m); }
+  flip(best); fmt(best);
+  return M;
+}
+const qrIn = document.getElementById("qr-in"), qrCv = document.getElementById("qr-cv"), qrMsg = document.getElementById("qr-msg");
+function qrFit() { const b = qrCv.parentElement, side = Math.max(0, Math.min(b.clientWidth, b.clientHeight)); qrCv.style.width = qrCv.style.height = side + "px"; }
+function qrDraw() {
+  const t = qrIn.value.trim(), M = t ? qrMake(t) : null;
+  qrCv.hidden = !M; qrMsg.textContent = !t ? "주소나 글을 넣으면 QR이 생겨요." : M ? "" : "글이 너무 길어요. 조금 줄여 주세요.";
+  if (!M) return;
+  const n = M.length + 8, k = Math.max(4, Math.floor(600 / n)), g = qrCv.getContext("2d"); // 둘레 4칸은 흰 여백
+  qrCv.width = qrCv.height = n * k;
+  g.fillStyle = "#fff"; g.fillRect(0, 0, n * k, n * k); g.fillStyle = "#000";
+  M.forEach((r, y) => r.forEach((v, x) => v && g.fillRect((x + 4) * k, (y + 4) * k, k, k)));
+  qrFit();
+}
+try { qrIn.value = localStorage.getItem("qr-text") || ""; } catch (e) {}
+qrIn.addEventListener("input", () => { try { localStorage.setItem("qr-text", qrIn.value); } catch (e) {} qrDraw(); });
+new ResizeObserver(qrFit).observe(qrCv.parentElement);
+qrDraw();
+
 // ───── 화이트보드 ─────
 // 저장 형태 { objs: [{id, type: "img"|"text", x, y, w, h(보드 크기에 대한 비율), ar(사진 가로/세로), src | text, fs(글씨, 보드 높이의 %)}],
 //            strokes: [{c(색), w(굵기, 보드 너비 비율), pts: [x, y, …](비율)}] }
@@ -3197,12 +3433,14 @@ function seTidy(D, cg, rg, rp = DH + .15, stack = true) { // stack: 세로 칸(�
 // 예전에 만든 짝꿍 분단은 분단 전체가 한 상자였음 → 기본 모둠으로 (책상·앉은 자리는 그대로)
 { const c = seat.cur; if (c.form?.type === "col" && c.form.w === 2 && !c.gv && !c.glabel && c.desks.length) seColGroups(c.desks); c.gv = 1; delete c.glabel; }
 // 화면 배치: 칠판은 늘 책상들 한가운데 정면. 상하 반전이면 칠판이 아래로 가고 앞줄도 아래로 (좌우는 그대로)
-function seLayout(flip) {
-  const c = sc(), D = c.desks, off = flip ? 0 : 1.2, hasG = D.some(d => d.g !== undefined), pad = hasG ? .5 : 0;
+// 공개 화면(보드·출력): 자동 자리배치 전이라 고정한 학생만 앉아 있으면 아무도 안 보임 (학생들이 고정을 눈치채지 않게)
+const seHideFixed = () => { const S = sc().seats, ids = Object.keys(S); return ids.length > 0 && ids.every(id => seatSec.fixed[id] === S[id]); };
+function seLayout(flip, pub, mirror) { // mirror: 좌우도 뒤집기 (출력 '교사 시점' = 180도 돌린 모습)
+  const c = sc(), D = c.desks, hide = pub && seHideFixed(), off = flip ? 0 : 1.2, hasG = D.some(d => d.g !== undefined), pad = hasG ? .5 : 0;
   const x0 = Math.min(...D.map(d => d.x)), x1 = Math.max(...D.map(d => d.x + dWd(d))), y0 = Math.min(...D.map(d => d.y)), y1 = Math.max(...D.map(d => d.y + dHd(d)));
   const W = x1 - x0 + 1, Hd = y1 - y0 + .6 + 2 * pad, sx = .5 - x0, sy = .3 + pad - y0, bw = Math.min(Math.max((x1 - x0) * .55, 2.5), 7);
   // face: 그 자리 학생이 보는 쪽 (0 위, 90 오른쪽, 180 아래, 270 왼쪽). 상하 반전이면 위·아래만 바뀜
-  const desks = D.map(d => { const y = d.y + sy, w = dWd(d), hh = dHd(d), r = d.rot || 0; return { d, w, h: hh, x: d.x + sx, y: (flip ? Hd - y - hh : y) + off, face: flip && !(r % 180) ? (r + 180) % 360 : r, person: c.seats[d.id] }; });
+  const desks = D.map(d => { const y = d.y + sy, w = dWd(d), hh = dHd(d), r = d.rot || 0; return { d, w, h: hh, x: mirror ? W - d.x - sx - w : d.x + sx, y: (flip ? Hd - y - hh : y) + off, face: flip && !(r % 180) ? (r + 180) % 360 : r, person: hide ? undefined : c.seats[d.id] }; });
   const boxes = {};
   for (const t of desks) if (t.d.g !== undefined) { const b = boxes[t.d.g] ||= { g: t.d.g, x0: 1e9, y0: 1e9, x1: -1e9, y1: -1e9 }; b.x0 = Math.min(b.x0, t.x); b.y0 = Math.min(b.y0, t.y); b.x1 = Math.max(b.x1, t.x + t.w); b.y1 = Math.max(b.y1, t.y + t.h); }
   return { W, H: Hd + 1.2, board: { x: W / 2 - bw / 2, y: flip ? Hd + .45 : .25, w: bw, h: .55 }, desks,
@@ -3217,7 +3455,7 @@ function seDraw(box, mode) {
     h("li", {}, "'자동 자리배치'를 누르면 학생들이 한 자리씩 앉아요. 명단과 성별은 설정 → 명단에서 넣어요."),
     h("li", {}, "이름을 끌어 다른 자리에 놓으면 서로 자리를 바꿔요."),
     h("li", {}, "저장 버튼으로 오늘 날짜 기록을 남기고, 출력 버튼으로 인쇄해요."))) : "");
-  const L = seLayout(!!seat.flip), cw = box.clientWidth, ch = box.clientHeight, u = Math.min(cw / L.W, ch / L.H), ox = (cw - L.W * u) / 2, oy = (ch - L.H * u) / 2;
+  const L = seLayout(!!seat.flip, mode === "home"), cw = box.clientWidth, ch = box.clientHeight, u = Math.min(cw / L.W, ch / L.H), ox = (cw - L.W * u) / 2, oy = (ch - L.H * u) / 2;
   const at = (el, x, y, w, hh) => { Object.assign(el.style, { left: ox + x * u + "px", top: oy + y * u + "px", width: w * u + "px", height: hh * u + "px" }); return el; };
   const board = at(h("div", { class: "sb" }, h("span", {}, "칠판"), h("button", { class: "sb-flip", title: "칠판을 위·아래로 (상하 반전)", onclick: seFlip }, ic("flip"), "상하전환")), L.board.x, L.board.y, L.board.w, L.board.h);
   board.style.fontSize = Math.max(12, u * .3) + "px";
@@ -3241,7 +3479,8 @@ const ICON = {
   set: '<path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/>',
   star: '<path d="M12 3l2.6 5.6 6.1.6-4.6 4.1 1.3 6L12 16.2l-5.4 3.1 1.3-6-4.6-4.1 6.1-.6z"/>',
   shuffle: '<path d="M3 7h3c4 0 6 10 10 10h5M3 17h3c1.5 0 2.7-1.4 3.8-3M14.2 10C15.3 8.4 16.5 7 18 7h3M18 4l3 3-3 3M18 14l3 3-3 3"/>',
-  flip: '<path d="M8 20V4M4 8l4-4 4 4M16 4v16M12 16l4 4 4-4"/>', lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>'
+  flip: '<path d="M8 20V4M4 8l4-4 4 4M16 4v16M12 16l4 4 4-4"/>', lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  bag: '<path d="M9 7V5.5a3 3 0 0 1 6 0V7"/><rect x="4" y="7" width="16" height="13" rx="2.5"/><path d="M4 12h16M11 12v2h2v-2"/>'
 };
 function ic(name, cls = "ic") { const s = document.createElement("span"); s.className = cls; s.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[name]}</svg>`; return s; }
 document.querySelectorAll("[data-ic]").forEach(el => el.prepend(ic(el.dataset.ic)));
@@ -3277,7 +3516,7 @@ function seAssign(person, to, from, lock) {
 }
 let seSwap = null; // 보드에서 눌러 고른 자리 id
 function seMapDown(e, mode) {
-  const el = e.target.closest(".sd"), id = el?.dataset.id, p = id && sc().seats[id];
+  const el = e.target.closest(".sd"), id = el?.dataset.id, p = id && !(mode === "home" && seHideFixed()) && sc().seats[id];
   if (!el || seBusy) return;
   const swapTo = () => { const a = seSwap; seSwap = null; if (a === id || !sc().seats[a]) return seRedraw(); seAssign(sc().seats[a], id, a, false); };
   if (!p) { if (mode === "home" && seSwap) swapTo(); return; } // 고른 학생을 빈자리로
@@ -3405,6 +3644,18 @@ function seAuto() {
   return { best, sepBad: sepV.length, bad: V.length, text };
 }
 // 카드(또는 창) 가운데에 뜨는 확인 창. 누른 답을 true/false로 (cancel이 없으면 알림만)
+// 여러 개 중 하나 고르기 (카드 안 작은 창). 고른 값, 취소면 null
+function seChoose(host, text, choices) {
+  return new Promise(res => {
+    host.querySelector(":scope > .se-ask")?.remove();
+    const done = v => { box.remove(); res(v); };
+    const box = h("div", { class: "se-ask" }, h("div", {}, h("p", {}, text),
+      h("div", { class: "row" }, h("button", { onclick: () => done(null) }, "취소"), choices.map(([t, v]) => h("button", { class: "main", onclick: () => done(v) }, t)))));
+    box.onpointerdown = e => { e.stopPropagation(); if (e.target === box) done(null); };
+    box.onkeydown = e => { if (e.key === "Escape") { e.stopPropagation(); done(null); } };
+    host.append(box); box.querySelector(".main").focus();
+  });
+}
 function seConfirm(host, text, ok = "확인", cancel = "취소") {
   return new Promise(res => {
     host.querySelector(":scope > .se-ask")?.remove();
@@ -3453,6 +3704,7 @@ function seSaveToday() {
   if (old >= 0) seat.hist[old] = rec; else seat.hist.unshift(rec);
   seatSec.histFixed[id] = clone(seatSec.fixed); seatStore();
   seMsg("");
+  const t = $s("seat-save").lastChild; t.textContent = "저장했어요"; setTimeout(() => t.textContent = "오늘 날짜로 저장", 1500); // 눌렀다는 표시만 잠깐
 }
 function seHistSelect() {
   const sel = $s("seat-hist");
@@ -3690,22 +3942,31 @@ function seSepDraw() {
 
 // ── 출력 (공개용: 고정 표시 없음). 화면과 같은 방향(상하 반전 포함)
 function seOutItems(u) {
-  const L = seLayout(!!seat.flip);
+  const L = seLayout(!!seat.flip, true);
   return { L, items: [...L.boxes.map(b => ({ kind: "box", ...b })), ...L.desks.map(t => ({ kind: "desk", x: t.x, y: t.y, w: t.w, h: t.h, person: t.person }))] };
 }
-function sePrint() {
+// 출력: 학생 시점(칠판이 위) · 교사 시점(180도 돌림, 칠판이 아래) · 둘 다. A4 가로 한 장에 가운데로 크게
+async function sePrint() {
   if (!sc().desks.length) return seMsg("먼저 설정 버튼에서 대형을 만들어 주세요.", true);
-  const u = 64, { L, items } = seOutItems(), w = window.open("", "_blank");
+  const v = await seChoose(card("seat"), "어느 쪽에서 본 자리배치도를 출력할까요?", [["학생 시점", "s"], ["교사 시점", "t"], ["둘 다", "st"]]);
+  if (!v) return;
+  const w = window.open("", "_blank");
   if (!w) return seMsg("새 창이 막혀 있어요. 브라우저에서 팝업을 허용해 주세요.", true);
-  const d = w.document, el = (tag, css, text = "") => { const x = d.createElement(tag); x.style.cssText = css; x.textContent = text; return x; };
+  const d = w.document, el = (tag, css, ...kids) => { const x = d.createElement(tag); x.style.cssText = css; x.append(...kids); return x; };
   d.title = sc().name || "자리배치";
-  d.body.style.cssText = "margin:24px;font-family:'Wanted Sans','Malgun Gothic',sans-serif";
-  const room = el("div", `position:relative;width:${L.W * u}px;height:${L.H * u}px;margin-top:12px`);
-  room.append(el("div", `position:absolute;left:${L.board.x * u}px;top:${L.board.y * u}px;width:${L.board.w * u}px;height:${L.board.h * u}px;border:2px solid #333;display:grid;place-items:center;font-size:16px;letter-spacing:.3em`, "칠판"));
-  for (const t of items) room.append(t.kind === "box"
-    ? el("div", `position:absolute;box-sizing:border-box;left:${t.x * u}px;top:${t.y * u}px;width:${t.w * u}px;height:${t.h * u}px;border:0;background:#f1f3f5;border-radius:12px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:2px;font-size:12px;color:#666`, t.label)
-    : el("div", `position:absolute;box-sizing:border-box;left:${(t.x + .03) * u}px;top:${(t.y + .03) * u}px;width:${(t.w - .06) * u}px;height:${(t.h - .06) * u}px;border:1.5px solid #333;border-radius:6px;display:grid;place-items:center;font-size:16px`, t.person ? seName(t.person) : ""));
-  d.body.append(el("h2", "margin:0;font-weight:normal", sc().name || "자리배치"), room);
+  d.head.append(el("style", "", `@page { size: A4 landscape; margin: 10mm; } body { margin: 0; font-family: 'Wanted Sans', 'Malgun Gothic', sans-serif; }
+    .pg { width: 277mm; height: 188mm; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4mm; overflow: hidden; break-after: page; } .pg:last-child { break-after: auto; }`));
+  for (const k of v) {
+    const teach = k === "t", L = seLayout(teach, true, teach), u = Math.min(270 / L.W, 170 / L.H), mm = n => n * u + "mm";
+    const box = (x, y, ww, hh, css, ...kids) => el("div", `position:absolute;box-sizing:border-box;left:${mm(x)};top:${mm(y)};width:${mm(ww)};height:${mm(hh)};${css}`, ...kids);
+    const room = el("div", `position:relative;flex:none;width:${mm(L.W)};height:${mm(L.H)}`);
+    room.append(box(L.board.x, L.board.y, L.board.w, L.board.h, `border:2px solid #333;display:grid;place-items:center;font-size:${mm(.28)};letter-spacing:.3em`, "칠판"));
+    for (const b of L.boxes) room.append(box(b.x, b.y, b.w, b.h, `background:#f1f3f5;border-radius:3mm;display:flex;align-items:flex-end;justify-content:center;padding-bottom:${mm(.06)};font-size:${mm(.17)};color:#666`, b.label));
+    for (const t of L.desks) room.append(box(t.x + .03, t.y + .03, t.w - .06, t.h - .06, `border:1.5px solid #333;border-radius:2mm;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15`,
+      ...(t.person ? [el("span", `font-size:${mm(.17)};color:#666`, seNum(t.person)), el("b", `font-size:${mm(.26)}`, seName(t.person))] : [])));
+    const pg = el("div", "", el("h2", "margin:0;font-weight:normal;font-size:6mm", sc().name || "자리배치"), room);
+    pg.className = "pg"; d.body.append(pg);
+  }
   w.focus(); w.print();
 }
 function seImage() {
