@@ -196,6 +196,8 @@
   .photo-tools { position: absolute; right: 6px; bottom: 6px; display: flex; gap: 6px; opacity: 0; transition: opacity .15s; }
   .photo-box:hover .photo-tools, .photo-tools:focus-within { opacity: 1; }
   .photo-tools button { border-style: solid; padding: 3px 12px; font-size: 13px; }
+  .ph-empty { display: flex; flex-direction: column; align-items: center; gap: 8px; } .ph-empty[hidden] { display: none; }
+  .ph-empty .ph-shelf { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; border: 0; background: none; color: var(--muted); cursor: pointer; }
 
   /* 타이머·사람 뽑기 */
   .tool-card { container-type: size; align-items: stretch; } /* 카드 너비·높이 둘 다에 맞춰 글자 크기 조절 */
@@ -400,6 +402,7 @@
   .tour-tip button.main { background: #e2643f; border-color: #e2643f; color: #fff; }
   .tour-tip button.lite { border: 0; color: var(--muted); padding: 4px 6px; }
   /* 사용 방법: 카드별 탭, 단계마다 실제 화면 조각 */
+  .mail-btn { display: inline-block; padding: 6px 16px; border-radius: 8px; background: #e2643f; color: #fff; text-decoration: none; white-space: nowrap; }
   .hp-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 14px; }
   .hp-tabs button { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid #e6dccf; background: #fff; color: var(--ink); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
   .hp-tabs button.on { background: var(--ink); border-color: var(--ink); color: #fff; }
@@ -527,7 +530,7 @@
   .tt-grid input { width: 100%; box-sizing: border-box; text-align: center; }
   /* ───── 디자인: 흰 카드 + 색 제목줄 + 그림자, 점무늬 바탕, 떠 있는 아래쪽 바 ───── */
   :root { --bg: #f4f0e8; }
-  html, body { background: var(--bg) radial-gradient(#e2d9ca 1px, transparent 1.2px) 0 0 / 18px 18px; }
+  html, body { background: var(--bg) radial-gradient(#e2d9ca 1px, transparent 1.2px) center / 18px 18px; } /* 가운데 맞춤: 양옆·위아래 여백이 같게 */
   [data-card="topic"]     { --accent: #f2643d; --card: #fff5f0; --line: #f6d6c8; }
   [data-card="timetable"] { --accent: #0f9db5; --card: #ecf8fb; --line: #c4e7ee; }
   [data-card^="memo"]     { --accent: #e09a00; --card: #fff8e1; --line: #f3e1a8; }
@@ -686,6 +689,9 @@
   .lk-menu .lk-ctx button { border: 0; text-align: left; padding: 6px 10px; border-radius: 6px; }
   .lk-menu .lk-ctx button:hover { background: #e3f6f8; }
   .lk-menu .lk-ctx .del { color: #e2643f; }
+  .shelf-menu { --accent: #495057; --line: #dee2e6; }
+  .shelf-empty { margin: 0; padding: 12px 6px; color: var(--muted); font-size: 13px; }
+  .ph-thumb { flex: none; width: 34px; height: 26px; object-fit: cover; border-radius: 4px; }
   .lk-ghost { position: fixed; z-index: 5; pointer-events: none; transform: translate(-50%, -120%); padding: 3px 12px; border-radius: 999px; background: var(--accent); color: #fff; white-space: nowrap; }
   .se-ask label.se-ask-f { display: block; font-size: 13px; color: var(--muted); }
   .se-ask select.se-ask-in { padding: 5px 8px; }
@@ -796,9 +802,9 @@
   <section class="card" data-card="photo">
     <p class="label">🖼️ 사진</p>
     <div class="photo-box">
-      <button class="empty">+ 사진 넣기</button>
+      <div class="ph-empty"><button class="empty">+ 사진 넣기</button><button class="ph-shelf">🗂️ 보관함</button></div>
       <img alt="우리반 사진" hidden>
-      <div class="photo-tools" hidden><button>바꾸기</button><button>지우기</button></div>
+      <div class="photo-tools" hidden><button class="ph-keep" title="보관함에 넣기 (4장까지)">☆ 저장</button><button class="ph-shelf">🗂️ 보관함</button><button class="ph-change">바꾸기</button><button class="ph-del">지우기</button></div>
     </div>
     <input type="file" accept="image/*" hidden>
   </section>
@@ -807,11 +813,11 @@
     <div class="big" id="timer-time" role="timer" aria-live="off" title="눌러서 시간 바꾸기 (예: 3:30)">05:00</div>
     <div class="bar"><i id="timer-bar"></i></div>
     <div class="chips">
-      <button onclick="timerSet(.5)">30초</button><button onclick="timerSet(1)">1분</button><button onclick="timerSet(3)">3분</button>
-      <button onclick="timerSet(5)">5분</button><button onclick="timerSet(10)">10분</button><button onclick="timerAdd(1)" title="1분 더하기">+1</button>
+      <button onclick="timerAdd(.5)">+30초</button><button onclick="timerAdd(1)">+1분</button><button onclick="timerAdd(3)">+3분</button>
+      <button onclick="timerAdd(5)">+5분</button><button onclick="timerAdd(10)">+10분</button>
     </div>
     <div class="acts">
-      <button class="main" id="timer-go" onclick="timerToggle()">시작</button><button class="again" onclick="timerReset()">↺ 다시</button><button class="sfx" id="timer-sfx" onclick="timerSfx()" title="시작·멈춤·째깍 소리 켜기/끄기 (마지막 3초와 끝날 때 소리는 늘 나요)"></button>
+      <button class="main" id="timer-go" onclick="timerToggle()">시작</button><button class="again" onclick="timerReset()" title="00:00으로">↺ 0:00</button><button class="sfx" id="timer-sfx" onclick="timerSfx()" title="시작·멈춤·째깍 소리 켜기/끄기 (마지막 3초와 끝날 때 소리는 늘 나요)"></button>
     </div>
   </section>
   <section class="card tool-card" data-card="picker">
@@ -998,6 +1004,7 @@
     <button data-tab="help" onclick="openTab('help')">사용 방법</button>
     <button data-tab="account" onclick="openTab('account')">로그인</button>
     <button data-tab="reset" onclick="openTab('reset')">초기화</button>
+    <button data-tab="contact" onclick="openTab('contact')">개발자에게 연락</button>
     <button class="close" onclick="togglePanel(false)" aria-label="닫기" title="닫기 (Esc)">✕</button>
   </nav>
   <section id="tab-time">
@@ -1047,8 +1054,14 @@
     </div>
     <p class="sum">로그아웃해도 이 컴퓨터의 보드는 그대로 남아요. 여럿이 쓰는 컴퓨터라면 로그아웃한 뒤 '초기화'에서 지워 주세요.</p>
   </section>
+  <section id="tab-contact" hidden>
+    <p>고장 난 곳, 있었으면 하는 기능, 궁금한 점을 메일로 보내 주세요.</p>
+    <div class="row"><a class="mail-btn" href="mailto:annakim.pj@gmail.com?subject=%EC%9A%B0%EB%A6%AC%EB%B0%98%20%EB%B3%B4%EB%93%9C%20%EB%AC%B8%EC%9D%98">✉️ 메일 보내기</a>
+      <input id="dev-mail" readonly value="annakim.pj@gmail.com" onclick="this.select()" aria-label="개발자 메일 주소"><button onclick="navigator.clipboard.writeText('annakim.pj@gmail.com').then(() => this.textContent = '복사했어요')">주소 복사</button></div>
+    <p class="sum">메일 프로그램이 안 열리면 주소를 복사해서 보내 주세요.</p>
+  </section>
   <section id="tab-reset" hidden>
-    <p>주제 사용 기록을 모두 지우고, 모든 주제가 다시 나오게 해요. 메모·규칙·사진과 '2줄 이상 쓰기' 문구는 그대로 남아요.</p>
+    <p>주제 사용 기록을 모두 지우고, 모든 주제가 다시 나오게 해요.</p>
     <button class="danger" onclick="resetAll()">주제 기록 초기화</button>
     <p style="margin-top:16px">보드 카드의 자리와 크기를 처음처럼 되돌려요. 적어 둔 내용은 그대로예요.</p>
     <button onclick="resetPlaces()">카드 자리 처음처럼</button>
@@ -1659,7 +1672,8 @@ board.addEventListener("pointerdown", e => {
     const dx = (ev.clientX - sx) / B.width, dy = (ev.clientY - sy) / B.height;
     const [mw, mh] = minOf(k); // 이보다 작게는 못 줄임
     // 배경 점(18px 간격)에 카드 가장자리를 맞춤: 줄 맞추기 쉽게 조금씩 끊어서 움직임
-    const snapX = v => (Math.round((B.left + v * B.width) / 18) * 18 - B.left) / B.width, snapY = v => (Math.round((B.top + v * B.height) / 18) * 18 - B.top) / B.height;
+    const gx = innerWidth / 2 + 9, gy = innerHeight / 2 + 9; // 점은 화면 가운데부터 18px마다 → 카드 가장자리는 점 사이에
+    const snapX = v => (Math.round((B.left + v * B.width - gx) / 18) * 18 + gx - B.left) / B.width, snapY = v => (Math.round((B.top + v * B.height - gy) / 18) * 18 + gy - B.top) / B.height;
     if (grip) { r.w = Math.min(1 - r.x, Math.max(mw / B.width, snapX(r.x + r0.w + dx) - r.x)); r.h = Math.min(1 - r.y, Math.max(mh / B.height, snapY(r.y + r0.h + dy) - r.y)); }
     else { r.x = Math.min(Math.max(0, snapX(r0.x + dx)), 1 - r.w); r.y = Math.min(Math.max(0, snapY(r0.y + dy)), 1 - r.h); } // 화면 밖으로 못 나감
     [r.x, r.y, r.w, r.h].forEach((v, i) => c.style[POS[i]] = v * 100 + "%");
@@ -1872,21 +1886,50 @@ function initNoteTools(ta) {
 document.querySelectorAll(".note[data-key]").forEach(initNoteTools);
 
 // 사진: 긴 변 1600px JPEG로 줄여서 이 컴퓨터에 저장. 카드 이름(photo, photo-2 …)이 저장 이름
-// shortcut: localStorage(약 5MB)에 카드마다 한 장, 여러 장이 모자라지면 IndexedDB로 옮기기
+// shortcut: localStorage(약 5MB)에 카드마다 한 장 + 보관함 4장, 여러 장이 모자라지면 IndexedDB로 옮기기
+// 보관함: photo-shelf = [{ id, at }], 사진은 photoshelf-<id>. 카드가 보관함 사진을 띄우면 "shelf:<id>"로 가리킴 (같은 사진을 두 번 저장하지 않게)
+const PH_MAX = 4;
+let phShelf = [];
+try { phShelf = JSON.parse(localStorage.getItem("photo-shelf")) || []; } catch (e) {}
+const phSaveShelf = () => { try { localStorage.setItem("photo-shelf", JSON.stringify(phShelf)); } catch (e) {} };
+const phUrl = v => v?.startsWith("shelf:") ? localStorage.getItem("photoshelf-" + v.slice(6)) : v; // 카드에 저장된 값 → 사진
+const phCards = () => [...document.querySelectorAll('.card[data-card^="photo"]')];
 function initPhoto(c) {
   const k = c.dataset.card, input = c.querySelector("input[type=file]"), img = c.querySelector("img");
-  const tools = c.querySelector(".photo-tools"), add = c.querySelector(".empty"), [change, del] = tools.children;
-  const show = url => {
+  const tools = c.querySelector(".photo-tools"), add = c.querySelector(".ph-empty"), change = c.querySelector(".ph-change"), del = c.querySelector(".ph-del");
+  const show = v => {
+    const url = phUrl(v);
     img.hidden = tools.hidden = !url; add.hidden = !!url;
     if (url) img.src = url; else img.removeAttribute("src");
   };
   const set = async url => {
-    if (url === null && !await seConfirm(c, "사진을 지울까요?", "지우기")) return;
+    if (url === null && !await seConfirm(c, "사진을 지울까요?" + (localStorage.getItem(k)?.startsWith("shelf:") ? "\n보관함의 사진은 남아요." : ""), "지우기")) return;
     try { if (url) localStorage.setItem(k, url); else localStorage.removeItem(k); }
-    catch (e) { seConfirm(c, "사진이 너무 커서 저장하지 못했어요. 더 작은 사진을 고르거나 다른 사진 카드를 닫아 주세요.", "확인", null); return; }
+    catch (e) { seConfirm(c, "사진이 너무 커서 저장하지 못했어요. 더 작은 사진을 고르거나 보관함 사진을 지워 주세요.", "확인", null); return; }
     show(url);
   };
-  add.onclick = change.onclick = () => input.click();
+  c.showPhoto = () => show(localStorage.getItem(k));
+  c.querySelector(".empty").onclick = change.onclick = () => input.click();
+  c.querySelector(".ph-keep").onclick = () => { // 지금 사진을 보관함에
+    const v = localStorage.getItem(k);
+    if (!v || v.startsWith("shelf:")) return seConfirm(c, "이미 보관함에 있는 사진이에요.", "확인", null);
+    if (phShelf.length >= PH_MAX) return seConfirm(c, `보관함이 꽉 찼어요 (${PH_MAX}장). '🗂️ 보관함'에서 하나를 지운 뒤 저장해 주세요.`, "확인", null);
+    const id = Date.now().toString(36);
+    try { localStorage.setItem("photoshelf-" + id, v); localStorage.setItem(k, "shelf:" + id); }
+    catch (e) { localStorage.removeItem("photoshelf-" + id); return seConfirm(c, "저장할 자리가 모자라요. 다른 사진 카드나 보관함 사진을 지워 주세요.", "확인", null); }
+    phShelf.push({ id, at: Date.now() }); phSaveShelf();
+    const b = c.querySelector(".ph-keep"); b.textContent = "저장했어요"; setTimeout(() => b.textContent = "☆ 저장", 1500);
+  };
+  c.querySelectorAll(".ph-shelf").forEach(btn => btn.onclick = () => shelfMenu(btn, `🗂️ 사진 보관함 (${phShelf.length}/${PH_MAX})`,
+    phShelf.map((x, i) => ({ icon: h("img", { class: "ph-thumb", src: localStorage.getItem("photoshelf-" + x.id) || "", alt: "" }), name: `사진 ${i + 1} · ${new Date(x.at).toLocaleDateString("ko-KR", { month: "long", day: "numeric" })}` })),
+    i => set("shelf:" + phShelf[i].id),
+    async (i, m) => {
+      if (!await seConfirm(m, "이 사진을 보관함에서 지울까요?\n지금 띄워 둔 카드에서는 그대로 보여요.", "지우기")) return;
+      const id = phShelf[i].id, data = localStorage.getItem("photoshelf-" + id);
+      for (const pc of phCards()) { const pk2 = pc.dataset.card; if (localStorage.getItem(pk2) === "shelf:" + id) try { localStorage.setItem(pk2, data); } catch (e) {} } // 띄워 둔 카드는 사진을 직접 가짐
+      localStorage.removeItem("photoshelf-" + id); phShelf.splice(i, 1); phSaveShelf(); btn.onclick();
+    },
+    "아직 저장한 사진이 없어요. 사진을 띄운 뒤 '☆ 저장'을 눌러요."));
   del.onclick = () => set(null);
   input.addEventListener("change", async () => {
     const file = input.files[0];
@@ -1908,7 +1951,7 @@ document.querySelectorAll('.card[data-card^="photo"]').forEach(initPhoto);
 // 타이머: 끝나는 시각을 기억해서 계산 (창이 가려져 있어도 정확함)
 const timerCard = document.getElementById("timer-card");
 const tTime = document.getElementById("timer-time"), tBar = document.getElementById("timer-bar"), tGo = document.getElementById("timer-go");
-let tTotal = 5 * 60000, tLeft = tTotal, tEnd = 0, tTick = 0, actx = null;
+let tTotal = 0, tLeft = tTotal, tEnd = 0, tTick = 0, actx = null;
 const fmt = ms => { const s = Math.ceil(ms / 1000); return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0"); };
 function timerDraw() {
   tTime.textContent = fmt(tLeft);
@@ -1938,7 +1981,8 @@ tTime.addEventListener("click", () => {
     if (sec >= 1 && sec <= 5999) timerSet(sec / 60); else timerDraw();
   };
 });
-function timerAdd(min) {
+function timerAdd(min) { // 돌아가는 중이면 남은 시간에, 멈춰 있으면 맞춘 시간에 더함. 끝난 뒤면 0부터
+  if (!tEnd && !tLeft) tTotal = 0;
   tTotal += min * 60000;
   if (tEnd) tEnd += min * 60000; else tLeft += min * 60000;
   timerCard.classList.remove("done");
@@ -1948,6 +1992,7 @@ function timerToggle() {
   if (tEnd) { tLeft = Math.max(0, tEnd - Date.now()); timerStop(); if (tSfx) tone(440, 0, .15); }
   else {
     if (!tLeft) tLeft = tTotal; // 끝난 뒤 다시 누르면 처음 시간으로 다시 시작
+    if (!tLeft) return timerDraw(); // 시간을 안 맞췄으면 시작하지 않음
     if (tSfx) melody([660, 880], .09, "sine", .2); // 시작 소리 (버튼을 누를 때 소리를 켜 둬야 끝날 때도 남)
     else try { actx = actx || new AudioContext(); actx.resume(); } catch (e) {} // 효과음을 꺼도 끝 소리는 나게
     tEnd = Date.now() + tLeft;
@@ -1976,7 +2021,7 @@ function timerSfx(flip) {
   const b = document.getElementById("timer-sfx"); b.textContent = "🔊 효과음"; b.classList.toggle("off", !tSfx);
 }
 timerSfx(false);
-function timerReset() { timerStop(); tLeft = tTotal; timerCard.classList.remove("done"); timerDraw(); }
+function timerReset() { timerStop(); tTotal = tLeft = 0; timerCard.classList.remove("done"); timerDraw(); } // 00:00으로. + 버튼으로 다시 맞춤
 // 효과음: 파일 없이 브라우저에서 바로 만든 소리
 function tone(freq, at, dur, type = "sine", vol = .25) {
   try {
@@ -2539,6 +2584,7 @@ const DAYS = ["월", "화", "수", "목", "금"];
 const SUBJECT = { 국: "국어", 수: "수학", 사: "사회", 과: "과학", 영: "영어", 음: "음악", 미: "미술", 체: "체육", 도: "도덕",
   자: "창체", 동: "동아리", 봉: "봉사", 진: "진로", 실: "실과", 바: "바른 생활", 슬: "슬기로운 생활", 즐: "즐거운 생활", 안: "안전한 생활" };
 const fullName = s => SUBJECT[s] || s;
+const NP = 6; // 교시 수 (7교시는 안 씀. 예전에 저장한 7교시 자료는 남겨 두지만 보이지 않음)
 const DEFAULT_BELLS = [["09:00", "09:40"], ["09:50", "10:30"], ["10:50", "11:30"], ["11:40", "12:20"],
   ["13:20", "14:00"], ["14:10", "14:50"], ["15:00", "15:40"]].map(([s, e]) => ({ s, e }));
 let tt = {};
@@ -2904,7 +2950,7 @@ function ttRender() {
   today.replaceChildren();
   if (!has) { when.textContent = ""; main.innerHTML = "<small>설정 → 시간표에서<br>시간표를 넣어 주세요</small>"; time.textContent = ""; return; }
   const plan = dayPlan(now) || [];
-  const slots = tt.bells.map((b, i) => ({ i, subj: plan[i] || "", s: toMin(b.s), e: toMin(b.e), b })).filter(x => x.subj && !x.b.off);
+  const slots = tt.bells.slice(0, NP).map((b, i) => ({ i, subj: plan[i] || "", s: toMin(b.s), e: toMin(b.e), b })).filter(x => x.subj && !x.b.off);
   const cur = slots.find(x => x.s <= mins && mins < x.e);
   const next = slots.find(x => x.s > mins);
   for (const x of slots) {
@@ -2924,7 +2970,7 @@ function ttRender() {
     when.textContent = plan.length ? "오늘 수업 끝" : "오늘은 수업이 없어요";
     for (let k = 1; k <= 14; k++) { // 다음 수업 있는 날 찾기
       const d = new Date(now); d.setDate(d.getDate() + k);
-      const p = dayPlan(d), i = p ? p.findIndex((x, j) => x && !tt.bells[j]?.off) : -1;
+      const p = dayPlan(d), i = p ? p.findIndex((x, j) => x && j < NP && !tt.bells[j]?.off) : -1;
       if (i < 0) continue;
       big(`${d.getMonth() + 1}/${d.getDate()}(${DAYS[d.getDay() - 1]}) 첫 시간`, { i, subj: p[i] });
       time.textContent = `${tt.bells[i].s} 시작`;
@@ -2939,7 +2985,7 @@ ttRender();
 // 설정 → 시간표: 시정표 입력칸과 주별 시간표 고치기
 function ttEditor() {
   const bells = document.getElementById("tt-bells");
-  bells.replaceChildren(...tt.bells.map((b, i) => {
+  bells.replaceChildren(...tt.bells.slice(0, NP).map((b, i) => {
     const l = document.createElement("div");
     l.append(`${i + 1}교시 `);
     for (const k of ["s", "e"]) {
@@ -2949,7 +2995,7 @@ function ttEditor() {
       l.append(inp);
       if (k === "s") l.append("~");
     }
-    if (i >= 5) { // 6·7교시는 안 쓰는 학교·학년이 있어서 끌 수 있게
+    if (i >= 5) { // 6교시는 안 쓰는 학교·학년이 있어서 끌 수 있게
       const off = document.createElement("label"), c = document.createElement("input");
       c.type = "checkbox"; c.checked = !!b.off; c.onchange = () => { b.off = c.checked; ttSave(); ttEditor(); };
       off.className = "off"; off.append(c, "미사용"); l.append(off);
@@ -2968,7 +3014,7 @@ function ttGrid() {
   const days = v === "base" ? tt.base : tt.weeks[v].days;
   const grid = document.getElementById("tt-grid");
   const cells = [document.createElement("b"), ...DAYS.map(d => { const b = document.createElement("b"); b.textContent = d; return b; })];
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; i < NP; i++) {
     if (tt.bells[i].off) continue; // 미사용 교시는 고치기 표에서도 뺌
     const b = document.createElement("b"); b.textContent = `${i + 1}교시`; cells.push(b);
     DAYS.forEach((_, k) => {
@@ -3389,6 +3435,26 @@ function qrMake(text) {
   flip(best); fmt(best);
   return M;
 }
+// 보관함 메뉴 (QR·사진): 버튼 위(자리가 없으면 아래)에 즐겨찾기처럼 한 줄씩. 줄을 누르면 고르고, ✕로 지움. 바깥을 누르면 닫힘
+// rows: [{ icon, name, title }], del(i, 메뉴): 지우고 나서 다시 열기는 부르는 쪽이 함
+function shelfMenu(btn, title, rows, pick, del, empty) {
+  const d = btn.ownerDocument, W = d.defaultView; // 다른 창으로 뗀 카드면 그 창에
+  d.querySelector(".shelf-menu")?.remove();
+  const m = h("div", { class: "lk-menu shelf-menu", popover: "auto" }, h("div", { class: "lk-head" }, h("b", {}, title)),
+    h("div", { class: "lk-list" }, rows.length ? rows.map((r, i) => {
+      const row = h("div", { class: "lk-row", title: r.title || r.name }, r.icon, h("span", { class: "lk-name" }, r.name),
+        h("button", { class: "lk-x del", title: "보관함에서 지우기", "aria-label": "보관함에서 지우기", onclick: e => { e.stopPropagation(); del(i, m); } }, "✕"));
+      row.onclick = () => { m.hidePopover(); pick(i); };
+      return row;
+    }) : [h("p", { class: "shelf-empty" }, empty)]));
+  d.body.append(m);
+  m.addEventListener("toggle", e => { if (e.newState === "closed") m.remove(); });
+  m.showPopover();
+  const r = btn.getBoundingClientRect(), mh = m.offsetHeight;
+  m.style.left = Math.max(8, Math.min(r.right - 280, W.innerWidth - 288)) + "px";
+  m.style.top = (r.top - mh - 6 >= 8 ? r.top - mh - 6 : Math.min(r.bottom + 6, W.innerHeight - mh - 8)) + "px";
+  return m;
+}
 // QR 카드마다 따로: 글 칸·그림. 더 띄운 카드(qr-2…)의 글은 qr-text-qr-2에 저장. 보관함 qr-saved = [{ name, text }]은 같이 씀
 let qrList = [];
 try { qrList = JSON.parse(localStorage.getItem("qr-saved")) || []; } catch (e) {}
@@ -3419,18 +3485,11 @@ function initQr(c) {
     if (old) old.name = name; else qrList.push({ name, text: t });
     qrSavedSave();
   };
-  c.querySelector(".qr-shelf-btn").onclick = () => { // 카드 안을 덮는 목록. 이름을 누르면 그 QR을 띄우고 닫힘
-    c.querySelector(".card-ed")?.remove();
-    const close = h("button", { class: "main", onclick: () => ed.remove() }, "닫기"), list = h("div", { class: "card-ed-list" });
-    const ed = h("div", { class: "card-ed" }, h("div", { class: "card-ed-head" }, h("b", {}, "QR 보관함"), close), list);
-    const show = () => list.replaceChildren(...(qrList.length ? qrList.map((q, i) => h("div", { class: "qr-item" },
-      h("button", { class: "pick" + (q.text === inp.value.trim() ? " on" : ""), title: q.text, onclick: () => { set(q.text); ed.remove(); } }, h("span", {}, q.name), h("small", {}, q.text)),
-      h("button", { class: "x", title: "보관함에서 지우기", "aria-label": "보관함에서 지우기", onclick: async () => { if (await seConfirm(c, `'${q.name}'을 보관함에서 지울까요?`, "지우기")) { qrList.splice(i, 1); qrSavedSave(); show(); } } }, "✕")))
-      : [h("p", { class: "none" }, "아직 저장한 QR이 없어요. 주소를 넣고 '☆ 저장'을 눌러요.")]));
-    show(); c.append(ed);
-    ed.addEventListener("keydown", e => { if (e.key === "Escape") ed.remove(); });
-    close.focus();
-  };
+  const shelf = c.querySelector(".qr-shelf-btn");
+  shelf.onclick = () => shelfMenu(shelf, "🗂️ QR 보관함", qrList.map(q => ({ icon: h("span", { class: "lk-ic", style: "background:#495057" }, "▦"), name: q.name, title: q.text })),
+    i => set(qrList[i].text),
+    async (i, m) => { if (await seConfirm(m, `'${qrList[i].name}'을 보관함에서 지울까요?`, "지우기")) { qrList.splice(i, 1); qrSavedSave(); shelf.onclick(); } },
+    "아직 저장한 QR이 없어요. 주소를 넣고 '☆ 저장'을 눌러요.");
   try { inp.value = localStorage.getItem(key) || ""; } catch (e) {}
   inp.addEventListener("input", () => set(inp.value));
   new ResizeObserver(fit).observe(cv.parentElement);
@@ -4795,65 +4854,47 @@ const TOURS = {
     { at: [() => tourCard()?.querySelector(".card-pop"), () => tourCard()?.querySelector(".card-full"), () => tourCard()?.querySelector(".card-down:not(.card-pop):not(.card-full)")], text: "왼쪽부터 ① 따로 창으로 떼기(TV 같은 다른 모니터로) ② 전체 화면 ③ 닫기(아래쪽 바로)" },
     { at: ".gear", text: "설정: 명단·시간표·로그인. '사용 방법'에서 이 안내를 다시 볼 수 있어요." }] },
   topic: { name: "✏️ 오늘의 주제", steps: [
-    { at: "#topic", text: "오늘 이야기할 주제예요." },
-    { at: ".tools button", text: "↻를 누르면 다른 주제가 나와요." },
     { at: ".used", text: "쓴 주제는 '사용 체크'하면 다시 나오지 않아요." },
     { at: ".rule-line", text: "아래 글은 두 번 눌러 고칠 수 있어요." }] },
   timetable: { name: "🕘 시간표", steps: [
-    { at: ".tt-left", text: "지금 몇 교시인지와 오늘 시간표가 보여요." },
-    { at: ".tt-right", text: "준비물과 숙제를 써요. 저절로 저장돼요." },
-    { text: "시간표는 설정 → 시간표에서 연간시간표 파일(한글·워드·PDF)과 시정표를 넣어요." }] },
+    { text: "시간표는 설정 → 시간표에서 연간시간표 파일(한글·워드·PDF)과 시정표를 넣어요. 수업이 없는 교시는 카드에 안 나와요." }] },
   memo: { name: "📝 메모", steps: [
-    { at: ".note", text: "눌러서 바로 쓰면 저절로 저장돼요." },
     { at: ".note-tools", text: "글자를 골라 Tt에서 크기·색을 바꿔요." },
     { text: "아래쪽 바 메모 버튼 오른쪽 위 +를 누르면 메모가 한 장 더 생겨요." }] },
   rules: { name: "📌 우리반 규칙", steps: [
-    { at: ".note", text: "한 줄에 규칙 하나. Enter를 치면 다음 번호가 붙어요. 많아지면 카드가 아래로 커져요." },
-    { at: ".note-tools", text: "Tt에서 글씨 크기·색을 바꿔요." }] },
-  motto: { name: "🏫 급훈", steps: [{ at: ".motto", text: "눌러서 급훈을 써요." }] },
+    { at: ".note-tools", text: "글자를 골라 Tt에서 색을 고르면 그 글자만 바뀌어요." }] },
   seat: { name: "🪑 자리배치", steps: [
     { at: 'button[data-ic="set"]', text: "처음 한 번: 자리 모양(분단·모둠·직접 그리기)과 짝꿍 조건을 정해요." },
-    { at: 'button[data-ic="shuffle"]', text: "자동 자리배치: 학생들이 한 자리씩 앉아요." },
-    { at: ".seat-mini", text: "이름을 끌거나, 누른 뒤 다른 자리를 누르면 서로 바꿔요. 바꾸면 오른쪽 아래에 되돌리기·원래대로가 나와요." },
+    { at: ".seat-mini", text: "이름을 끌거나, 누른 뒤 다른 자리를 누르면 서로 바꿔요. 오른쪽 아래 '원래대로'로 자동 배치한 자리로 돌아가요." },
     { at: "#seat-save", text: "오늘 날짜로 저장하면 위 목록에서 다시 볼 수 있어요." },
     { at: 'button[data-ic="print"]', text: "출력: 학생 시점 · 교사 시점 · 둘 다 (A4 가로)" }] },
   photo: { name: "🖼️ 사진", steps: [
-    { at: ".photo-box", text: "'+ 사진 넣기'로 사진을 골라요. 사진 위에 마우스를 올리면 바꾸기·지우기가 나와요." },
+    { at: ".photo-box", text: "사진 위에 마우스를 올리면 버튼이 나와요. '☆ 저장'으로 보관함에 4장까지 넣어 두고 '🗂️ 보관함'에서 바로 바꿔 띄워요." },
     { text: "아래쪽 바 사진 버튼의 +로 사진 카드를 더 띄워요." }] },
   timer: { name: "⏱️ 타이머", steps: [
-    { at: ".chips", text: "시간을 골라요. +1은 1분 더하기예요." },
-    { at: "#timer-time", text: "시간을 눌러 3:30처럼 직접 써도 돼요." },
-    { at: "#timer-go", text: "시작·멈춤. 끝나면 소리가 나고 카드가 깜빡여요." },
+    { at: "#timer-time", text: "시간을 눌러 3:30처럼 직접 써도 돼요. + 버튼은 돌아가는 중에도 더해져요." },
     { at: "#timer-sfx", text: "효과음 켜기·끄기 (마지막 3초와 끝나는 소리는 늘 나요)" }] },
   picker: { name: "🎲 뽑기", steps: [
     { at: ".modes", text: "뽑는 방법: 전체 · 선택 · 모둠 · 순서(핀볼) · 직접입력" },
-    { at: "#pick-go", text: "뽑기! 한 번 뽑힌 사람은 모두 뽑힐 때까지 안 나와요." },
     { at: ".pick-bottom .acts button:not(.main)", text: "처음부터: 뽑힌 기록을 비워요." },
     { at: ".pick-opt", text: "방법마다 고르기·쓰기·모둠 수. 순서 뽑기는 '📜 기록'에서 지난 결과를 봐요." }] },
   whiteboard: { name: "🖍️ 화이트보드", steps: [
-    { at: ".wb-tools", text: "옮기기 · 펜 · 글상자 · 되돌리기 · 모두 지우기" },
-    { at: "#wb", text: "여기에 그려요. 사진은 복사해서 Ctrl+V(또는 끌어다 놓기)." },
+    { at: "#wb", text: "사진은 복사해서 Ctrl+V(또는 끌어다 놓기)로 넣어요." },
     { at: ".wb-pages", text: "화이트보드를 4장까지 따로 써요." },
     { text: "옮기기 도구로 사진·글·선을 끌어 옮기고, 파란 점으로 크기를 바꿔요. 지우기는 Delete." }] },
   dust: { name: "😷 미세먼지·날씨", steps: [
-    { at: "#dust-set-btn", text: "처음 한 번 '지역 설정'에서 지역을 정해요." },
-    { at: "#dust-main", text: "미세먼지 5단계: 최고 · 좋음 · 보통 · 나쁨 · 최악" },
-    { at: "#dust-wx", text: "날씨와 기온 (지금 · 오늘 최저 · 최고)" }] },
+    { at: "#dust-set-btn", text: "처음 한 번 '지역 설정'에서 지역을 정하면 미세먼지와 날씨가 나와요." }] },
   noise: { name: "🔉 소음 측정", steps: [
-    { at: "#noise-go", text: "'측정 시작'을 누르고 마이크를 허락해요. 녹음하거나 보내지 않아요." },
     { at: ".noise-th", text: "기준을 1초 넘게 넘으면 경고음이 나요." },
     { at: ".noise-count", text: "오늘 경고 횟수가 쌓여요. 🔔로 직접 경고도 줘요." }] },
   thermo: { name: "🌡️ 학급 온도계", steps: [
-    { at: ".acts", text: "칭찬할 때 온도를 올려요. ↻는 0°로." },
     { at: ".th-pen", text: "연필: 5°마다 보상을 정해요 (비워 둬도 돼요)." },
     { at: ".th-goal", text: "다음 보상이 여기 보여요." }] },
   qr: { name: "🔳 QR 만들기", steps: [
-    { at: ".qr-in", text: "주소나 글을 넣으면 QR이 바로 생겨요." },
     { at: ".qr-keep", text: "자주 쓰는 건 '☆ 저장'으로 보관함에 넣어요." },
     { at: ".qr-shelf-btn", text: "보관함에서 눌러 바로 띄워요." },
     { text: "⛶ 전체 화면으로 크게 띄워 학생들이 찍게 하세요. 아래쪽 바 +로 여러 장 띄워요." }] },
   notice: { name: "📋 알림장", steps: [
-    { at: ".chalk", text: "칠판에 알림장을 써요. Enter를 치면 다음 번호." },
     { at: "#nt-copy", text: "복사: 날짜·번호가 붙은 채로 다른 곳에 붙여 넣어요." },
     { at: "#nt-save", text: "저장: 날짜별로 남겨요." },
     { at: "#nt-hist", text: "지난 알림장을 불러오거나 ✕로 지워요." }] },
@@ -4861,7 +4902,6 @@ const TOURS = {
     { at: ".sc-top button", text: "'✎ 점수 넣기': 평가 이름·만점·학생 점수 (엑셀 한 줄 붙여넣기도 돼요)" },
     { at: "#sc-grid", text: "이름을 누르면 그 학생 점수만 크게 보여요." }] },
   links: { name: "🌐 즐겨찾기", steps: [
-    { text: "아래쪽 바 🌐 즐겨찾기를 누르면 메뉴가 떠요." },
     { text: "'+ 링크'로 주소를, '+ 폴더'로 폴더를 만들어요." },
     { text: "링크를 끌어 폴더 위에 놓으면 폴더로 들어가요." },
     { text: "오른쪽 버튼: 이름 바꾸기 · 삭제" }] },
@@ -4990,7 +5030,7 @@ function hpShot(k, at) {
 const FB = "https://www.gstatic.com/firebasejs/10.14.1/";
 const FB_CONFIG = { apiKey: "AIzaSyCEsOWNlfwrGdTKfbgL-C6JTPlc7Z3pUmo", authDomain: "class-board-aeed0.firebaseapp.com", projectId: "class-board-aeed0",
   storageBucket: "class-board-aeed0.firebasestorage.app", messagingSenderId: "826892766619", appId: "1:826892766619:web:67ca38017c7d580801a53e" };
-const PHOTO_KEY = /^photo(-\d+)?$/, WB_KEYS = [0, 1, 2, 3].map(wbKey);
+const PHOTO_KEY = /^photo(-\d+)?$|^photoshelf-[a-z0-9]+$/, WB_KEYS = [0, 1, 2, 3].map(wbKey);
 const SET = Storage.prototype.setItem, DEL = Storage.prototype.removeItem;
 const lsSet = (k, v) => SET.call(localStorage, k, v), lsDel = k => DEL.call(localStorage, k), lsGet = k => localStorage.getItem(k);
 let fb = null, fbUser = null, syncT = 0, syncBusy = false, syncAgain = false;
