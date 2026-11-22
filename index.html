@@ -521,9 +521,9 @@
   /* 학급 온도계 */
   [data-card="thermo"] { --accent: #e03131; --card: #fff0f0; --line: #f5c6c6; }
   .th-main { flex: 1; min-height: 0; display: flex; align-items: stretch; justify-content: center; gap: 18px; padding-left: 34px; }
-  .th-tube { position: relative; flex: none; width: 22px; margin: 6px 0 24px; border-radius: 14px; background: #fff; border: 3px solid var(--line); }
+  .th-tube { position: relative; flex: none; width: 18px; margin: 6px 0 22px; border-radius: 12px; background: #fff; border: 2.5px solid #d5d9df; }
   #th-fill { position: absolute; left: 3px; right: 3px; bottom: 0; border-radius: 9px; background: linear-gradient(to top, #e03131, #ff8787); }
-  .th-bulb { position: absolute; left: 50%; bottom: -26px; width: 34px; height: 34px; transform: translateX(-50%); border-radius: 50%; background: #e03131; border: 3px solid var(--line); z-index: 1; }
+  .th-bulb { position: absolute; left: 50%; top: calc(100% + 1px); width: 20px; height: 20px; transform: translateX(-50%); border-radius: 50%; background: #e03131; border: 2.5px solid #d5d9df; } /* 관 아래에 붙어서 0° 위로 차오르는 게 다 보임 */
   /* 눈금: 왼쪽에 10도마다 숫자, 5도마다 짧은 금. 보상을 정한 온도는 오른쪽에 🎁 */
   .th-tick { position: absolute; right: calc(100% + 3px); width: 6px; height: 0; border-top: 1.5px solid #c9a0a0; }
   .th-tick.major { width: 10px; }
@@ -560,6 +560,8 @@
   .qr-box { flex: 1; min-height: 0; position: relative; display: grid; place-items: center; }
   #qr-cv { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); image-rendering: pixelated; }
   /* 서랍: 아래쪽 바에서 고른 버튼을 넣어 두는 곳 */
+  .dock #drawer-btn { position: sticky; right: 0; margin-left: 9px; background: #fff; overflow: visible; } /* 바가 넘쳐 밀려도 늘 맨 오른쪽 */
+  .dock #drawer-btn::before { content: ""; position: absolute; left: -7px; top: 10px; bottom: 10px; width: 1.5px; background: #e6dccf; } /* 다른 기능: 세로 선으로 구분 */
   .drawer { inset: auto; left: 50%; bottom: 84px; transform: translateX(-50%); margin: 0; padding: 12px; border: 0; border-radius: 18px; background: #fff; color: var(--ink);
             width: min(440px, calc(100vw - 24px)); box-sizing: border-box; box-shadow: 0 10px 34px rgba(60, 40, 20, .22); font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; }
   .drawer-items { display: flex; flex-wrap: wrap; gap: 4px; }
@@ -765,7 +767,7 @@
       </div>
       <div class="tt-right">
         <div class="tt-box">
-          <p class="sub" data-ic="bag">준비물</p>
+          <p class="sub">✂️ 준비물</p>
           <div class="note" data-key="supplies" contenteditable="true" spellcheck="false" role="textbox" aria-multiline="true" aria-label="준비물"></div>
         </div>
         <div class="tt-box">
@@ -882,13 +884,13 @@
       <li><b>사진</b> '사진 넣기'로 사진을 고르세요. 사진 위에 마우스를 올리면 바꾸기·지우기 버튼이 나와요. 아래쪽 바 버튼을 누를 때마다 사진 카드가 한 장씩 더 생겨요.</li>
       <li><b>타이머</b> 30초·1·3·5·10분을 고르거나, 가운데 시간(00:00)을 눌러 3:30처럼 직접 쓰고 '시작'. +1은 1분 더하기예요. 시간이 끝나면 소리가 나고 카드가 깜빡여요. 아래 '🔊 효과음'으로 시작·멈춤·째깍 소리를 끄고 켜요(마지막 3초와 끝날 때 소리는 늘 나요).</li>
       <li><b>뽑기</b> <u>전체</u>: 설정 → 명단에 우리 반 이름을 한 줄에 하나씩(숫자만 쓰면 번호로). <u>선택</u>: 오른쪽 아래 '✎ 고르기'로 뽑을 사람만 골라요. <u>모둠</u>: 오른쪽 아래에 모둠 수를 정해요. <u>직접입력</u>: 오른쪽 아래 '✎ 쓰기'로 그때그때 뽑을 것을 써요. <u>순서</u>: 명단 전체가 이름 구슬이 되어 긴 핀볼 코스(경사로·범퍼·도는 막대·쐐기)를 굴러 내려가요. 화면은 맨 앞 구슬을 따라 내려가고, 맨 아래 구멍으로 빠진 순서대로 1등부터 정해요. 한 번 뽑힌 것은 모두 뽑힐 때까지 다시 나오지 않고, '처음부터'로 다시 시작해요.</li>
-      <li><b>미세먼지</b> '지역 설정'에서 '지금 위치로'를 누르거나 시·군 이름(예: 수원시)으로 찾으세요. Open-Meteo(무료 공개 자료)의 예보값이라 에어코리아 측정소 값과 조금 다를 수 있어요. 30분마다 새로 받아요.</li>
+      <li><b>미세먼지</b> 최고·좋음·보통·나쁨·최악 다섯 단계로 보여 줘요. '지역 설정'에서 '지금 위치로'를 누르거나 시·군 이름(예: 수원시)으로 찾으세요. Open-Meteo(무료 공개 자료)의 예보값이라 에어코리아 측정소 값과 조금 다를 수 있어요. 30분마다 새로 받아요.</li>
       <li><b>소음 측정</b> '측정 시작'을 누르고 마이크를 허락하면 소리 크기를 막대로 보여 줘요. 기준(검은 선)을 1초 넘게 넘으면 경고음이 나고 오늘 경고 횟수가 쌓여요. '🔔 경고'로 직접 경고를 줄 수도 있어요. 소리는 이 컴퓨터 안에서만 재고, 녹음하거나 보내지 않아요.</li>
       <li><b>화이트보드</b> ✏️ 펜을 누르면 색과 굵기를 골라 그려요. T 글상자는 누른 뒤 보드(사진 위도 돼요)를 클릭해 써요. 사진은 복사해서 Ctrl+V(또는 끌어다 놓기). 옮기기에서 사진·글상자·펜 선을 끌어 옮기고, 오른쪽 아래 파란 점으로 크기를 바꾸고(글상자는 글씨도 같이 커져요), 오른쪽 위 ✕나 Delete로 지워요. 빈 곳에서 끌어 네모를 그리면 그 안에 통째로 들어온 것이 함께 골라지고(조금 걸친 건 빠져요), Shift를 누른 채 여러 개를 눌러도 골라져요. '묶기'로 한 덩어리로 묶어요('풀기'로 다시 나눠요). 글상자는 두 번 클릭하면 고치고, 글상자를 고르면 위에 나오는 Tt로 글씨 크기·색을 바꿔요. 여러 개나 묶음은 점선 상자 오른쪽 아래 파란 점으로 한꺼번에 크기를 바꿔요. ↶나 Ctrl+Z로 되돌려요. 제목 줄 오른쪽 1~4 버튼으로 화이트보드를 4개까지 따로 써요.</li>
       <li><b>시간표</b> 설정 → 시간표에서 연간시간표(한글 파일 또는 표 붙여넣기)와 시정표를 넣으면, 지금 몇 교시인지와 다음 시간을 알려 줘요. 표에 없는 주는 '매주 기본 시간표'를 써요.</li>
       <li><b>보드 카드</b> 제목을 끌어 옮기고, 오른쪽 아래 모서리로 크기를 바꿔요. 옮긴 자리와 크기는 앱을 껐다 켜도 그대로예요. ✕를 누르면 보드에서 닫히고 아래쪽 바로 들어가요. 닫아도 적어 둔 내용은 남아요.</li>
       <li><b>아래쪽 바</b> 보드에서 닫은 카드가 들어가요. 누르면 보드에 다시 나와요. 자주 안 쓰는 버튼은 오른쪽 끝 '서랍'을 눌러 아래 목록에서 골라 넣어 두면 서랍 안에서 꺼내 써요.</li>
-      <li><b>학급 온도계</b> +1°, +5°로 반 온도를 올리고 −1°로 내려요. 연필 버튼에서 5°마다 보상을 쓸 수 있어요(비워 둬도 돼요). 카드에는 다음 보상(예: 10°가 되면 ○○)이 나오고, 보상 온도를 넘거나 100°가 되면 소리와 함께 축하해요. ↻는 0°로 되돌려요.</li>
+      <li><b>학급 온도계</b> +1°, +5°로 반 온도를 올리고 −1°로 내려요. 연필 버튼에서 5°마다 보상을 쓸 수 있어요(비워 둬도 돼요). 카드에는 다음 보상(예: 10°가 되면 ○○)이 나오고, 올릴 땐 올라가는 소리, 내릴 땐 내려가는 소리가 나요. 보상 온도를 넘거나 100°가 되면 소리와 함께 축하해요. ↻는 0°로 되돌려요.</li>
       <li><b>QR 만들기</b> 칸에 주소나 글을 넣으면 바로 QR이 생겨요. ⛶ 전체 화면으로 크게 띄워 학생들이 찍게 하세요. 인터넷 없이 이 컴퓨터에서 만들어요.</li>
       <li><b>자리배치</b> 처음 한 번 설정 버튼에서 모양(분단: 혼자·짝꿍과 앉기와 분단 수 / 모둠: 모둠 인원 / 직접 그리기: 명단 인원만큼 자리를 고르고, 필요하면 '방향 돌리기'로 ㄷ자처럼 옆을 보게)과 짝꿍 조건(상관없이·이성끼리·동성끼리·성별 고르게, 이전 짝꿍과 같이 안 앉기)을 정하면 계속 유지돼요. 성별은 설정 → 명단에서 이름과 함께 정해요. 평소에는 '자동 자리배치'(한 자리씩 나타나요), 그 아래 '오늘 날짜로 저장', 출력만 누르면 돼요. 출력은 학생 시점(칠판이 위)·교사 시점(칠판이 아래)·둘 다 중에서 골라 A4 가로로 크게 나와요. 이름을 끌어 다른 자리에 놓거나, 이름을 누른 뒤 다른 자리를 누르면 서로 자리를 바꾸고, 칠판 옆 '상하전환'으로 위아래를 바꿔요. 대형을 만들면 많이 쓰는 공개 모둠으로 묶여요(혼자 앉기는 한 줄, 짝꿍은 4~6명). 미리보기에서 책상이나 모둠을 끌어 옮기고 '간격 맞추기'로 줄과 간격을 똑같이 맞춰요. 모둠을 바꾸려면 책상을 고르고(Shift+누르기, 빈 곳을 끌어 네모로) '모둠으로 묶기'를 눌러요. 혼자 앉기에서는 짝꿍 대신 모둠 성별 조건(상관없이·성별 고르게)을 골라요. 모둠 상자 아래 이름(1모둠…)을 누르면 이름을 바꿀 수 있어요. 자리배치도 이름 옆 작은 별은 선생님 모드예요(고정, 분리, 기록). 분리에서 같이 앉으면 안 되는 학생을 비밀 그룹으로 묶고 1~4순위를 정해요(1순위를 가장 먼저 떨어뜨려요). 같은 그룹은 짝꿍·앞뒤·좌우·같은 모둠으로 앉지 않아요. 다 지킬 수 없으면 바로 앉히지 않고 먼저 물어봐요.</li>
       <li><b>로그인</b> 설정 → 로그인에서 구글로 로그인하면 보드가 서버에 저장되고, 다른 컴퓨터에서 같은 계정으로 로그인하면 같은 보드가 나와요.</li>
@@ -2752,9 +2754,11 @@ function thDraw() { // 지금 보이는 값에서 새 온도까지 천천히
 function thAdd(d) {
   const was = thermo.t;
   thermo.t = Math.max(0, Math.min(100, thermo.t + d)); thSave(); thDraw();
-  if (thermo.t === 100 && was < 100) melody([523, 659, 784, 1047, 0, 784, 1047], .13, "triangle", .3);
+  if (thermo.t === was) return;
+  melody(thermo.t > was ? [523, 587, 659, 784] : [784, 659, 587, 523], .06, "sine", .22); // 오를 땐 올라가는 소리, 내릴 땐 내려가는 소리
+  if (thermo.t === 100 && was < 100) melody([0, 0, 0, 0, 523, 659, 784, 1047, 0, 784, 1047], .13, "triangle", .3); // 앞의 0은 쉼표
   else if (thDegs().some(x => x > was && x <= thermo.t)) { // 보상 온도를 넘으면 짧게 축하
-    melody([659, 880, 1175], .1, "triangle", .25);
+    melody([0, 0, 0, 659, 880, 1175], .1, "triangle", .25);
     thCard.classList.remove("hit"); void thCard.offsetWidth; thCard.classList.add("hit");
   }
 }
@@ -3293,9 +3297,9 @@ setTool("pen");
 wbLoad(wbPage);
 
 // ───── 미세먼지 ─────
-// Open-Meteo 대기질 API (무료, 키 없음). 등급은 환경부 기준 (PM10: 30/80/150, PM2.5: 15/35/75)
-const DUST_GRADES = [["좋음", "#3b82f6", "😊"], ["보통", "#1fa463", "🙂"], ["나쁨", "#f59e0b", "😷"], ["매우 나쁨", "#ef4444", "😫"]];
-const dustGrade = (v, cuts) => { const i = cuts.findIndex(c => v <= c); return i < 0 ? 3 : i; };
+// Open-Meteo 대기질 API (무료, 키 없음). 5단계: 환경부 기준(PM10: 30/80/150, PM2.5: 15/35/75)에서 '좋음'의 아래 절반을 '최고'로
+const DUST_GRADES = [["최고", "#1d4ed8", "😄"], ["좋음", "#3b82f6", "😊"], ["보통", "#1fa463", "🙂"], ["나쁨", "#f59e0b", "😷"], ["최악", "#ef4444", "😫"]];
+const dustGrade = (v, cuts) => { const i = cuts.findIndex(c => v <= c); return i < 0 ? cuts.length : i; };
 let dustPlace = null;
 try { dustPlace = JSON.parse(localStorage.getItem("dust-place")); } catch (e) {}
 async function dustLoad() {
@@ -3305,13 +3309,13 @@ async function dustLoad() {
   try {
     const r = await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${dustPlace.lat}&longitude=${dustPlace.lon}&current=pm10,pm2_5&timezone=Asia%2FSeoul`);
     const c = (await r.json()).current;
-    const g10 = dustGrade(c.pm10, [30, 80, 150]), g25 = dustGrade(c.pm2_5, [15, 35, 75]);
+    const g10 = dustGrade(c.pm10, [15, 30, 80, 150]), g25 = dustGrade(c.pm2_5, [8, 15, 35, 75]);
     const [name, color, face] = DUST_GRADES[Math.max(g10, g25)];
     document.getElementById("dust-face").textContent = face;
     main.textContent = name; main.style.setProperty("--grade", color);
-    chips.replaceChildren(...[["미세", c.pm10, g10], ["초미세", c.pm2_5, g25]].map(([t, v, g]) => {
+    chips.replaceChildren(...[["미세", g10], ["초미세", g25]].map(([t, g]) => {
       const sp = document.createElement("span");
-      sp.textContent = `${t} ${Math.round(v)} ${DUST_GRADES[g][0]}`; sp.style.setProperty("--grade", DUST_GRADES[g][1]);
+      sp.textContent = `${t} ${DUST_GRADES[g][0]}`; // 수치는 빼고 등급만 sp.style.setProperty("--grade", DUST_GRADES[g][1]);
       return sp;
     }));
     document.getElementById("dust-place").textContent = `📍 ${dustPlace.name} · ${c.time.slice(11, 16)} 기준`;
@@ -3595,8 +3599,7 @@ const ICON = {
   set: '<path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/>',
   star: '<path d="M12 3l2.6 5.6 6.1.6-4.6 4.1 1.3 6L12 16.2l-5.4 3.1 1.3-6-4.6-4.1 6.1-.6z"/>',
   shuffle: '<path d="M3 7h3c4 0 6 10 10 10h5M3 17h3c1.5 0 2.7-1.4 3.8-3M14.2 10C15.3 8.4 16.5 7 18 7h3M18 4l3 3-3 3M18 14l3 3-3 3"/>',
-  flip: '<path d="M8 20V4M4 8l4-4 4 4M16 4v16M12 16l4 4 4-4"/>', lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
-  bag: '<path d="M9 7V5.5a3 3 0 0 1 6 0V7"/><rect x="4" y="7" width="16" height="13" rx="2.5"/><path d="M4 12h16M11 12v2h2v-2"/>'
+  flip: '<path d="M8 20V4M4 8l4-4 4 4M16 4v16M12 16l4 4 4-4"/>', lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>'
 };
 function ic(name, cls = "ic") { const s = document.createElement("span"); s.className = cls; s.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[name]}</svg>`; return s; }
 document.querySelectorAll("[data-ic]").forEach(el => el.prepend(ic(el.dataset.ic)));
