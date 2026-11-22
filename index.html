@@ -7,7 +7,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#fbf3e4">
 <link rel="icon" href="icon-192.png">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Nanum+Pen+Script&display=swap"><!-- 급훈 명조, 알림장 분필 글씨 -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap"><!-- 급훈 명조 -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@2.39.3/dist/galmuri.css"><!-- 순서 뽑기 핀볼 픽셀 글꼴 -->
 <style>
   /* 원티드 산스 Regular (무료 폰트, jsDelivr CDN). 첫 실행 때 한 번 받고 이후엔 캐시 사용 */
@@ -28,7 +28,7 @@
   header b { font-weight: normal; color: var(--accent); }
   header > * { white-space: nowrap; flex: none; }
   /* 아래쪽 바: 필요할 때 띄우는 도구 (사진·타이머·뽑기·화이트보드) */
-  .dock { display: flex; justify-content: center; align-items: center; gap: 8px; padding: 6px 12px 10px; overflow-x: auto; }
+  .dock { display: flex; justify-content: safe center; align-items: center; gap: 8px; padding: 6px 12px 10px; overflow-x: auto; }
   .dock button { display: flex; flex-direction: column; align-items: center; gap: 1px; min-width: 64px; padding: 5px 10px 4px; cursor: pointer;
                  font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--accent); background: var(--card);
                  border: 1.5px solid var(--line); border-bottom: 4px solid var(--accent); border-radius: 14px; flex: none; }
@@ -575,12 +575,16 @@
   [data-card="notice"] { --accent: #2b6a4a; --card: #e6f2ec; --line: #bcdccb; }
   .chalk { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 4px; position: relative; padding: 12px 18px; border-radius: 8px;
            background: #2f5d46 radial-gradient(circle at 30% 20%, rgba(255, 255, 255, .07), transparent 60%); border: 8px solid #8a5a2b; box-shadow: inset 0 0 18px rgba(0, 0, 0, .35); }
-  .chalk-date { font: 26px/1.2 "Nanum Pen Script", "Wanted Sans", sans-serif; color: #ffe8a3; }
-  .card .chalk .note { color: #fdfdf6; font: 34px/1.35 "Nanum Pen Script", "Wanted Sans", "Malgun Gothic", sans-serif; text-shadow: 0 0 1px rgba(255, 255, 255, .5); }
+  .chalk-date { font: 20px/1.3 "Wanted Sans", "Malgun Gothic", sans-serif; color: #ffe8a3; }
+  .card .chalk .note { color: #fdfdf6; font: 26px/1.45 "Wanted Sans", "Malgun Gothic", sans-serif; }
   .card .chalk .note:focus { background: rgba(255, 255, 255, .06); box-shadow: none; border-radius: 6px; }
   .chalk-list li { border-bottom-color: rgba(255, 255, 255, .22); }
   .chalk-list li::before { background: none; border: 2px solid #fdfdf6; box-sizing: border-box; color: #fdfdf6; }
   .chalk .note-tools { right: 6px; bottom: 4px; }
+  .nt-foot { display: flex; gap: 6px; align-items: center; padding-top: 8px; }
+  .nt-foot select { flex: 1; min-width: 0; }
+  .nt-foot button, .nt-foot select { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); background: #fff; color: var(--ink); border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  .nt-foot .main { background: var(--accent); border-color: var(--accent); color: #fff; }
   /* 성적 알리미 */
   [data-card="scores"] { --accent: #5f3dc4; --card: #f1edff; --line: #d6ccf7; }
   .sc-top, .dic-top { display: flex; gap: 6px; align-items: center; }
@@ -634,8 +638,14 @@
   /* 아래쪽 바 버튼 끌어서 순서 바꾸기 */
   #launch button { touch-action: none; }
   #launch button.dragging { opacity: .55; background: var(--card); }
+  /* 보드에 떠 있는 카드 버튼: 아이콘 테두리와 아래 점 */
+  .dock button, .drawer-items button { position: relative; }
+  .dock button.shown i, .drawer-items button.shown i { box-shadow: inset 0 0 0 2px var(--accent); }
+  .dock button.shown::after, .drawer-items button.shown::after { content: ""; position: absolute; left: 50%; bottom: 0; width: 4px; height: 4px; margin-left: -2px; border-radius: 50%; background: var(--accent); }
+  .dock-add { position: absolute; top: 0; right: 8px; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); color: #fff; font: 700 14px/18px sans-serif; text-align: center; box-shadow: 0 0 0 2px #fff; }
+  .dock-add:hover { filter: brightness(1.15); }
   /* 서랍: 아래쪽 바에서 고른 버튼을 넣어 두는 곳 */
-  .dock #drawer-btn { position: sticky; right: 0; margin-left: 9px; background: #fff; overflow: visible; } /* 바가 넘쳐 밀려도 늘 맨 오른쪽 */
+  .dock #drawer-btn { position: sticky; right: 0; margin-left: 9px; background: #fff; overflow: visible; box-shadow: -12px 0 0 #fff, 12px 0 0 #fff; } /* 바가 넘쳐 밀려도 늘 맨 오른쪽 */
   .dock #drawer-btn::before { content: ""; position: absolute; left: -7px; top: 10px; bottom: 10px; width: 1.5px; background: #e6dccf; } /* 다른 기능: 세로 선으로 구분 */
   .drawer { inset: auto; left: 50%; bottom: 84px; transform: translateX(-50%); margin: 0; padding: 12px; border: 0; border-radius: 18px; background: #fff; color: var(--ink);
             width: min(440px, calc(100vw - 24px)); box-sizing: border-box; box-shadow: 0 10px 34px rgba(60, 40, 20, .22); font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; }
@@ -818,6 +828,7 @@
   <section class="card" data-card="notice">
     <p class="label">📋 알림장</p>
     <div class="chalk"><p class="chalk-date" id="nt-date"></p><ol class="note rule-list chalk-list" data-key="notice" contenteditable="true" spellcheck="false" role="textbox" aria-multiline="true" aria-label="알림장"></ol></div>
+    <div class="nt-foot"><select id="nt-hist" onchange="ntPick(this)" aria-label="저장한 알림장"></select><button onclick="ntCopy()" id="nt-copy">📋 복사</button><button class="main" onclick="ntSave()" id="nt-save">💾 저장</button></div>
   </section>
   <section class="card tool-card" data-card="scores" id="sc-card">
     <p class="label">📊 성적 알리미</p>
@@ -994,10 +1005,10 @@
       <li><b>화이트보드</b> ✏️ 펜을 누르면 색과 굵기를 골라 그려요. T 글상자는 누른 뒤 보드(사진 위도 돼요)를 클릭해 써요. 사진은 복사해서 Ctrl+V(또는 끌어다 놓기). 옮기기에서 사진·글상자·펜 선을 끌어 옮기고, 오른쪽 아래 파란 점으로 크기를 바꾸고(글상자는 글씨도 같이 커져요), 오른쪽 위 ✕나 Delete로 지워요. 빈 곳에서 끌어 네모를 그리면 그 안에 통째로 들어온 것이 함께 골라지고(조금 걸친 건 빠져요), Shift를 누른 채 여러 개를 눌러도 골라져요. '묶기'로 한 덩어리로 묶어요('풀기'로 다시 나눠요). 글상자는 두 번 클릭하면 고치고, 글상자를 고르면 위에 나오는 Tt로 글씨 크기·색을 바꿔요. 여러 개나 묶음은 점선 상자 오른쪽 아래 파란 점으로 한꺼번에 크기를 바꿔요. ↶나 Ctrl+Z로 되돌려요. 제목 줄 오른쪽 1~4 버튼으로 화이트보드를 4개까지 따로 써요.</li>
       <li><b>시간표</b> 설정 → 시간표에서 연간시간표 파일(한글·워드·PDF)과 시정표를 넣으면, 지금 몇 교시인지와 다음 시간을 알려 줘요. 표에 없는 주는 '매주 기본 시간표'를 써요.</li>
       <li><b>보드 카드</b> 제목을 끌어 옮기고, 오른쪽 아래 모서리로 크기를 바꿔요. 옮긴 자리와 크기는 앱을 껐다 켜도 그대로예요. ✕를 누르면 보드에서 닫히고 아래쪽 바로 들어가요. 닫아도 적어 둔 내용은 남아요. 제목 줄 맨 오른쪽 세 버튼 중 첫 번째(네모에서 화살표가 나가는 모양)를 누르면 카드가 따로 창으로 떨어져요. 그 창을 다른 모니터(TV)로 끌어 놓고 최대화하면 학생 화면에는 그 카드만 크게 보여요. 그 창을 닫거나 같은 버튼을 다시 누르면 보드로 돌아와요. 떼어 낸 자리배치에서 별(선생님 모드)을 누르면 선생님 모드는 원래 보드 창에 떠서 학생들에게 안 보여요.</li>
-      <li><b>아래쪽 바</b> 보드에서 닫은 카드가 들어가요. 누르면 보드에 다시 나와요. 버튼을 옆으로 끌어 순서를 바꿀 수 있어요. 자주 안 쓰는 버튼은 오른쪽 끝 '서랍'을 눌러 아래 목록에서 골라 넣어 두면 서랍 안에서 꺼내 써요.</li>
+      <li><b>아래쪽 바</b> 모든 카드 버튼이 늘 있어요. 누르면 보드에 띄우고, 한 번 더 누르면 내려요. 보드에 떠 있는 카드는 아이콘에 테두리와 아래 점이 생겨요. 메모·사진은 버튼 오른쪽 위 +를 누르면 한 장 더 생겨요. 버튼을 옆으로 끌어 순서를 바꿀 수 있어요. 자주 안 쓰는 버튼은 오른쪽 끝 '서랍'을 눌러 아래 목록에서 골라 넣어 두면 서랍 안에서 꺼내 써요.</li>
       <li><b>학급 온도계</b> +1°, +5°로 반 온도를 올리고 −1°로 내려요. 연필 버튼에서 5°마다 보상을 쓸 수 있어요(비워 둬도 돼요). 카드에는 다음 보상(예: 10°가 되면 ○○)이 나오고, 올릴 땐 올라가는 소리, 내릴 땐 내려가는 소리가 나요. 보상 온도를 넘거나 100°가 되면 소리와 함께 축하해요. ↻는 0°로 되돌려요.</li>
       <li><b>즐겨찾기</b> '+ 링크'로 자주 가는 주소를 넣고, 누르면 새 창으로 열려요. '+ 폴더'로 폴더를 만들고, 폴더를 연 채 '+ 링크'를 누르면 그 폴더에 들어가요. '✎ 고치기'를 켜면 이름·주소·폴더를 바꾸거나 지울 수 있어요.</li>
-      <li><b>알림장</b> 칠판처럼 생긴 카드에 분필 글씨로 알림장을 써요. Enter를 치면 다음 번호, 날짜는 늘 오늘이에요. Tt에서 글씨 크기와 분필 색을 바꾸고 ⛶로 크게 띄워요.</li>
+      <li><b>알림장</b> 칠판처럼 생긴 카드에 알아보기 쉬운 글씨로 알림장을 써요. Enter를 치면 다음 번호, 날짜는 오늘이에요. '📋 복사'를 누르면 날짜와 번호가 붙은 채로 복사돼서 다른 곳에 그대로 붙여 넣을 수 있어요(직접 골라 Ctrl+C 해도 번호가 붙어요). '💾 저장'은 날짜별로 저장하고, '지난 알림장 보기'에서 그날 것을 다시 불러와요. '＋ 오늘 새로 쓰기'로 빈 알림장을 시작해요. Tt에서 글씨 크기와 분필 색을 바꾸고 ⛶로 크게 띄워요.</li>
       <li><b>성적 알리미</b> '✎ 점수 넣기'에서 평가 이름·만점과 학생마다 점수를 넣어요(엑셀에서 점수 한 줄을 복사해 첫 칸에 붙여넣으면 아래로 채워져요). 카드에는 이름만 보이고, 이름을 누르면 그 학생 점수만 크게 나와요. 한 번 본 학생은 흐리게 바뀌어요. 점수도 다른 내용처럼 이 컴퓨터(로그인하면 서버)에 저장돼요.</li>
       <li><b>받아쓰기</b> '📂 급수 파일'로 받아쓰기 급수표(한글·워드·PDF·txt)를 넣으면 급마다 문장을 찾아요. 급을 고르고 '▶ 읽기'를 누르면 "1번" 다음 문장을 반복 횟수만큼 읽고, 간격만큼 기다렸다 다음 문제로 넘어가요. 문장은 '문장 보기'를 켜야 화면에 나와요. ✎에서 찾은 문장을 확인하고 고치거나 직접 쓸 수 있어요. 목소리는 컴퓨터에 깔린 한국어 음성을 써요.</li>
       <li><b>QR 만들기</b> 칸에 주소나 글을 넣으면 바로 QR이 생겨요. 자주 쓰는 건 '☆ 저장'으로 이름을 붙여 보관함에 넣고, 오른쪽 아래 '보관함'에서 눌러 바로 띄워요. ⛶ 전체 화면으로 크게 띄워 학생들이 찍게 하세요. 인터넷 없이 이 컴퓨터에서 만들어요.</li>
@@ -1461,7 +1472,7 @@ const CARDS = [["topic", "✏️ 오늘의 주제", "board", "2", [340, 200]], [
   ["photo", "🖼️ 사진", "popup", "1", [200, 170]], ["timer", "⏱️ 타이머", "popup", "1", [240, 240]], ["picker", "🎲 뽑기", "popup", "1", [300, 260]],
   ["whiteboard", "🖍️ 화이트보드", "popup", "4", [420, 320]], ["dust", "😷 미세먼지", "board", "1", [260, 270]], ["noise", "🔉 소음 측정", "popup", "1", [240, 270]],
   ["thermo", "🌡️ 학급 온도계", "popup", "1", [240, 260]], ["qr", "🔳 QR 만들기", "popup", "1", [240, 280]],
-  ["links", "🔖 즐겨찾기", "popup", "1", [260, 240]], ["notice", "📋 알림장", "popup", "2", [340, 260]],
+  ["links", "🔖 즐겨찾기", "popup", "1", [260, 240]], ["notice", "📋 알림장", "popup", "2", [340, 320]],
   ["scores", "📊 성적 알리미", "popup", "2", [320, 280]], ["dictation", "🗣️ 받아쓰기", "popup", "1", [300, 300]]];
 const minOf = k => { const m = CARDS.find(c => c[0] === k)[4]; return k === "rules" ? [m[0], Math.max(m[1], rulesNeed())] : m; };
 function rulesNeed() { // 규칙이 스크롤 없이 다 보이는 카드 높이(px)
@@ -1647,10 +1658,18 @@ function applyLayout() {
     const c = card(k), l = lay(k);
     c.style.order = i; c.dataset.size = l.size;
     c.hidden = !pops[k] && l.mode !== "board";
-    if (l.mode === "popup" || MULTI[k]) { // 메모·사진 버튼은 늘 있음 (여러 장 띄우기)
+    if (!extras.includes(k)) { // 버튼은 늘 있음. 누르면 보드에 띄우기 ↔ 내리기, 메모·사진은 오른쪽 위 +로 한 장 더
       const b = document.createElement("button"), [icon, ...label] = name.split(" "), ic = document.createElement("i");
       ic.textContent = icon; b.append(ic, label.join(" ")); b.dataset.card = k;
-      b.onclick = () => { if (dockDragged) return; showCard(k); document.getElementById("drawer").hidePopover(); };
+      b.classList.toggle("shown", l.mode === "board" || !!pops[k]);
+      b.title = l.mode === "board" ? "누르면 보드에서 내려요" : "누르면 보드에 띄워요";
+      b.onclick = () => { if (dockDragged) return; toggleCard(k); document.getElementById("drawer").hidePopover(); };
+      if (MULTI[k]) {
+        const add = document.createElement("span");
+        add.className = "dock-add"; add.textContent = "+"; add.title = "하나 더 띄우기"; add.setAttribute("role", "button");
+        add.onclick = e => { e.stopPropagation(); addCard(k); document.getElementById("drawer").hidePopover(); };
+        b.append(add);
+      }
       (drawer.includes(k.split("-")[0]) ? dIn : launch).append(b);
     }
   });
@@ -1663,7 +1682,7 @@ function applyLayout() {
 // 아래쪽 바 버튼을 옆으로 끌면 순서가 바뀜 (조금만 움직이면 그냥 누르기)
 document.getElementById("launch").addEventListener("pointerdown", e => {
   const b = e.target.closest("button"), launch = e.currentTarget;
-  if (!b || e.button) return;
+  if (!b || e.button || e.target.closest(".dock-add")) return;
   const sx = e.clientX;
   let moved = false;
   const move = ev => {
@@ -1689,6 +1708,12 @@ function resetPlaces() {
   if (!confirm("카드 자리와 크기를 처음처럼 되돌릴까요? 적어 둔 내용은 그대로예요.")) return;
   for (const k in layout) { delete layout[k].rect; delete layout[k].locked; } // locked: 예전 📌 고정 값 정리
   saveLayout(); applyLayout();
+}
+function toggleCard(k) {
+  if (pops[k]) return pops[k].w.focus(); // 다른 창으로 뗀 카드는 그 창을 앞으로
+  if (lay(k).mode !== "board") return showCard(k);
+  if (document.fullscreenElement === card(k)) document.exitFullscreen().catch(() => {});
+  setLayout(k, { mode: "popup" });
 }
 function showCard(k) { // 아래쪽 바에서 누르면 보드에 바로 맨 앞으로
   if (pops[k]) return pops[k].w.focus();
@@ -2985,8 +3010,50 @@ function thEdit() { // 5°~100° 보상 쓰기. 비워 둔 온도는 보상 없�
 }
 thTicks(); thShow(thShown); thText(); thCard.classList.toggle("full", thermo.t >= 100);
 
-// ───── 알림장: 날짜는 늘 오늘
-document.getElementById("nt-date").textContent = new Date().toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "long" }) + " 알림장";
+// ───── 알림장: 날짜는 오늘(저장한 알림장을 불러오면 그 날짜). 저장은 날짜별로 notice-hist = { "2026-11-22": html }
+const ntEl = document.querySelector('.note[data-key="notice"]');
+let ntHist = {}, ntDay = localStorage.getItem("notice-day") || iso(new Date());
+const ntLabel = d => new Date(d + "T00:00").toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "long" });
+function ntDraw() {
+  $s("nt-date").textContent = ntLabel(ntDay) + " 알림장";
+  $s("nt-hist").replaceChildren(h("option", { value: "" }, "지난 알림장 보기"), h("option", { value: "new" }, "＋ 오늘 새로 쓰기"),
+    ...Object.keys(ntHist).sort().reverse().map(d => h("option", { value: d }, ntLabel(d) + (d === ntDay ? " (지금)" : ""))));
+}
+const ntLines = lis => lis.map(li => li.textContent.trim()).filter(Boolean);
+const ntText = lis => ntLines(lis).map((t, i) => `${i + 1}. ${t}`).join("\n");
+const ntHtml = lis => `<ol>${ntLines(lis).map(t => `<li>${t.replace(/&/g, "&amp;").replace(/</g, "&lt;")}</li>`).join("")}</ol>`;
+function ntCopyTo(cb, lis, withDate) { // 다른 곳에 붙여 넣어도 날짜·번호가 그대로
+  const date = $s("nt-date").textContent;
+  cb.setData("text/plain", (withDate ? date + "\n" : "") + ntText(lis));
+  cb.setData("text/html", (withDate ? `<p><b>${date}</b></p>` : "") + ntHtml(lis));
+}
+function ntCopy() {
+  const lis = [...ntEl.querySelectorAll("li")], on = ev => { ev.preventDefault(); ntCopyTo(ev.clipboardData, lis, true); };
+  document.addEventListener("copy", on, { once: true }); document.execCommand("copy");
+  const b = $s("nt-copy"); b.textContent = "복사했어요"; setTimeout(() => b.textContent = "📋 복사", 1500);
+}
+// 직접 골라서 Ctrl+C 해도 번호가 붙음. 전체를 고르면 날짜도 같이
+ntEl.addEventListener("copy", e => {
+  const sel = getSelection(), all = [...ntEl.querySelectorAll("li")], lis = all.filter(li => sel.containsNode(li, true));
+  if (lis.length < 2) return;
+  e.preventDefault(); ntCopyTo(e.clipboardData, lis, lis.length === all.length);
+});
+function ntSave() {
+  ntHist[ntDay] = ntEl.innerHTML; jset("notice-hist", ntHist); ntDraw();
+  const b = $s("nt-save"); b.textContent = "저장했어요"; setTimeout(() => b.textContent = "💾 저장", 1500);
+}
+async function ntPick(sel) {
+  const v = sel.value; sel.value = "";
+  if (!v || v === ntDay) return;
+  const dirty = ntLines([...ntEl.querySelectorAll("li")]).length && ntEl.innerHTML !== ntHist[ntDay];
+  if (dirty && !await seConfirm(card("notice"), "지금 알림장은 저장하지 않았어요. 그래도 바꿀까요?", "바꾸기")) return;
+  ntDay = v === "new" ? iso(new Date()) : v;
+  ntEl.innerHTML = v === "new" ? "" : ntHist[v];
+  if (ntDay === iso(new Date())) localStorage.removeItem("notice-day"); else localStorage.setItem("notice-day", ntDay);
+  ntEl.dispatchEvent(new Event("input")); ntDraw();
+}
+try { ntHist = JSON.parse(localStorage.getItem("notice-hist")) || {}; } catch (e) {}
+setTimeout(ntDraw); // h는 아래에서 만들어짐
 
 // ───── 성적 알리미: 수행평가 점수를 한 명씩 눌러 보여 줌. 카드에는 이름만, 점수는 누른 학생 것만 크게
 // scores = { tests: [{ id, name, max, s: { "1번 김하늘": "18" } }], cur }
