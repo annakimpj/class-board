@@ -695,21 +695,20 @@
   .ch-tb thead th input { width: 64px; font: 15px "Wanted Sans", "Malgun Gothic", sans-serif; text-align: center; border: 1.5px solid var(--line); border-radius: 6px; padding: 2px 3px; background: #fff; color: var(--ink); }
   .ch-tb thead th .x { border: 0; background: none; color: #adb5bd; padding: 0 0 0 2px; font-size: 12px; cursor: pointer; }
   .tool-card .ch-tb thead .add button { width: 26px; height: 26px; padding: 0; border-radius: 50%; font-size: 16px; }
-  .ch-tb .n { position: sticky; left: 0; z-index: 1; width: 36px; color: var(--muted); font-size: 14px; } .ch-tb .nm { position: sticky; left: 36px; z-index: 1; text-align: left; white-space: nowrap; min-width: 80px; } .ch-tb tbody .nm { font-size: 26px; }
+  .ch-tb .n { position: sticky; left: 0; z-index: 1; width: 36px; color: var(--muted); font-size: 14px; } .ch-tb .nm { position: sticky; left: 36px; z-index: 1; text-align: left; white-space: nowrap; min-width: 80px; } .ch-tb tbody .nm { font-size: 22px; }
   .ch-tb thead .n, .ch-tb thead .nm { z-index: 3; }
-  .ch-tb td.ck { min-width: 64px; cursor: pointer; font-size: 26px; font-weight: 700; color: #fff; } .ch-tb td.ck:hover { background: var(--card); } .ch-tb td.ck.on { background: var(--accent); }
+  .ch-tb td.ck { min-width: 64px; cursor: pointer; font-size: 22px; font-weight: 700; color: #fff; } .ch-tb td.ck:hover { background: var(--card); } .ch-tb td.ck.on { background: var(--accent); }
   .ch-tb tfoot td { position: sticky; bottom: 0; background: #fff8f0; color: #e8590c; font-size: 15px; border-top: 1.5px solid var(--line); } .ch-tb tfoot .nm { font-size: 13px; }
   /* 토너먼트: 라운드마다 한 줄, 이긴 사람을 누르면 다음 라운드로 */
   [data-card="bracket"] { --accent: #f08c00; --card: #fff4e6; --line: #ffd8a8; }
   .br-view { position: relative; flex: 1; min-height: 0; overflow: auto; display: flex; gap: 40px; justify-content: safe center; padding: 2px 2px 6px; font-family: "Wanted Sans", "Malgun Gothic", sans-serif; user-select: none; }
   .br-view:empty::before { content: "'👥 참가자 고르기'에서 학생을 고르면 대진표를 짜 줘요."; margin: auto; color: var(--muted); font-size: 14px; }
-  .br-col { flex: none; display: flex; flex-direction: column; min-width: 190px; max-width: 300px; } .br-col h5 { margin: 0 0 6px; text-align: center; font-size: 18px; font-weight: 600; color: var(--accent); }
-  .br-col.right .br-p { text-align: right; } .br-col.right .br-p i { float: right; margin: 0 0 0 6px; }
-  .br-final { display: flex; flex-direction: column; gap: 10px; align-items: stretch; } .br-col.mid { min-width: 210px; }
+  .br-col { flex: none; display: flex; flex-direction: column; min-width: 150px; max-width: 240px; } .br-col h5 { margin: 0 0 6px; text-align: center; font-size: 18px; font-weight: 600; color: var(--accent); }
+  .br-final { display: flex; flex-direction: column; gap: 10px; align-items: stretch; } .br-col.mid { min-width: 170px; }
   .br-ms { flex: 1; display: flex; flex-direction: column; justify-content: space-around; gap: 8px; }
   .br-m { position: relative; z-index: 1; background: #fff; border: 2px solid var(--line); border-radius: 10px; overflow: hidden; }
-  .br-p { display: block; width: 100%; border: 0; background: none; text-align: left; padding: 6px 14px; font: clamp(28px, 2.6cqw, 46px) "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--ink); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .tool-card .br-m .br-p { border: 0; border-radius: 0; margin: 0; background: #fff; font-size: clamp(28px, 2.6cqw, 46px); line-height: 1.25; } .tool-card .br-m .br-p + .br-p { border-top: 1.5px solid var(--line); }
+  .br-p { display: block; width: 100%; border: 0; background: none; text-align: center; padding: 5px 12px; font: 22px "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--ink); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tool-card .br-m .br-p { border: 0; border-radius: 0; margin: 0; background: #fff; font-size: 22px; line-height: 1.3; text-align: center; } .tool-card .br-m .br-p + .br-p { border-top: 1.5px solid var(--line); }
   .tool-card .br-m .br-p:hover:not(:disabled) { background: var(--card); } .tool-card .br-m .br-p.win { background: var(--accent); }
   .br-p.win { background: var(--accent); color: #fff; font-weight: 700; }
   .br-lines { position: absolute; left: 0; top: 0; pointer-events: none; overflow: visible; }
@@ -717,7 +716,7 @@
   .br-p i { font-style: normal; font-size: .55em; color: var(--muted); margin-right: 6px; } .br-p.win i { color: #fff3bf; }
   .br-p.lose { color: #adb5bd; text-decoration: line-through; } .br-p.wait, .br-p.bye { color: #ced4da; cursor: default; }
   .br-champ { flex: none; text-align: center; padding: 14px; border-radius: 16px; background: var(--card); border: 2px dashed var(--line); }
-  .br-champ .cup { font-size: 46px; line-height: 1.2; } .br-champ b { display: block; font-size: 30px; color: var(--ink); } .br-champ small { color: var(--muted); font-size: 13px; }
+  .br-champ .cup { font-size: 46px; line-height: 1.2; } .br-champ b { display: block; font-size: 24px; color: var(--ink); } .br-champ small { color: var(--muted); font-size: 13px; }
   .br-champ.done { border-style: solid; border-color: var(--accent); animation: rw-pop .7s ease-out; } .br-champ.done .cup { animation: al-ring .6s ease-in-out 3; }
   .br-foot { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; } .br-foot .sp { flex: 1; } .br-info { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--muted); }
   .tool-card .br-foot button { font-size: 13px; padding: 4px 10px; border-radius: 8px; }
@@ -726,6 +725,11 @@
   .br-pick-bar { display: flex; gap: 4px; align-items: center; margin-bottom: 8px; font-size: 13px; color: var(--muted); } .tool-card .br-pick-bar button { font-size: 13px; padding: 2px 10px; border-radius: 8px; }
   /* 우리반 점수: 학생 카드(번호·이름·점수·픽셀 아바타), 고르기, 칭찬해요·노력해요 */
   [data-card="reward"] { --accent: #3b82f6; --card: #eef4ff; --line: #cddcfb; }
+  .kid-code { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin: 4px 0 8px; font-size: 14px; } .kid-code b { font: 700 40px "Wanted Sans", "Malgun Gothic", sans-serif; letter-spacing: .12em; color: var(--accent); }
+  .kid-url { display: flex; gap: 6px; align-items: center; font-size: 14px; margin-bottom: 8px; } .kid-url code { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; background: #fff; border: 1.5px solid var(--line); border-radius: 6px; padding: 4px 8px; }
+  .kid-tb { width: 100%; border-collapse: collapse; font-size: 18px; } .kid-tb th { font-size: 13px; font-weight: normal; color: var(--muted); text-align: left; }
+  .kid-tb td, .kid-tb th { border-bottom: 1px solid var(--line); padding: 4px 6px; } .kid-tb .pin { font-weight: 700; font-size: 22px; letter-spacing: .1em; font-variant-numeric: tabular-nums; }
+  .tool-card .kid-tb button, .tool-card .kid-acts button, .tool-card .kid-url button { font-size: 13px; padding: 2px 10px; border-radius: 8px; } .kid-acts { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
   .rw-bar, .rw-foot { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; } .rw-bar .sp, .rw-foot .sp { flex: 1; }
   .tool-card .rw-bar button { font-size: 13px; padding: 3px 10px; border-radius: 8px; }
   .rw-count { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--muted); }
@@ -755,7 +759,7 @@
   .rw-tile.sel { border-color: var(--accent); background: #f3f7ff; }
   .rw-tile.sel::after { content: "✓"; position: absolute; left: 8px; bottom: 8px; width: 20px; height: 20px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 13px; display: grid; place-items: center; }
   .rw-tile .n { font-size: 15px; color: var(--muted); line-height: 1; }
-  .rw-tile .nm { display: block; font-size: 26px; line-height: 1.2; color: var(--ink); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 62%; }
+  .rw-tile .nm { display: block; font-size: 22px; line-height: 1.2; color: var(--ink); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 62%; }
   .rw-pt { position: absolute; left: 8px; bottom: 34px; display: flex; align-items: center; gap: 3px; padding: 1px 9px 1px 6px; border-radius: 999px; background: var(--accent); color: #fff; font-size: 16px; font-weight: 700; }
   .rw-tile.sel .rw-pt { bottom: 34px; }
   .rw-av { position: absolute; right: 6px; bottom: 5px; width: 55px; height: 72px; border-radius: 8px; overflow: hidden; } .rw-av svg { width: 100%; height: 100%; display: block; }
@@ -1306,6 +1310,7 @@
     <button class="danger" onclick="resetEverything()">모든 데이터 초기화</button>
   </section>
 </div>
+<script src="avatar.js"></script>
 <script>
 // 다른 창(듀얼 모니터)으로 뗀 카드: { 카드: { w: 창, c: 카드, mark: 보드에 돌아올 자리, np: 글자 도구 창 } }
 // 카드를 통째로 그 창으로 옮김. 그래서 id·선택자로 찾을 때 뗀 창도 같이 찾고, 키보드·붙여넣기·전체 화면 알림도 그 창에 똑같이 붙임
@@ -3524,97 +3529,13 @@ setInterval(ckDraw, 1000); ckDraw();
 // ───── 우리반 점수: 학생마다 점수와 픽셀 아바타. 머리·옷·장신구·배경은 점수로 사서 꾸밈 (가격은 정해져 있음). 칭찬해요·노력해요는 교사가 고친 목록에서
 // reward = { unit, reasons: [{ t, pt }], st: { "1번 김하늘": { pt, av: { skin, hair(색) }, own: [산 물건 id], wear: { hair, top, bottom, shoes, head, face, neck, bg } } }, log: [{ at, who: [학생], d, why }] }
 // 나중에 학생이 직접 꾸미는 사이트도 이 자료(로그인하면 서버에도 저장)를 그대로 쓰면 됨
-// ───── 픽셀 아바타 (24×32, 사람 모양). 그림은 "글자x0,y0,x1,y1" 네모 칠하기로 적음. ~ 는 좌우 대칭도 함께 칠함
-const AV_SKIN = [["#ffe3cf", "#f2c4a6"], ["#f8cfa5", "#e3ad7f"], ["#d9a074", "#bd8156"], ["#a26a45", "#82512f"]];
-const AV_HAIR = [["#2e2b36", "#1a1820", "#55516a"], ["#5b3a29", "#3d2619", "#86604a"], ["#9a6532", "#74491f", "#c08a52"], ["#ecc45c", "#c99c33", "#f8e3a0"], ["#c9463c", "#972f28", "#ec7a6f"], ["#3f63c8", "#2a4590", "#7393ea"], ["#ec8fb8", "#cc6795", "#f8c2da"], ["#e9ecef", "#bfc5cc", "#ffffff"]];
-const AV_FIX = { k: "#2b2430", e: "#2b2430", w: "#ffffff", c: "#ffb1b5", m: "#b8504a", g: "#ffd43b", G: "#f08c00", r: "#e03131", R: "#a61e1e", d: "#343a40", D: "#868e96", l: "#a5d8ff", n: "#ffffff" };
-const AV_BODY = "s6,4,17,4 s5,5,18,5 s4,6,19,14 s5,15,18,15 s6,16,17,16 ~s3,10,3,12 ~S3,11 ~e7,10,8,12 w8,10 w16,10 ~c5,13,6,13 m11,14,12,14 S10,17,13,17 s7,18,16,23 ~s5,18,6,25 ~s8,25,10,28";
-// 슬롯 그리는 순서: 뒷머리 → 몸 → 하의 → 신발 → 상의 → 목 → 앞머리 → 얼굴 → 머리 장신구
-const AV_ITEMS = [
-  // 헤어 (b: 뒷머리, f: 앞머리)
-  { id: "h-short", slot: "hair", name: "짧은 머리", price: 0, f: "h8,2,15,2 h6,3,17,3 ~h4,4,5,4 h5,4,18,4 h4,5,19,7 h4,8,19,8 H5,8,8,8 H15,8,18,8 s10,8 s13,8 ~h3,6,3,10 ~H4,9,4,10 j9,3,11,3 j7,4,8,4" },
-  { id: "h-bob", slot: "hair", name: "단발", price: 0, b: "h3,5,20,17", f: "h8,2,15,2 h6,3,17,3 h5,4,18,4 h4,5,19,8 h4,9,19,9 s8,9 s12,9 s15,9 ~H5,9,6,9 ~h2,7,4,16 ~H3,16,5,17 ~h5,10,5,15 ~H2,12,2,16 j9,3,11,3 j7,4,8,5" },
-  { id: "h-long", slot: "hair", name: "긴 머리", price: 7, b: "h3,5,20,23 ~H2,9,2,22 ~H3,23,5,24", f: "h8,2,15,2 h6,3,17,3 h5,4,18,4 h4,5,19,8 h4,9,19,9 s9,9 s14,9 ~H5,9,6,9 ~h2,7,4,18 ~h5,10,5,13 ~H2,14,3,18 j9,3,11,3 j7,4,8,5" },
-  { id: "h-pony", slot: "hair", name: "포니테일", price: 6, b: "h19,6,22,8 h20,9,22,15 h19,16,21,18 H21,10,22,16 r19,6,20,7", f: "h8,2,15,2 h6,3,17,3 h5,4,18,4 h4,5,19,8 h4,9,8,9 h15,9,19,9 h10,9,13,9 s11,9 ~H4,9,5,9 ~h3,6,3,11 j9,3,11,3 j7,4,8,5" },
-  { id: "h-twin", slot: "hair", name: "양갈래", price: 8, b: "~h0,7,3,9 ~h0,10,2,19 ~H0,15,1,20 ~r2,6,3,7", f: "h8,2,15,2 h6,3,17,3 h5,4,18,4 h4,5,19,8 h4,9,19,9 s8,9 s11,9,12,9 s15,9 ~H4,9,5,9 ~h3,6,3,11 j9,3,11,3 j7,4,8,5" },
-  { id: "h-bun", slot: "hair", name: "똥머리", price: 8, f: "h9,0,14,0 h8,1,15,1 H9,2,14,2 j10,0,11,0 h7,3,16,3 h5,4,18,4 h4,5,19,8 h4,9,19,9 s9,9 s14,9 ~H5,9,6,9 ~h3,6,3,11 j8,4,10,4" },
-  { id: "h-spiky", slot: "hair", name: "뾰족 머리", price: 7, f: "h7,0 h11,0 h15,0 h6,1,8,1 h10,1,12,1 h14,1,16,1 h5,2,18,2 h4,3,19,7 ~h3,2 ~h3,4,3,9 h4,8,19,8 ~H5,8,7,8 H11,8,12,8 s9,8 s14,8 j8,2,9,2 j6,3,7,3" },
-  { id: "h-curly", slot: "hair", name: "곱슬 머리", price: 9, b: "~h2,6,4,15 ~H2,14,4,15", f: "h7,1,9,1 h11,1,12,1 h14,1,16,1 h5,2,18,2 h4,3,19,7 ~h3,3,3,10 ~h2,5,2,13 h4,8,19,8 ~H4,8,5,8 H9,8 H14,8 s7,8 s11,8,12,8 s16,8 ~j6,3,7,3 j11,2,12,2" },
-  // 상의 (full: 하의를 덮음)
-  { id: "t-tee", slot: "top", name: "티셔츠", price: 0, c: { t: "#f8f9fa", T: "#d5dbe1" }, p: "t7,18,16,23 s10,18,13,18 ~t5,18,6,20 ~T7,19,7,23 T8,23,15,23 ~T5,20,6,20" },
-  { id: "t-stripe", slot: "top", name: "줄무늬 티", price: 5, c: { t: "#ffffff", T: "#dee2e6", u: "#4c6ef5" }, p: "t7,18,16,23 s10,18,13,18 ~t5,18,6,20 u7,19,16,19 u7,21,16,21 ~u5,19,6,19 u8,23,15,23 ~T7,20 ~T7,22" },
-  { id: "t-hood", slot: "top", name: "후드티", price: 7, c: { t: "#74c0fc", T: "#4dabf7", u: "#a5d8ff" }, p: "T8,17,15,17 t7,18,16,23 T10,18,13,18 ~t5,18,6,23 ~T5,23,6,23 u9,21,14,22 n10,19 n13,19 n10,20 n13,20 ~T7,19,7,23" },
-  { id: "t-jacket", slot: "top", name: "노란 재킷", price: 8, c: { t: "#fcc419", T: "#e0a800", u: "#ffc9d6" }, p: "t7,18,16,23 u10,18,13,23 ~T9,18,9,20 ~t5,18,6,23 ~T5,23,6,23 ~T7,22,8,23 ~T7,19,7,21" },
-  { id: "t-uniform", slot: "top", name: "교복", price: 9, c: { t: "#364fc7", T: "#2b3f9e", u: "#ffffff" }, p: "t7,18,16,23 u10,18,13,19 ~u9,18 r11,19,12,22 ~t5,18,6,23 ~T5,23,6,23 ~T7,19,7,23 T8,23,15,23 g9,20 g9,22" },
-  { id: "t-dress", slot: "top", name: "원피스", price: 10, full: 1, c: { t: "#ff8fab", T: "#e0607e", u: "#ffffff" }, p: "t7,18,16,21 s10,18,13,18 u10,18,13,18 ~t5,18,6,19 t7,22,16,23 t6,24,17,25 t5,26,18,27 T5,27,18,27 ~T8,24 ~T11,25 u7,21,16,21" },
-  // 하의
-  { id: "b-jeans", slot: "bottom", name: "청바지", price: 0, c: { p: "#4f6fb3", P: "#3a5592" }, p: "p7,24,16,24 ~p8,25,10,28 ~P10,25,10,28 ~P8,28,10,28" },
-  { id: "b-shorts", slot: "bottom", name: "반바지", price: 5, c: { p: "#8b6b4a", P: "#6b5034" }, p: "p7,24,16,24 ~p8,25,10,26 ~P8,26,10,26" },
-  { id: "b-skirt", slot: "bottom", name: "치마", price: 6, c: { p: "#e8590c", P: "#c2410c" }, p: "p7,24,16,24 p7,25,16,25 p6,26,17,26 P6,26 P9,26 P12,26 P15,26 P17,26" },
-  { id: "b-pants", slot: "bottom", name: "체크 바지", price: 7, c: { p: "#6c757d", P: "#495057", u: "#868e96" }, p: "p7,24,16,24 ~p8,25,10,28 ~u8,26,10,26 ~u9,25,9,28 ~P8,28,10,28" },
-  // 신발
-  { id: "s-sneak", slot: "shoes", name: "운동화", price: 0, c: { o: "#ffffff", O: "#adb5bd" }, p: "~o7,29,10,29 ~O7,30,10,30" },
-  { id: "s-red", slot: "shoes", name: "빨간 구두", price: 5, c: { o: "#e03131", O: "#a61e1e" }, p: "~o7,29,10,29 ~O7,30,10,30 ~n8,29" },
-  { id: "s-boot", slot: "shoes", name: "장화", price: 6, c: { o: "#fab005", O: "#e67700" }, p: "~o8,27,10,29 ~o7,29 ~O7,30,10,30" },
-  { id: "s-brown", slot: "shoes", name: "갈색 구두", price: 6, c: { o: "#7a4b2a", O: "#4f2e17" }, p: "~o7,29,10,29 ~O7,30,10,30" },
-  // 장신구 (예전 장신구 이름 그대로: 이미 산 것은 그대로 가짐)
-  { id: "ribbon", slot: "head", name: "리본", price: 5, p: "r15,3 r17,3 r15,5 r17,5 R16,4 r14,4 r18,4" },
-  { id: "clip", slot: "head", name: "꽃핀", price: 5, p: "n16,5 n18,5 n17,4 n17,6 g17,5" },
-  { id: "bowtie", slot: "neck", name: "나비넥타이", price: 5, p: "~r9,18,10,18 ~r9,19 R11,18,12,18" },
-  { id: "glasses", slot: "face", name: "안경", price: 6, p: "~k6,9,9,9 ~k6,13,9,13 ~k6,10,6,12 ~k9,10,9,12 k10,10,13,10" },
-  { id: "scarf", slot: "neck", name: "목도리", price: 7, p: "r8,17,15,18 n9,17 n11,17 n13,17 R14,19,15,22 n14,20" },
-  { id: "hat", slot: "head", name: "모자", price: 7, p: "l6,1,17,1 l5,2,18,4 d5,4,18,4 d4,5,21,5 n10,2,12,3" },
-  { id: "sunglasses", slot: "face", name: "선글라스", price: 8, p: "~k6,9,9,9 ~k6,10,9,12 ~D7,10 k10,10,13,10" },
-  { id: "headphones", slot: "head", name: "헤드폰", price: 9, p: "D6,1,17,1 ~D4,2,5,3 ~D3,4,3,8 ~r2,9,4,12 ~R2,12,4,12" },
-  { id: "crown", slot: "head", name: "왕관", price: 10, p: "g7,0 g11,0,12,0 g16,0 g7,1,8,1 g10,1,13,1 g15,1,16,1 g7,2,16,3 G7,3,16,3 r9,2 l12,2 r14,2" },
-  // 배경
-  { id: "bg-none", slot: "bg", name: "없음", price: 0, p: "" },
-  { id: "bg-sky", slot: "bg", name: "하늘", price: 5, c: { a: "#a5d8ff", A: "#d0ebff", b: "#69db7c", B: "#40c057" }, p: "a0,0,23,15 A0,16,23,25 n3,5,7,6 n2,6 n16,9,20,10 n15,10 b0,26,23,31 B0,26,23,26 B4,29 B12,28 B19,30" },
-  { id: "bg-class", slot: "bg", name: "교실", price: 6, c: { a: "#fff4d6", A: "#2f6e4f", b: "#c08a52", B: "#9a6532" }, p: "a0,0,23,23 B1,3,22,15 A2,4,21,14 n4,6,7,6 n4,8,9,8 n13,11,18,11 n20,13 b0,24,23,31 B0,24,23,24 B0,28,23,28 B6,25,6,27 B17,29,17,31" },
-  { id: "bg-park", slot: "bg", name: "공원", price: 6, c: { a: "#c5f6fa", A: "#2b8a3e", b: "#8ce99a", B: "#7a4b2a" }, p: "a0,0,23,31 A0,6,4,13 A1,4,3,5 B2,14,2,22 A19,8,23,15 A20,6,22,7 B21,16,21,22 b0,23,23,31 A0,23,23,23 g11,2 g10,3,12,3 g11,4" },
-  { id: "bg-night", slot: "bg", name: "밤하늘", price: 8, c: { a: "#1c2541", A: "#3a506b" }, p: "a0,0,23,31 A0,24,23,31 g18,2,20,4 a17,2 a17,3 g3,3 g8,6 g21,9 g2,12 g14,1 g6,17 g22,15 n12,4 n4,8" },
-  { id: "bg-beach", slot: "bg", name: "바다", price: 8, c: { a: "#d0ebff", A: "#339af0", b: "#ffe8a3", B: "#1c7ed6" }, p: "a0,0,23,17 g19,2,21,4 A0,18,23,24 B0,20,23,20 B3,23,8,23 B15,22,20,22 n5,19 n17,21 b0,25,23,31 G4,28 G18,29" },
-  { id: "bg-street", slot: "bg", name: "거리", price: 10, c: { a: "#e7f5ff", A: "#f3c6c6", b: "#ced4da", B: "#868e96" }, p: "a0,0,23,31 A0,2,5,24 A18,4,23,24 B1,5,3,8 B1,12,3,15 B19,7,22,10 B19,13,22,16 n2,6 n20,8 b0,25,23,31 B0,25,23,25 n10,28,13,28 n4,29,7,29 n16,29,19,29" },
-];
-const AV_REQ = { hair: "h-short", top: "t-tee", bottom: "b-jeans", shoes: "s-sneak", bg: "bg-none" }; // 늘 입고 있는 슬롯 (없으면 기본)
-const avItem = id => AV_ITEMS.find(x => x.id === id);
-function avPaint(spec, set) {
-  if (spec) spec.split(" ").forEach(tok => {
-    const mir = tok[0] === "~", ch = tok[mir ? 1 : 0], [x0, y0, x1 = x0, y1 = y0] = tok.slice(mir ? 2 : 1).split(",").map(Number);
-    for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) { set(x, y, ch); if (mir) set(23 - x, y, ch); }
-  });
-}
-// av = { skin, hair }, wear = { hair, top, bottom, shoes, neck, face, head, bg }
-function avSvg(av, wear = {}) {
-  const w = { ...AV_REQ, ...wear }, [s, S] = AV_SKIN[av.skin] || AV_SKIN[0], [hc, H, j] = AV_HAIR[av.hair] || AV_HAIR[0];
-  const base = { ...AV_FIX, s, S, h: hc, H, j };
-  const it = sl => avItem(w[sl]) || avItem(AV_REQ[sl]);
-  const bg = [], ch = [];
-  const lay = (grid, spec, c) => { const pal = { ...base, ...c }; avPaint(spec, (x, y, k) => { if (x >= 0 && x < 24 && y >= 0 && y < 32 && pal[k]) (grid[y] ||= [])[x] = pal[k]; }); };
-  const bgI = it("bg"); lay(bg, bgI?.p, bgI?.c);
-  const hair = it("hair"), top = it("top");
-  lay(ch, hair.b); lay(ch, AV_BODY);
-  if (!top.full) lay(ch, it("bottom").p, it("bottom").c);
-  lay(ch, it("shoes").p, it("shoes").c); lay(ch, top.p, top.c);
-  for (const sl of ["neck"]) { const x = avItem(w[sl]); x && lay(ch, x.p, x.c); }
-  lay(ch, hair.f);
-  for (const sl of ["face", "head"]) { const x = avItem(w[sl]); x && lay(ch, x.p, x.c); }
-  const has = (x, y) => !!ch[y]?.[x];
-  const out = {}; // 바깥 테두리는 그림 밖(-1, 24, 32)까지 그려서 잘리지 않게
-  for (let y = -1; y <= 32; y++) for (let x = -1; x <= 24; x++) if (!has(x, y) && (has(x - 1, y) || has(x + 1, y) || has(x, y - 1) || has(x, y + 1))) (out[y] ||= {})[x] = AV_FIX.k;
-  let r = "";
-  const run = (row, y, x0, x1, grow) => { for (let x = x0; x <= x1;) { const c = row[x]; if (!c) { x++; continue; } let n = 1; while (x + n <= x1 && row[x + n] === c) n++; const a = grow && x === 0 ? -1 : x, b = grow && x + n === 24 ? 25 : x + n; r += `<rect x="${a}" y="${y}" width="${b - a}" height="1" fill="${c}"/>`; x += n; } };
-  bg.forEach((row, y) => { if (!row) return; run(row, y, 0, 23, 1); if (y === 0) run(row, -1, 0, 23, 1); if (y === 31) run(row, 32, 0, 23, 1); });
-  for (const y in out) run(out[y], +y, -1, 24);
-  ch.forEach((row, y) => row && run(row, y, 0, 23));
-  return `<svg viewBox="-1 -1 26 34" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`;
-}
+// 픽셀 아바타 그림(AV_…, avSvg)은 avatar.js (학생 화면 student.html과 같이 씀)
 const RW_REASONS = [{ t: "숙제를 잘했어요", pt: 1 }, { t: "발표를 잘했어요", pt: 1 }, { t: "친구를 도와줬어요", pt: 2 }, { t: "정리를 잘했어요", pt: 1 }, { t: "수업 시간에 떠들었어요", pt: -1 }, { t: "숙제를 안 했어요", pt: -1 }];
 let reward = { unit: "포인트", reasons: RW_REASONS, st: {}, log: [], prices: {} }; // prices: { 물건 id: 교사가 정한 가격 }
 try { reward = Object.assign(reward, JSON.parse(localStorage.getItem("reward")) || {}); } catch (e) {}
 let rwPick = new Set();
 const rwCard = document.getElementById("rw-card");
-const rwStore = () => { try { localStorage.setItem("reward", JSON.stringify(reward)); } catch (e) {} };
+const rwStore = () => { try { localStorage.setItem("reward", JSON.stringify(reward)); } catch (e) {} setTimeout(kidSoon); }; // 학생 화면에도 (아래 로그인·동기화 쪽)
 const avPrice = it => reward.prices?.[it.id] ?? it.price;
 const rwHash = t => [...t].reduce((a, c) => a * 31 + c.charCodeAt(0) >>> 0, 7);
 function rwSt(p) { // 처음 보는 학생은 이름으로 피부·머리색을 정해 둠 (나중에 바꿀 수 있어요)
@@ -3716,7 +3637,8 @@ function rwSettings() {
   const bulk = h("input", { type: "number", min: "0", max: "999", value: "5", "aria-label": "가격" });
   const SAMPLE = { skin: 0, hair: 1 };
   const draw = () => {
-    const tabs = h("div", { class: "rw-tabs" }, [["reason", "칭찬·노력 목록"], ["shop", "가게 가격"]].map(([k, t]) => h("button", { class: rwSetTab === k ? "on" : "", onclick: () => { rwSetTab = k; draw(); } }, t)));
+    const tabs = h("div", { class: "rw-tabs" }, [["reason", "칭찬·노력 목록"], ["shop", "가게 가격"], ["kids", "학생 입장"]].map(([k, t]) => h("button", { class: rwSetTab === k ? "on" : "", onclick: () => { rwSetTab = k; draw(); } }, t)));
+    if (rwSetTab === "kids") return body.replaceChildren(tabs, kidPanel(rwCard, draw));
     if (rwSetTab === "reason") {
       body.replaceChildren(tabs, h("label", { class: "rw-h rw-unitrow" }, "점수 단위", unit), rows,
         h("button", { class: "rw-add", onclick: () => { list.push({ t: "", pt: 1 }); drawRows(); rows.querySelectorAll("input")[rows.querySelectorAll("input").length - 2]?.focus(); } }, "+ 이유 추가"));
@@ -3764,7 +3686,6 @@ function rwDressPick(btn) { // 한 명을 골라 두었으면 바로, 아니면 
   popAt(btn, m, true);
 }
 // 아바타 꾸미기: 피부·머리색은 마음대로, 머리 모양·옷·장신구·배경은 점수로 사서 입고 벗기
-const AV_TABS = [["hair", "헤어"], ["top", "상의"], ["bottom", "하의"], ["shoes", "신발"], ["acc", "장신구"], ["bg", "배경"]];
 let rwTab = "hair";
 function rwAvatar(p) {
   rwCard.querySelector(".card-ed")?.remove();
@@ -6128,7 +6049,7 @@ async function fbLoad() { // 필요할 때만 불러옴 (로그인 안 하면 �
   const a = app.initializeApp(FB_CONFIG);
   fb = { ...auth, ...fs, auth: auth.getAuth(a), db: fs.getFirestore(a) };
   fb.onAuthStateChanged(fb.auth, u => {
-    fbUser = u; syncShow();
+    fbUser = u; syncShow(); kidListen();
     if (!u) return lsDel("sync-uid");
     if (lsGet("sync-uid") !== u.uid) { lsDel("sync-at"); lsSet("sync-dirty", "1"); } // 다른 계정이면 처음부터 맞춤
     lsSet("sync-uid", u.uid);
@@ -6224,6 +6145,111 @@ async function syncPull(d) {
   for (const k of WB_KEYS) if (!have.has(k)) await idb("readwrite", s => s.delete(k));
   lsSet("sync-at", String(d.updatedAt)); lsDel("sync-dirty");
   location.reload();
+}
+// ───── 학생 화면(student.html): 반 코드 + 번호 + 비밀번호 4자리로 들어와 자기 아바타를 꾸미고 점수로 물건을 바로 삼
+// 서버: classes/{반 코드} = { owner(교사 uid), unit, prices, at }
+//       classes/{반 코드}/kids/{번호}-{비밀번호} = { p, n, name, pt, av, wear, own, buys: [{ id, at }], kidAt }
+//   점수·이름은 교사 보드만 씀. 학생은 av·wear·own·buys·kidAt만 바꿀 수 있음(서버 규칙). 학생이 산 것(buys)은 교사 보드가 받아서 점수를 빼고 비움
+//   비밀번호는 reward.cls.pins에 (교사가 보고 새로 바꿀 수 있음). 문서 이름에 비밀번호가 들어 있어서 알아야만 열림
+const KID_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // 헷갈리는 0·O·1·I 빼고
+const kidUrl = () => new URL("student.html", location.href).href;
+const kidKey = p => `${seNum(p) || 0}-${reward.cls.pins[p]}`;
+const kidRef = key => fb.doc(fb.db, "classes", reward.cls.code, "kids", key);
+let kidSeen = {}, kidT = 0, kidUnsub = null, kidClsSent = "", kidReady = false; // kidReady: 서버 것을 한 번 받은 뒤에만 올림 (학생이 바꾼 걸 덮지 않게)
+const kidBusy = new Set();
+function kidPins() { // 명단 학생마다 비밀번호 (없는 학생만 새로 만듦)
+  const ppl = people(), pins = reward.cls.pins ||= {};
+  ppl.forEach(p => pins[p] ||= String(1000 + Math.floor(Math.random() * 9000)));
+  for (const p in pins) if (!ppl.includes(p)) delete pins[p];
+}
+function kidSoon() { if (reward.cls?.code && fbUser) { clearTimeout(kidT); kidT = setTimeout(() => kidPush().catch(() => {}), 1500); } }
+async function kidPush() { // 교사 쪽에서 바뀐 것만 올림 (서버에 있는 것과 같으면 안 씀)
+  if (!reward.cls?.code || !fbUser || !kidReady) return;
+  kidPins();
+  const cls = { owner: fbUser.uid, unit: reward.unit, prices: reward.prices || {} }, cj = JSON.stringify(cls);
+  if (kidClsSent !== cj) { await fb.setDoc(fb.doc(fb.db, "classes", reward.cls.code), { ...cls, at: Date.now() }); kidClsSent = cj; }
+  const live = new Set();
+  for (const p of people()) {
+    const s = rwSt(p), key = kidKey(p), was = kidSeen[key] || {}; live.add(key);
+    if (kidBusy.has(key)) continue; // 학생 것을 받는 중
+    const now = { p, n: seNum(p) || "", name: seName(p), pt: s.pt, av: s.av, wear: rwWear(p, s.wear), own: s.own };
+    const diff = Object.fromEntries(Object.entries(now).filter(([k, v]) => JSON.stringify(v) !== JSON.stringify(was[k])));
+    if (!Object.keys(diff).length) continue;
+    await fb.setDoc(kidRef(key), diff, { merge: true }); kidSeen[key] = { ...was, ...diff };
+  }
+  for (const key in kidSeen) if (!live.has(key)) { delete kidSeen[key]; await fb.deleteDoc(kidRef(key)).catch(() => {}); } // 명단에서 빠졌거나 비밀번호를 바꿈
+}
+function kidListen() { // 학생이 꾸미거나 산 것을 받아 옴
+  kidUnsub?.(); kidUnsub = null; kidSeen = {}; kidClsSent = ""; kidReady = false;
+  if (!reward.cls?.code || !fbUser) return;
+  kidUnsub = fb.onSnapshot(fb.collection(fb.db, "classes", reward.cls.code, "kids"), snap => {
+    kidPins();
+    const who = new Map(people().map(p => [kidKey(p), p]));
+    snap.docs.forEach(d => {
+      const v = d.data(), p = who.get(d.id);
+      kidSeen[d.id] = v;
+      if (p && ((v.buys || []).length || (v.kidAt || 0) > (rwSt(p).kidAt || 0))) kidTake(p, d.ref);
+    });
+    kidReady = true; kidSoon();
+  }, () => {});
+}
+async function kidTake(p, ref) { // 학생이 산 것: 교사 보드 가격으로 점수를 빼고 기록. 꾸민 것: 그대로 받음
+  if (kidBusy.has(ref.id)) return;
+  kidBusy.add(ref.id);
+  try {
+    const s = rwSt(p), base = s.pt;
+    const got = await fb.runTransaction(fb.db, async tx => {
+      const v = (await tx.get(ref)).data(); if (!v) return null;
+      const buys = (v.buys || []).filter(b => avItem(b.id)), spent = buys.reduce((a, b) => a + avPrice(avItem(b.id)), 0);
+      const own = [...new Set([...s.own, ...buys.map(b => b.id)])]; // 산 기록(buys)이 있는 것만 가짐
+      tx.update(ref, { buys: [], pt: base - spent, own });
+      return { v, buys, spent, own };
+    });
+    if (!got) return;
+    s.pt -= got.spent; s.own = got.own;
+    if ((got.v.kidAt || 0) > (s.kidAt || 0)) { if (got.v.av) s.av = got.v.av; if (got.v.wear) s.wear = got.v.wear; s.saved = 1; s.kidAt = got.v.kidAt; }
+    got.buys.forEach(b => reward.log = [{ at: b.at || Date.now(), who: [p], d: -avPrice(avItem(b.id)), why: `${avItem(b.id).name} 샀어요 (학생 화면)` }, ...reward.log].slice(0, 1000));
+    kidSeen[ref.id] = { ...got.v, buys: [], pt: s.pt, own: s.own };
+    rwStore(); rwDraw();
+  } catch (e) {} finally { kidBusy.delete(ref.id); }
+}
+function kidPanel(ed, redraw) { // 점수 설정 → 학생 입장
+  const box = h("div");
+  if (!fbUser) return h("p", { class: "rw-h" }, "학생 화면은 로그인해야 쓸 수 있어요. ⚙ 설정 → 계정에서 구글로 로그인해 주세요.");
+  if (!reward.cls?.code) return h("div", {}, h("p", { class: "rw-h" }, "학생이 태블릿·노트북에서 반 코드 + 번호 + 비밀번호(4자리)로 들어와 자기 아바타를 꾸미고, 모은 점수로 물건을 사요. 비밀번호는 여기서 보고 다시 만들 수 있어요."),
+    h("button", { class: "main", onclick: () => {
+      reward.cls = { code: Array.from({ length: 5 }, () => KID_CHARS[Math.floor(Math.random() * KID_CHARS.length)]).join(""), pins: {} };
+      kidPins(); rwStore(); kidListen(); redraw();
+    } }, "학생 입장 켜기"));
+  kidPins();
+  const url = kidUrl(), copy = h("button", { onclick: () => { navigator.clipboard?.writeText(url); copy.textContent = "복사했어요"; setTimeout(() => copy.textContent = "주소 복사", 1500); } }, "주소 복사");
+  box.append(h("div", { class: "kid-code" }, "반 코드", h("b", {}, reward.cls.code)), h("div", { class: "kid-url" }, "학생 주소", h("code", {}, url), copy),
+    h("div", { class: "kid-acts" }, h("button", { onclick: kidPrint }, "🖨️ 입장 카드 출력"), h("button", { class: "danger", onclick: async () => {
+      if (!await seConfirm(ed, "학생 입장을 끌까요?\n학생 화면에서 더 들어갈 수 없어요. (점수·아바타는 그대로)", "끄기")) return;
+      const code = reward.cls.code; kidUnsub?.(); kidUnsub = null;
+      try { await Promise.all(Object.keys(kidSeen).map(k => fb.deleteDoc(fb.doc(fb.db, "classes", code, "kids", k)))); await fb.deleteDoc(fb.doc(fb.db, "classes", code)); } catch (e) {}
+      kidSeen = {}; reward.cls = null; rwStore(); redraw();
+    } }, "학생 입장 끄기")),
+    h("table", { class: "kid-tb" }, h("tr", {}, h("th", {}, "번호"), h("th", {}, "이름"), h("th", {}, "비밀번호"), h("th")),
+      ...people().map(p => h("tr", {}, h("td", {}, seNum(p) || ""), h("td", {}, seName(p)), h("td", { class: "pin" }, reward.cls.pins[p]),
+        h("td", {}, h("button", { title: "잊어버렸을 때: 새 비밀번호를 만들어요. 그 학생은 새 비밀번호로 다시 들어와요.", onclick: async () => {
+          if (!await seConfirm(ed, `${seName(p)}의 비밀번호를 새로 만들까요?\n전 비밀번호로는 더 못 들어가요.`, "새로 만들기")) return;
+          delete reward.cls.pins[p]; kidPins(); rwStore(); redraw();
+        } }, "새 비밀번호"))))));
+  return box;
+}
+function kidPrint() { // A4에 입장 카드 (가위로 잘라 나눠 줌)
+  const esc = t => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;"), url = kidUrl();
+  const cards = people().map(p => `<div class="c"><h3>우리반 보드 · 내 아바타</h3><p class="u">${esc(url)}</p><dl><dt>반 코드</dt><dd>${esc(reward.cls.code)}</dd><dt>번호</dt><dd>${esc(seNum(p) || "")} <small>${esc(seName(p))}</small></dd><dt>비밀번호</dt><dd>${esc(reward.cls.pins[p])}</dd></dl></div>`).join("");
+  const w = window.open("", "_blank");
+  if (!w) return seConfirm(rwCard, "출력 창을 열지 못했어요. 주소창 오른쪽에서 팝업을 허용해 주세요.", "확인", null);
+  w.document.write(`<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>입장 카드</title><style>
+    @page { size: A4 portrait; margin: 10mm; } body { margin: 0; font-family: "Wanted Sans", "Malgun Gothic", sans-serif; color: #222; }
+    .g { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; } .c { border: 1.5px dashed #999; border-radius: 4mm; padding: 4mm 6mm; break-inside: avoid; }
+    h3 { margin: 0 0 1mm; font-size: 13pt; } .u { margin: 0 0 2mm; font-size: 8.5pt; color: #666; word-break: break-all; }
+    dl { display: grid; grid-template-columns: auto 1fr; gap: 1mm 4mm; margin: 0; align-items: baseline; } dt { font-size: 10pt; color: #666; } dd { margin: 0; font-size: 20pt; font-weight: 700; letter-spacing: .08em; } dd small { font-size: 11pt; font-weight: 400; letter-spacing: 0; color: #444; }
+  </style></head><body><div class="g">${cards}</div></body></html>`);
+  w.document.close(); w.focus(); w.print();
 }
 syncShow();
 if (lsGet("sync-uid")) fbLoad().catch(() => syncShow("서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요.")); // 전에 로그인했으면 이어서

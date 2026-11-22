@@ -1,0 +1,28 @@
+rules_version = '2';
+// Firebase 콘솔 → Firestore Database → 규칙(Rules)에 붙여 넣고 '게시'
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 교사 보드: 구글로 로그인한 본인만
+    match /boards/{uid}/{rest=**} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+    // 학생 화면(student.html): 반 코드 + 번호-비밀번호를 알아야 열 수 있음 (목록 보기는 교사만)
+    match /classes/{code} {
+      function isOwner() {
+        return request.auth != null && get(/databases/$(database)/documents/classes/$(code)).data.owner == request.auth.uid;
+      }
+      allow get: if true;
+      allow create: if request.auth != null && request.resource.data.owner == request.auth.uid;
+      allow update, delete: if request.auth != null && resource.data.owner == request.auth.uid;
+      match /kids/{key} {
+        allow read, write: if isOwner();
+        allow get: if true;
+        // 학생은 꾸미기·산 기록만 바꿈 (점수·이름은 못 바꿈, 가진 것·산 기록은 늘리기만)
+        allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(["av", "wear", "own", "buys", "kidAt"])
+          && request.resource.data.get("own", []).hasAll(resource.data.get("own", []))
+          && request.resource.data.get("buys", []).hasAll(resource.data.get("buys", []))
+          && request.resource.data.get("buys", []).size() <= 30;
+      }
+    }
+  }
+}

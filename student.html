@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>내 아바타 · 우리반 보드</title>
+<meta name="theme-color" content="#fbf3e4">
+<link rel="icon" href="icon-192.png">
+<style>
+  /* 학생 화면: 반 코드 + 번호 + 비밀번호로 들어와 자기 아바타를 꾸미고 점수로 물건을 삼. 태블릿·노트북용, 글씨 크게 */
+  @font-face { font-family: "Wanted Sans"; font-display: swap;
+    src: url("https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.3/packages/wanted-sans/fonts/webfonts/static/complete/woff2/WantedSans-Regular.woff2") format("woff2"); }
+  :root { --bg: #fbf3e4; --ink: #2b1d14; --muted: #8a7a6c; --accent: #3b82f6; --card: #eef4ff; --line: #cddcfb; --warn: #e8590c; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--ink); font-family: "Wanted Sans", "Malgun Gothic", sans-serif; }
+  button, input { font: inherit; color: inherit; }
+  button { cursor: pointer; border: 1.5px solid var(--line); background: #fff; border-radius: 12px; padding: 8px 16px; font-size: 18px; }
+  button.main { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+  button:disabled { opacity: .45; cursor: default; }
+  [hidden] { display: none !important; }
+  /* 들어가기 */
+  .login { min-height: 100vh; display: grid; place-items: center; padding: 16px; }
+  .login form { width: min(420px, 100%); background: #fff; border-radius: 24px; padding: 28px 28px 24px; box-shadow: 0 10px 40px rgba(60, 40, 20, .12); display: grid; gap: 14px; }
+  .login h1 { margin: 0; font-size: 28px; text-align: center; } .login p.sub { margin: -6px 0 6px; text-align: center; color: var(--muted); font-size: 16px; }
+  .login label { display: grid; gap: 4px; font-size: 16px; color: var(--muted); }
+  .login input { font-size: 28px; padding: 8px 14px; border: 2px solid var(--line); border-radius: 12px; text-align: center; letter-spacing: .12em; width: 100%; }
+  .login input:focus { outline: none; border-color: var(--accent); }
+  .login .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .login button { font-size: 22px; padding: 12px; }
+  .err { margin: 0; color: var(--warn); text-align: center; font-size: 17px; } .err:empty { display: none; }
+  /* 꾸미기 */
+  .app { max-width: 1100px; margin: 0 auto; padding: 14px 16px 40px; }
+  .top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+  .top h1 { margin: 0; font-size: 26px; flex: 1; min-width: 0; } .top h1 small { font-size: 16px; color: var(--muted); font-weight: normal; margin-left: 6px; }
+  .pt { display: inline-flex; align-items: center; gap: 6px; padding: 4px 16px; border-radius: 999px; background: var(--accent); color: #fff; font-size: 24px; font-weight: 700; }
+  .pt small { font-size: 15px; font-weight: normal; opacity: .9; }
+  .top .out { font-size: 15px; padding: 6px 12px; }
+  .main-grid { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 16px; align-items: start; }
+  @media (max-width: 760px) { .main-grid { grid-template-columns: minmax(0, 1fr); } }
+  .stage { background: #fff; border-radius: 22px; padding: 16px; text-align: center; position: sticky; top: 12px; box-shadow: 0 2px 10px rgba(60, 40, 20, .06); }
+  @media (max-width: 760px) { .stage { position: static; } }
+  .stage .me svg { width: min(220px, 60vw); height: auto; aspect-ratio: 26 / 34; display: block; margin: 0 auto 10px; border-radius: 16px; background: var(--card); }
+  .sw { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: center; margin: 6px 0; font-size: 15px; color: var(--muted); }
+  .sw span { width: 46px; text-align: right; }
+  .sw button { width: 32px; height: 32px; padding: 0; border-radius: 50%; } .sw button.on { box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--accent); }
+  .save { display: flex; gap: 8px; justify-content: center; margin-top: 12px; } .save button { font-size: 20px; padding: 10px 20px; }
+  .note { margin: 8px 0 0; font-size: 15px; color: var(--muted); min-height: 1.2em; }
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+  .tabs button { border-radius: 999px; font-size: 19px; padding: 6px 18px; } .tabs button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .shop { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+  .it { background: #fff; border: 2px solid transparent; border-radius: 16px; padding: 10px; text-align: center; box-shadow: 0 1px 4px rgba(60, 40, 20, .08); }
+  .it.worn { border-color: var(--accent); }
+  .it svg { width: 84px; height: 110px; display: block; margin: 0 auto 4px; border-radius: 10px; background: #f8f9fa; }
+  .it b { display: block; font-size: 20px; font-weight: 600; } .it small { display: block; font-size: 14px; color: var(--muted); margin-bottom: 6px; }
+  .it button { font-size: 17px; padding: 5px 14px; border-radius: 999px; } .it button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .it button.buy { border-color: #f59f00; color: #a6730c; }
+  /* 팝업 */
+  .modal { position: fixed; inset: 0; background: rgba(30, 20, 10, .35); display: grid; place-items: center; padding: 16px; z-index: 10; }
+  .modal > div { background: #fff; border-radius: 22px; padding: 22px 24px; width: min(380px, 100%); text-align: center; }
+  .modal p { font-size: 21px; margin: 0 0 16px; white-space: pre-line; } .modal .btns { display: flex; gap: 8px; justify-content: center; } .modal button { font-size: 19px; }
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: #2b1d14; color: #fff; padding: 10px 20px; border-radius: 999px; font-size: 17px; z-index: 11; }
+  .loading { min-height: 100vh; display: grid; place-items: center; font-size: 20px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="loading" id="loading">불러오는 중…</div>
+<div class="login" id="login" hidden>
+  <form id="login-form" autocomplete="off">
+    <h1>🏅 내 아바타</h1>
+    <p class="sub">선생님이 준 입장 카드를 보고 써요</p>
+    <label>반 코드<input id="in-code" maxlength="8" autocapitalize="characters" spellcheck="false" required></label>
+    <div class="row">
+      <label>번호<input id="in-num" inputmode="numeric" pattern="[0-9]*" maxlength="3" required></label>
+      <label>비밀번호<input id="in-pin" inputmode="numeric" pattern="[0-9]*" maxlength="4" type="password" required></label>
+    </div>
+    <p class="err" id="login-err"></p>
+    <button class="main" id="login-go">들어가기</button>
+  </form>
+</div>
+<div class="app" id="app" hidden>
+  <div class="top"><h1 id="me-name"></h1><span class="pt" id="me-pt"></span><button class="out" id="out">나가기</button></div>
+  <div class="main-grid">
+    <div class="stage">
+      <div class="me" id="me-av"></div>
+      <div class="sw" id="sw-skin"></div>
+      <div class="sw" id="sw-hair"></div>
+      <div class="save"><button id="undo">되돌리기</button><button class="main" id="save">저장하기</button></div>
+      <p class="note" id="note"></p>
+    </div>
+    <div>
+      <div class="tabs" id="tabs"></div>
+      <div class="shop" id="shop"></div>
+    </div>
+  </div>
+</div>
+<script src="avatar.js"></script>
+<script type="module">
+// 서버: classes/{반 코드} = { unit, prices } · classes/{반 코드}/kids/{번호}-{비밀번호} = { name, n, pt, av, wear, own, buys, kidAt }
+// 점수는 선생님 보드만 바꿈. 여기서 사면 buys에 남기고(바로 입음), 선생님 보드가 받아서 점수를 뺌
+const FB = "https://www.gstatic.com/firebasejs/10.14.1/";
+const CFG = { apiKey: "AIzaSyCEsOWNlfwrGdTKfbgL-C6JTPlc7Z3pUmo", authDomain: "class-board-aeed0.firebaseapp.com", projectId: "class-board-aeed0",
+  storageBucket: "class-board-aeed0.firebasestorage.app", messagingSenderId: "826892766619", appId: "1:826892766619:web:67ca38017c7d580801a53e" };
+const $ = id => document.getElementById(id);
+const el = (tag, attrs = {}, ...kids) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) k.startsWith("on") ? e[k] = v : e.setAttribute(k, v); e.append(...kids.filter(x => x != null)); return e; };
+let fs, db, unsubs = [], me = null, cls = { unit: "포인트", prices: {} }, d = null, dirty = false, tab = "hair";
+
+function show(which) { ["loading", "login", "app"].forEach(k => $(k).hidden = k !== which); }
+function toast(t) { document.querySelector(".toast")?.remove(); const e = el("div", { class: "toast" }, t); document.body.append(e); setTimeout(() => e.remove(), 2200); }
+function ask(text, ok = "확인", cancel = "취소") {
+  return new Promise(res => {
+    const m = el("div", { class: "modal" }, el("div", {}, el("p", {}, text), el("div", { class: "btns" },
+      cancel ? el("button", { onclick: () => { m.remove(); res(false); } }, cancel) : null, el("button", { class: "main", onclick: () => { m.remove(); res(true); } }, ok))));
+    document.body.append(m);
+  });
+}
+function tone(f, at, dur, type = "triangle", vol = .2) {
+  try { const a = tone.ctx ||= new AudioContext(), t = a.currentTime + at, o = a.createOscillator(), g = a.createGain(); o.type = type; o.frequency.value = f; o.connect(g); g.connect(a.destination); g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.001, t + dur); o.start(t); o.stop(t + dur); } catch (e) {}
+}
+const unit = () => (cls.unit || "").trim() || "점";
+const price = it => cls.prices?.[it.id] ?? it.price;
+const pending = () => (me.buys || []).reduce((a, b) => a + (avItem(b.id) ? price(avItem(b.id)) : 0), 0); // 샀지만 선생님 보드가 아직 안 뺀 점수
+const left = () => me.pt - pending();
+const owns = it => !price(it) || (me.own || []).includes(it.id);
+const login = () => { try { return JSON.parse(localStorage.getItem("kid-login")); } catch (e) { return null; } };
+const kidRef = l => fs.doc(db, "classes", l.code, "kids", l.key);
+
+function draw() {
+  $("me-name").replaceChildren(me.name || "", el("small", {}, me.n ? `${me.n}번` : ""));
+  $("me-pt").replaceChildren(String(left()), el("small", {}, unit()));
+  $("me-av").innerHTML = avSvg(d.av, d.wear);
+  const sw = (box, list, key, label) => $(box).replaceChildren(el("span", {}, label), ...list.map((c, i) => el("button", { class: d.av[key] === i ? "on" : "", style: `background:${c[0]}`, "aria-label": label, onclick: () => { d.av = { ...d.av, [key]: i }; dirty = true; draw(); } })));
+  sw("sw-skin", AV_SKIN, "skin", "피부"); sw("sw-hair", AV_HAIR, "hair", "머리색");
+  $("save").disabled = $("undo").disabled = !dirty;
+  $("note").textContent = dirty ? "저장하기를 눌러야 바뀌어요." : "";
+  $("tabs").replaceChildren(...AV_TABS.map(([k, t]) => el("button", { class: tab === k ? "on" : "", onclick: () => { tab = k; draw(); } }, t)));
+  const items = AV_ITEMS.filter(it => tab === "acc" ? ["head", "face", "neck"].includes(it.slot) : it.slot === tab);
+  $("shop").replaceChildren(...items.map(it => {
+    const has = owns(it), must = it.slot in AV_REQ, worn = (d.wear[it.slot] || AV_REQ[it.slot]) === it.id, bg = it.slot === "bg", cost = price(it);
+    const pic = el("div"); pic.innerHTML = avSvg(d.av, { ...d.wear, [it.slot]: it.id, ...(bg ? {} : { bg: "bg-none" }), ...(tab === "hair" ? { head: "" } : {}) });
+    const act = has ? el("button", { class: worn ? "on" : "", onclick: () => { if (worn) { if (must) return; const w = { ...d.wear }; delete w[it.slot]; d.wear = w; } else d.wear = { ...d.wear, [it.slot]: it.id }; dirty = true; draw(); } },
+        worn ? (must ? (bg ? "골랐어요" : "입는 중") : "벗기") : bg ? "고르기" : "입기")
+      : el("button", { class: "buy", onclick: () => buy(it) }, `${cost} ${unit()}`);
+    return el("div", { class: "it" + (worn ? " worn" : "") }, pic.firstChild, el("b", {}, it.name), el("small", {}, !cost ? "무료" : has ? "가지고 있어요" : "가게"), act);
+  }));
+}
+async function buy(it) {
+  const cost = price(it);
+  if (left() < cost) return ask(`${it.name}은(는) ${cost} ${unit()}예요.\n${cost - left()} ${unit()} 더 모아요!`, "알겠어요", null);
+  if (!await ask(`${it.name}을(를) ${cost} ${unit()}에 살까요?`, "사기")) return;
+  const wear = { ...d.wear, [it.slot]: it.id };
+  try {
+    await fs.updateDoc(kidRef(login()), { buys: fs.arrayUnion({ id: it.id, at: Date.now() }), own: fs.arrayUnion(it.id), av: d.av, wear, kidAt: Date.now() });
+    d.wear = wear; dirty = false; draw();
+    [784, 988, 1319].forEach((f, i) => tone(f, i * .07, .12, "square", .12));
+    toast(`${it.name}을(를) 샀어요!`);
+  } catch (e) { toast("사지 못했어요. 인터넷 연결을 확인해 주세요."); }
+}
+async function save() {
+  try { await fs.updateDoc(kidRef(login()), { av: d.av, wear: d.wear, kidAt: Date.now() }); dirty = false; draw(); toast("저장했어요!"); [659, 988].forEach((f, i) => tone(f, i * .08, .15)); }
+  catch (e) { toast("저장하지 못했어요. 인터넷 연결을 확인해 주세요."); }
+}
+function logout(msg) {
+  unsubs.forEach(u => u()); unsubs = []; me = d = null; dirty = false;
+  try { localStorage.removeItem("kid-login"); } catch (e) {}
+  $("login-err").textContent = msg || ""; $("in-pin").value = ""; show("login");
+}
+function enter(l) { // 내 문서와 반 설정을 계속 들음 (점수가 바뀌면 바로 보임)
+  unsubs.forEach(u => u()); unsubs = [];
+  unsubs.push(fs.onSnapshot(fs.doc(db, "classes", l.code), s => { if (!s.exists()) return logout("학생 입장이 꺼졌어요. 선생님께 물어보세요."); cls = s.data(); if (me) draw(); }, () => {}));
+  unsubs.push(fs.onSnapshot(kidRef(l), s => {
+    if (!s.exists()) return logout("비밀번호가 바뀌었어요. 선생님께 새 비밀번호를 물어보세요.");
+    me = s.data();
+    if (!d || !dirty) d = { av: { skin: 0, hair: 0, ...me.av }, wear: { ...me.wear } };
+    show("app"); draw();
+  }, () => logout("들어가지 못했어요. 다시 해 볼까요?")));
+}
+$("login-form").onsubmit = async e => {
+  e.preventDefault();
+  const code = $("in-code").value.trim().toUpperCase(), n = +$("in-num").value.trim(), pin = $("in-pin").value.trim();
+  if (!code || !n || !/^\d{4}$/.test(pin)) return $("login-err").textContent = "반 코드, 번호, 비밀번호 4자리를 모두 써요.";
+  $("login-go").disabled = true; $("login-err").textContent = "";
+  try {
+    if (!(await fs.getDoc(fs.doc(db, "classes", code))).exists()) return $("login-err").textContent = "반 코드를 찾을 수 없어요. 다시 확인해 봐요.";
+    const l = { code, key: `${n}-${pin}` };
+    if (!(await fs.getDoc(kidRef(l))).exists()) return $("login-err").textContent = "번호나 비밀번호가 맞지 않아요. 선생님께 물어보세요.";
+    try { localStorage.setItem("kid-login", JSON.stringify(l)); } catch (er) {}
+    enter(l);
+  } catch (er) { $("login-err").textContent = "연결하지 못했어요. 인터넷 연결을 확인해 주세요."; }
+  finally { $("login-go").disabled = false; }
+};
+$("in-code").oninput = e => e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+$("save").onclick = save;
+$("undo").onclick = () => { d = { av: { skin: 0, hair: 0, ...me.av }, wear: { ...me.wear } }; dirty = false; draw(); };
+$("out").onclick = async () => { if (!dirty || await ask("저장하지 않은 것이 있어요.\n그래도 나갈까요?", "나가기")) logout(); };
+addEventListener("beforeunload", e => { if (dirty) e.preventDefault(); });
+
+try {
+  const [app, f] = await Promise.all([import(FB + "firebase-app.js"), import(FB + "firebase-firestore.js")]);
+  fs = f; db = fs.getFirestore(app.initializeApp(CFG));
+  const l = login();
+  if (l) enter(l); else show("login");
+} catch (e) { $("loading").textContent = "불러오지 못했어요. 인터넷 연결을 확인하고 새로 고침해 주세요."; }
+</script>
+</body>
+</html>
