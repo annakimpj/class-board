@@ -226,6 +226,7 @@
   .tt-right { border-left: 2px dashed var(--line); padding-left: 12px; }
   .tt-right .sub { text-align: left; font-size: 15px; color: var(--accent); }
   .tt-right .note { font-size: 22px; }
+  .tt-right .sub .bag-ic { width: 1.15em; height: 1.15em; vertical-align: -.2em; margin-right: .25em; }
   /* Tt 버튼: 줄을 따로 차지하지 않게 칸 오른쪽 아래에 띄움 (크기 조절 모서리 옆) */
   .note-tools { position: absolute; right: 22px; bottom: 6px; z-index: 2; opacity: 0; transition: opacity .15s; }
   .tt-box { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 4px; position: relative; } /* 준비물·숙제 칸 */
@@ -376,8 +377,8 @@
   .se-ask > div { max-width: min(400px, 90%); background: #fff; border-radius: 14px; padding: 18px 20px 14px; box-shadow: 0 10px 34px rgba(60, 40, 20, .22); font: 15px/1.55 "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--ink); }
   .se-ask p { margin: 0 0 14px; white-space: pre-line; max-height: 50vh; overflow-y: auto; }
   .se-ask .row { display: flex; justify-content: flex-end; gap: 6px; }
-  .se-ask button { font: inherit; font-size: 14px; border: 1.5px solid #c3e1e6; background: #fff; color: var(--ink); border-radius: 999px; padding: 5px 16px; cursor: pointer; }
-  .se-ask button.main { background: #2f7d8c; border-color: #2f7d8c; color: #fff; }
+  .se-ask button { font: inherit; font-size: 14px; border: 1.5px solid var(--line, #c3e1e6); background: #fff; color: var(--ink); border-radius: 999px; padding: 5px 16px; cursor: pointer; }
+  .se-ask button.main { background: var(--accent, #2f7d8c); border-color: var(--accent, #2f7d8c); color: #fff; } /* 카드 색에 맞춤 */
   /* 선생님 모드 → 분리 */
   #seat-ed .sep-card { flex: none; flex-direction: column; flex-wrap: nowrap; align-items: stretch; border-style: solid; gap: 6px; padding: 8px 10px; }
   #seat-ed .sep-card .row { align-items: center; flex-wrap: nowrap; }
@@ -520,21 +521,23 @@
 
   /* 학급 온도계 */
   [data-card="thermo"] { --accent: #e03131; --card: #fff0f0; --line: #f5c6c6; }
-  .th-main { flex: 1; min-height: 0; display: flex; align-items: stretch; justify-content: center; gap: 18px; padding-left: 34px; }
-  .th-tube { position: relative; flex: none; width: 18px; margin: 6px 0 22px; border-radius: 12px; background: #fff; border: 2.5px solid #d5d9df; }
-  #th-fill { position: absolute; left: 3px; right: 3px; bottom: 0; border-radius: 9px; background: linear-gradient(to top, #e03131, #ff8787); }
-  .th-bulb { position: absolute; left: 50%; top: calc(100% + 1px); width: 20px; height: 20px; transform: translateX(-50%); border-radius: 50%; background: #e03131; border: 2.5px solid #d5d9df; } /* 관 아래에 붙어서 0° 위로 차오르는 게 다 보임 */
+  .th-main { flex: 1; min-height: 0; display: flex; align-items: stretch; justify-content: center; gap: 22px; padding-left: 58px; }
+  .th-tube { position: relative; flex: none; width: 16px; margin: 6px 0 24px; border-radius: 10px 10px 0 0; background: #fff; border: 2.5px solid #d5d9df; border-bottom: 0; }
+  #th-fill { position: absolute; left: 2px; right: 2px; bottom: 0; border-radius: 6px 6px 0 0; background: linear-gradient(to top, #e03131, #ff8787); }
+  .th-bulb { position: absolute; left: 50%; top: calc(100% - 3px); width: 28px; height: 28px; box-sizing: border-box; transform: translateX(-50%); border-radius: 50%;
+             background: #e03131; border: 2.5px solid #d5d9df; box-shadow: inset 0 0 0 2.5px #fff; z-index: 1; } /* 관 바로 아래에 이어 붙임: 0° 위로 차오르는 게 다 보임 */
+  .th-bulb::before { content: ""; position: absolute; left: 50%; bottom: calc(100% - 6px); width: 11px; height: 8px; transform: translateX(-50%); background: #e03131; } /* 관과 구 사이 이음매 */
   /* 눈금: 왼쪽에 10도마다 숫자, 5도마다 짧은 금. 보상을 정한 온도는 오른쪽에 🎁 */
   .th-tick { position: absolute; right: calc(100% + 3px); width: 6px; height: 0; border-top: 1.5px solid #c9a0a0; }
   .th-tick.major { width: 10px; }
   .th-tick span { position: absolute; right: 13px; top: -.65em; font: 11px/1.2 "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--muted); }
-  .th-gift { position: absolute; left: calc(100% + 5px); transform: translateY(50%); font-size: 12px; line-height: 1; filter: grayscale(1); opacity: .55; transition: filter .3s, opacity .3s; }
+  .th-gift { position: absolute; right: calc(100% + 40px); transform: translateY(50%); font-size: 12px; line-height: 1; filter: grayscale(1); opacity: .55; transition: filter .3s, opacity .3s; }
   .th-gift.got { filter: none; opacity: 1; }
   .th-info { display: flex; flex-direction: column; justify-content: center; gap: 6px; min-width: 0; }
   .tool-card .th-info .big { flex: none; color: var(--accent); font-size: clamp(28px, min(18cqw, 20cqh), 72px); }
   .th-goal { display: flex; align-items: center; justify-content: center; gap: 4px; font: 15px/1.4 "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--ink); text-align: center; }
   .th-goal span b { color: var(--accent); }
-  .tool-card .th-pen { flex: none; width: 28px; height: 28px; padding: 0; display: grid; place-items: center; color: var(--accent); }
+  .tool-card .th-pen { width: 32px; padding: 0; display: inline-grid; place-items: center; color: var(--accent); }
   .th-pen svg { width: 16px; height: 16px; }
   #thermo-card.hit .th-info .big { animation: th-pop .6s ease-in-out 2; }
   #thermo-card.full .th-info .big { animation: th-pop .6s ease-in-out 3; }
@@ -724,9 +727,9 @@
     <div class="th-main">
       <div class="th-tube" id="th-tube" aria-hidden="true"><i id="th-fill"></i><b class="th-bulb"></b></div>
       <div class="th-info"><div class="big" id="th-val" aria-live="polite">0°</div>
-        <p class="th-goal"><span id="th-next"></span><button class="th-pen" onclick="thEdit()" title="보상 정하기" aria-label="보상 정하기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1-5L15.5 4.5a2.1 2.1 0 0 1 3 0l1 1a2.1 2.1 0 0 1 0 3L9 19zM13.5 6.5l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p></div>
+        <p class="th-goal"><span id="th-next"></span></p></div>
     </div>
-    <div class="acts"><button class="main" onclick="thAdd(1)">+1°</button><button onclick="thAdd(5)">+5°</button><button onclick="thAdd(-1)">−1°</button><button onclick="thReset()" title="0°로 되돌리기">↻</button></div>
+    <div class="acts"><button class="main" onclick="thAdd(1)">+1°</button><button onclick="thAdd(5)">+5°</button><button onclick="thAdd(-1)">−1°</button><button onclick="thReset()" title="0°로 되돌리기">↻</button><button class="th-pen" onclick="thEdit()" title="보상 정하기" aria-label="보상 정하기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1-5L15.5 4.5a2.1 2.1 0 0 1 3 0l1 1a2.1 2.1 0 0 1 0 3L9 19zM13.5 6.5l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
   </section>
   <section class="card tool-card" data-card="qr">
     <p class="label">🔳 QR 만들기</p>
@@ -767,7 +770,7 @@
       </div>
       <div class="tt-right">
         <div class="tt-box">
-          <p class="sub">✂️ 준비물</p>
+          <p class="sub"><svg class="bag-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8.5V7a4 2.6 0 0 1 8 0v1.5" fill="none" stroke="#8a5a2b" stroke-width="2" stroke-linecap="round"/><rect x="2" y="8" width="20" height="13" rx="3.5" fill="#f59f00"/><rect x="2" y="8" width="20" height="4.5" rx="2.2" fill="#e67700"/><rect x="6" y="14.5" width="12" height="4.5" rx="1.5" fill="#ffd43b"/></svg>준비물</p>
           <div class="note" data-key="supplies" contenteditable="true" spellcheck="false" role="textbox" aria-multiline="true" aria-label="준비물"></div>
         </div>
         <div class="tt-box">
@@ -883,7 +886,7 @@
       <li><b>메모 · 우리반 규칙</b> 카드를 눌러 바로 쓰면 저절로 저장돼요. 글자를 끌어서 고른 뒤 오른쪽 아래 Tt에서 색을 고르면 그 글자만 바뀌어요. 메모는 아래쪽 바 버튼을 누를 때마다 한 장씩 더 생겨요(더 만든 메모는 닫으면 지워져요).</li>
       <li><b>사진</b> '사진 넣기'로 사진을 고르세요. 사진 위에 마우스를 올리면 바꾸기·지우기 버튼이 나와요. 아래쪽 바 버튼을 누를 때마다 사진 카드가 한 장씩 더 생겨요.</li>
       <li><b>타이머</b> 30초·1·3·5·10분을 고르거나, 가운데 시간(00:00)을 눌러 3:30처럼 직접 쓰고 '시작'. +1은 1분 더하기예요. 시간이 끝나면 소리가 나고 카드가 깜빡여요. 아래 '🔊 효과음'으로 시작·멈춤·째깍 소리를 끄고 켜요(마지막 3초와 끝날 때 소리는 늘 나요).</li>
-      <li><b>뽑기</b> <u>전체</u>: 설정 → 명단에 우리 반 이름을 한 줄에 하나씩(숫자만 쓰면 번호로). <u>선택</u>: 오른쪽 아래 '✎ 고르기'로 뽑을 사람만 골라요. <u>모둠</u>: 오른쪽 아래에 모둠 수를 정해요. <u>직접입력</u>: 오른쪽 아래 '✎ 쓰기'로 그때그때 뽑을 것을 써요. <u>순서</u>: 명단 전체가 이름 구슬이 되어 긴 핀볼 코스(경사로·범퍼·도는 막대·쐐기)를 굴러 내려가요. 화면은 맨 앞 구슬을 따라 내려가고, 맨 아래 구멍으로 빠진 순서대로 1등부터 정해요. 한 번 뽑힌 것은 모두 뽑힐 때까지 다시 나오지 않고, '처음부터'로 다시 시작해요.</li>
+      <li><b>뽑기</b> <u>전체</u>: 설정 → 명단에 우리 반 이름을 한 줄에 하나씩(숫자만 쓰면 번호로). <u>선택</u>: 오른쪽 아래 '✎ 고르기'로 뽑을 사람만 골라요('처음부터'를 누르면 고른 사람도 비워져요). <u>모둠</u>: 오른쪽 아래에 모둠 수를 정해요. <u>직접입력</u>: 오른쪽 아래 '✎ 쓰기'로 그때그때 뽑을 것을 써요. <u>순서</u>: 명단 전체가 이름 구슬이 되어 긴 핀볼 코스(경사로·범퍼·도는 막대·쐐기)를 굴러 내려가요. 화면은 맨 앞 구슬을 따라 내려가고, 맨 아래 구멍으로 빠진 순서대로 1등부터 정해요. 한 번 뽑힌 것은 모두 뽑힐 때까지 다시 나오지 않고, '처음부터'로 다시 시작해요.</li>
       <li><b>미세먼지</b> 최고·좋음·보통·나쁨·최악 다섯 단계로 보여 줘요. '지역 설정'에서 '지금 위치로'를 누르거나 시·군 이름(예: 수원시)으로 찾으세요. Open-Meteo(무료 공개 자료)의 예보값이라 에어코리아 측정소 값과 조금 다를 수 있어요. 30분마다 새로 받아요.</li>
       <li><b>소음 측정</b> '측정 시작'을 누르고 마이크를 허락하면 소리 크기를 막대로 보여 줘요. 기준(검은 선)을 1초 넘게 넘으면 경고음이 나고 오늘 경고 횟수가 쌓여요. '🔔 경고'로 직접 경고를 줄 수도 있어요. 소리는 이 컴퓨터 안에서만 재고, 녹음하거나 보내지 않아요.</li>
       <li><b>화이트보드</b> ✏️ 펜을 누르면 색과 굵기를 골라 그려요. T 글상자는 누른 뒤 보드(사진 위도 돼요)를 클릭해 써요. 사진은 복사해서 Ctrl+V(또는 끌어다 놓기). 옮기기에서 사진·글상자·펜 선을 끌어 옮기고, 오른쪽 아래 파란 점으로 크기를 바꾸고(글상자는 글씨도 같이 커져요), 오른쪽 위 ✕나 Delete로 지워요. 빈 곳에서 끌어 네모를 그리면 그 안에 통째로 들어온 것이 함께 골라지고(조금 걸친 건 빠져요), Shift를 누른 채 여러 개를 눌러도 골라져요. '묶기'로 한 덩어리로 묶어요('풀기'로 다시 나눠요). 글상자는 두 번 클릭하면 고치고, 글상자를 고르면 위에 나오는 Tt로 글씨 크기·색을 바꿔요. 여러 개나 묶음은 점선 상자 오른쪽 아래 파란 점으로 한꺼번에 크기를 바꿔요. ↶나 Ctrl+Z로 되돌려요. 제목 줄 오른쪽 1~4 버튼으로 화이트보드를 4개까지 따로 써요.</li>
@@ -1937,7 +1940,8 @@ function pickOne() {
   };
   step();
 }
-function pickReset() { pk.picked[pk.mode] = []; pkWin = null; if (pk.mode === "order") delete pk.order; pkSave(); pickInfo(); }
+// 처음부터: 뽑힌 기록을 비움. 선택은 고른 사람도 비움
+function pickReset() { pk.picked[pk.mode] = []; if (pk.mode === "select") pk.chosen = []; pkWin = null; if (pk.mode === "order") delete pk.order; pkSave(); pickInfo(); }
 // 순서 뽑기 (핀볼): 이름 구슬이 긴 코스를 굴러 내려가고, 맨 아래 깔때기 구멍으로 빠진 순서가 곧 순서
 // 코스는 화면 높이의 몇 배로 길고, 화면은 맨 앞 구슬을 따라 아래로 내려감. 진짜로 굴려서 정함 (미리 정해 두지 않음)
 // 장애물: 못밭 → 지그재그 경사로 → 범퍼 → 도는 막대 → 세모 쐐기 → 못밭 → 깔때기
@@ -2762,7 +2766,7 @@ function thAdd(d) {
     thCard.classList.remove("hit"); void thCard.offsetWidth; thCard.classList.add("hit");
   }
 }
-function thReset() { if (!thermo.t || !confirm("온도를 0°로 되돌릴까요?")) return; thermo.t = 0; thSave(); thDraw(); }
+async function thReset() { if (!thermo.t || !await seConfirm(thCard, "온도를 0°로 되돌릴까요?", "되돌리기")) return; thermo.t = 0; thSave(); thDraw(); melody([784, 659, 587, 523], .06, "sine", .22); }
 function thEdit() { // 5°~100° 보상 쓰기. 비워 둔 온도는 보상 없음
   thCard.querySelector(".th-ed")?.remove();
   const ed = document.createElement("div"), head = document.createElement("div"), list = document.createElement("div"), done = document.createElement("button"), tt = document.createElement("b");
