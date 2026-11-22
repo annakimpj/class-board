@@ -154,7 +154,7 @@
   #rule[contenteditable="true"] { background: #fff; box-shadow: 0 0 0 2px var(--line); }
   .hint { font-size: 13px; color: var(--muted); cursor: default; }
   .tools { flex: none; display: flex; align-items: center; gap: 8px; font-family: "Wanted Sans", "Malgun Gothic", sans-serif; }
-  .tools .tp-hist { white-space: nowrap; flex: none; font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); background: #fff; color: var(--muted); border-radius: 999px; padding: 4px 10px; cursor: pointer; }
+  .tools .tp-hist { white-space: nowrap; flex: none; width: auto; height: auto; font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); background: #fff; color: var(--muted); border-radius: 999px; padding: 4px 10px; cursor: pointer; }
   .tools button { width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid var(--line); background: #fff; color: var(--accent);
                   font-size: 22px; line-height: 1; cursor: pointer; padding: 0; }
   .tools button:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
@@ -672,6 +672,20 @@
   .rw-count { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--muted); }
   .tool-card .rw-foot button { font-size: 14px; padding: 5px 12px; border-radius: 999px; }
   .tool-card .rw-foot .rw-minus { border-color: #ffc078; color: #d9480f; }
+  .rw-sel { display: flex; gap: 3px; } .tool-card .rw-foot .rw-sel button { font-size: 13px; padding: 4px 9px; border-radius: 8px; }
+  .rw-log { font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; } .rw-log .day { margin: 10px 0 4px; font-size: 13px; color: var(--muted); }
+  .rw-log .row { display: grid; grid-template-columns: 64px minmax(0, 1fr) minmax(0, 1.2fr) auto; gap: 8px; align-items: baseline; padding: 5px 4px; border-bottom: 1px solid var(--line); }
+  .rw-log .tm { color: var(--muted); font-size: 12px; } .rw-log .who { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .rw-log .why { color: var(--muted); }
+  .rw-log b { color: #3b82f6; white-space: nowrap; } .rw-log b.neg { color: #e8590c; }
+  .card-ed-head select { font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); border-radius: 8px; padding: 3px 6px; margin-left: auto; }
+  .rw-prices { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 4px 8px; font-size: 14px; }
+  .rw-prices label { display: flex; align-items: center; gap: 6px; padding: 2px 6px; border-radius: 8px; } .rw-prices label.on { background: #eef4ff; }
+  .card-ed-list .rw-prices label > span { flex: 1; width: auto; text-align: left; color: var(--ink); } .rw-prices label input[type=number] { flex: none; width: 52px; }
+  .rw-prices input[type=checkbox] { flex: none; width: 16px; height: 16px; margin: 0; }
+  .rw-prices .g { grid-column: 1 / -1; margin-top: 6px; font-size: 13px; color: var(--muted); }
+  .rw-prices input[type=number], .rw-bulk input { font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); border-radius: 6px; padding: 2px 6px; }
+  .rw-bulk { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 14px; margin-bottom: 6px; } .rw-bulk input { width: 60px; }
+  .tool-card .rw-bulk button, .tool-card .rw-add { font-size: 13px; padding: 3px 10px; border-radius: 8px; } .tool-card .rw-add { margin-top: 6px; }
   .rw-grid { flex: 1; min-height: 0; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); grid-auto-rows: max-content; gap: 8px; padding: 2px; user-select: none; }
   .rw-grid:empty::before { content: "설정 → 명단에 학생을 넣으면 학생 카드가 생겨요."; grid-column: 1 / -1; margin: auto; padding: 20px 0; color: var(--muted); font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; }
   .rw-tile { position: relative; height: 120px; background: #fff; border-radius: 14px; border: 2px solid transparent; box-shadow: 0 1px 3px rgba(40, 60, 100, .1); padding: 8px 10px; cursor: pointer; font-family: "Wanted Sans", "Malgun Gothic", sans-serif; overflow: hidden; }
@@ -681,7 +695,7 @@
   .rw-tile .nm { display: block; font-size: 19px; color: var(--ink); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 62%; }
   .rw-pt { position: absolute; left: 8px; bottom: 34px; display: flex; align-items: center; gap: 3px; padding: 1px 9px 1px 6px; border-radius: 999px; background: var(--accent); color: #fff; font-size: 16px; font-weight: 700; }
   .rw-tile.sel .rw-pt { bottom: 34px; }
-  .rw-av { position: absolute; right: 6px; bottom: 5px; width: 54px; height: 72px; border-radius: 8px; overflow: hidden; } .rw-av svg { width: 100%; height: 100%; display: block; }
+  .rw-av { position: absolute; right: 6px; bottom: 5px; width: 55px; height: 72px; border-radius: 8px; overflow: hidden; } .rw-av svg { width: 100%; height: 100%; display: block; }
   .rw-av:hover { transform: scale(1.06); }
   .rw-pm { position: absolute; top: 6px; right: 6px; display: flex; gap: 3px; }
   .tool-card .rw-pm button { width: 26px; height: 26px; padding: 0; border-radius: 50%; font-size: 16px; line-height: 1; display: grid; place-items: center; }
@@ -689,7 +703,7 @@
   .rw-tile.bump { animation: rw-bump .5s ease-out; } @keyframes rw-bump { 30% { transform: scale(1.06); } }
   .rw-cheer { position: absolute; inset: 0; z-index: 25; display: grid; place-content: center; gap: 6px; text-align: center; background: rgba(255, 255, 255, .82); border-radius: inherit; font-family: "Wanted Sans", "Malgun Gothic", sans-serif; animation: rw-in .25s ease-out; cursor: pointer; }
   .rw-cheer b { font-size: clamp(34px, 9cqw, 64px); color: var(--accent); } .rw-cheer.try b { color: #e8590c; }
-  .rw-cheer .big { font-size: clamp(40px, 12cqw, 84px); line-height: 1; animation: rw-pop .6s ease-out; } .rw-cheer span { font-size: 20px; color: var(--ink); } .rw-cheer small { font-size: 16px; color: var(--muted); }
+  .rw-cheer .big { font-size: clamp(40px, min(12cqw, 16cqh), 84px); line-height: 1.3; padding: 4px 10px; overflow: visible; animation: rw-pop .6s ease-out; } .rw-cheer span { font-size: 20px; color: var(--ink); } .rw-cheer small { font-size: 16px; color: var(--muted); }
   @keyframes rw-in { from { opacity: 0; } } @keyframes rw-pop { 0% { transform: scale(.3) rotate(-20deg); } 60% { transform: scale(1.2) rotate(6deg); } }
   .rw-menu { inset: auto; margin: 0; width: 260px; max-height: 60vh; overflow-y: auto; padding: 6px; border: 0; border-radius: 14px; background: #fff; color: var(--ink); box-shadow: 0 10px 34px rgba(30, 40, 70, .25); font: 15px "Wanted Sans", "Malgun Gothic", sans-serif; }
   .rw-menu h4 { margin: 4px 6px 6px; font-weight: normal; font-size: 13px; color: var(--muted); }
@@ -1022,9 +1036,9 @@
   </section>
   <section class="card tool-card" data-card="reward" id="rw-card">
     <p class="label">🏅 우리반 점수</p>
-    <div class="rw-bar"><button onclick="rwSel('all')">전체 선택</button><button onclick="rwSel('inv')">선택 반전</button><button onclick="rwSel('none')">선택 해제</button><span class="sp"></span><span class="rw-count" id="rw-count"></span></div>
+    <div class="rw-bar"><span class="rw-count" id="rw-count"></span><span class="sp"></span><button class="rw-give" onclick="rwSendOpen()">🤝 주고받기</button><button class="rw-hist" onclick="rwLog()">📜 기록</button><button class="rw-set" onclick="rwSettings()">⚙ 설정</button></div>
     <div class="rw-grid" id="rw-grid"></div>
-    <div class="rw-foot"><button class="rw-set" onclick="rwSettings()">⚙ 설정</button><button class="rw-send" onclick="rwSendOpen()">🤝 주고받기</button><span class="sp"></span><button class="rw-minus" onclick="rwGiveSel(this, -1)">− 노력해요</button><button class="main rw-plus" onclick="rwGiveSel(this, 1)">+ 칭찬해요</button></div>
+    <div class="rw-foot"><span class="rw-sel"><button onclick="rwSel('all')">전체 선택</button><button onclick="rwSel('inv')">선택 반전</button><button onclick="rwSel('none')">선택 해제</button></span><span class="sp"></span><button class="rw-minus" onclick="rwGiveSel(this, -1)">− 노력해요</button><button class="main rw-plus" onclick="rwGiveSel(this, 1)">+ 칭찬해요</button></div>
   </section>
   <section class="card tool-card" data-card="roles" id="rl-card">
     <p class="label">🧹 1인 1역</p>
@@ -3380,7 +3394,7 @@ async function ntPick(v) {
 try { ntHist = JSON.parse(localStorage.getItem("notice-hist")) || {}; } catch (e) {}
 setTimeout(ntDraw); // h는 아래에서 만들어짐
 
-// ───── 시계: 디지털(오전·오후 시:분, 초, 날짜) · 아날로그(바늘 셋). 고른 모양은 clock-mode에 저장
+// ───── 시계: 디지털(오전·오후 시:분, 날짜) · 아날로그(시침·분침). 고른 모양은 clock-mode에 저장
 let ckMode = "digital";
 try { ckMode = localStorage.getItem("clock-mode") || "digital"; } catch (e) {}
 function ckDraw() {
@@ -3388,14 +3402,14 @@ function ckDraw() {
   if (box.closest(".card").hidden) return; // 안 보이면 안 그림
   const date = now.toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "long" });
   if (ckMode === "digital") {
-    box.innerHTML = `<div class="ck-digital"><span>${H < 12 ? "오전" : "오후"}</span><b>${H % 12 || 12}:${String(M).padStart(2, "0")}<small>${String(S).padStart(2, "0")}</small></b><span>${date}</span></div>`;
+    box.innerHTML = `<div class="ck-digital"><span>${H < 12 ? "오전" : "오후"}</span><b>${H % 12 || 12}:${String(M).padStart(2, "0")}</b><span>${date}</span></div>`;
   } else {
     const hand = (deg, len, w, col) => `<line x1="50" y1="50" x2="${50 + len * Math.sin(deg * Math.PI / 180)}" y2="${50 - len * Math.cos(deg * Math.PI / 180)}" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/>`;
     let face = "";
     for (let i = 0; i < 60; i++) { const a = i * 6 * Math.PI / 180, r1 = i % 5 ? 43 : 40; face += `<line x1="${50 + r1 * Math.sin(a)}" y1="${50 - r1 * Math.cos(a)}" x2="${50 + 46 * Math.sin(a)}" y2="${50 - 46 * Math.cos(a)}" stroke="${i % 5 ? "#c5ccd6" : "#495057"}" stroke-width="${i % 5 ? .6 : 1.4}"/>`; }
     for (let n = 1; n <= 12; n++) { const a = n * 30 * Math.PI / 180; face += `<text x="${50 + 33 * Math.sin(a)}" y="${50 - 33 * Math.cos(a) + 3.2}" text-anchor="middle" font-size="9" fill="#343a40">${n}</text>`; }
     box.innerHTML = `<div class="ck-analog"><svg viewBox="0 0 100 100" aria-label="${H % 12 || 12}시 ${M}분"><circle cx="50" cy="50" r="48" fill="#fff" stroke="var(--accent)" stroke-width="2"/>${face}`
-      + hand((H % 12) * 30 + M / 2, 22, 3.2, "#343a40") + hand(M * 6 + S / 10, 32, 2.2, "#343a40") + hand(S * 6, 36, .9, "#e03131") + `<circle cx="50" cy="50" r="2.2" fill="#e03131"/></svg><span class="ck-date">${date}</span></div>`;
+      + hand((H % 12) * 30 + M / 2, 22, 3.2, "#343a40") + hand(M * 6 + S / 10, 32, 2.2, "#343a40") + `<circle cx="50" cy="50" r="2.2" fill="#343a40"/></svg><span class="ck-date">${date}</span></div>`;
   }
   document.querySelectorAll("#ck-card [data-ck]").forEach(b => b.classList.toggle("on", b.dataset.ck === ckMode));
 }
@@ -3415,47 +3429,47 @@ const AV_ITEMS = [
   // 헤어 (b: 뒷머리, f: 앞머리)
   { id: "h-short", slot: "hair", name: "짧은 머리", price: 0, f: "h8,2,15,2 h6,3,17,3 ~h4,4,5,4 h5,4,18,4 h4,5,19,7 h4,8,19,8 H5,8,8,8 H15,8,18,8 s10,8 s13,8 ~h3,6,3,10 ~H4,9,4,10 j9,3,11,3 j7,4,8,4" },
   { id: "h-bob", slot: "hair", name: "단발", price: 0, b: "h3,5,20,17", f: "h8,2,15,2 h6,3,17,3 h5,4,18,4 h4,5,19,8 h4,9,19,9 s8,9 s12,9 s15,9 ~H5,9,6,9 ~h2,7,4,16 ~H3,16,5,17 ~h5,10,5,15 ~H2,12,2,16 j9,3,11,3 j7,4,8,5" },
-  { id: "h-long", slot: "hair", name: "긴 머리", price: 25, b: "h3,5,20,23 ~H2,9,2,22 ~H3,23,5,24", f: "h8,2,15,2 h6,3,17,3 h5,4,18,4 h4,5,19,8 h4,9,19,9 s9,9 s14,9 ~H5,9,6,9 ~h2,7,4,18 ~h5,10,5,13 ~H2,14,3,18 j9,3,11,3 j7,4,8,5" },
-  { id: "h-pony", slot: "hair", name: "포니테일", price: 20, b: "h19,6,22,8 h20,9,22,15 h19,16,21,18 H21,10,22,16 r19,6,20,7", f: "h8,2,15,2 h6,3,17,3 h5,4,18,4 h4,5,19,8 h4,9,8,9 h15,9,19,9 h10,9,13,9 s11,9 ~H4,9,5,9 ~h3,6,3,11 j9,3,11,3 j7,4,8,5" },
-  { id: "h-twin", slot: "hair", name: "양갈래", price: 30, b: "~h0,7,3,9 ~h0,10,2,19 ~H0,15,1,20 ~r2,6,3,7", f: "h8,2,15,2 h6,3,17,3 h5,4,18,4 h4,5,19,8 h4,9,19,9 s8,9 s11,9,12,9 s15,9 ~H4,9,5,9 ~h3,6,3,11 j9,3,11,3 j7,4,8,5" },
-  { id: "h-bun", slot: "hair", name: "똥머리", price: 30, f: "h9,0,14,0 h8,1,15,1 H9,2,14,2 j10,0,11,0 h7,3,16,3 h5,4,18,4 h4,5,19,8 h4,9,19,9 s9,9 s14,9 ~H5,9,6,9 ~h3,6,3,11 j8,4,10,4" },
-  { id: "h-spiky", slot: "hair", name: "뾰족 머리", price: 25, f: "h7,0 h11,0 h15,0 h6,1,8,1 h10,1,12,1 h14,1,16,1 h5,2,18,2 h4,3,19,7 ~h3,2 ~h3,4,3,9 h4,8,19,8 ~H5,8,7,8 H11,8,12,8 s9,8 s14,8 j8,2,9,2 j6,3,7,3" },
-  { id: "h-curly", slot: "hair", name: "곱슬 머리", price: 35, b: "~h2,6,4,15 ~H2,14,4,15", f: "h7,1,9,1 h11,1,12,1 h14,1,16,1 h5,2,18,2 h4,3,19,7 ~h3,3,3,10 ~h2,5,2,13 h4,8,19,8 ~H4,8,5,8 H9,8 H14,8 s7,8 s11,8,12,8 s16,8 ~j6,3,7,3 j11,2,12,2" },
+  { id: "h-long", slot: "hair", name: "긴 머리", price: 7, b: "h3,5,20,23 ~H2,9,2,22 ~H3,23,5,24", f: "h8,2,15,2 h6,3,17,3 h5,4,18,4 h4,5,19,8 h4,9,19,9 s9,9 s14,9 ~H5,9,6,9 ~h2,7,4,18 ~h5,10,5,13 ~H2,14,3,18 j9,3,11,3 j7,4,8,5" },
+  { id: "h-pony", slot: "hair", name: "포니테일", price: 6, b: "h19,6,22,8 h20,9,22,15 h19,16,21,18 H21,10,22,16 r19,6,20,7", f: "h8,2,15,2 h6,3,17,3 h5,4,18,4 h4,5,19,8 h4,9,8,9 h15,9,19,9 h10,9,13,9 s11,9 ~H4,9,5,9 ~h3,6,3,11 j9,3,11,3 j7,4,8,5" },
+  { id: "h-twin", slot: "hair", name: "양갈래", price: 8, b: "~h0,7,3,9 ~h0,10,2,19 ~H0,15,1,20 ~r2,6,3,7", f: "h8,2,15,2 h6,3,17,3 h5,4,18,4 h4,5,19,8 h4,9,19,9 s8,9 s11,9,12,9 s15,9 ~H4,9,5,9 ~h3,6,3,11 j9,3,11,3 j7,4,8,5" },
+  { id: "h-bun", slot: "hair", name: "똥머리", price: 8, f: "h9,0,14,0 h8,1,15,1 H9,2,14,2 j10,0,11,0 h7,3,16,3 h5,4,18,4 h4,5,19,8 h4,9,19,9 s9,9 s14,9 ~H5,9,6,9 ~h3,6,3,11 j8,4,10,4" },
+  { id: "h-spiky", slot: "hair", name: "뾰족 머리", price: 7, f: "h7,0 h11,0 h15,0 h6,1,8,1 h10,1,12,1 h14,1,16,1 h5,2,18,2 h4,3,19,7 ~h3,2 ~h3,4,3,9 h4,8,19,8 ~H5,8,7,8 H11,8,12,8 s9,8 s14,8 j8,2,9,2 j6,3,7,3" },
+  { id: "h-curly", slot: "hair", name: "곱슬 머리", price: 9, b: "~h2,6,4,15 ~H2,14,4,15", f: "h7,1,9,1 h11,1,12,1 h14,1,16,1 h5,2,18,2 h4,3,19,7 ~h3,3,3,10 ~h2,5,2,13 h4,8,19,8 ~H4,8,5,8 H9,8 H14,8 s7,8 s11,8,12,8 s16,8 ~j6,3,7,3 j11,2,12,2" },
   // 상의 (full: 하의를 덮음)
   { id: "t-tee", slot: "top", name: "티셔츠", price: 0, c: { t: "#f8f9fa", T: "#d5dbe1" }, p: "t7,18,16,23 s10,18,13,18 ~t5,18,6,20 ~T7,19,7,23 T8,23,15,23 ~T5,20,6,20" },
-  { id: "t-stripe", slot: "top", name: "줄무늬 티", price: 15, c: { t: "#ffffff", T: "#dee2e6", u: "#4c6ef5" }, p: "t7,18,16,23 s10,18,13,18 ~t5,18,6,20 u7,19,16,19 u7,21,16,21 ~u5,19,6,19 u8,23,15,23 ~T7,20 ~T7,22" },
-  { id: "t-hood", slot: "top", name: "후드티", price: 25, c: { t: "#74c0fc", T: "#4dabf7", u: "#a5d8ff" }, p: "T8,17,15,17 t7,18,16,23 T10,18,13,18 ~t5,18,6,23 ~T5,23,6,23 u9,21,14,22 n10,19 n13,19 n10,20 n13,20 ~T7,19,7,23" },
-  { id: "t-jacket", slot: "top", name: "노란 재킷", price: 30, c: { t: "#fcc419", T: "#e0a800", u: "#ffc9d6" }, p: "t7,18,16,23 u10,18,13,23 ~T9,18,9,20 ~t5,18,6,23 ~T5,23,6,23 ~T7,22,8,23 ~T7,19,7,21" },
-  { id: "t-uniform", slot: "top", name: "교복", price: 35, c: { t: "#364fc7", T: "#2b3f9e", u: "#ffffff" }, p: "t7,18,16,23 u10,18,13,19 ~u9,18 r11,19,12,22 ~t5,18,6,23 ~T5,23,6,23 ~T7,19,7,23 T8,23,15,23 g9,20 g9,22" },
-  { id: "t-dress", slot: "top", name: "원피스", price: 40, full: 1, c: { t: "#ff8fab", T: "#e0607e", u: "#ffffff" }, p: "t7,18,16,21 s10,18,13,18 u10,18,13,18 ~t5,18,6,19 t7,22,16,23 t6,24,17,25 t5,26,18,27 T5,27,18,27 ~T8,24 ~T11,25 u7,21,16,21" },
+  { id: "t-stripe", slot: "top", name: "줄무늬 티", price: 5, c: { t: "#ffffff", T: "#dee2e6", u: "#4c6ef5" }, p: "t7,18,16,23 s10,18,13,18 ~t5,18,6,20 u7,19,16,19 u7,21,16,21 ~u5,19,6,19 u8,23,15,23 ~T7,20 ~T7,22" },
+  { id: "t-hood", slot: "top", name: "후드티", price: 7, c: { t: "#74c0fc", T: "#4dabf7", u: "#a5d8ff" }, p: "T8,17,15,17 t7,18,16,23 T10,18,13,18 ~t5,18,6,23 ~T5,23,6,23 u9,21,14,22 n10,19 n13,19 n10,20 n13,20 ~T7,19,7,23" },
+  { id: "t-jacket", slot: "top", name: "노란 재킷", price: 8, c: { t: "#fcc419", T: "#e0a800", u: "#ffc9d6" }, p: "t7,18,16,23 u10,18,13,23 ~T9,18,9,20 ~t5,18,6,23 ~T5,23,6,23 ~T7,22,8,23 ~T7,19,7,21" },
+  { id: "t-uniform", slot: "top", name: "교복", price: 9, c: { t: "#364fc7", T: "#2b3f9e", u: "#ffffff" }, p: "t7,18,16,23 u10,18,13,19 ~u9,18 r11,19,12,22 ~t5,18,6,23 ~T5,23,6,23 ~T7,19,7,23 T8,23,15,23 g9,20 g9,22" },
+  { id: "t-dress", slot: "top", name: "원피스", price: 10, full: 1, c: { t: "#ff8fab", T: "#e0607e", u: "#ffffff" }, p: "t7,18,16,21 s10,18,13,18 u10,18,13,18 ~t5,18,6,19 t7,22,16,23 t6,24,17,25 t5,26,18,27 T5,27,18,27 ~T8,24 ~T11,25 u7,21,16,21" },
   // 하의
   { id: "b-jeans", slot: "bottom", name: "청바지", price: 0, c: { p: "#4f6fb3", P: "#3a5592" }, p: "p7,24,16,24 ~p8,25,10,28 ~P10,25,10,28 ~P8,28,10,28" },
-  { id: "b-shorts", slot: "bottom", name: "반바지", price: 10, c: { p: "#8b6b4a", P: "#6b5034" }, p: "p7,24,16,24 ~p8,25,10,26 ~P8,26,10,26" },
-  { id: "b-skirt", slot: "bottom", name: "치마", price: 15, c: { p: "#e8590c", P: "#c2410c" }, p: "p7,24,16,24 p7,25,16,25 p6,26,17,26 P6,26 P9,26 P12,26 P15,26 P17,26" },
-  { id: "b-pants", slot: "bottom", name: "체크 바지", price: 20, c: { p: "#6c757d", P: "#495057", u: "#868e96" }, p: "p7,24,16,24 ~p8,25,10,28 ~u8,26,10,26 ~u9,25,9,28 ~P8,28,10,28" },
+  { id: "b-shorts", slot: "bottom", name: "반바지", price: 5, c: { p: "#8b6b4a", P: "#6b5034" }, p: "p7,24,16,24 ~p8,25,10,26 ~P8,26,10,26" },
+  { id: "b-skirt", slot: "bottom", name: "치마", price: 6, c: { p: "#e8590c", P: "#c2410c" }, p: "p7,24,16,24 p7,25,16,25 p6,26,17,26 P6,26 P9,26 P12,26 P15,26 P17,26" },
+  { id: "b-pants", slot: "bottom", name: "체크 바지", price: 7, c: { p: "#6c757d", P: "#495057", u: "#868e96" }, p: "p7,24,16,24 ~p8,25,10,28 ~u8,26,10,26 ~u9,25,9,28 ~P8,28,10,28" },
   // 신발
   { id: "s-sneak", slot: "shoes", name: "운동화", price: 0, c: { o: "#ffffff", O: "#adb5bd" }, p: "~o7,29,10,29 ~O7,30,10,30" },
-  { id: "s-red", slot: "shoes", name: "빨간 구두", price: 10, c: { o: "#e03131", O: "#a61e1e" }, p: "~o7,29,10,29 ~O7,30,10,30 ~n8,29" },
-  { id: "s-boot", slot: "shoes", name: "장화", price: 15, c: { o: "#fab005", O: "#e67700" }, p: "~o8,27,10,29 ~o7,29 ~O7,30,10,30" },
-  { id: "s-brown", slot: "shoes", name: "갈색 구두", price: 15, c: { o: "#7a4b2a", O: "#4f2e17" }, p: "~o7,29,10,29 ~O7,30,10,30" },
+  { id: "s-red", slot: "shoes", name: "빨간 구두", price: 5, c: { o: "#e03131", O: "#a61e1e" }, p: "~o7,29,10,29 ~O7,30,10,30 ~n8,29" },
+  { id: "s-boot", slot: "shoes", name: "장화", price: 6, c: { o: "#fab005", O: "#e67700" }, p: "~o8,27,10,29 ~o7,29 ~O7,30,10,30" },
+  { id: "s-brown", slot: "shoes", name: "갈색 구두", price: 6, c: { o: "#7a4b2a", O: "#4f2e17" }, p: "~o7,29,10,29 ~O7,30,10,30" },
   // 장신구 (예전 장신구 이름 그대로: 이미 산 것은 그대로 가짐)
-  { id: "ribbon", slot: "head", name: "리본", price: 10, p: "r15,3 r17,3 r15,5 r17,5 R16,4 r14,4 r18,4" },
-  { id: "clip", slot: "head", name: "꽃핀", price: 10, p: "n16,5 n18,5 n17,4 n17,6 g17,5" },
-  { id: "bowtie", slot: "neck", name: "나비넥타이", price: 10, p: "~r9,18,10,18 ~r9,19 R11,18,12,18" },
-  { id: "glasses", slot: "face", name: "안경", price: 15, p: "~k6,9,9,9 ~k6,13,9,13 ~k6,10,6,12 ~k9,10,9,12 k10,10,13,10" },
-  { id: "scarf", slot: "neck", name: "목도리", price: 15, p: "r8,17,15,18 n9,17 n11,17 n13,17 R14,19,15,22 n14,20" },
-  { id: "hat", slot: "head", name: "모자", price: 20, p: "l6,1,17,1 l5,2,18,4 d5,4,18,4 d4,5,21,5 n10,2,12,3" },
-  { id: "sunglasses", slot: "face", name: "선글라스", price: 25, p: "~k6,9,9,9 ~k6,10,9,12 ~D7,10 k10,10,13,10" },
-  { id: "headphones", slot: "head", name: "헤드폰", price: 30, p: "D6,1,17,1 ~D4,2,5,3 ~D3,4,3,8 ~r2,9,4,12 ~R2,12,4,12" },
-  { id: "crown", slot: "head", name: "왕관", price: 50, p: "g7,0 g11,0,12,0 g16,0 g7,1,8,1 g10,1,13,1 g15,1,16,1 g7,2,16,3 G7,3,16,3 r9,2 l12,2 r14,2" },
+  { id: "ribbon", slot: "head", name: "리본", price: 5, p: "r15,3 r17,3 r15,5 r17,5 R16,4 r14,4 r18,4" },
+  { id: "clip", slot: "head", name: "꽃핀", price: 5, p: "n16,5 n18,5 n17,4 n17,6 g17,5" },
+  { id: "bowtie", slot: "neck", name: "나비넥타이", price: 5, p: "~r9,18,10,18 ~r9,19 R11,18,12,18" },
+  { id: "glasses", slot: "face", name: "안경", price: 6, p: "~k6,9,9,9 ~k6,13,9,13 ~k6,10,6,12 ~k9,10,9,12 k10,10,13,10" },
+  { id: "scarf", slot: "neck", name: "목도리", price: 7, p: "r8,17,15,18 n9,17 n11,17 n13,17 R14,19,15,22 n14,20" },
+  { id: "hat", slot: "head", name: "모자", price: 7, p: "l6,1,17,1 l5,2,18,4 d5,4,18,4 d4,5,21,5 n10,2,12,3" },
+  { id: "sunglasses", slot: "face", name: "선글라스", price: 8, p: "~k6,9,9,9 ~k6,10,9,12 ~D7,10 k10,10,13,10" },
+  { id: "headphones", slot: "head", name: "헤드폰", price: 9, p: "D6,1,17,1 ~D4,2,5,3 ~D3,4,3,8 ~r2,9,4,12 ~R2,12,4,12" },
+  { id: "crown", slot: "head", name: "왕관", price: 10, p: "g7,0 g11,0,12,0 g16,0 g7,1,8,1 g10,1,13,1 g15,1,16,1 g7,2,16,3 G7,3,16,3 r9,2 l12,2 r14,2" },
   // 배경
   { id: "bg-none", slot: "bg", name: "없음", price: 0, p: "" },
-  { id: "bg-sky", slot: "bg", name: "하늘", price: 20, c: { a: "#a5d8ff", A: "#d0ebff", b: "#69db7c", B: "#40c057" }, p: "a0,0,23,15 A0,16,23,25 n3,5,7,6 n2,6 n16,9,20,10 n15,10 b0,26,23,31 B0,26,23,26 B4,29 B12,28 B19,30" },
-  { id: "bg-class", slot: "bg", name: "교실", price: 30, c: { a: "#fff4d6", A: "#2f6e4f", b: "#c08a52", B: "#9a6532" }, p: "a0,0,23,23 B1,3,22,15 A2,4,21,14 n4,6,7,6 n4,8,9,8 n13,11,18,11 n20,13 b0,24,23,31 B0,24,23,24 B0,28,23,28 B6,25,6,27 B17,29,17,31" },
-  { id: "bg-park", slot: "bg", name: "공원", price: 30, c: { a: "#c5f6fa", A: "#2b8a3e", b: "#8ce99a", B: "#7a4b2a" }, p: "a0,0,23,31 A0,6,4,13 A1,4,3,5 B2,14,2,22 A19,8,23,15 A20,6,22,7 B21,16,21,22 b0,23,23,31 A0,23,23,23 g11,2 g10,3,12,3 g11,4" },
-  { id: "bg-night", slot: "bg", name: "밤하늘", price: 40, c: { a: "#1c2541", A: "#3a506b" }, p: "a0,0,23,31 A0,24,23,31 g18,2,20,4 a17,2 a17,3 g3,3 g8,6 g21,9 g2,12 g14,1 g6,17 g22,15 n12,4 n4,8" },
-  { id: "bg-beach", slot: "bg", name: "바다", price: 40, c: { a: "#d0ebff", A: "#339af0", b: "#ffe8a3", B: "#1c7ed6" }, p: "a0,0,23,17 g19,2,21,4 A0,18,23,24 B0,20,23,20 B3,23,8,23 B15,22,20,22 n5,19 n17,21 b0,25,23,31 G4,28 G18,29" },
-  { id: "bg-street", slot: "bg", name: "거리", price: 50, c: { a: "#e7f5ff", A: "#f3c6c6", b: "#ced4da", B: "#868e96" }, p: "a0,0,23,31 A0,2,5,24 A18,4,23,24 B1,5,3,8 B1,12,3,15 B19,7,22,10 B19,13,22,16 n2,6 n20,8 b0,25,23,31 B0,25,23,25 n10,28,13,28 n4,29,7,29 n16,29,19,29" },
+  { id: "bg-sky", slot: "bg", name: "하늘", price: 5, c: { a: "#a5d8ff", A: "#d0ebff", b: "#69db7c", B: "#40c057" }, p: "a0,0,23,15 A0,16,23,25 n3,5,7,6 n2,6 n16,9,20,10 n15,10 b0,26,23,31 B0,26,23,26 B4,29 B12,28 B19,30" },
+  { id: "bg-class", slot: "bg", name: "교실", price: 6, c: { a: "#fff4d6", A: "#2f6e4f", b: "#c08a52", B: "#9a6532" }, p: "a0,0,23,23 B1,3,22,15 A2,4,21,14 n4,6,7,6 n4,8,9,8 n13,11,18,11 n20,13 b0,24,23,31 B0,24,23,24 B0,28,23,28 B6,25,6,27 B17,29,17,31" },
+  { id: "bg-park", slot: "bg", name: "공원", price: 6, c: { a: "#c5f6fa", A: "#2b8a3e", b: "#8ce99a", B: "#7a4b2a" }, p: "a0,0,23,31 A0,6,4,13 A1,4,3,5 B2,14,2,22 A19,8,23,15 A20,6,22,7 B21,16,21,22 b0,23,23,31 A0,23,23,23 g11,2 g10,3,12,3 g11,4" },
+  { id: "bg-night", slot: "bg", name: "밤하늘", price: 8, c: { a: "#1c2541", A: "#3a506b" }, p: "a0,0,23,31 A0,24,23,31 g18,2,20,4 a17,2 a17,3 g3,3 g8,6 g21,9 g2,12 g14,1 g6,17 g22,15 n12,4 n4,8" },
+  { id: "bg-beach", slot: "bg", name: "바다", price: 8, c: { a: "#d0ebff", A: "#339af0", b: "#ffe8a3", B: "#1c7ed6" }, p: "a0,0,23,17 g19,2,21,4 A0,18,23,24 B0,20,23,20 B3,23,8,23 B15,22,20,22 n5,19 n17,21 b0,25,23,31 G4,28 G18,29" },
+  { id: "bg-street", slot: "bg", name: "거리", price: 10, c: { a: "#e7f5ff", A: "#f3c6c6", b: "#ced4da", B: "#868e96" }, p: "a0,0,23,31 A0,2,5,24 A18,4,23,24 B1,5,3,8 B1,12,3,15 B19,7,22,10 B19,13,22,16 n2,6 n20,8 b0,25,23,31 B0,25,23,25 n10,28,13,28 n4,29,7,29 n16,29,19,29" },
 ];
 const AV_REQ = { hair: "h-short", top: "t-tee", bottom: "b-jeans", shoes: "s-sneak", bg: "bg-none" }; // 늘 입고 있는 슬롯 (없으면 기본)
 const avItem = id => AV_ITEMS.find(x => x.id === id);
@@ -3481,28 +3495,35 @@ function avSvg(av, wear = {}) {
   lay(ch, hair.f);
   for (const sl of ["face", "head"]) { const x = avItem(w[sl]); x && lay(ch, x.p, x.c); }
   const has = (x, y) => !!ch[y]?.[x];
-  const out = [];
-  for (let y = 0; y < 32; y++) for (let x = 0; x < 24; x++) if (!has(x, y) && (has(x - 1, y) || has(x + 1, y) || has(x, y - 1) || has(x, y + 1))) (out[y] ||= [])[x] = AV_FIX.k;
+  const out = {}; // 바깥 테두리는 그림 밖(-1, 24, 32)까지 그려서 잘리지 않게
+  for (let y = -1; y <= 32; y++) for (let x = -1; x <= 24; x++) if (!has(x, y) && (has(x - 1, y) || has(x + 1, y) || has(x, y - 1) || has(x, y + 1))) (out[y] ||= {})[x] = AV_FIX.k;
   let r = "";
-  for (const g of [bg, out, ch]) g.forEach((row, y) => { if (!row) return; for (let x = 0; x < 24;) { const c = row[x]; if (!c) { x++; continue; } let n = 1; while (row[x + n] === c) n++; r += `<rect x="${x}" y="${y}" width="${n}" height="1" fill="${c}"/>`; x += n; } });
-  return `<svg viewBox="0 0 24 32" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`;
+  const run = (row, y, x0, x1, grow) => { for (let x = x0; x <= x1;) { const c = row[x]; if (!c) { x++; continue; } let n = 1; while (x + n <= x1 && row[x + n] === c) n++; const a = grow && x === 0 ? -1 : x, b = grow && x + n === 24 ? 25 : x + n; r += `<rect x="${a}" y="${y}" width="${b - a}" height="1" fill="${c}"/>`; x += n; } };
+  bg.forEach((row, y) => { if (!row) return; run(row, y, 0, 23, 1); if (y === 0) run(row, -1, 0, 23, 1); if (y === 31) run(row, 32, 0, 23, 1); });
+  for (const y in out) run(out[y], +y, -1, 24);
+  ch.forEach((row, y) => row && run(row, y, 0, 23));
+  return `<svg viewBox="-1 -1 26 34" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`;
 }
 const RW_REASONS = [{ t: "숙제를 잘했어요", pt: 1 }, { t: "발표를 잘했어요", pt: 1 }, { t: "친구를 도와줬어요", pt: 2 }, { t: "정리를 잘했어요", pt: 1 }, { t: "수업 시간에 떠들었어요", pt: -1 }, { t: "숙제를 안 했어요", pt: -1 }];
-let reward = { unit: "포인트", reasons: RW_REASONS, st: {}, log: [] };
+let reward = { unit: "포인트", reasons: RW_REASONS, st: {}, log: [], prices: {} }; // prices: { 물건 id: 교사가 정한 가격 }
 try { reward = Object.assign(reward, JSON.parse(localStorage.getItem("reward")) || {}); } catch (e) {}
 let rwPick = new Set();
 const rwCard = document.getElementById("rw-card");
 const rwStore = () => { try { localStorage.setItem("reward", JSON.stringify(reward)); } catch (e) {} };
+const avPrice = it => reward.prices?.[it.id] ?? it.price;
 const rwHash = t => [...t].reduce((a, c) => a * 31 + c.charCodeAt(0) >>> 0, 7);
-function rwSt(p) { // 처음 보는 학생은 이름으로 머리 모양·색을 정해 둠 (나중에 바꿀 수 있어요)
+function rwSt(p) { // 처음 보는 학생은 이름으로 피부·머리색을 정해 둠 (나중에 바꿀 수 있어요)
   const s = reward.st[p] ||= { pt: 0, own: [], wear: {} };
   if (!s.av || s.av.base !== undefined) { // 처음이거나 예전 동물 아바타 → 사람 아바타로 (산 장신구는 그대로)
     const k = rwHash(seName(p));
     s.av = { skin: k % 2, hair: k % 3 };
-    s.wear = { ...Object.fromEntries(Object.entries(s.wear || {}).filter(([sl, id]) => avItem(id)?.slot === sl)), hair: k % 5 < 2 ? "h-short" : "h-bob" };
+    s.wear = Object.fromEntries(Object.entries(s.wear || {}).filter(([sl, id]) => avItem(id)?.slot === sl));
   }
+  if (!s.v) { if (!s.saved && ["h-short", "h-bob"].includes(s.wear.hair)) delete s.wear.hair; s.v = 2; } // 저장한 적 없는 기본 머리는 성별을 따르게
   return s;
 }
+// 입은 것 + 기본 머리(명단 성별: 남 짧은 머리, 여 단발, 모르면 이름으로)
+const rwWear = (p, wear) => ({ hair: gender[p] === "M" ? "h-short" : gender[p] === "F" ? "h-bob" : rwHash(seName(p)) % 5 < 2 ? "h-short" : "h-bob", ...wear });
 function rwDraw() {
   const ppl = people(), unit = reward.unit.trim() || "점";
   rwPick = new Set([...rwPick].filter(p => ppl.includes(p)));
@@ -3511,7 +3532,7 @@ function rwDraw() {
       h("div", { class: "n" }, seNum(p) || ""), h("span", { class: "nm" }, seName(p)),
       h("span", { class: "rw-pt" }, "★ " + s.pt),
       h("div", { class: "rw-pm" }, h("button", { class: "p", title: "칭찬해요", onclick: e => { e.stopPropagation(); rwMenu(e.currentTarget, 1, [p]); } }, "+"), h("button", { class: "m", title: "노력해요", onclick: e => { e.stopPropagation(); rwMenu(e.currentTarget, -1, [p]); } }, "−")));
-    const av = h("div", { class: "rw-av", title: "아바타 꾸미기" }); av.innerHTML = avSvg(s.av, s.wear);
+    const av = h("div", { class: "rw-av", title: "아바타 꾸미기" }); av.innerHTML = avSvg(s.av, rwWear(p, s.wear));
     av.onclick = e => { e.stopPropagation(); rwAvatar(p); };
     t.append(av);
     t.onclick = () => { rwPick.has(p) ? rwPick.delete(p) : rwPick.add(p); t.classList.toggle("sel", rwPick.has(p)); rwCount(); };
@@ -3550,13 +3571,24 @@ function rwApply(who, d, why, from) { // 점수 주기·빼기 + 칭찬해요/�
   who.forEach(p => rwCard.querySelector(`.rw-tile[data-p="${CSS.escape(p)}"]`)?.classList.add("bump"));
   rwCheer(from ? "주고받았어요" : d > 0 ? "칭찬해요!" : "노력해요!", from ? "🤝" : d > 0 ? "👏" : "💪", who, d, why, d < 0 && !from);
 }
+function rwSound(k) {
+  if (k === "up") { // 두구두구 → 빰빠밤!
+    for (let i = 0; i < 10; i++) tone(90 + i * 6, i * .04, .05, "square", .1);
+    [523, 659, 784].forEach((f, i) => tone(f, .42 + i * .09, .14, "square", .14));
+    [1047, 1319, 1568].forEach(f => { tone(f, .7, 1.1, "triangle", .2); tone(f / 2, .7, 1.1, "sawtooth", .05); });
+    [2093, 2637, 3136, 2637, 3136, 4186].forEach((f, i) => tone(f, .78 + i * .06, .2, "sine", .07));
+  } else if (k === "try") { // 빠밤빠밤~ (아쉬운 트롬본)
+    [392, 370, 349].forEach((f, i) => { tone(f, i * .32, .3, "sawtooth", .1); tone(f / 2, i * .32, .3, "triangle", .15); });
+    for (let i = 0; i < 8; i++) tone(330 - (i % 2) * 10 - i * 3, .96 + i * .1, .12, "sawtooth", .1);
+  } else melody([659, 784, 1047, 1319], .09, "triangle", .25);
+}
 function rwCheer(title, icon, who, d, why, isTry) {
   rwCard.querySelector(".rw-cheer")?.remove();
   const unit = reward.unit.trim() || "점", names = who.length <= 3 ? who.map(seName).join(", ") : `${who.slice(0, 3).map(seName).join(", ")} 외 ${who.length - 3}명`;
   const c = h("div", { class: "rw-cheer" + (isTry ? " try" : ""), onclick: () => c.remove() }, h("div", { class: "big" }, icon), h("b", {}, title), h("span", {}, `${names}  ${d > 0 ? "+" : "−"}${Math.abs(d)} ${unit}`), why ? h("small", {}, why) : "");
   rwCard.append(c);
-  if (isTry) melody([523, 440, 392], .12, "triangle", .2); else melody([523, 659, 784, 1047], .08, "triangle", .25);
-  setTimeout(() => c.remove(), 2200);
+  rwSound(isTry ? "try" : d > 0 && !/주고/.test(title) ? "up" : "give");
+  setTimeout(() => c.remove(), 2600);
 }
 // 설정: 점수 단위 · 칭찬해요/노력해요 목록 · 모든 점수 0으로
 function rwSettings() {
@@ -3570,11 +3602,34 @@ function rwSettings() {
       return [t, v, h("button", { class: "x", title: "빼기", onclick: () => { list.splice(i, 1); draw(); } }, "✕")];
     }));
   draw();
-  const ok = h("button", { class: "main", onclick: () => { reward.unit = unit.value.trim() || "포인트"; reward.reasons = list.filter(r => r.t && r.pt); rwStore(); rwDraw(); ed.remove(); } }, "완료");
-  const zero = h("button", { class: "danger", onclick: async () => { if (await seConfirm(ed, "모든 학생의 점수를 0으로 할까요?\n산 장신구는 그대로 남아요.", "0으로")) { Object.values(reward.st).forEach(s => s.pt = 0); reward.log = []; rwStore(); rwDraw(); } } }, "모든 점수 0으로");
+  const price = Object.fromEntries(AV_ITEMS.filter(it => it.price).map(it => [it.id, avPrice(it)])), chosen = new Set(), shop = h("div", { class: "rw-prices" });
+  const bulk = h("input", { type: "number", min: "0", max: "999", value: "5", "aria-label": "가격" });
+  const drawShop = () => shop.replaceChildren(...AV_TABS.flatMap(([tab, tname]) => {
+    const its = AV_ITEMS.filter(it => it.price && (tab === "acc" ? ["head", "face", "neck"].includes(it.slot) : it.slot === tab));
+    const all = h("input", { type: "checkbox", title: tname + " 모두 고르기" }); all.checked = its.every(it => chosen.has(it.id));
+    all.onchange = () => { its.forEach(it => all.checked ? chosen.add(it.id) : chosen.delete(it.id)); drawShop(); };
+    return [h("label", { class: "g" }, all, tname), ...its.map(it => {
+      const c = h("input", { type: "checkbox" }), v = h("input", { type: "number", min: "0", max: "999", value: String(price[it.id]) });
+      c.checked = chosen.has(it.id); c.onchange = () => { c.checked ? chosen.add(it.id) : chosen.delete(it.id); drawShop(); };
+      v.oninput = () => price[it.id] = Math.max(0, Math.round(+v.value || 0));
+      return h("label", { class: chosen.has(it.id) ? "on" : "" }, c, h("span", {}, it.name), v);
+    })];
+  }));
+  drawShop();
+  const bulkRow = h("div", { class: "rw-bulk" }, "고른 물건을 ", bulk, ` ${reward.unit.trim() || "점"}으로 `, h("button", { onclick: () => {
+    if (!chosen.size) return seConfirm(ed, "가격을 바꿀 물건을 먼저 골라요.", "확인", null);
+    chosen.forEach(id => price[id] = Math.max(0, Math.round(+bulk.value || 0))); drawShop();
+  } }, "바꾸기"), h("button", { onclick: () => { AV_ITEMS.forEach(it => it.price && (price[it.id] = it.price)); drawShop(); } }, "처음 가격으로"));
+  const ok = h("button", { class: "main", onclick: () => {
+    reward.unit = unit.value.trim() || "포인트"; reward.reasons = list.filter(r => r.t && r.pt);
+    reward.prices = Object.fromEntries(Object.entries(price).filter(([id, v]) => v !== avItem(id).price));
+    rwStore(); rwDraw(); ed.remove();
+  } }, "완료");
+  const zero = h("button", { class: "danger", onclick: async () => { if (await seConfirm(ed, "모든 학생의 점수를 0으로 할까요?\n산 물건과 점수 기록은 그대로 남아요.", "0으로")) { Object.values(reward.st).forEach(s => s.pt = 0); reward.log = [{ at: Date.now(), who: [], d: 0, why: "모든 점수 0으로" }, ...reward.log].slice(0, 1000); rwStore(); rwDraw(); } } }, "모든 점수 0으로");
   const ed = h("div", { class: "card-ed" }, h("div", { class: "card-ed-head" }, h("b", {}, "점수 설정"), ok),
-    h("div", { class: "card-ed-list" }, h("label", { class: "rw-h" }, "점수 단위 ", unit), h("p", { class: "rw-h" }, "칭찬해요(+)·노력해요(−) 목록"), rows),
-    h("div", { class: "card-ed-foot" }, h("button", { onclick: () => { list.push({ t: "", pt: 1 }); draw(); rows.querySelectorAll("input")[rows.querySelectorAll("input").length - 2]?.focus(); } }, "+ 이유 추가"), zero));
+    h("div", { class: "card-ed-list" }, h("label", { class: "rw-h" }, "점수 단위 ", unit), h("p", { class: "rw-h" }, "칭찬해요(+)·노력해요(−) 목록"), rows, h("button", { class: "rw-add", onclick: () => { list.push({ t: "", pt: 1 }); draw(); rows.querySelectorAll("input")[rows.querySelectorAll("input").length - 2]?.focus(); } }, "+ 이유 추가"),
+      h("p", { class: "rw-h" }, "가게 가격 (0이면 무료)"), bulkRow, shop),
+    h("div", { class: "card-ed-foot" }, zero));
   rwCard.append(ed);
 }
 // 아바타 꾸미기: 피부·머리색은 마음대로, 머리 모양·옷·장신구·배경은 점수로 사서 입고 벗기
@@ -3583,31 +3638,58 @@ let rwTab = "hair";
 function rwAvatar(p) {
   rwCard.querySelector(".card-ed")?.remove();
   const s = rwSt(p), unit = reward.unit.trim() || "점", body = h("div", { class: "card-ed-list" });
-  const save = () => { rwStore(); draw(); rwDraw(); };
+  const d = { pt: s.pt, av: { ...s.av }, own: [...s.own], wear: rwWear(p, s.wear) }, bought = [], start = JSON.stringify(d); // 저장 전까지는 여기서만 바꿈
   const draw = () => {
-    const me = h("div", { class: "rw-me" }); me.innerHTML = avSvg(s.av, s.wear);
-    const sw = (list, key, label) => h("div", { class: "rw-pick" }, h("span", {}, label), ...list.map((c, i) => h("button", { class: "sw" + (s.av[key] === i ? " on" : ""), style: `background:${c[0]}`, "aria-label": label, onclick: () => { s.av[key] = i; save(); } })));
-    me.append(h("div", {}, h("b", {}, seName(p)), h("br"), h("span", { class: "rw-pt" }, `★ ${s.pt} ${unit}`), sw(AV_SKIN, "skin", "피부"), sw(AV_HAIR, "hair", "머리색")));
+    const me = h("div", { class: "rw-me" }); me.innerHTML = avSvg(d.av, d.wear);
+    const sw = (list, key, label) => h("div", { class: "rw-pick" }, h("span", {}, label), ...list.map((c, i) => h("button", { class: "sw" + (d.av[key] === i ? " on" : ""), style: `background:${c[0]}`, "aria-label": label, onclick: () => { d.av[key] = i; draw(); } })));
+    me.append(h("div", {}, h("b", {}, seName(p)), h("br"), h("span", { class: "rw-pt" }, `★ ${d.pt} ${unit}`), sw(AV_SKIN, "skin", "피부"), sw(AV_HAIR, "hair", "머리색")));
     const tabs = h("div", { class: "rw-tabs" }, AV_TABS.map(([k, t]) => h("button", { class: rwTab === k ? "on" : "", onclick: () => { rwTab = k; draw(); } }, t)));
     const items = AV_ITEMS.filter(it => rwTab === "acc" ? ["head", "face", "neck"].includes(it.slot) : it.slot === rwTab);
     const shop = h("div", { class: "rw-shop" }, items.map(it => {
-      const has = !it.price || s.own.includes(it.id), must = it.slot in AV_REQ, worn = (s.wear[it.slot] || AV_REQ[it.slot]) === it.id, bg = it.slot === "bg";
-      const pic = h("div"); pic.innerHTML = avSvg(s.av, { ...s.wear, [it.slot]: it.id, ...(bg ? {} : { bg: "bg-none" }), ...(rwTab === "hair" ? { head: "" } : {}) });
-      const act = has ? h("button", { class: worn ? "on" : "", onclick: () => { if (worn) { if (must) return; delete s.wear[it.slot]; } else s.wear[it.slot] = it.id; save(); } },
+      const cost = avPrice(it), has = !cost || d.own.includes(it.id), must = it.slot in AV_REQ, worn = (d.wear[it.slot] || AV_REQ[it.slot]) === it.id, bg = it.slot === "bg";
+      const pic = h("div"); pic.innerHTML = avSvg(d.av, { ...d.wear, [it.slot]: it.id, ...(bg ? {} : { bg: "bg-none" }), ...(rwTab === "hair" ? { head: "" } : {}) });
+      const act = has ? h("button", { class: worn ? "on" : "", onclick: () => { if (worn) { if (must) return; delete d.wear[it.slot]; } else d.wear[it.slot] = it.id; draw(); } },
           worn ? (must ? (bg ? "골랐어요" : "입는 중") : "벗기") : bg ? "고르기" : "입기")
         : h("button", { onclick: async () => {
-          if (s.pt < it.price) return seConfirm(rwCard, `${it.name}은(는) ${it.price} ${unit}예요. ${it.price - s.pt} ${unit} 더 모아요!`, "확인", null);
-          if (!await seConfirm(rwCard, `${seName(p)}: ${it.name}을(를) ${it.price} ${unit}에 살까요?`, "사기")) return;
-          s.pt -= it.price; s.own.push(it.id); s.wear[it.slot] = it.id;
-          reward.log = [{ at: Date.now(), who: [p], d: -it.price, why: `${it.name} 샀어요` }, ...reward.log].slice(0, 1000);
-          save(); melody([784, 988, 1319], .07, "square", .15);
-        } }, `${it.price} ${unit}`);
-      return h("div", { class: "rw-item" + (worn ? " worn" : "") }, pic.firstChild, h("span", {}, it.name), h("small", {}, !it.price ? "기본" : has ? "가지고 있어요" : "가게"), act);
+          if (d.pt < cost) return seConfirm(rwCard, `${it.name}은(는) ${cost} ${unit}예요. ${cost - d.pt} ${unit} 더 모아요!`, "확인", null);
+          if (!await seConfirm(rwCard, `${seName(p)}: ${it.name}을(를) ${cost} ${unit}에 살까요?\n(저장해야 사져요)`, "사기")) return;
+          d.pt -= cost; d.own.push(it.id); d.wear[it.slot] = it.id; bought.push([it.name, cost]);
+          draw(); melody([784, 988, 1319], .07, "square", .15);
+        } }, `${cost} ${unit}`);
+      return h("div", { class: "rw-item" + (worn ? " worn" : "") }, pic.firstChild, h("span", {}, it.name), h("small", {}, !cost ? "무료" : has ? "가지고 있어요" : "가게"), act);
     }));
     body.replaceChildren(me, tabs, shop);
   };
   draw();
-  const ed = h("div", { class: "card-ed" }, h("div", { class: "card-ed-head" }, h("b", {}, "아바타 꾸미기"), h("button", { class: "main", onclick: () => ed.remove() }, "닫기")), body);
+  const save = () => {
+    s.pt -= bought.reduce((a, [, c]) => a + c, 0); s.av = d.av; s.own = d.own; s.wear = d.wear; s.saved = 1;
+    bought.forEach(([name, c]) => reward.log = [{ at: Date.now(), who: [p], d: -c, why: `${name} 샀어요` }, ...reward.log].slice(0, 1000));
+    rwStore(); rwDraw(); ed.remove();
+  };
+  const close = async () => { if (JSON.stringify(d) === start || await seConfirm(rwCard, "저장하지 않고 닫을까요?\n바꾼 것과 산 것이 모두 취소돼요.", "닫기")) ed.remove(); };
+  const ed = h("div", { class: "card-ed" }, h("div", { class: "card-ed-head" }, h("b", {}, "아바타 꾸미기"), h("button", { onclick: close }, "취소"), h("button", { class: "main", onclick: save }, "저장")), body);
+  rwCard.append(ed);
+}
+// 점수 기록: 누가, 언제, 몇 점, 왜 (학생별로 골라 보기)
+function rwLog() {
+  rwCard.querySelector(".card-ed")?.remove();
+  const unit = reward.unit.trim() || "점", who = h("select", { "aria-label": "학생" }, h("option", { value: "" }, "모든 학생"), ...people().map(p => h("option", { value: p }, seName(p))));
+  const list = h("div", { class: "rw-log" });
+  const draw = () => {
+    const f = who.value, rows = reward.log.filter(l => !f || l.who.includes(f) || l.from === f).slice(0, 300);
+    let day = "";
+    list.replaceChildren(...(rows.length ? rows.flatMap(l => {
+      const t = new Date(l.at), dd = t.toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "short" }), out = [];
+      if (dd !== day) out.push(h("div", { class: "day" }, day = dd));
+      const names = l.from ? `${seName(l.from)} → ${l.who.map(seName).join(", ")}` : l.who.length > 4 ? `${l.who.slice(0, 4).map(seName).join(", ")} 외 ${l.who.length - 4}명` : l.who.map(seName).join(", ");
+      const dv = f && l.from === f ? -l.d : l.d;
+      out.push(h("div", { class: "row" }, h("span", { class: "tm" }, t.toLocaleTimeString("ko-KR", { hour: "numeric", minute: "2-digit" })), h("span", { class: "who" }, names || "모두"),
+        h("span", { class: "why" }, l.why || ""), h("b", { class: dv < 0 ? "neg" : "" }, dv ? `${dv > 0 ? "+" : "−"}${Math.abs(dv)} ${unit}` : "")));
+      return out;
+    }) : [h("p", { class: "rw-h" }, "아직 기록이 없어요.")]));
+  };
+  who.onchange = draw; draw();
+  const ed = h("div", { class: "card-ed" }, h("div", { class: "card-ed-head" }, h("b", {}, "점수 기록"), who, h("button", { class: "main", onclick: () => ed.remove() }, "닫기")), h("div", { class: "card-ed-list" }, list));
   rwCard.append(ed);
 }
 // 학생끼리 주고받기: 보내는 학생의 점수에서 받는 학생에게 옮김
@@ -5507,10 +5589,10 @@ const TOURS = {
     { text: "번호는 첫 줄의 '1.'만 붙어요. 한 내용을 두 줄로 쓸 수 있게 나머지 번호는 직접 써요." }] },
   reward: { name: "🏅 우리반 점수", steps: [
     { at: ".rw-tile", text: "학생 카드를 누르면 골라져요. 오른쪽 위 +·−로 그 학생에게 바로 줄 수도 있어요." },
-    { at: ".rw-bar", text: "전체 선택 · 선택 반전 · 선택 해제" },
+    { at: ".rw-sel", text: "전체 선택 · 선택 반전 · 선택 해제" },
     { at: [".rw-plus", ".rw-minus"], text: "고른 학생에게 칭찬해요(+)·노력해요(−). 이유를 고르면 소리와 함께 크게 보여요." },
     { at: ".rw-av", text: "아바타를 누르면 꾸며요. 머리·옷·장신구·배경은 점수로 사요." },
-    { at: [".rw-set", ".rw-send"], text: "설정: 점수 단위(포인트·으쓱…)와 이유 목록. 주고받기: 학생끼리 점수를 보내요." }] },
+    { at: [".rw-give", ".rw-hist", ".rw-set"], text: "주고받기: 학생끼리 점수를 보내요. 기록: 점수가 바뀐 내역. 설정: 점수 단위·이유 목록·가게 가격." }] },
   roles: { name: "🧹 1인 1역", steps: [
     { at: ".rl-edit", text: "역할·하는 일·맡을 사람 수·기간·포인트(단위는 직접: 포인트·개·으쓱…, 비우면 안 씀)를 정해요. 아래에 몇 명까지 맡는지 합계가 나와요." },
     { at: ".rl-pool", text: "이름 카드를 끌어 역할 칸에 놓아요. 역할 칸의 이름을 여기로 끌어 놓으면 빠져요." },
