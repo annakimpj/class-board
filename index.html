@@ -154,7 +154,7 @@
   #rule[contenteditable="true"] { background: #fff; box-shadow: 0 0 0 2px var(--line); }
   .hint { font-size: 13px; color: var(--muted); cursor: default; }
   .tools { flex: none; display: flex; align-items: center; gap: 8px; font-family: "Wanted Sans", "Malgun Gothic", sans-serif; }
-  .tools .tp-hist { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); background: #fff; color: var(--muted); border-radius: 999px; padding: 4px 10px; cursor: pointer; }
+  .tools .tp-hist { white-space: nowrap; flex: none; font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); background: #fff; color: var(--muted); border-radius: 999px; padding: 4px 10px; cursor: pointer; }
   .tools button { width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid var(--line); background: #fff; color: var(--accent);
                   font-size: 22px; line-height: 1; cursor: pointer; padding: 0; }
   .tools button:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
@@ -665,6 +665,55 @@
   .ck-analog { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
   .ck-analog svg { width: min(100%, 56cqh); height: auto; flex: none; }
   .ck-modes { display: flex; justify-content: center; gap: 4px; }
+  /* 우리반 점수: 학생 카드(번호·이름·점수·픽셀 아바타), 고르기, 칭찬해요·노력해요 */
+  [data-card="reward"] { --accent: #3b82f6; --card: #eef4ff; --line: #cddcfb; }
+  .rw-bar, .rw-foot { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; } .rw-bar .sp, .rw-foot .sp { flex: 1; }
+  .tool-card .rw-bar button { font-size: 13px; padding: 3px 10px; border-radius: 8px; }
+  .rw-count { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--muted); }
+  .tool-card .rw-foot button { font-size: 14px; padding: 5px 12px; border-radius: 999px; }
+  .tool-card .rw-foot .rw-minus { border-color: #ffc078; color: #d9480f; }
+  .rw-grid { flex: 1; min-height: 0; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); grid-auto-rows: max-content; gap: 8px; padding: 2px; user-select: none; }
+  .rw-grid:empty::before { content: "설정 → 명단에 학생을 넣으면 학생 카드가 생겨요."; grid-column: 1 / -1; margin: auto; padding: 20px 0; color: var(--muted); font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; }
+  .rw-tile { position: relative; height: 112px; background: #fff; border-radius: 14px; border: 2px solid transparent; box-shadow: 0 1px 3px rgba(40, 60, 100, .1); padding: 8px 10px; cursor: pointer; font-family: "Wanted Sans", "Malgun Gothic", sans-serif; overflow: hidden; }
+  .rw-tile.sel { border-color: var(--accent); background: #f3f7ff; }
+  .rw-tile.sel::after { content: "✓"; position: absolute; left: 8px; bottom: 8px; width: 20px; height: 20px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 13px; display: grid; place-items: center; }
+  .rw-tile .n { font-size: 15px; color: var(--muted); line-height: 1; }
+  .rw-tile .nm { display: block; font-size: 19px; color: var(--ink); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 62%; }
+  .rw-pt { position: absolute; left: 8px; bottom: 34px; display: flex; align-items: center; gap: 3px; padding: 1px 9px 1px 6px; border-radius: 999px; background: var(--accent); color: #fff; font-size: 16px; font-weight: 700; }
+  .rw-tile.sel .rw-pt { bottom: 34px; }
+  .rw-av { position: absolute; right: 6px; bottom: 4px; width: 58px; height: 58px; image-rendering: pixelated; }
+  .rw-av:hover { transform: scale(1.06); }
+  .rw-pm { position: absolute; top: 6px; right: 6px; display: flex; gap: 3px; }
+  .tool-card .rw-pm button { width: 26px; height: 26px; padding: 0; border-radius: 50%; font-size: 16px; line-height: 1; display: grid; place-items: center; }
+  .tool-card .rw-pm .p { background: var(--accent); border-color: var(--accent); color: #fff; } .tool-card .rw-pm .m { color: #d9480f; border-color: #ffc078; }
+  .rw-tile.bump { animation: rw-bump .5s ease-out; } @keyframes rw-bump { 30% { transform: scale(1.06); } }
+  .rw-cheer { position: absolute; inset: 0; z-index: 25; display: grid; place-content: center; gap: 6px; text-align: center; background: rgba(255, 255, 255, .82); border-radius: inherit; font-family: "Wanted Sans", "Malgun Gothic", sans-serif; animation: rw-in .25s ease-out; cursor: pointer; }
+  .rw-cheer b { font-size: clamp(34px, 9cqw, 64px); color: var(--accent); } .rw-cheer.try b { color: #e8590c; }
+  .rw-cheer .big { font-size: clamp(40px, 12cqw, 84px); line-height: 1; animation: rw-pop .6s ease-out; } .rw-cheer span { font-size: 20px; color: var(--ink); } .rw-cheer small { font-size: 16px; color: var(--muted); }
+  @keyframes rw-in { from { opacity: 0; } } @keyframes rw-pop { 0% { transform: scale(.3) rotate(-20deg); } 60% { transform: scale(1.2) rotate(6deg); } }
+  .rw-menu { inset: auto; margin: 0; width: 260px; max-height: 60vh; overflow-y: auto; padding: 6px; border: 0; border-radius: 14px; background: #fff; color: var(--ink); box-shadow: 0 10px 34px rgba(30, 40, 70, .25); font: 15px "Wanted Sans", "Malgun Gothic", sans-serif; }
+  .rw-menu h4 { margin: 4px 6px 6px; font-weight: normal; font-size: 13px; color: var(--muted); }
+  .rw-menu button { display: flex; width: 100%; align-items: center; gap: 8px; border: 0; background: none; padding: 8px; border-radius: 8px; font: inherit; color: inherit; cursor: pointer; text-align: left; }
+  .rw-menu button:hover { background: #eef4ff; } .rw-menu button span { flex: 1; } .rw-menu button b { font-weight: 700; color: #3b82f6; } .rw-menu button b.neg { color: #e8590c; }
+  .rw-menu .own { display: flex; gap: 6px; padding: 6px 8px; align-items: center; } .rw-menu .own input { width: 64px; font: inherit; border: 1.5px solid #cddcfb; border-radius: 6px; padding: 3px 6px; }
+  .rw-menu .own button { width: auto; background: #3b82f6; color: #fff; padding: 4px 12px; }
+  .rw-rows { display: grid; grid-template-columns: minmax(0, 1fr) 70px auto; gap: 4px 6px; align-items: center; font-size: 13px; }
+  .rw-rows input, .rw-unit { font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); border-radius: 6px; padding: 3px 6px; min-width: 0; }
+  .rw-rows .h { color: var(--muted); } .rw-h { margin: 12px 0 6px; font-size: 13px; color: var(--muted); }
+  .rw-shop { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 6px; }
+  .rw-item { background: #fff; border: 1.5px solid var(--line); border-radius: 10px; padding: 6px; text-align: center; font-size: 13px; }
+  .rw-item svg { width: 48px; height: 48px; image-rendering: pixelated; display: block; margin: 0 auto 2px; }
+  .rw-item small { display: block; color: var(--muted); }
+  .tool-card .rw-item button { margin-top: 4px; font-size: 12px; padding: 2px 10px; border-radius: 999px; }
+  .tool-card .rw-item button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .rw-me { display: flex; gap: 14px; align-items: center; } .rw-me svg { width: 112px; height: 112px; image-rendering: pixelated; background: var(--card); border-radius: 14px; }
+  .rw-me b { font-size: 22px; font-weight: normal; } .rw-me .rw-pt { position: static; display: inline-flex; margin-top: 6px; }
+  .rw-pick { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .tool-card .rw-pick button { padding: 2px; border-radius: 10px; } .tool-card .rw-pick button.on { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+  .rw-pick svg { width: 40px; height: 40px; display: block; image-rendering: pixelated; }
+  .tool-card .rw-pick .sw { width: 26px; height: 26px; border-radius: 50%; }
+  .rw-send { display: grid; grid-template-columns: auto 1fr; gap: 8px 10px; align-items: center; font-size: 14px; }
+  .rw-send select, .rw-send input { font: 15px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); border-radius: 8px; padding: 4px 8px; }
   /* 1인 1역 */
   [data-card="roles"] { --accent: #2b8a3e; --card: #ebfbee; --line: #c3e6cb; }
   .rl-period { margin: -4px 0 0; } .rl-period:empty { display: none; }
@@ -967,6 +1016,12 @@
     <div class="sc-top"><select id="sc-test" aria-label="평가 고르기"></select><button onclick="scEdit()">✎ 점수 넣기</button></div>
     <div class="sc-grid" id="sc-grid"></div>
     <p class="sub" id="sc-hint">이름을 누르면 그 학생 점수만 크게 보여요</p>
+  </section>
+  <section class="card tool-card" data-card="reward" id="rw-card">
+    <p class="label">🏅 우리반 점수</p>
+    <div class="rw-bar"><button onclick="rwSel('all')">전체 선택</button><button onclick="rwSel('inv')">선택 반전</button><button onclick="rwSel('none')">선택 해제</button><span class="sp"></span><span class="rw-count" id="rw-count"></span></div>
+    <div class="rw-grid" id="rw-grid"></div>
+    <div class="rw-foot"><button class="rw-set" onclick="rwSettings()">⚙ 설정</button><button class="rw-send" onclick="rwSendOpen()">🤝 주고받기</button><span class="sp"></span><button class="rw-minus" onclick="rwGiveSel(this, -1)">− 노력해요</button><button class="main rw-plus" onclick="rwGiveSel(this, 1)">+ 칭찬해요</button></div>
   </section>
   <section class="card tool-card" data-card="roles" id="rl-card">
     <p class="label">🧹 1인 1역</p>
@@ -1591,7 +1646,7 @@ const CARDS = [["topic", "✏️ 오늘의 주제", "board", "2", [340, 200]], [
   ["whiteboard", "🖍️ 화이트보드", "popup", "4", [420, 320]], ["dust", "😷 미세먼지·날씨", "board", "1", [190, 190]], ["noise", "🔉 소음 측정", "popup", "1", [240, 270]],
   ["thermo", "🌡️ 학급 온도계", "popup", "1", [240, 260]], ["qr", "🔳 QR 만들기", "popup", "1", [240, 280]],
   ["notice", "📋 알림장", "popup", "2", [340, 320]],
-  ["scores", "📊 성적 알리미", "popup", "2", [320, 280]], ["roles", "🧹 1인 1역", "popup", "2", [360, 360]]];
+  ["scores", "📊 성적 알리미", "popup", "2", [320, 280]], ["roles", "🧹 1인 1역", "popup", "2", [360, 360]], ["reward", "🏅 우리반 점수", "popup", "4", [420, 380]]];
 const FITS = ["rules", "notice"]; // 글이 넘치면 카드가 아래로 커지는 카드
 const minOf = k => { const m = CARDS.find(c => c[0] === k)[4]; return FITS.includes(k) ? [m[0], Math.max(m[1], noteNeed(k))] : m; };
 function noteNeed(k) { // 글이 스크롤 없이 다 보이는 카드 높이(px)
@@ -1959,7 +2014,7 @@ function initNoteTools(ta) {
   let st = {};
   try { st = JSON.parse(localStorage.getItem(key)) || {}; } catch (e) {}
   const apply = () => {
-    ta.style.fontSize = st.fs ? st.fs + "px" : ""; ta.style.color = st.color || "";
+    ta.style.fontSize = st.fs ? st.fs + "px" : ""; ta.style.color = st.color || ""; ta.style.fontWeight = st.bold ? "700" : "";
     if (FITS.includes(ta.dataset.key)) noteFit(ta.dataset.key); // 글씨가 커지면 카드도
     pop.querySelectorAll(".dot").forEach(d => d.classList.toggle("on", d.dataset.c === (st.color || COLORS[0])));
     try { localStorage.setItem(key, JSON.stringify(st)); } catch (e) {}
@@ -1976,10 +2031,16 @@ function initNoteTools(ta) {
     } else { st.color = c; apply(); }
   };
   const size = d => { st.fs = Math.max(14, Math.min(96, (st.fs || parseFloat(getComputedStyle(ta).fontSize)) + d)); apply(); };
+  const bold = () => { // 글자를 골라 두면 그 글자만, 아니면 글 전체를 굵게
+    const s = getSelection();
+    if (!s.isCollapsed && ta.contains(s.anchorNode) && ta.contains(s.focusNode)) { document.execCommand("bold"); s.collapseToEnd(); }
+    else { st.bold = !st.bold; apply(); }
+  };
   const bar = document.createElement("div"), pop = document.createElement("div"), sizes = document.createElement("div"), tip = document.createElement("small");
   bar.className = "note-tools"; pop.className = "note-pop"; pop.popover = "auto"; sizes.className = "size";
-  sizes.append(btn("가−", "글씨 작게", () => size(-2)), btn("가+", "글씨 크게", () => size(2)));
-  tip.textContent = "글자를 골라 두면 그 글자만 색이 바뀌어요";
+  const bb = btn("B", "굵게 (글자를 골라 두면 그 글자만)", bold); bb.style.fontWeight = "800";
+  sizes.append(btn("가−", "글씨 작게", () => size(-2)), btn("가+", "글씨 크게", () => size(2)), bb);
+  tip.textContent = "글자를 골라 두면 그 글자만 색·굵기가 바뀌어요";
   pop.append(sizes, ...COLORS.map(c => { const b = btn("", "글씨 색", () => color(c)); b.className = "dot"; b.dataset.c = c; b.style.background = c; b.setAttribute("aria-label", "글씨 색"); return b; }), tip);
   const open = btn("", "글씨 크기·색", () => {});
   open.className = "tt"; open.setAttribute("aria-label", "글씨 크기·색");
@@ -3337,6 +3398,154 @@ function ckDraw() {
 }
 document.querySelectorAll("#ck-card [data-ck]").forEach(b => b.onclick = () => { ckMode = b.dataset.ck; try { localStorage.setItem("clock-mode", ckMode); } catch (e) {} ckDraw(); });
 setInterval(ckDraw, 1000); ckDraw();
+
+const AV = {"bases": {"cat": ["................", ".OO..........OO.", ".OPO........OPO.", ".OPBO......OBPO.", ".OBBOOOOOOOOBBO.", "OBBBBBBBBBBBBBBO", "OBBBBBBBBBBBBBBO", "OBBEEBBBBBBEEBBO", "OBBEWBBBBBBWEBBO", "OBPPBBBBBBBBPPBO", "OBBBBBBNNBBBBBBO", "OBBBBBLLLLBBBBBO", ".OBBBBBLLBBBBBO.", "..OBBBBBBBBBBO..", "...OOOOOOOOOO...", "................"], "bear": ["................", ".OOO........OOO.", "OBBBO......OBBBO", "OBLBOOOOOOOOBLBO", ".OBBBBBBBBBBBBO.", "OBBBBBBBBBBBBBBO", "OBBBBBBBBBBBBBBO", "OBBEEBBBBBBEEBBO", "OBBEWBBBBBBWEBBO", "OBBBBBLLLLBBBBBO", "OBPBBLLNNLLBBPBO", "OBBBBLLLLLLBBBBO", ".OBBBBBLLBBBBBO.", "..OBBBBBBBBBBO..", "...OOOOOOOOOO...", "................"], "rabbit": ["..OO........OO..", ".OBPO......OPBO.", ".OBPO......OPBO.", ".OBPO......OPBO.", "..OBOOOOOOOOBO..", ".OBBBBBBBBBBBBO.", "OBBBBBBBBBBBBBBO", "OBBEEBBBBBBEEBBO", "OBBEWBBBBBBWEBBO", "OBPPBBBBBBBBPPBO", "OBBBBBBNNBBBBBBO", "OBBBBBLLLLBBBBBO", ".OBBBBBLLBBBBBO.", "..OBBBBBBBBBBO..", "...OOOOOOOOOO...", "................"], "chick": ["................", ".......OO.......", "....OOOBBOOO....", "...OBBBBBBBBO...", "..OBBBBBBBBBBO..", ".OBBBBBBBBBBBBO.", ".OBBBBBBBBBBBBO.", "OBBEEBBBBBBEEBBO", "OBBEWBBBBBBWEBBO", "OBPPBBBKKBBBPPBO", "OBBBBBKKKKBBBBBO", "OBBBBBBBBBBBBBBO", ".OBBBBBBBBBBBBO.", "..OBBBBBBBBBBO..", "...OOOOOOOOOO...", "................"]}, "items": [{"id": "ribbon", "name": "리본", "slot": "head", "price": 10, "px": ["................", "...........R.R..", "..........RRWRR.", "...........R.R..", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................"]}, {"id": "bowtie", "name": "나비넥타이", "slot": "neck", "price": 10, "px": ["................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", ".....R....R.....", ".....RRRRRR.....", ".....R....R....."]}, {"id": "glasses", "name": "안경", "slot": "face", "price": 15, "px": ["................", "................", "................", "................", "................", "................", "..OOOO....OOOO..", "..O..OOOOOO..O..", "..O..O....O..O..", "..OOOO....OOOO..", "................", "................", "................", "................", "................", "................"]}, {"id": "scarf", "name": "목도리", "slot": "neck", "price": 15, "px": ["................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "...SSSSSSSSSS...", "...SWSWSWSWSS...", ".........SS....."]}, {"id": "hat", "name": "모자", "slot": "head", "price": 20, "px": ["....HHHHHHHH....", "....HHHHHHHH....", "....hhhhhhhh....", "..HHHHHHHHHHHH..", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................"]}, {"id": "sunglasses", "name": "선글라스", "slot": "face", "price": 25, "px": ["................", "................", "................", "................", "................", "................", "..OOOO....OOOO..", "..ODDOOOOOODDO..", "..ODDO....ODDO..", "..OOOO....OOOO..", "................", "................", "................", "................", "................", "................"]}, {"id": "headphones", "name": "헤드폰", "slot": "head", "price": 30, "px": ["................", "................", "................", "....DDDDDDDD....", "...D........D...", "..D..........D..", ".CC..........CC.", ".CC..........CC.", ".CC..........CC.", "................", "................", "................", "................", "................", "................", "................"]}, {"id": "crown", "name": "왕관", "slot": "head", "price": 50, "px": ["....Y..YY..Y....", "....YY.YY.YY....", "....YYYYYYYY....", "....YRYYYYRY....", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................"]}]};
+// ───── 우리반 점수: 학생마다 점수와 픽셀 아바타. 장신구는 점수로 사서 꾸밈 (가격은 정해져 있음). 칭찬해요·노력해요는 교사가 고친 목록에서
+// reward = { unit, reasons: [{ t, pt }], st: { "1번 김하늘": { pt, av: { base, color }, own: [장신구 id], wear: { head, face, neck } } }, log: [{ at, who: [학생], d, why }] }
+// 나중에 학생이 직접 꾸미는 사이트도 이 자료(로그인하면 서버에도 저장)를 그대로 쓰면 됨
+const AV_COLORS = [["#f4a259", "#fde2c0"], ["#9c6b45", "#e5c29f"], ["#f1f3f5", "#ffffff"], ["#ffd43b", "#fff3bf"], ["#74c0fc", "#d0ebff"], ["#b197fc", "#e5dbff"], ["#8ce99a", "#d3f9d8"], ["#ff8787", "#ffe3e3"]];
+const AV_BASES = [["cat", "고양이", 0], ["bear", "곰", 1], ["rabbit", "토끼", 2], ["chick", "병아리", 3]];
+const AV_PAL = { O: "#2b2420", E: "#2b2420", W: "#ffffff", P: "#ff9aa2", N: "#2b2420", K: "#f08c00", R: "#e64980", H: "#4263eb", h: "#ffd43b", D: "#343a40", C: "#e03131", Y: "#fcc419", S: "#e03131", G: "#a5d8ff" };
+const RW_REASONS = [{ t: "숙제를 잘했어요", pt: 1 }, { t: "발표를 잘했어요", pt: 1 }, { t: "친구를 도와줬어요", pt: 2 }, { t: "정리를 잘했어요", pt: 1 }, { t: "수업 시간에 떠들었어요", pt: -1 }, { t: "숙제를 안 했어요", pt: -1 }];
+let reward = { unit: "포인트", reasons: RW_REASONS, st: {}, log: [] };
+try { reward = Object.assign(reward, JSON.parse(localStorage.getItem("reward")) || {}); } catch (e) {}
+let rwPick = new Set();
+const rwCard = document.getElementById("rw-card");
+const rwStore = () => { try { localStorage.setItem("reward", JSON.stringify(reward)); } catch (e) {} };
+const rwHash = t => [...t].reduce((a, c) => a * 31 + c.charCodeAt(0) >>> 0, 7);
+function rwSt(p) { // 처음 보는 학생은 이름으로 동물·색을 정해 둠 (나중에 바꿀 수 있어요)
+  if (!reward.st[p]) { const k = rwHash(seName(p)), b = AV_BASES[k % 4]; reward.st[p] = { pt: 0, av: { base: b[0], color: b[2] }, own: [], wear: {} }; }
+  return reward.st[p];
+}
+// 16×16 픽셀 그림 → SVG (같은 색이 이어지면 한 칸으로 합쳐 가볍게)
+function avSvg(av, wear = {}, extra) {
+  const [body, light] = AV_COLORS[av.color] || AV_COLORS[0], pal = { ...AV_PAL, B: body, L: light };
+  const layers = [AV.bases[av.base] || AV.bases.cat, ...["neck", "face", "head"].map(sl => AV.items.find(x => x.id === wear[sl])?.px).filter(Boolean), extra].filter(Boolean);
+  let rects = "";
+  for (const px of layers) px.forEach((row, y) => { for (let x = 0; x < 16;) { const ch = row[x]; if (ch === "." || !pal[ch]) { x++; continue; } let w = 1; while (row[x + w] === ch) w++; rects += `<rect x="${x}" y="${y}" width="${w}" height="1" fill="${pal[ch]}"/>`; x += w; } });
+  return `<svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true">${rects}</svg>`;
+}
+function rwDraw() {
+  const ppl = people(), unit = reward.unit.trim() || "점";
+  rwPick = new Set([...rwPick].filter(p => ppl.includes(p)));
+  $s("rw-grid").replaceChildren(...ppl.map(p => {
+    const s = rwSt(p), t = h("div", { class: "rw-tile" + (rwPick.has(p) ? " sel" : ""), "data-p": p, title: `${seName(p)} · ${s.pt} ${unit}` },
+      h("div", { class: "n" }, seNum(p) || ""), h("span", { class: "nm" }, seName(p)),
+      h("span", { class: "rw-pt" }, "★ " + s.pt),
+      h("div", { class: "rw-pm" }, h("button", { class: "p", title: "칭찬해요", onclick: e => { e.stopPropagation(); rwMenu(e.currentTarget, 1, [p]); } }, "+"), h("button", { class: "m", title: "노력해요", onclick: e => { e.stopPropagation(); rwMenu(e.currentTarget, -1, [p]); } }, "−")));
+    const av = h("div", { class: "rw-av", title: "아바타 꾸미기" }); av.innerHTML = avSvg(s.av, s.wear);
+    av.onclick = e => { e.stopPropagation(); rwAvatar(p); };
+    t.append(av);
+    t.onclick = () => { rwPick.has(p) ? rwPick.delete(p) : rwPick.add(p); t.classList.toggle("sel", rwPick.has(p)); rwCount(); };
+    return t;
+  }));
+  rwCount();
+}
+const rwCount = () => $s("rw-count").textContent = rwPick.size ? `${rwPick.size}명 골랐어요` : "";
+function rwSel(how) {
+  const ppl = people();
+  rwPick = how === "all" ? new Set(ppl) : how === "inv" ? new Set(ppl.filter(p => !rwPick.has(p))) : new Set();
+  rwDraw();
+}
+function rwGiveSel(btn, sign) {
+  if (!rwPick.size) return seConfirm(rwCard, "학생 카드를 눌러 먼저 골라요. (전체 선택도 돼요)", "확인", null);
+  rwMenu(btn, sign, [...rwPick]);
+}
+// 이유 목록 (칭찬해요는 +, 노력해요는 −) + 직접 쓰기
+function rwMenu(btn, sign, who) {
+  const d = btn.ownerDocument, W = d.defaultView, unit = reward.unit.trim() || "점";
+  d.querySelector(".rw-menu")?.remove();
+  const list = reward.reasons.filter(r => Math.sign(r.pt) === sign);
+  const own = h("input", { type: "number", min: "1", max: "100", value: "1", "aria-label": "점수" });
+  const m = h("div", { class: "rw-menu", popover: "auto" }, h("h4", {}, `${sign > 0 ? "칭찬해요" : "노력해요"} · ${who.length === 1 ? seName(who[0]) : who.length + "명"}`),
+    ...list.map(r => h("button", { onclick: () => { m.hidePopover(); rwApply(who, r.pt, r.t); } }, h("span", {}, r.t), h("b", { class: r.pt < 0 ? "neg" : "" }, `${r.pt > 0 ? "+" : ""}${r.pt}`))),
+    h("div", { class: "own" }, h("span", {}, sign > 0 ? "+" : "−"), own, unit, h("button", { onclick: () => { const v = Math.max(1, Math.round(+own.value || 1)); m.hidePopover(); rwApply(who, sign * v, ""); } }, "주기")));
+  d.body.append(m); m.addEventListener("toggle", e => { if (e.newState === "closed") m.remove(); }); m.showPopover();
+  const r = btn.getBoundingClientRect();
+  m.style.left = Math.max(8, Math.min(r.left, W.innerWidth - m.offsetWidth - 8)) + "px";
+  m.style.top = (r.bottom + 6 + m.offsetHeight < W.innerHeight ? r.bottom + 6 : Math.max(8, r.top - m.offsetHeight - 6)) + "px";
+}
+function rwApply(who, d, why, from) { // 점수 주기·빼기 + 칭찬해요/노력해요 화면 + 소리
+  who.forEach(p => rwSt(p).pt += d);
+  reward.log = [{ at: Date.now(), who, d, why, ...(from ? { from } : {}) }, ...reward.log].slice(0, 1000);
+  rwStore(); rwDraw();
+  who.forEach(p => rwCard.querySelector(`.rw-tile[data-p="${CSS.escape(p)}"]`)?.classList.add("bump"));
+  rwCheer(from ? "주고받았어요" : d > 0 ? "칭찬해요!" : "노력해요!", from ? "🤝" : d > 0 ? "👏" : "💪", who, d, why, d < 0 && !from);
+}
+function rwCheer(title, icon, who, d, why, isTry) {
+  rwCard.querySelector(".rw-cheer")?.remove();
+  const unit = reward.unit.trim() || "점", names = who.length <= 3 ? who.map(seName).join(", ") : `${who.slice(0, 3).map(seName).join(", ")} 외 ${who.length - 3}명`;
+  const c = h("div", { class: "rw-cheer" + (isTry ? " try" : ""), onclick: () => c.remove() }, h("div", { class: "big" }, icon), h("b", {}, title), h("span", {}, `${names}  ${d > 0 ? "+" : "−"}${Math.abs(d)} ${unit}`), why ? h("small", {}, why) : "");
+  rwCard.append(c);
+  if (isTry) melody([523, 440, 392], .12, "triangle", .2); else melody([523, 659, 784, 1047], .08, "triangle", .25);
+  setTimeout(() => c.remove(), 2200);
+}
+// 설정: 점수 단위 · 칭찬해요/노력해요 목록 · 모든 점수 0으로
+function rwSettings() {
+  rwCard.querySelector(".card-ed")?.remove();
+  const list = reward.reasons.map(r => ({ ...r })), rows = h("div", { class: "rw-rows" });
+  const unit = h("input", { class: "rw-unit", value: reward.unit, placeholder: "포인트, 으쓱, 개…" });
+  const draw = () => rows.replaceChildren(h("span", { class: "h" }, "이유"), h("span", { class: "h" }, "점수 (+/−)"), h("span"),
+    ...list.flatMap((r, i) => {
+      const t = h("input", { value: r.t, placeholder: "예: 숙제를 잘했어요" }), v = h("input", { type: "number", min: "-100", max: "100", value: String(r.pt) });
+      t.oninput = () => r.t = t.value.trim(); v.oninput = () => r.pt = Math.round(+v.value || 0);
+      return [t, v, h("button", { class: "x", title: "빼기", onclick: () => { list.splice(i, 1); draw(); } }, "✕")];
+    }));
+  draw();
+  const ok = h("button", { class: "main", onclick: () => { reward.unit = unit.value.trim() || "포인트"; reward.reasons = list.filter(r => r.t && r.pt); rwStore(); rwDraw(); ed.remove(); } }, "완료");
+  const zero = h("button", { class: "danger", onclick: async () => { if (await seConfirm(ed, "모든 학생의 점수를 0으로 할까요?\n산 장신구는 그대로 남아요.", "0으로")) { Object.values(reward.st).forEach(s => s.pt = 0); reward.log = []; rwStore(); rwDraw(); } } }, "모든 점수 0으로");
+  const ed = h("div", { class: "card-ed" }, h("div", { class: "card-ed-head" }, h("b", {}, "점수 설정"), ok),
+    h("div", { class: "card-ed-list" }, h("label", { class: "rw-h" }, "점수 단위 ", unit), h("p", { class: "rw-h" }, "칭찬해요(+)·노력해요(−) 목록"), rows),
+    h("div", { class: "card-ed-foot" }, h("button", { onclick: () => { list.push({ t: "", pt: 1 }); draw(); rows.querySelectorAll("input")[rows.querySelectorAll("input").length - 2]?.focus(); } }, "+ 이유 추가"), zero));
+  rwCard.append(ed);
+}
+// 아바타 꾸미기: 동물·색은 마음대로, 장신구는 점수로 사서 입고 벗기
+function rwAvatar(p) {
+  rwCard.querySelector(".card-ed")?.remove();
+  const s = rwSt(p), unit = reward.unit.trim() || "점", body = h("div", { class: "card-ed-list" });
+  const draw = () => {
+    const me = h("div", { class: "rw-me" }); me.innerHTML = avSvg(s.av, s.wear);
+    me.append(h("div", {}, h("b", {}, seName(p)), h("br"), h("span", { class: "rw-pt" }, `★ ${s.pt} ${unit}`)));
+    const bases = h("div", { class: "rw-pick" }, AV_BASES.map(([id, name]) => { const b = h("button", { class: s.av.base === id ? "on" : "", title: name, onclick: () => { s.av.base = id; rwStore(); draw(); rwDraw(); } }); b.innerHTML = avSvg({ base: id, color: s.av.color }); return b; }));
+    const colors = h("div", { class: "rw-pick" }, AV_COLORS.map(([c], i) => h("button", { class: "sw" + (s.av.color === i ? " on" : ""), style: `background:${c}`, "aria-label": "색", onclick: () => { s.av.color = i; rwStore(); draw(); rwDraw(); } })));
+    const shop = h("div", { class: "rw-shop" }, AV.items.map(it => {
+      const has = s.own.includes(it.id), worn = s.wear[it.slot] === it.id, pic = h("div"); pic.innerHTML = avSvg(s.av, {}, it.px);
+      const act = has ? h("button", { class: worn ? "on" : "", onclick: () => { worn ? delete s.wear[it.slot] : s.wear[it.slot] = it.id; rwStore(); draw(); rwDraw(); } }, worn ? "벗기" : "입기")
+        : h("button", { onclick: async () => {
+          if (s.pt < it.price) return seConfirm(rwCard, `${it.name}은(는) ${it.price} ${unit}예요. ${it.price - s.pt} ${unit} 더 모아요!`, "확인", null);
+          if (!await seConfirm(rwCard, `${seName(p)}: ${it.name}을(를) ${it.price} ${unit}에 살까요?`, "사기")) return;
+          s.pt -= it.price; s.own.push(it.id); s.wear[it.slot] = it.id;
+          reward.log = [{ at: Date.now(), who: [p], d: -it.price, why: `${it.name} 샀어요` }, ...reward.log].slice(0, 1000);
+          rwStore(); draw(); rwDraw(); melody([784, 988, 1319], .07, "square", .15);
+        } }, `${it.price} ${unit}`);
+      return h("div", { class: "rw-item" }, pic.firstChild, h("span", {}, it.name), h("small", {}, has ? "가지고 있어요" : "가게"), act);
+    }));
+    body.replaceChildren(me, h("p", { class: "rw-h" }, "동물"), bases, h("p", { class: "rw-h" }, "색"), colors, h("p", { class: "rw-h" }, `장신구 (점수로 사요 · ${unit})`), shop);
+  };
+  draw();
+  const ed = h("div", { class: "card-ed" }, h("div", { class: "card-ed-head" }, h("b", {}, "아바타 꾸미기"), h("button", { class: "main", onclick: () => ed.remove() }, "닫기")), body);
+  rwCard.append(ed);
+}
+// 학생끼리 주고받기: 보내는 학생의 점수에서 받는 학생에게 옮김
+function rwSendOpen() {
+  rwCard.querySelector(".card-ed")?.remove();
+  const ppl = people(), unit = reward.unit.trim() || "점";
+  if (ppl.length < 2) return seConfirm(rwCard, "설정 → 명단에 학생을 먼저 넣어 주세요.", "확인", null);
+  const opt = sel => h("select", {}, ppl.map(p => { const o = h("option", { value: p }, `${seName(p)} (★ ${rwSt(p).pt})`); if (p === sel) o.selected = true; return o; }));
+  const picked = [...rwPick], from = opt(picked[0] || ppl[0]), to = opt(picked[1] || ppl[1]), n = h("input", { type: "number", min: "1", max: "100", value: "1" }), why = h("input", { placeholder: "예: 연필을 빌려줘서 고마워" });
+  const ok = h("button", { class: "main", onclick: async () => {
+    const a = from.value, b = to.value, v = Math.max(1, Math.round(+n.value || 1));
+    if (a === b) return seConfirm(ed, "보내는 학생과 받는 학생이 같아요.", "확인", null);
+    if (rwSt(a).pt < v) return seConfirm(ed, `${seName(a)}의 점수가 ${rwSt(a).pt} ${unit}라서 ${v} ${unit}를 보낼 수 없어요.`, "확인", null);
+    rwSt(a).pt -= v; ed.remove(); rwApply([b], v, why.value.trim() || `${seName(a)}에게 받았어요`, a);
+  } }, "보내기");
+  const ed = h("div", { class: "card-ed" }, h("div", { class: "card-ed-head" }, h("b", {}, "🤝 학생끼리 주고받기"), h("button", { onclick: () => ed.remove() }, "닫기")),
+    h("div", { class: "card-ed-list" }, h("div", { class: "rw-send" }, "보내는 학생", from, "받는 학생", to, `${unit}`, n, "이유", why), h("p", { class: "rw-h" }, "보내는 학생의 점수에서 빠져 받는 학생에게 가요.")),
+    h("div", { class: "card-ed-foot" }, h("span"), ok));
+  rwCard.append(ed);
+}
+setTimeout(rwDraw); // h는 아래쪽에서 만들어짐
+document.getElementById("roster").addEventListener("change", () => rwDraw());
 
 // ───── 1인 1역: 역할(직업)마다 맡을 사람. 이름은 여러 명. 아래 이름 카드를 끌어 역할에 놓거나 🎲로 무작위. 💾로 기간을 제목 삼아 기록
 // roles = { list: [{ job, task(하는 일), n(맡을 사람 수), pt(포인트, 단위를 정했을 때만), who: ["1번 김하늘", …] }], unit(포인트 단위, 비우면 안 씀), from, to(기간 YYYY-MM-DD), hist: [{ at, from, to, unit, list }] }
@@ -5212,6 +5421,12 @@ const TOURS = {
     { at: "#nt-save", text: "저장: 날짜별로 남겨요." },
     { at: "#nt-hist", text: "지난 알림장을 불러오거나 ✕로 지워요. 칠판에 떠 있는 날 것을 지우면 칠판 글도 지워져요." },
     { text: "번호는 첫 줄의 '1.'만 붙어요. 한 내용을 두 줄로 쓸 수 있게 나머지 번호는 직접 써요." }] },
+  reward: { name: "🏅 우리반 점수", steps: [
+    { at: ".rw-tile", text: "학생 카드를 누르면 골라져요. 오른쪽 위 +·−로 그 학생에게 바로 줄 수도 있어요." },
+    { at: ".rw-bar", text: "전체 선택 · 선택 반전 · 선택 해제" },
+    { at: [".rw-plus", ".rw-minus"], text: "고른 학생에게 칭찬해요(+)·노력해요(−). 이유를 고르면 소리와 함께 크게 보여요." },
+    { at: ".rw-av", text: "아바타를 누르면 꾸며요. 장신구는 점수로 사요." },
+    { at: [".rw-set", ".rw-send"], text: "설정: 점수 단위(포인트·으쓱…)와 이유 목록. 주고받기: 학생끼리 점수를 보내요." }] },
   roles: { name: "🧹 1인 1역", steps: [
     { at: ".rl-edit", text: "역할·하는 일·맡을 사람 수·기간·포인트(단위는 직접: 포인트·개·으쓱…, 비우면 안 씀)를 정해요. 아래에 몇 명까지 맡는지 합계가 나와요." },
     { at: ".rl-pool", text: "이름 카드를 끌어 역할 칸에 놓아요. 역할 칸의 이름을 여기로 끌어 놓으면 빠져요." },
