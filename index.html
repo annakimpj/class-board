@@ -667,17 +667,32 @@
   .ck-modes { display: flex; justify-content: center; gap: 4px; }
   /* 1인 1역 */
   [data-card="roles"] { --accent: #2b8a3e; --card: #ebfbee; --line: #c3e6cb; }
-  .rl-grid { flex: 1; min-height: 0; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); align-content: start; gap: 6px; }
+  .rl-period { margin: -4px 0 0; } .rl-period:empty { display: none; }
+  .rl-grid { flex: 1; min-height: 96px; overflow-y: auto; user-select: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); align-content: start; gap: 6px; }
   .rl-grid:empty::before { content: "'✎ 역할 정하기'에서 역할을 넣어요."; grid-column: 1 / -1; margin: auto; padding: 20px 0; color: var(--muted); font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; }
-  .rl-tile { background: #fff; border-radius: 10px; padding: 6px 10px; border: 1.5px solid var(--line); font: 15px/1.35 "Wanted Sans", "Malgun Gothic", sans-serif; }
-  .rl-tile b { display: block; font-weight: normal; font-size: 13px; color: var(--accent); }
-  .rl-tile span { font-size: 17px; color: var(--ink); word-break: keep-all; } .rl-tile span.none { color: var(--muted); font-size: 14px; }
+  .rl-tile { position: relative; background: #fff; border-radius: 10px; padding: 6px 10px 8px; border: 1.5px solid var(--line); font: 15px/1.35 "Wanted Sans", "Malgun Gothic", sans-serif; min-height: 52px; }
+  .rl-tile.drop { border-color: var(--accent); background: var(--card); box-shadow: 0 0 0 2px var(--accent); }
+  .rl-tile > b { display: block; font-weight: normal; font-size: 13px; color: var(--accent); padding-right: 52px; }
+  .rl-pt { position: absolute; top: 5px; right: 6px; padding: 0 7px; border-radius: 999px; background: #fff3bf; color: #a6730c; font-size: 12px; white-space: nowrap; }
+  .rl-who { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 3px; }
+  .rl-name { display: inline-block; padding: 1px 9px; border-radius: 999px; background: var(--card); color: var(--ink); font-size: 16px; cursor: grab; touch-action: none; user-select: none; }
+  .rl-who .none { color: var(--muted); font-size: 13px; }
   .rl-tile.pop { animation: seat-pop .45s ease-out; }
+  .rl-pool { flex: none; max-height: 22%; user-select: none; overflow-y: auto; display: flex; flex-wrap: wrap; gap: 4px; padding: 6px; border-radius: 10px; border: 1.5px dashed var(--line); }
+  .rl-pool.drop { border-color: var(--accent); background: var(--card); }
+  .rl-pool:empty { display: none; }
+  .rl-pool .rl-name { background: #fff; border: 1.5px solid var(--line); font-size: 14px; }
   .rl-foot { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; padding-right: 8px; } .rl-foot .sp { flex: 1; }
+  .rl-sum { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--muted); }
   .tool-card .rl-foot button { font-size: 13px; padding: 3px 10px; border-radius: 8px; } .tool-card .rl-foot .main { padding: 3px 12px; }
-  .rl-rows { display: grid; grid-template-columns: minmax(0, 1.2fr) 56px minmax(0, 2fr) auto; gap: 4px 6px; align-items: center; font-size: 13px; }
+  .rl-set { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; margin-bottom: 10px; font-size: 13px; color: var(--muted); }
+  .rl-set input { font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); border-radius: 6px; padding: 3px 6px; }
+  .rl-set .unit { width: 9em; }
+  .rl-rows { display: grid; grid-template-columns: minmax(0, 1.2fr) 52px 60px minmax(0, 2fr) auto; gap: 4px 6px; align-items: center; font-size: 13px; }
   .rl-rows input { font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); border-radius: 6px; padding: 3px 6px; min-width: 0; }
+  .rl-rows input:disabled { opacity: .4; }
   .rl-rows .h { color: var(--muted); }
+  .rl-total { font-size: 13px; color: var(--ink); } .rl-total.warn { color: #c92a2a; }
   /* 성적 알리미 */
   [data-card="scores"] { --accent: #5f3dc4; --card: #f1edff; --line: #d6ccf7; }
   .sc-top { display: flex; gap: 6px; align-items: center; }
@@ -953,8 +968,10 @@
   </section>
   <section class="card tool-card" data-card="roles" id="rl-card">
     <p class="label">🧹 1인 1역</p>
+    <p class="rl-period sub" id="rl-period"></p>
     <div class="rl-grid" id="rl-grid"></div>
-    <div class="rl-foot"><button class="rl-hist" onclick="rlHist(this)">📜 기록</button><span class="sp"></span><button class="rl-edit" onclick="rlEdit()">✎ 역할 정하기</button><button class="rl-save" onclick="rlSave(this)">💾 저장</button><button class="main rl-rand" onclick="rlRandom()">🎲 랜덤 배치</button></div>
+    <div class="rl-pool" id="rl-pool" title="이름을 끌어 역할 칸에 놓아요"></div>
+    <div class="rl-foot"><span class="rl-sum" id="rl-sum"></span><span class="sp"></span><button class="rl-hist" onclick="rlHist(this)">📜 기록</button><button class="rl-edit" onclick="rlEdit()">✎ 역할 정하기</button><button class="rl-save" onclick="rlSave(this)">💾 저장</button><button class="main rl-rand" onclick="rlRandom()">🎲 랜덤 배치</button></div>
   </section>
   <section class="card wb-card" data-card="whiteboard">
     <p class="label">🖍️ 화이트보드</p>
@@ -1572,7 +1589,7 @@ const CARDS = [["topic", "✏️ 오늘의 주제", "board", "2", [340, 200]], [
   ["whiteboard", "🖍️ 화이트보드", "popup", "4", [420, 320]], ["dust", "😷 미세먼지·날씨", "board", "1", [190, 190]], ["noise", "🔉 소음 측정", "popup", "1", [240, 270]],
   ["thermo", "🌡️ 학급 온도계", "popup", "1", [240, 260]], ["qr", "🔳 QR 만들기", "popup", "1", [240, 280]],
   ["notice", "📋 알림장", "popup", "2", [340, 320]],
-  ["scores", "📊 성적 알리미", "popup", "2", [320, 280]], ["roles", "🧹 1인 1역", "popup", "2", [340, 260]]];
+  ["scores", "📊 성적 알리미", "popup", "2", [320, 280]], ["roles", "🧹 1인 1역", "popup", "2", [360, 360]]];
 const FITS = ["rules", "notice"]; // 글이 넘치면 카드가 아래로 커지는 카드
 const minOf = k => { const m = CARDS.find(c => c[0] === k)[4]; return FITS.includes(k) ? [m[0], Math.max(m[1], noteNeed(k))] : m; };
 function noteNeed(k) { // 글이 스크롤 없이 다 보이는 카드 높이(px)
@@ -3311,15 +3328,36 @@ function ckDraw() {
 document.querySelectorAll("#ck-card [data-ck]").forEach(b => b.onclick = () => { ckMode = b.dataset.ck; try { localStorage.setItem("clock-mode", ckMode); } catch (e) {} ckDraw(); });
 setInterval(ckDraw, 1000); ckDraw();
 
-// ───── 1인 1역: 역할(직업)마다 맡을 사람. 이름은 여러 명. 🎲로 명단에서 무작위, 💾로 날짜별 기록
-// roles = { list: [{ job, n(맡을 사람 수), who: ["1번 김하늘", …] }], hist: [{ at, list }] }
-let roles = { list: [], hist: [] };
+// ───── 1인 1역: 역할(직업)마다 맡을 사람. 이름은 여러 명. 아래 이름 카드를 끌어 역할에 놓거나 🎲로 무작위. 💾로 기간을 제목 삼아 기록
+// roles = { list: [{ job, n(맡을 사람 수), pt(포인트, 단위를 정했을 때만), who: ["1번 김하늘", …] }], unit(포인트 단위, 비우면 안 씀), from, to(기간 YYYY-MM-DD), hist: [{ at, from, to, unit, list }] }
+let roles = { list: [], unit: "", from: "", to: "", hist: [] };
 try { roles = Object.assign(roles, JSON.parse(localStorage.getItem("roles")) || {}); } catch (e) {}
 const rlCard = document.getElementById("rl-card");
 function rlStore() { try { localStorage.setItem("roles", JSON.stringify(roles)); } catch (e) {} }
+const rlDay = d => d ? `${+d.slice(5, 7)}월 ${+d.slice(8)}일` : "";
+const rlPeriod = (f, t) => f || t ? `${rlDay(f) || "?"} ~ ${rlDay(t) || "?"}` : "";
+const rlNeed = list => list.reduce((n, r) => n + (+r.n || 1), 0); // 역할이 맡을 사람 수 합계
+function rlName(p, from) { // 끌 수 있는 이름 카드. 역할 칸에 놓으면 그 역할로, 아래 이름 칸에 놓으면 빼기
+  const el = h("span", { class: "rl-name", title: "끌어서 역할에 놓아요" }, seName(p));
+  el.onpointerdown = e => seDrag(e, seName(p), t => {
+    const tile = t?.closest(".rl-tile");
+    if (!tile && !t?.closest(".rl-pool")) return;
+    roles.list.forEach(r => r.who = r.who.filter(x => x !== p)); // 한 사람은 한 역할에
+    if (tile) roles.list[+tile.dataset.i].who.push(p);
+    rlStore(); rlDraw();
+  });
+  return el;
+}
 function rlDraw(anim) {
-  const tiles = roles.list.map(r => h("div", { class: "rl-tile" }, h("b", {}, r.job || "역할"), h("span", { class: r.who.length ? "" : "none" }, r.who.length ? r.who.map(seName).join(", ") : "아직 없어요")));
+  const unit = roles.unit.trim(), ppl = people(), taken = new Set(roles.list.flatMap(r => r.who));
+  $s("rl-period").textContent = rlPeriod(roles.from, roles.to);
+  const tiles = roles.list.map((r, i) => h("div", { class: "rl-tile", "data-i": String(i) }, h("b", {}, r.job || "역할"),
+    unit && r.pt ? h("span", { class: "rl-pt" }, `+${r.pt} ${unit}`) : null,
+    h("div", { class: "rl-who" }, r.who.length ? r.who.map(p => rlName(p)) : h("span", { class: "none" }, "이름을 끌어 놓아요"))));
   $s("rl-grid").replaceChildren(...tiles);
+  $s("rl-pool").replaceChildren(...(roles.list.length ? ppl.filter(p => !taken.has(p)).map(p => rlName(p)) : []));
+  const need = rlNeed(roles.list);
+  $s("rl-sum").textContent = roles.list.length ? `역할 ${roles.list.length}개 · ${need}명 / 학생 ${ppl.length}명` : "";
   if (anim) tiles.forEach((t, i) => setTimeout(() => { t.classList.add("pop"); tone(600 + i * 25, 0, .05, "triangle", .1); }, i * 70));
 }
 function rlRandom() { // 명단을 섞어 역할마다 정한 수만큼. 사람이 남으면 앞 역할부터 한 명씩 더
@@ -3333,33 +3371,48 @@ function rlRandom() { // 명단을 섞어 역할마다 정한 수만큼. 사람�
   rlStore(); rlDraw(true);
   setTimeout(() => melody([523, 659, 784, 1047], .09, "triangle", .25), roles.list.length * 70);
 }
-function rlSave(b) {
+function rlSave(b) { // 기간이 저장 제목 (기간이 없으면 저장한 날짜)
   if (!roles.list.length) return;
-  roles.hist = [{ at: Date.now(), list: clone(roles.list) }, ...roles.hist].slice(0, 30); rlStore();
+  roles.hist = [{ at: Date.now(), from: roles.from, to: roles.to, unit: roles.unit, list: clone(roles.list) }, ...roles.hist].slice(0, 30); rlStore();
   b.textContent = "저장했어요"; setTimeout(() => b.textContent = "💾 저장", 1500);
 }
 function rlHist(btn) { // 지난 기록: 누르면 불러오고 ✕로 지움
-  const when = t => new Date(t).toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "short" });
-  shelfMenu(btn, "📜 1인 1역 기록", roles.hist.map(x => ({ icon: h("span", { class: "lk-ic", style: "background:#2b8a3e" }, "역"), name: when(x.at), title: x.list.map(r => `${r.job}: ${r.who.map(seName).join(", ")}`).join("\n") })),
-    i => { roles.list = clone(roles.hist[i].list); rlStore(); rlDraw(); },
-    async (i, m) => { if (await seConfirm(m, `${when(roles.hist[i].at)} 기록을 지울까요?`, "지우기")) { roles.hist.splice(i, 1); rlStore(); rlHist(btn); } },
+  const title = x => rlPeriod(x.from, x.to) || new Date(x.at).toLocaleDateString("ko-KR", { month: "long", day: "numeric" }) + " 저장";
+  shelfMenu(btn, "📜 1인 1역 기록", roles.hist.map(x => ({ icon: h("span", { class: "lk-ic", style: "background:#2b8a3e" }, "역"), name: title(x), title: x.list.map(r => `${r.job}: ${r.who.map(seName).join(", ")}`).join("\n") })),
+    i => { const x = roles.hist[i]; Object.assign(roles, { list: clone(x.list), from: x.from || "", to: x.to || "", unit: x.unit ?? roles.unit }); rlStore(); rlDraw(); },
+    async (i, m) => { if (await seConfirm(m, `'${title(roles.hist[i])}' 기록을 지울까요?`, "지우기")) { roles.hist.splice(i, 1); rlStore(); rlHist(btn); } },
     "아직 저장한 기록이 없어요. '💾 저장'을 누르면 남아요.");
 }
-function rlEdit() { // 역할 이름 · 맡을 사람 수 · 이름(쉼표로 여러 명, 비워 두고 🎲로 정해도 돼요)
+function rlEdit() { // 기간 · 포인트 단위 + 역할마다 이름 · 몇 명 · 포인트 · 맡은 사람(쉼표로 여러 명). 아래에 합계
   rlCard.querySelector(".card-ed")?.remove();
-  const rows = h("div", { class: "rl-rows" });
+  const rows = h("div", { class: "rl-rows" }), total = h("span", { class: "rl-total" });
   const list = roles.list.map(r => ({ ...r, who: r.who.slice() }));
-  const draw = () => rows.replaceChildren(h("span", { class: "h" }, "역할"), h("span", { class: "h" }, "몇 명"), h("span", { class: "h" }, "이름 (쉼표로 여러 명)"), h("span"),
-    ...list.flatMap((r, i) => {
-      const job = h("input", { value: r.job, placeholder: "예: 칠판 지우기" }), n = h("input", { type: "number", min: "1", max: "10", value: String(r.n || 1) }), who = h("input", { value: r.who.map(seName).join(", ") });
-      job.oninput = () => r.job = job.value.trim(); n.oninput = () => r.n = Math.max(1, +n.value || 1);
-      who.oninput = () => r.who = who.value.split(/[,，]/).map(x => x.trim()).filter(Boolean).map(x => people().find(p => seName(p) === x) || x);
-      return [job, n, who, h("button", { class: "x", title: "이 역할 빼기", onclick: () => { list.splice(i, 1); draw(); } }, "✕")];
-    }));
+  const from = h("input", { type: "date", value: roles.from || "" }), to = h("input", { type: "date", value: roles.to || "" });
+  const unit = h("input", { class: "unit", value: roles.unit || "", placeholder: "포인트, 개, 으쓱…" });
+  const sum = () => { const need = rlNeed(list), n = people().length; total.textContent = `합계 ${need}명 · 학생 ${n}명` + (need < n ? ` (${n - need}명은 🎲 때 앞 역할부터 더 들어가요)` : need > n ? ` (${need - n}명 모자라요)` : " (딱 맞아요)"); total.classList.toggle("warn", need > n); };
+  const draw = () => {
+    const pts = !!unit.value.trim();
+    rows.replaceChildren(h("span", { class: "h" }, "역할"), h("span", { class: "h" }, "몇 명"), h("span", { class: "h" }, "포인트"), h("span", { class: "h" }, "맡은 사람 (쉼표로 여러 명)"), h("span"),
+      ...list.flatMap((r, i) => {
+        const job = h("input", { value: r.job, placeholder: "예: 칠판 지우기" }), n = h("input", { type: "number", min: "1", max: "10", value: String(r.n || 1) });
+        const pt = h("input", { type: "number", min: "0", max: "999", value: r.pt ? String(r.pt) : "", placeholder: pts ? "0" : "-", ...(pts ? {} : { disabled: "", title: "포인트 단위를 쓰면 정할 수 있어요" }) });
+        const who = h("input", { value: r.who.map(seName).join(", ") });
+        job.oninput = () => r.job = job.value.trim(); n.oninput = () => { r.n = Math.max(1, +n.value || 1); sum(); }; pt.oninput = () => r.pt = Math.max(0, +pt.value || 0);
+        who.oninput = () => r.who = who.value.split(/[,，]/).map(x => x.trim()).filter(Boolean).map(x => people().find(p => seName(p) === x) || x);
+        return [job, n, pt, who, h("button", { class: "x", title: "이 역할 빼기", onclick: () => { list.splice(i, 1); draw(); } }, "✕")];
+      }));
+    sum();
+  };
+  unit.oninput = () => { const had = rows.querySelector("input[disabled]"), on = !!unit.value.trim(); if (!!had === on) draw(); }; // 단위를 쓰거나 지우면 포인트 칸을 켜고 끔
   draw();
-  const add = h("button", { onclick: () => { list.push({ job: "", n: 1, who: [] }); draw(); rows.querySelectorAll("input")[rows.querySelectorAll("input").length - 3]?.focus(); } }, "+ 역할 추가");
-  const ok = h("button", { class: "main", onclick: () => { roles.list = list.filter(r => r.job || r.who.length); rlStore(); rlDraw(); ed.remove(); } }, "완료");
-  const ed = h("div", { class: "card-ed" }, h("div", { class: "card-ed-head" }, h("b", {}, "역할 정하기"), ok), h("div", { class: "card-ed-list" }, rows), h("div", { class: "card-ed-foot" }, add));
+  const add = h("button", { onclick: () => { list.push({ job: "", n: 1, pt: 0, who: [] }); draw(); const ins = rows.querySelectorAll("input"); ins[ins.length - 4]?.focus(); } }, "+ 역할 추가");
+  const ok = h("button", { class: "main", onclick: () => {
+    Object.assign(roles, { list: list.filter(r => r.job || r.who.length), unit: unit.value.trim(), from: from.value, to: to.value });
+    rlStore(); rlDraw(); ed.remove();
+  } }, "완료");
+  const ed = h("div", { class: "card-ed" }, h("div", { class: "card-ed-head" }, h("b", {}, "역할 정하기"), ok),
+    h("div", { class: "card-ed-list" }, h("div", { class: "rl-set" }, h("label", {}, "기간 ", from, " ~ ", to), h("label", {}, "포인트 단위 ", unit, " (비우면 포인트 없이)")), rows),
+    h("div", { class: "card-ed-foot" }, add, total));
   rlCard.append(ed);
   if (!list.length) add.click();
 }
@@ -4438,7 +4491,7 @@ function seDrag(e, label, onDrop) {
   const mv = ev => {
     if (!moved && Math.hypot(ev.clientX - sx, ev.clientY - sy) < 6) return;
     moved = true; gh.hidden = false; gh.style.left = ev.clientX + "px"; gh.style.top = ev.clientY + "px";
-    const t = D.elementFromPoint(ev.clientX, ev.clientY)?.closest(".sd, .se-group");
+    const t = D.elementFromPoint(ev.clientX, ev.clientY)?.closest(".sd, .se-group, .rl-tile, .rl-pool");
     if (t !== over) { over?.classList.remove("drop"); (over = t)?.classList.add("drop"); }
   };
   const up = ev => {
@@ -5118,9 +5171,10 @@ const TOURS = {
     { at: "#nt-hist", text: "지난 알림장을 불러오거나 ✕로 지워요. 칠판에 떠 있는 날 것을 지우면 칠판 글도 지워져요." },
     { text: "번호는 첫 줄의 '1.'만 붙어요. 한 내용을 두 줄로 쓸 수 있게 나머지 번호는 직접 써요." }] },
   roles: { name: "🧹 1인 1역", steps: [
-    { at: ".rl-edit", text: "역할(직업)과 맡을 사람 수를 정해요. 이름을 직접 쓸 수도 있어요 (쉼표로 여러 명)." },
+    { at: ".rl-edit", text: "역할과 맡을 사람 수, 기간, 포인트(단위는 직접: 포인트·개·으쓱…, 비우면 안 씀)를 정해요. 아래에 몇 명까지 맡는지 합계가 나와요." },
+    { at: ".rl-pool", text: "이름 카드를 끌어 역할 칸에 놓아요. 역할 칸의 이름을 여기로 끌어 놓으면 빠져요." },
     { at: ".rl-rand", text: "명단에서 무작위로 정해요. 사람이 남으면 앞 역할부터 한 명씩 더 들어가요." },
-    { at: [".rl-save", ".rl-hist"], text: "저장해 두면 '📜 기록'에서 다시 불러와요." }] },
+    { at: [".rl-save", ".rl-hist"], text: "기간을 제목으로 저장돼요. '📜 기록'에서 다시 불러와요." }] },
   scores: { name: "📊 성적 알리미", steps: [
     { at: ".sc-top button", text: "'✎ 점수 넣기': 평가 이름·만점·학생 점수 (엑셀 한 줄 붙여넣기도 돼요)" },
     { at: "#sc-grid", text: "이름을 누르면 그 학생 점수만 크게 보여요." }] },
