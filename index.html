@@ -543,22 +543,25 @@
   #thermo-card.full .th-info .big { animation: th-pop .6s ease-in-out 3; }
   @keyframes th-pop { 50% { transform: scale(1.25); } }
   /* 보상 정하기: 카드 안을 덮는 목록 */
-  .th-ed { position: absolute; inset: 0; z-index: 4; display: flex; flex-direction: column; gap: 8px; padding: 12px 16px; background: #fff; border-radius: inherit;
+  .card-ed { position: absolute; inset: 0; z-index: 4; display: flex; flex-direction: column; gap: 8px; padding: 12px 16px; background: #fff; border-radius: inherit;
            font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--ink); }
-  .th-ed-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-  .th-ed-list { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
-  .th-ed-list label { display: flex; align-items: center; gap: 8px; }
-  .th-ed-list label > span { width: 3em; flex: none; text-align: right; color: var(--accent); }
-  .th-ed-list input { flex: 1; min-width: 0; font: inherit; border: 1.5px solid var(--line); border-radius: 8px; padding: 4px 8px; }
+  .card-ed-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .card-ed-list { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+  .card-ed-list label { display: flex; align-items: center; gap: 8px; }
+  .card-ed-list label > span { width: 3em; flex: none; text-align: right; color: var(--accent); }
+  .card-ed-list input { flex: 1; min-width: 0; font: inherit; border: 1.5px solid var(--line); border-radius: 8px; padding: 4px 8px; }
   /* QR 만들기 */
   [data-card="qr"] { --accent: #495057; --card: #f1f3f5; --line: #dee2e6; }
   .qr-row { display: flex; gap: 6px; } .qr-row #qr-in { flex: 1; }
-  .qr-saved { display: flex; flex-wrap: wrap; gap: 4px; max-height: 60px; overflow-y: auto; }
-  .qr-saved:empty { display: none; }
-  .tool-card .qr-saved button { font-size: 12px; padding: 2px 4px 2px 10px; display: inline-flex; align-items: center; gap: 2px; max-width: 100%; }
-  .tool-card .qr-saved button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .qr-saved b { font-weight: normal; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .qr-saved i { font-style: normal; padding: 0 6px; opacity: .6; } .qr-saved i:hover { opacity: 1; }
+  .qr-foot { display: flex; justify-content: flex-end; padding-right: 8px; }
+  .tool-card .qr-foot button { font-size: 13px; padding: 3px 10px; border-radius: 8px; }
+  .qr-item { display: flex; gap: 6px; align-items: center; }
+  .tool-card .qr-item .pick { flex: 1; min-width: 0; text-align: left; border-radius: 8px; display: flex; flex-direction: column; padding: 5px 10px; }
+  .tool-card .qr-item .pick.on { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+  .qr-item .pick small { color: var(--muted); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tool-card .qr-item .x { border: 0; background: none; color: var(--muted); padding: 4px 8px; }
+  .card-ed .none { color: var(--muted); font-size: 13px; }
+  .se-ask .se-ask-in { display: block; width: 100%; box-sizing: border-box; font: inherit; border: 1.5px solid var(--line, #c3e1e6); border-radius: 8px; padding: 6px 10px; margin: 0 0 12px; }
   #qr-in { font: 15px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); border-radius: 8px; padding: 6px 10px; background: #fff; color: var(--ink); min-width: 0; }
   .qr-box { flex: 1; min-height: 0; position: relative; display: grid; place-items: center; }
   #qr-cv { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); image-rendering: pixelated; }
@@ -678,7 +681,7 @@
   <section class="card tool-card" data-card="picker">
     <p class="label">🎲 뽑기</p>
     <div class="modes" role="group" aria-label="뽑기 방법">
-      <button data-mode="all" title="명단 전체에서 뽑기">전체</button><button data-mode="select" title="명단에서 고른 사람만">선택</button><button data-mode="group" title="모둠 뽑기">모둠</button><button data-mode="direct" title="그때그때 직접 입력한 것 중에서">직접입력</button><button data-mode="order" title="명단 전체가 핀볼처럼 굴러떨어져 빠진 순서대로 순서 정하기">순서</button>
+      <button data-mode="all" title="명단 전체에서 뽑기">전체</button><button data-mode="select" title="명단에서 고른 사람만">선택</button><button data-mode="group" title="모둠 뽑기">모둠</button><button data-mode="order" title="명단 전체가 핀볼처럼 굴러떨어져 빠진 순서대로 순서 정하기">순서</button><button data-mode="direct" title="그때그때 직접 입력한 것 중에서">직접입력</button>
     </div>
     <div class="big" id="pick-name" aria-live="polite">?</div>
     <div class="pick-edit" id="pick-edit" hidden>
@@ -734,8 +737,8 @@
   <section class="card tool-card" data-card="qr">
     <p class="label">🔳 QR 만들기</p>
     <div class="qr-row"><input id="qr-in" placeholder="주소나 글을 넣으세요" aria-label="QR로 만들 주소나 글" spellcheck="false" autocomplete="off"><button onclick="qrKeep()" title="자주 쓰는 QR로 저장">☆ 저장</button></div>
-    <div class="qr-saved" id="qr-saved"></div>
     <div class="qr-box"><canvas id="qr-cv" hidden></canvas><p class="sub" id="qr-msg"></p></div>
+    <div class="qr-foot"><button onclick="qrShelf()" id="qr-shelf-btn">🗂️ 보관함</button></div>
   </section>
   <section class="card wb-card" data-card="whiteboard">
     <p class="label">🖍️ 화이트보드</p>
@@ -848,10 +851,9 @@
   </nav>
   <section id="tab-time">
     <h3>1. 연간시간표 가져오기</h3>
-    <p class="sum">연간시간표, 주간 시간표, 주간학습안내 모두 돼요. 한글(.hwp·.hwpx), 워드(.docx), PDF 파일을 고르거나, 한글·엑셀·나이스에서 표 전체를 복사해 아래 칸에 붙여넣으세요(Ctrl+V). 다시 넣으면 그 주만 새로 바뀌어요. 날짜가 있는 주간 시간표·주간학습안내를 넣으면 연간시간표의 그 주가 이걸로 바뀌어요.</p>
+    <p class="sum">연간시간표, 주간 시간표, 주간학습안내 모두 돼요. 한글(.hwp·.hwpx), 워드(.docx), PDF 파일을 고르기만 하면 돼요. 다시 넣으면 그 주만 새로 바뀌어요. 날짜가 있는 주간 시간표·주간학습안내를 넣으면 연간시간표의 그 주가 이걸로 바뀌어요.</p>
     <div class="row">
       <button onclick="document.getElementById('tt-file').click()">파일 고르기 (한글 · 워드 · PDF)</button>
-      <input id="tt-paste" placeholder="여기를 누르고 Ctrl+V" aria-label="시간표 붙여넣기">
       <input type="file" id="tt-file" accept=".hwp,.hwpx,.doc,.docx,.pdf" hidden>
     </div>
     <p class="sum" id="tt-msg"></p>
@@ -890,11 +892,11 @@
       <li><b>미세먼지</b> 최고·좋음·보통·나쁨·최악 다섯 단계로 보여 줘요. '지역 설정'에서 '지금 위치로'를 누르거나 시·군 이름(예: 수원시)으로 찾으세요. Open-Meteo(무료 공개 자료)의 예보값이라 에어코리아 측정소 값과 조금 다를 수 있어요. 30분마다 새로 받아요.</li>
       <li><b>소음 측정</b> '측정 시작'을 누르고 마이크를 허락하면 소리 크기를 막대로 보여 줘요. 기준(검은 선)을 1초 넘게 넘으면 경고음이 나고 오늘 경고 횟수가 쌓여요. '🔔 경고'로 직접 경고를 줄 수도 있어요. 소리는 이 컴퓨터 안에서만 재고, 녹음하거나 보내지 않아요.</li>
       <li><b>화이트보드</b> ✏️ 펜을 누르면 색과 굵기를 골라 그려요. T 글상자는 누른 뒤 보드(사진 위도 돼요)를 클릭해 써요. 사진은 복사해서 Ctrl+V(또는 끌어다 놓기). 옮기기에서 사진·글상자·펜 선을 끌어 옮기고, 오른쪽 아래 파란 점으로 크기를 바꾸고(글상자는 글씨도 같이 커져요), 오른쪽 위 ✕나 Delete로 지워요. 빈 곳에서 끌어 네모를 그리면 그 안에 통째로 들어온 것이 함께 골라지고(조금 걸친 건 빠져요), Shift를 누른 채 여러 개를 눌러도 골라져요. '묶기'로 한 덩어리로 묶어요('풀기'로 다시 나눠요). 글상자는 두 번 클릭하면 고치고, 글상자를 고르면 위에 나오는 Tt로 글씨 크기·색을 바꿔요. 여러 개나 묶음은 점선 상자 오른쪽 아래 파란 점으로 한꺼번에 크기를 바꿔요. ↶나 Ctrl+Z로 되돌려요. 제목 줄 오른쪽 1~4 버튼으로 화이트보드를 4개까지 따로 써요.</li>
-      <li><b>시간표</b> 설정 → 시간표에서 연간시간표(한글 파일 또는 표 붙여넣기)와 시정표를 넣으면, 지금 몇 교시인지와 다음 시간을 알려 줘요. 표에 없는 주는 '매주 기본 시간표'를 써요.</li>
+      <li><b>시간표</b> 설정 → 시간표에서 연간시간표 파일(한글·워드·PDF)과 시정표를 넣으면, 지금 몇 교시인지와 다음 시간을 알려 줘요. 표에 없는 주는 '매주 기본 시간표'를 써요.</li>
       <li><b>보드 카드</b> 제목을 끌어 옮기고, 오른쪽 아래 모서리로 크기를 바꿔요. 옮긴 자리와 크기는 앱을 껐다 켜도 그대로예요. ✕를 누르면 보드에서 닫히고 아래쪽 바로 들어가요. 닫아도 적어 둔 내용은 남아요.</li>
       <li><b>아래쪽 바</b> 보드에서 닫은 카드가 들어가요. 누르면 보드에 다시 나와요. 자주 안 쓰는 버튼은 오른쪽 끝 '서랍'을 눌러 아래 목록에서 골라 넣어 두면 서랍 안에서 꺼내 써요.</li>
       <li><b>학급 온도계</b> +1°, +5°로 반 온도를 올리고 −1°로 내려요. 연필 버튼에서 5°마다 보상을 쓸 수 있어요(비워 둬도 돼요). 카드에는 다음 보상(예: 10°가 되면 ○○)이 나오고, 올릴 땐 올라가는 소리, 내릴 땐 내려가는 소리가 나요. 보상 온도를 넘거나 100°가 되면 소리와 함께 축하해요. ↻는 0°로 되돌려요.</li>
-      <li><b>QR 만들기</b> 칸에 주소나 글을 넣으면 바로 QR이 생겨요. ⛶ 전체 화면으로 크게 띄워 학생들이 찍게 하세요. 인터넷 없이 이 컴퓨터에서 만들어요.</li>
+      <li><b>QR 만들기</b> 칸에 주소나 글을 넣으면 바로 QR이 생겨요. 자주 쓰는 건 '☆ 저장'으로 이름을 붙여 보관함에 넣고, 오른쪽 아래 '보관함'에서 눌러 바로 띄워요. ⛶ 전체 화면으로 크게 띄워 학생들이 찍게 하세요. 인터넷 없이 이 컴퓨터에서 만들어요.</li>
       <li><b>자리배치</b> 처음 한 번 설정 버튼에서 모양(분단: 혼자·짝꿍과 앉기와 분단 수 / 모둠: 모둠 인원 / 직접 그리기: 명단 인원만큼 자리를 고르고, 필요하면 '방향 돌리기'로 ㄷ자처럼 옆을 보게)과 짝꿍 조건(상관없이·이성끼리·동성끼리·성별 고르게, 이전 짝꿍과 같이 안 앉기)을 정하면 계속 유지돼요. 성별은 설정 → 명단에서 이름과 함께 정해요. 평소에는 '자동 자리배치'(한 자리씩 나타나요), 그 아래 '오늘 날짜로 저장', 출력만 누르면 돼요. 출력은 학생 시점(칠판이 위)·교사 시점(칠판이 아래)·둘 다 중에서 골라 A4 가로로 크게 나와요. 이름을 끌어 다른 자리에 놓거나, 이름을 누른 뒤 다른 자리를 누르면 서로 자리를 바꾸고, 칠판 옆 '상하전환'으로 위아래를 바꿔요. 대형을 만들면 많이 쓰는 공개 모둠으로 묶여요(혼자 앉기는 한 줄, 짝꿍은 4~6명). 미리보기에서 책상이나 모둠을 끌어 옮기고 '간격 맞추기'로 줄과 간격을 똑같이 맞춰요. 모둠을 바꾸려면 책상을 고르고(Shift+누르기, 빈 곳을 끌어 네모로) '모둠으로 묶기'를 눌러요. 혼자 앉기에서는 짝꿍 대신 모둠 성별 조건(상관없이·성별 고르게)을 골라요. 모둠 상자 아래 이름(1모둠…)을 누르면 이름을 바꿀 수 있어요. 자리배치도 이름 옆 작은 별은 선생님 모드예요(고정, 분리, 기록). 분리에서 같이 앉으면 안 되는 학생을 비밀 그룹으로 묶고 1~4순위를 정해요(1순위를 가장 먼저 떨어뜨려요). 같은 그룹은 짝꿍·앞뒤·좌우·같은 모둠으로 앉지 않아요. 다 지킬 수 없으면 바로 앉히지 않고 먼저 물어봐요.</li>
       <li><b>로그인</b> 설정 → 로그인에서 구글로 로그인하면 보드가 서버에 저장되고, 다른 컴퓨터에서 같은 계정으로 로그인하면 같은 보드가 나와요.</li>
       <li><b>준비물</b> 시간표 카드 오른쪽 칸에 쓰면 저장돼요.</li>
@@ -1862,7 +1864,7 @@ document.getElementById("roster-file").addEventListener("change", async e => {
     try { localStorage.setItem("gender", JSON.stringify(gender)); } catch (e) {}
     roster.dispatchEvent(new Event("input")); roster.dispatchEvent(new Event("change")); rosterTable();
     msg.textContent = `${list.length}명을 가져왔어요${list.some(x => x.g) ? " (성별 포함)" : ""}. 아래 표에서 번호·이름·성별을 바로 고칠 수 있어요.`;
-  } catch (err) { msg.textContent = fileError(err, "명단"); }
+  } catch (err) { msg.textContent = fileError(err, "아래 표에 번호와 이름을 직접 써 주세요."); }
 });
 function candidates(mode = pk.mode) {
   if (mode === "select") return people().filter(p => pk.chosen.includes(p));
@@ -2344,16 +2346,6 @@ function ttImport(rows) {
   ttSave(); ttEditor();
   msg.textContent = `${weeks.length}주 시간표를 가져왔어요 (${weeks[0].start} ~ ${weeks[weeks.length - 1].end}). 아래에서 확인하고 고칠 수 있어요.`;
 }
-// 붙여넣기: 한글·엑셀·나이스 표는 HTML 표로, 아니면 탭으로 나뉜 글자로 들어옴
-document.getElementById("tt-paste").addEventListener("paste", e => {
-  e.preventDefault();
-  const html = e.clipboardData.getData("text/html");
-  let rows = [];
-  if (html) rows = [...new DOMParser().parseFromString(html, "text/html").querySelectorAll("tr")]
-    .map(tr => [...tr.cells].map(td => td.innerText || td.textContent || ""));
-  if (!rows.length) rows = e.clipboardData.getData("text/plain").split(/\r?\n/).map(l => l.split("\t"));
-  ttImport(rows);
-});
 document.getElementById("tt-file").addEventListener("change", async e => {
   const f = e.target.files[0]; e.target.value = "";
   if (!f) return;
@@ -2361,7 +2353,7 @@ document.getElementById("tt-file").addEventListener("change", async e => {
   msg.textContent = "읽는 중…";
   try {
     ttImport(await readTables(f));
-  } catch (err) { msg.textContent = fileError(err, "표 전체"); }
+  } catch (err) { msg.textContent = fileError(err, "PDF로 저장해서 다시 넣거나, 아래 '시간표 고치기'에서 직접 써 주세요."); }
 });
 
 // 파일에서 표 줄 꺼내기: 교육청마다 쓰는 프로그램이 달라서 한글(.hwp·.hwpx)·워드(.docx)·PDF 모두 받음
@@ -2373,9 +2365,9 @@ async function readTables(f) {
   if (ext === "doc") throw new Error("doc"); // 옛 워드 형식은 못 읽음
   return readHwpTables(buf);
 }
-const fileError = (err, what) => err.message === "doc"
+const fileError = (err, hint) => err.message === "doc"
   ? "옛 워드 파일(.doc)은 읽지 못해요. 워드에서 '다른 이름으로 저장 → Word 문서(.docx)'로 저장해서 넣어 주세요."
-  : `이 파일은 읽지 못했어요. 파일을 열어 ${what}를 복사해 붙여넣어 주세요.`;
+  : "이 파일은 읽지 못했어요. " + hint;
 // .docx(워드)·.hwpx(한글 새 형식)는 ZIP 안의 XML. 표 → 줄 → 칸 → 글자 순으로 꺼냄 (칸 안 문단은 띄어 붙임)
 function unzip(buf) {
   const u8 = new Uint8Array(buf), dv = new DataView(buf), files = {};
@@ -2768,9 +2760,9 @@ function thAdd(d) {
 }
 async function thReset() { if (!thermo.t || !await seConfirm(thCard, "온도를 0°로 되돌릴까요?", "되돌리기")) return; thermo.t = 0; thSave(); thDraw(); melody([784, 659, 587, 523], .06, "sine", .22); }
 function thEdit() { // 5°~100° 보상 쓰기. 비워 둔 온도는 보상 없음
-  thCard.querySelector(".th-ed")?.remove();
+  thCard.querySelector(".card-ed")?.remove();
   const ed = document.createElement("div"), head = document.createElement("div"), list = document.createElement("div"), done = document.createElement("button"), tt = document.createElement("b");
-  ed.className = "th-ed"; head.className = "th-ed-head"; list.className = "th-ed-list";
+  ed.className = "card-ed"; head.className = "card-ed-head"; list.className = "card-ed-list";
   tt.textContent = "보상 정하기 (비워 둬도 돼요)"; done.className = "main"; done.textContent = "완료";
   done.onclick = () => { ed.remove(); thTicks(); thText(); thShow(thShown); };
   for (let d = 5; d <= 100; d += 5) {
@@ -2880,32 +2872,33 @@ function qrDraw() {
   M.forEach((r, y) => r.forEach((v, x) => v && g.fillRect((x + 4) * k, (y + 4) * k, k, k)));
   qrFit();
 }
-// 자주 쓰는 QR: [{ name, text }]. 누르면 불러오고 ✕로 지움
+// QR 보관함: [{ name, text }]. '☆ 저장'으로 넣고, 오른쪽 아래 '보관함'에서 눌러 띄움
+const qrCard = card("qr");
 let qrList = [];
 try { qrIn.value = localStorage.getItem("qr-text") || ""; qrList = JSON.parse(localStorage.getItem("qr-saved")) || []; } catch (e) {}
-function qrSavedDraw() {
-  document.getElementById("qr-saved").replaceChildren(...qrList.map((q, i) => {
-    const b = document.createElement("button"), nm = document.createElement("b"), x = document.createElement("i");
-    nm.textContent = q.name; x.textContent = "✕"; x.title = "지우기"; b.title = q.text; b.append(nm, x);
-    b.classList.toggle("on", q.text === qrIn.value.trim());
-    b.onclick = e => {
-      if (e.target === x) { if (confirm(`'${q.name}'을 지울까요?`)) { qrList.splice(i, 1); qrSavedSave(); } return; }
-      qrIn.value = q.text; qrIn.dispatchEvent(new Event("input"));
-    };
-    return b;
-  }));
-}
-function qrSavedSave() { try { localStorage.setItem("qr-saved", JSON.stringify(qrList)); } catch (e) {} qrSavedDraw(); }
-function qrKeep() {
+function qrSavedSave() { try { localStorage.setItem("qr-saved", JSON.stringify(qrList)); } catch (e) {} document.getElementById("qr-shelf-btn").textContent = `🗂️ 보관함${qrList.length ? " " + qrList.length : ""}`; }
+async function qrKeep() {
   const t = qrIn.value.trim();
   if (!t) return qrIn.focus();
-  const old = qrList.find(q => q.text === t), name = prompt("저장할 이름 (예: 학급 홈페이지)", old?.name || t.replace(/^https?:\/\/(www\.)?/, "").slice(0, 20));
-  if (!name?.trim()) return;
-  if (old) old.name = name.trim(); else qrList.push({ name: name.trim(), text: t });
+  const old = qrList.find(q => q.text === t), name = await seAskText(qrCard, "보관함에 넣을 이름을 써 주세요. (예: 학급 홈페이지)", old?.name || t.replace(/^https?:\/\/(www\.)?/, "").slice(0, 20), "저장");
+  if (!name) return;
+  if (old) old.name = name; else qrList.push({ name, text: t });
   qrSavedSave();
 }
-qrIn.addEventListener("input", () => { try { localStorage.setItem("qr-text", qrIn.value); } catch (e) {} qrDraw(); qrSavedDraw(); });
-qrSavedDraw();
+function qrShelf() { // 카드 안을 덮는 목록. 이름을 누르면 그 QR을 띄우고 닫힘
+  qrCard.querySelector(".card-ed")?.remove();
+  const close = h("button", { class: "main", onclick: () => ed.remove() }, "닫기"), list = h("div", { class: "card-ed-list" });
+  const ed = h("div", { class: "card-ed" }, h("div", { class: "card-ed-head" }, h("b", {}, "QR 보관함"), close), list);
+  const draw = () => list.replaceChildren(...(qrList.length ? qrList.map((q, i) => h("div", { class: "qr-item" },
+    h("button", { class: "pick" + (q.text === qrIn.value.trim() ? " on" : ""), title: q.text, onclick: () => { qrIn.value = q.text; qrIn.dispatchEvent(new Event("input")); ed.remove(); } }, h("span", {}, q.name), h("small", {}, q.text)),
+    h("button", { class: "x", title: "보관함에서 지우기", "aria-label": "보관함에서 지우기", onclick: async () => { if (await seConfirm(qrCard, `'${q.name}'을 보관함에서 지울까요?`, "지우기")) { qrList.splice(i, 1); qrSavedSave(); draw(); } } }, "✕")))
+    : [h("p", { class: "none" }, "아직 저장한 QR이 없어요. 주소를 넣고 '☆ 저장'을 눌러요.")]));
+  draw(); qrCard.append(ed);
+  ed.addEventListener("keydown", e => { if (e.key === "Escape") ed.remove(); });
+  close.focus();
+}
+qrIn.addEventListener("input", () => { try { localStorage.setItem("qr-text", qrIn.value); } catch (e) {} qrDraw(); });
+qrSavedSave();
 new ResizeObserver(qrFit).observe(qrCv.parentElement);
 qrDraw();
 
@@ -3777,6 +3770,18 @@ function seChoose(host, text, choices) {
     box.onpointerdown = e => { e.stopPropagation(); if (e.target === box) done(null); };
     box.onkeydown = e => { if (e.key === "Escape") { e.stopPropagation(); done(null); } };
     host.append(box); box.querySelector(".main").focus();
+  });
+}
+// 카드 안에서 글 한 줄 받기. 쓴 글, 취소면 null
+function seAskText(host, text, value = "", ok = "확인") {
+  return new Promise(res => {
+    host.querySelector(":scope > .se-ask")?.remove();
+    const inp = h("input", { class: "se-ask-in", value }), done = v => { box.remove(); res(v); }, okv = () => done(inp.value.trim().slice(0, 40) || null);
+    const box = h("div", { class: "se-ask" }, h("div", {}, h("p", {}, text), inp,
+      h("div", { class: "row" }, h("button", { onclick: () => done(null) }, "취소"), h("button", { class: "main", onclick: okv }, ok))));
+    box.onpointerdown = e => { e.stopPropagation(); if (e.target === box) done(null); };
+    box.onkeydown = e => { if (e.key === "Escape") { e.stopPropagation(); done(null); } else if (e.key === "Enter") { e.preventDefault(); okv(); } };
+    host.append(box); inp.focus(); inp.select();
   });
 }
 function seConfirm(host, text, ok = "확인", cancel = "취소") {
