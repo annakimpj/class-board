@@ -637,8 +637,8 @@
   [data-card="notice"] { --accent: #2b6a4a; --card: #e6f2ec; --line: #bcdccb; }
   .chalk { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 4px; position: relative; padding: 12px 18px; border-radius: 8px;
            background: #2f5d46 radial-gradient(circle at 30% 20%, rgba(255, 255, 255, .07), transparent 60%); border: 8px solid #8a5a2b; box-shadow: inset 0 0 18px rgba(0, 0, 0, .35); }
-  .chalk-date { font: 20px/1.3 "Wanted Sans", "Malgun Gothic", sans-serif; color: #ffe8a3; }
-  .card .chalk .note { color: #fdfdf6; font: 26px/1.45 "Wanted Sans", "Malgun Gothic", sans-serif; }
+  .chalk-date { font: 24px/1.3 "Wanted Sans", "Malgun Gothic", sans-serif; color: #ffe8a3; }
+  .card .chalk .note { color: #fdfdf6; font: 34px/1.45 "Wanted Sans", "Malgun Gothic", sans-serif; } /* 뒤에 앉은 학생도 보이게 */
   .card .chalk .note:focus { background: rgba(255, 255, 255, .06); box-shadow: none; border-radius: 6px; }
   .chalk-list li { border-bottom-color: rgba(255, 255, 255, .22); }
   .chalk-list li::before { display: none; } /* 한 내용을 두 줄로 쓸 수도 있어서 번호는 첫 줄의 '1.'만. 나머지는 직접 씀 */
@@ -668,27 +668,29 @@
   /* 1인 1역 */
   [data-card="roles"] { --accent: #2b8a3e; --card: #ebfbee; --line: #c3e6cb; }
   .rl-period { margin: -4px 0 0; } .rl-period:empty { display: none; }
-  .rl-grid { flex: 1; min-height: 96px; overflow-y: auto; user-select: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); align-content: start; gap: 6px; }
+  .rl-grid { flex: 1; min-height: 96px; overflow-y: auto; user-select: none; display: grid; grid-auto-rows: max-content; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); align-content: start; gap: 6px; }
   .rl-grid:empty::before { content: "'✎ 역할 정하기'에서 역할을 넣어요."; grid-column: 1 / -1; margin: auto; padding: 20px 0; color: var(--muted); font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; }
-  .rl-tile { position: relative; background: #fff; border-radius: 10px; padding: 6px 10px 8px; border: 1.5px solid var(--line); font: 15px/1.35 "Wanted Sans", "Malgun Gothic", sans-serif; min-height: 52px; }
+  .rl-tile { position: relative; background: #fff; border-radius: 10px; padding: 6px 10px 8px; border: 1.5px solid var(--line); font: 15px/1.35 "Wanted Sans", "Malgun Gothic", sans-serif; min-height: 60px; cursor: pointer; }
   .rl-tile.drop { border-color: var(--accent); background: var(--card); box-shadow: 0 0 0 2px var(--accent); }
-  .rl-tile > b { display: block; font-weight: normal; font-size: 13px; color: var(--accent); padding-right: 52px; }
-  .rl-pt { position: absolute; top: 5px; right: 6px; padding: 0 7px; border-radius: 999px; background: #fff3bf; color: #a6730c; font-size: 12px; white-space: nowrap; }
+  .rl-tile > b { display: block; font-weight: 600; font-size: 18px; color: var(--accent); padding-right: 70px; }
+  .rl-pt { position: absolute; top: 6px; right: 6px; padding: 0 8px; border-radius: 999px; background: #fff3bf; color: #a6730c; font-size: 15px; white-space: nowrap; }
   .rl-who { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 3px; }
-  .rl-name { display: inline-block; padding: 1px 9px; border-radius: 999px; background: var(--card); color: var(--ink); font-size: 16px; cursor: grab; touch-action: none; user-select: none; }
-  .rl-who .none { color: var(--muted); font-size: 13px; }
+  .rl-name { display: inline-block; padding: 1px 10px; border-radius: 999px; background: var(--card); color: var(--ink); font-size: 22px; cursor: grab; touch-action: none; user-select: none; } /* 숙제 글씨만큼 */
+  .rl-who .none { color: var(--muted); font-size: 14px; }
   .rl-tile.pop { animation: seat-pop .45s ease-out; }
   .rl-pool { flex: none; max-height: 22%; user-select: none; overflow-y: auto; display: flex; flex-wrap: wrap; gap: 4px; padding: 6px; border-radius: 10px; border: 1.5px dashed var(--line); }
   .rl-pool.drop { border-color: var(--accent); background: var(--card); }
   .rl-pool:empty { display: none; }
-  .rl-pool .rl-name { background: #fff; border: 1.5px solid var(--line); font-size: 14px; }
+  .rl-pool .rl-name { background: #fff; border: 1.5px solid var(--line); font-size: 18px; }
+  .rl-info { inset: auto; margin: 0; max-width: 300px; padding: 12px 14px; border: 0; border-radius: 12px; background: #fff; color: var(--ink); box-shadow: 0 10px 30px rgba(60, 40, 20, .22); font: 16px/1.5 "Wanted Sans", "Malgun Gothic", sans-serif; }
+  .rl-info b { display: block; color: #2b8a3e; font-size: 18px; margin-bottom: 4px; } .rl-info p { margin: 0; white-space: pre-line; } .rl-info small { display: block; margin-top: 6px; color: #a6730c; }
   .rl-foot { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; padding-right: 8px; } .rl-foot .sp { flex: 1; }
   .rl-sum { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--muted); }
   .tool-card .rl-foot button { font-size: 13px; padding: 3px 10px; border-radius: 8px; } .tool-card .rl-foot .main { padding: 3px 12px; }
   .rl-set { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; margin-bottom: 10px; font-size: 13px; color: var(--muted); }
   .rl-set input { font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); border-radius: 6px; padding: 3px 6px; }
   .rl-set .unit { width: 9em; }
-  .rl-rows { display: grid; grid-template-columns: minmax(0, 1.2fr) 52px 60px minmax(0, 2fr) auto; gap: 4px 6px; align-items: center; font-size: 13px; }
+  .rl-rows { display: grid; grid-template-columns: minmax(0, 1.1fr) 52px 60px minmax(0, 2fr) auto; gap: 4px 6px; align-items: center; font-size: 13px; }
   .rl-rows input { font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); border-radius: 6px; padding: 3px 6px; min-width: 0; }
   .rl-rows input:disabled { opacity: .4; }
   .rl-rows .h { color: var(--muted); }
@@ -971,7 +973,7 @@
     <p class="rl-period sub" id="rl-period"></p>
     <div class="rl-grid" id="rl-grid"></div>
     <div class="rl-pool" id="rl-pool" title="이름을 끌어 역할 칸에 놓아요"></div>
-    <div class="rl-foot"><span class="rl-sum" id="rl-sum"></span><span class="sp"></span><button class="rl-hist" onclick="rlHist(this)">📜 기록</button><button class="rl-edit" onclick="rlEdit()">✎ 역할 정하기</button><button class="rl-save" onclick="rlSave(this)">💾 저장</button><button class="main rl-rand" onclick="rlRandom()">🎲 랜덤 배치</button></div>
+    <div class="rl-foot"><span class="rl-sum" id="rl-sum"></span><span class="sp"></span><button class="rl-hist" onclick="rlHist(this)">📜 기록</button><button class="rl-print" onclick="rlPrint()" title="A4 세로 표로 출력">🖨️ 출력</button><button class="rl-reset" onclick="rlReset()" title="초기화">↺ 초기화</button><button class="rl-edit" onclick="rlEdit()">✎ 역할 정하기</button><button class="rl-save" onclick="rlSave(this)">💾 저장</button><button class="main rl-rand" onclick="rlRandom()">🎲 랜덤 배치</button></div>
   </section>
   <section class="card wb-card" data-card="whiteboard">
     <p class="label">🖍️ 화이트보드</p>
@@ -1746,14 +1748,22 @@ function placeCards() {
     saveLayout();
   }
   board.classList.add("free");
+  // 저장은 보드에 대한 비율, 그릴 때는 네 변을 배경 점 칸(18px, 화면 가운데 기준)에 맞춤 → 창 크기가 달라도 카드 가장자리가 서로 줄 맞게
+  const B = board.getBoundingClientRect(), G = 18, gx = innerWidth / 2 + 9, gy = innerHeight / 2 + 9;
+  const snx = v => Math.round((B.left + v - gx) / G) * G + gx - B.left, sny = v => Math.round((B.top + v - gy) / G) * G + gy - B.top;
   for (const [k] of CARDS) {
     const c = card(k), l = lay(k);
     if (l.mode !== "board" || pops[k]) continue;
     const { x, y, w, h } = l.rect, [mw, mh] = minOf(k);
-    [x, y, w, h].forEach((v, i) => c.style[POS[i]] = v * 100 + "%");
+    let L = snx(x * B.width), T = sny(y * B.height), R = snx((x + w) * B.width), Bo = sny((y + h) * B.height);
+    if (L < 0) L += G; if (T < 0) T += G; // 보드 밖으로 나가지 않게 한 칸 안으로
+    while (R - L < mw) R += G; while (Bo - T < mh) Bo += G; // 최소 크기도 칸 단위로 늘림
+    while (R > B.width + .5 && L - G >= 0) { L -= G; R -= G; } while (Bo > B.height + .5 && T - G >= 0) { T -= G; Bo -= G; }
+    Object.assign(c.style, { left: L + "px", top: T + "px", width: R - L + "px", height: Bo - T + "px" });
     c.style.minWidth = mw + "px"; c.style.minHeight = mh + "px"; // 예전에 더 작게 줄여 둔 카드도 최소 크기는 지킴
   }
 }
+new ResizeObserver(() => board.classList.contains("free") && placeCards()).observe(board); // 창 크기가 바뀌면 다시 맞춤
 // 제목 줄을 끌면 옮기기, 오른쪽 아래 모서리를 끌면 크기 조절
 board.addEventListener("pointerdown", e => {
   const c = e.target.closest(".card");
@@ -1780,7 +1790,7 @@ board.addEventListener("pointerdown", e => {
     else { r.x = Math.min(Math.max(0, snapX(r0.x + dx)), 1 - r.w); r.y = Math.min(Math.max(0, snapY(r0.y + dy)), 1 - r.h); } // 화면 밖으로 못 나감
     [r.x, r.y, r.w, r.h].forEach((v, i) => c.style[POS[i]] = v * 100 + "%");
   };
-  const up = () => { t.removeEventListener("pointermove", move); t.removeEventListener("pointerup", up); layout[k] = l; saveLayout(); };
+  const up = () => { t.removeEventListener("pointermove", move); t.removeEventListener("pointerup", up); layout[k] = l; saveLayout(); placeCards(); };
   t.addEventListener("pointermove", move); t.addEventListener("pointerup", up);
 });
 const LINKS = ["links", "🌐 즐겨찾기"]; // 아래쪽 바 버튼만 있는 메뉴
@@ -3329,7 +3339,7 @@ document.querySelectorAll("#ck-card [data-ck]").forEach(b => b.onclick = () => {
 setInterval(ckDraw, 1000); ckDraw();
 
 // ───── 1인 1역: 역할(직업)마다 맡을 사람. 이름은 여러 명. 아래 이름 카드를 끌어 역할에 놓거나 🎲로 무작위. 💾로 기간을 제목 삼아 기록
-// roles = { list: [{ job, n(맡을 사람 수), pt(포인트, 단위를 정했을 때만), who: ["1번 김하늘", …] }], unit(포인트 단위, 비우면 안 씀), from, to(기간 YYYY-MM-DD), hist: [{ at, from, to, unit, list }] }
+// roles = { list: [{ job, task(하는 일), n(맡을 사람 수), pt(포인트, 단위를 정했을 때만), who: ["1번 김하늘", …] }], unit(포인트 단위, 비우면 안 씀), from, to(기간 YYYY-MM-DD), hist: [{ at, from, to, unit, list }] }
 let roles = { list: [], unit: "", from: "", to: "", hist: [] };
 try { roles = Object.assign(roles, JSON.parse(localStorage.getItem("roles")) || {}); } catch (e) {}
 const rlCard = document.getElementById("rl-card");
@@ -3351,7 +3361,7 @@ function rlName(p, from) { // 끌 수 있는 이름 카드. 역할 칸에 놓으
 function rlDraw(anim) {
   const unit = roles.unit.trim(), ppl = people(), taken = new Set(roles.list.flatMap(r => r.who));
   $s("rl-period").textContent = rlPeriod(roles.from, roles.to);
-  const tiles = roles.list.map((r, i) => h("div", { class: "rl-tile", "data-i": String(i) }, h("b", {}, r.job || "역할"),
+  const tiles = roles.list.map((r, i) => h("div", { class: "rl-tile", "data-i": String(i), title: r.task ? "누르면 하는 일이 보여요" : "", onclick: e => { if (!e.target.closest(".rl-name")) rlInfo(e.currentTarget, r); } }, h("b", {}, r.job || "역할"),
     unit && r.pt ? h("span", { class: "rl-pt" }, `+${r.pt} ${unit}`) : null,
     h("div", { class: "rl-who" }, r.who.length ? r.who.map(p => rlName(p)) : h("span", { class: "none" }, "이름을 끌어 놓아요"))));
   $s("rl-grid").replaceChildren(...tiles);
@@ -3359,6 +3369,38 @@ function rlDraw(anim) {
   const need = rlNeed(roles.list);
   $s("rl-sum").textContent = roles.list.length ? `역할 ${roles.list.length}개 · ${need}명 / 학생 ${ppl.length}명` : "";
   if (anim) tiles.forEach((t, i) => setTimeout(() => { t.classList.add("pop"); tone(600 + i * 25, 0, .05, "triangle", .1); }, i * 70));
+}
+function rlInfo(tile, r) { // 역할 칸을 누르면 하는 일 (바깥을 누르면 닫힘)
+  const d = tile.ownerDocument, W = d.defaultView, unit = roles.unit.trim();
+  d.querySelector(".rl-info")?.remove();
+  const m = h("div", { class: "rl-info", popover: "auto" }, h("b", {}, r.job || "역할"), h("p", {}, r.task || "하는 일을 아직 안 적었어요. '✎ 역할 정하기'에서 적어요."), unit && r.pt ? h("small", {}, `하면 +${r.pt} ${unit}`) : null);
+  d.body.append(m); m.addEventListener("toggle", e => { if (e.newState === "closed") m.remove(); }); m.showPopover();
+  const t = tile.getBoundingClientRect();
+  m.style.left = Math.max(8, Math.min(t.left, W.innerWidth - m.offsetWidth - 8)) + "px";
+  m.style.top = (t.bottom + 6 + m.offsetHeight < W.innerHeight ? t.bottom + 6 : Math.max(8, t.top - m.offsetHeight - 6)) + "px";
+}
+async function rlReset() { // 이름만 비우기 / 역할까지 모두
+  const how = await seChoose(rlCard, "1인 1역을 초기화할까요?\n저장한 기록은 남아요.", [["이름만 비우기", "who"], ["역할까지 모두 지우기", "all"]]);
+  if (!how) return;
+  if (how === "all") Object.assign(roles, { list: [], from: "", to: "" }); else roles.list.forEach(r => r.who = []);
+  rlStore(); rlDraw();
+}
+function rlPrint() { // A4 세로, 표: 역할 · 하는 일 · 맡은 사람 (· 포인트). 글씨 크게
+  if (!roles.list.length) return rlEdit();
+  const unit = roles.unit.trim(), esc = t => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  const rows = roles.list.map(r => `<tr><th>${esc(r.job)}</th><td class="task">${esc(r.task || "")}</td><td class="who">${r.who.map(p => esc(seName(p))).join(", ")}</td>${unit ? `<td class="pt">${r.pt ? `+${r.pt}` : ""}</td>` : ""}</tr>`).join("");
+  const w = window.open("", "_blank");
+  if (!w) return seConfirm(rlCard, "출력 창을 열지 못했어요. 주소창 오른쪽에서 팝업을 허용해 주세요.", "확인", null);
+  w.document.write(`<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>1인 1역${roles.from || roles.to ? " " + rlPeriod(roles.from, roles.to) : ""}</title><style>
+    @page { size: A4 portrait; margin: 14mm; }
+    body { font-family: "Wanted Sans", "Malgun Gothic", sans-serif; margin: 0; color: #222; }
+    h1 { text-align: center; font-size: 30pt; margin: 0 0 4mm; } .period { text-align: center; font-size: 16pt; color: #555; margin-bottom: 6mm; }
+    table { width: 100%; border-collapse: collapse; font-size: 17pt; } th, td { border: 1.5px solid #444; padding: 3mm 3mm; vertical-align: middle; }
+    thead th { background: #eef6ef; font-size: 15pt; } tbody th { width: 22%; text-align: center; font-weight: 700; } td.task { font-size: 14pt; } td.who { width: 30%; text-align: center; font-weight: 700; } td.pt { width: 12%; text-align: center; }
+    tr { break-inside: avoid; }
+  </style></head><body><h1>1인 1역</h1>${roles.from || roles.to ? `<div class="period">${rlPeriod(roles.from, roles.to)}</div>` : ""}
+  <table><thead><tr><th>역할</th><th>하는 일</th><th>맡은 사람</th>${unit ? `<th>${esc(unit)}</th>` : ""}</tr></thead><tbody>${rows}</tbody></table></body></html>`);
+  w.document.close(); w.focus(); w.print();
 }
 function rlRandom() { // 명단을 섞어 역할마다 정한 수만큼. 사람이 남으면 앞 역할부터 한 명씩 더
   if (!roles.list.length) return rlEdit();
@@ -3383,7 +3425,7 @@ function rlHist(btn) { // 지난 기록: 누르면 불러오고 ✕로 지움
     async (i, m) => { if (await seConfirm(m, `'${title(roles.hist[i])}' 기록을 지울까요?`, "지우기")) { roles.hist.splice(i, 1); rlStore(); rlHist(btn); } },
     "아직 저장한 기록이 없어요. '💾 저장'을 누르면 남아요.");
 }
-function rlEdit() { // 기간 · 포인트 단위 + 역할마다 이름 · 몇 명 · 포인트 · 맡은 사람(쉼표로 여러 명). 아래에 합계
+function rlEdit() { // 기간 · 포인트 단위 + 역할마다 이름 · 몇 명 · 포인트 · 하는 일. 맡은 사람은 카드에서 끌기·🎲로. 아래에 합계
   rlCard.querySelector(".card-ed")?.remove();
   const rows = h("div", { class: "rl-rows" }), total = h("span", { class: "rl-total" });
   const list = roles.list.map(r => ({ ...r, who: r.who.slice() }));
@@ -3392,22 +3434,22 @@ function rlEdit() { // 기간 · 포인트 단위 + 역할마다 이름 · 몇 �
   const sum = () => { const need = rlNeed(list), n = people().length; total.textContent = `합계 ${need}명 · 학생 ${n}명` + (need < n ? ` (${n - need}명은 🎲 때 앞 역할부터 더 들어가요)` : need > n ? ` (${need - n}명 모자라요)` : " (딱 맞아요)"); total.classList.toggle("warn", need > n); };
   const draw = () => {
     const pts = !!unit.value.trim();
-    rows.replaceChildren(h("span", { class: "h" }, "역할"), h("span", { class: "h" }, "몇 명"), h("span", { class: "h" }, "포인트"), h("span", { class: "h" }, "맡은 사람 (쉼표로 여러 명)"), h("span"),
+    rows.replaceChildren(h("span", { class: "h" }, "역할"), h("span", { class: "h" }, "몇 명"), h("span", { class: "h" }, "포인트"), h("span", { class: "h" }, "하는 일"), h("span"),
       ...list.flatMap((r, i) => {
         const job = h("input", { value: r.job, placeholder: "예: 칠판 지우기" }), n = h("input", { type: "number", min: "1", max: "10", value: String(r.n || 1) });
         const pt = h("input", { type: "number", min: "0", max: "999", value: r.pt ? String(r.pt) : "", placeholder: pts ? "0" : "-", ...(pts ? {} : { disabled: "", title: "포인트 단위를 쓰면 정할 수 있어요" }) });
-        const who = h("input", { value: r.who.map(seName).join(", ") });
+        const task = h("input", { value: r.task || "", placeholder: "예: 쉬는 시간마다 칠판을 지워요" });
         job.oninput = () => r.job = job.value.trim(); n.oninput = () => { r.n = Math.max(1, +n.value || 1); sum(); }; pt.oninput = () => r.pt = Math.max(0, +pt.value || 0);
-        who.oninput = () => r.who = who.value.split(/[,，]/).map(x => x.trim()).filter(Boolean).map(x => people().find(p => seName(p) === x) || x);
-        return [job, n, pt, who, h("button", { class: "x", title: "이 역할 빼기", onclick: () => { list.splice(i, 1); draw(); } }, "✕")];
+        task.oninput = () => r.task = task.value.trim();
+        return [job, n, pt, task, h("button", { class: "x", title: "이 역할 빼기", onclick: () => { list.splice(i, 1); draw(); } }, "✕")];
       }));
     sum();
   };
   unit.oninput = () => { const had = rows.querySelector("input[disabled]"), on = !!unit.value.trim(); if (!!had === on) draw(); }; // 단위를 쓰거나 지우면 포인트 칸을 켜고 끔
   draw();
-  const add = h("button", { onclick: () => { list.push({ job: "", n: 1, pt: 0, who: [] }); draw(); const ins = rows.querySelectorAll("input"); ins[ins.length - 4]?.focus(); } }, "+ 역할 추가");
+  const add = h("button", { onclick: () => { list.push({ job: "", n: 1, pt: 0, task: "", who: [] }); draw(); const ins = rows.querySelectorAll("input"); ins[ins.length - 4]?.focus(); } }, "+ 역할 추가");
   const ok = h("button", { class: "main", onclick: () => {
-    Object.assign(roles, { list: list.filter(r => r.job || r.who.length), unit: unit.value.trim(), from: from.value, to: to.value });
+    Object.assign(roles, { list: list.filter(r => r.job), unit: unit.value.trim(), from: from.value, to: to.value });
     rlStore(); rlDraw(); ed.remove();
   } }, "완료");
   const ed = h("div", { class: "card-ed" }, h("div", { class: "card-ed-head" }, h("b", {}, "역할 정하기"), ok),
@@ -5171,10 +5213,11 @@ const TOURS = {
     { at: "#nt-hist", text: "지난 알림장을 불러오거나 ✕로 지워요. 칠판에 떠 있는 날 것을 지우면 칠판 글도 지워져요." },
     { text: "번호는 첫 줄의 '1.'만 붙어요. 한 내용을 두 줄로 쓸 수 있게 나머지 번호는 직접 써요." }] },
   roles: { name: "🧹 1인 1역", steps: [
-    { at: ".rl-edit", text: "역할과 맡을 사람 수, 기간, 포인트(단위는 직접: 포인트·개·으쓱…, 비우면 안 씀)를 정해요. 아래에 몇 명까지 맡는지 합계가 나와요." },
+    { at: ".rl-edit", text: "역할·하는 일·맡을 사람 수·기간·포인트(단위는 직접: 포인트·개·으쓱…, 비우면 안 씀)를 정해요. 아래에 몇 명까지 맡는지 합계가 나와요." },
     { at: ".rl-pool", text: "이름 카드를 끌어 역할 칸에 놓아요. 역할 칸의 이름을 여기로 끌어 놓으면 빠져요." },
     { at: ".rl-rand", text: "명단에서 무작위로 정해요. 사람이 남으면 앞 역할부터 한 명씩 더 들어가요." },
-    { at: [".rl-save", ".rl-hist"], text: "기간을 제목으로 저장돼요. '📜 기록'에서 다시 불러와요." }] },
+    { at: [".rl-save", ".rl-hist"], text: "기간을 제목으로 저장돼요. '📜 기록'에서 다시 불러와요." },
+    { at: [".rl-print", ".rl-reset"], text: "🖨 A4 세로 표로 출력 · ↺ 초기화(이름만 / 역할까지). 역할 칸을 누르면 하는 일이 보여요." }] },
   scores: { name: "📊 성적 알리미", steps: [
     { at: ".sc-top button", text: "'✎ 점수 넣기': 평가 이름·만점·학생 점수 (엑셀 한 줄 붙여넣기도 돼요)" },
     { at: "#sc-grid", text: "이름을 누르면 그 학생 점수만 크게 보여요." }] },
