@@ -95,7 +95,7 @@
                      height: 26px; display: inline-flex; align-items: center; gap: 4px; line-height: 1; } /* 이모지·글자 버튼 높이를 맞춤 */
   .wb-tools svg { width: 14px; height: 14px; flex: none; }
   /* 화이트보드 1~4: 제목 줄 오른쪽 (⛶ ✕ 왼쪽) */
-  .wb-card > .wb-pages { position: absolute; top: 7px; right: 70px; display: flex; gap: 3px; z-index: 1; }
+  .wb-card > .wb-pages { position: absolute; top: 7px; right: 120px; display: flex; gap: 3px; z-index: 1; }
   .wb-pages button { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; width: 24px; height: 24px; padding: 0; border: 0; border-radius: 6px; cursor: pointer;
                      background: rgba(255, 255, 255, .18); color: #fff; }
   .wb-pages button.on { background: #fff; color: var(--accent); }
@@ -663,7 +663,8 @@
   .ck-digital span, .ck-date { font-size: clamp(13px, 6cqw, 22px); color: var(--muted); }
   .ck-analog { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
   .ck-analog svg { width: min(100%, 56cqh); height: auto; flex: none; }
-  .ck-modes { display: flex; justify-content: center; gap: 4px; flex-wrap: wrap; }
+  .ck-modes { position: absolute; top: 46px; right: 8px; z-index: 2; display: flex; gap: 2px; align-items: center; }
+  .tool-card .ck-modes button { font-size: 11px; padding: 2px 7px; border-radius: 6px; line-height: 1.4; } .tool-card .ck-modes .ck-al { margin-left: 4px; }
   .ck-next { margin: 0; text-align: center; font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .ck-next:empty { display: none; }
   /* 알람: 설정 메뉴 + 울릴 때 크게 */
   .al-menu { inset: auto; margin: 0; width: 330px; max-height: 70vh; overflow-y: auto; padding: 10px; border: 0; border-radius: 14px; background: #fff; color: #333; box-shadow: 0 10px 34px rgba(30, 40, 70, .25); font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; }
@@ -681,33 +682,39 @@
   .al-box .big { font-size: 80px; line-height: 1.2; animation: al-ring .5s ease-in-out infinite; } @keyframes al-ring { 25% { transform: rotate(-14deg); } 75% { transform: rotate(14deg); } }
   .al-box b { display: block; font-size: 44px; color: #e8590c; } .al-box p { margin: 6px 0 18px; font-size: 40px; color: #222; overflow-wrap: anywhere; }
   .al-box button { font: 20px "Wanted Sans", "Malgun Gothic", sans-serif; padding: 8px 34px; border-radius: 999px; border: 0; background: #e8590c; color: #fff; cursor: pointer; }
-  /* 확인 체크: 항목마다 한 사람 ✓ / 안 한 사람 */
+  /* 체크표: 세로 명단 × 여러 열 */
   [data-card="check"] { --accent: #0ca678; --card: #e6fcf5; --line: #b2f2bb; }
   .ch-top, .ch-foot { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; } .ch-top .sp, .ch-foot .sp { flex: 1; }
   .tool-card .ch-pick { font-size: 18px; padding: 3px 12px; border-radius: 10px; max-width: 70%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .ch-sum { font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--muted); } .ch-sum b { color: var(--accent); } .ch-sum i { font-style: normal; color: #e8590c; }
-  .tool-card .ch-foot button { font-size: 13px; padding: 4px 10px; border-radius: 8px; } .tool-card .ch-foot .ch-only.on { background: #e8590c; border-color: #e8590c; color: #fff; }
-  .ch-grid { flex: 1; min-height: 0; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); grid-auto-rows: max-content; gap: 6px; user-select: none; font-family: "Wanted Sans", "Malgun Gothic", sans-serif; }
-  .ch-grid:empty::before { content: "'+ 새 항목'으로 확인할 것을 만들어요. (예: 숙제, 가정통신문)"; grid-column: 1 / -1; margin: auto; padding: 20px 0; color: var(--muted); font-size: 14px; }
-  .ch-st { position: relative; display: flex; align-items: center; gap: 6px; padding: 6px 8px; border-radius: 12px; background: #fff; border: 2px solid var(--line); cursor: pointer; font-size: 20px; color: var(--ink); }
-  .ch-st i { font-style: normal; font-size: 13px; color: var(--muted); } .ch-st span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .ch-st::after { content: ""; flex: none; width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--line); }
-  .ch-st.done { background: var(--accent); border-color: var(--accent); color: #fff; } .ch-st.done i { color: #d3f9d8; }
-  .ch-st.done::after { content: "✓"; border-color: #fff; display: grid; place-items: center; font-size: 15px; font-weight: 700; }
+  .tool-card .ch-top .ch-new, .tool-card .ch-foot button { font-size: 13px; padding: 4px 10px; border-radius: 8px; } .tool-card .ch-foot .ch-minus { border-color: #ffc078; color: #d9480f; }
+  .ch-wrap { flex: 1; min-height: 0; overflow: auto; font-family: "Wanted Sans", "Malgun Gothic", sans-serif; }
+  .ch-empty { margin: 24px 0; text-align: center; color: var(--muted); font-size: 14px; }
+  .ch-tb { border-collapse: separate; border-spacing: 0; font-size: 20px; color: var(--ink); user-select: none; }
+  .ch-tb th, .ch-tb td { border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); padding: 4px 8px; text-align: center; background: #fff; }
+  .ch-tb thead th { position: sticky; top: 0; z-index: 2; background: var(--card); font-size: 13px; font-weight: normal; color: var(--muted); white-space: nowrap; }
+  .ch-tb thead th input { width: 64px; font: 15px "Wanted Sans", "Malgun Gothic", sans-serif; text-align: center; border: 1.5px solid var(--line); border-radius: 6px; padding: 2px 3px; background: #fff; color: var(--ink); }
+  .ch-tb thead th .x { border: 0; background: none; color: #adb5bd; padding: 0 0 0 2px; font-size: 12px; cursor: pointer; }
+  .tool-card .ch-tb thead .add button { width: 26px; height: 26px; padding: 0; border-radius: 50%; font-size: 16px; }
+  .ch-tb .n { position: sticky; left: 0; z-index: 1; width: 36px; color: var(--muted); font-size: 14px; } .ch-tb .nm { position: sticky; left: 36px; z-index: 1; text-align: left; white-space: nowrap; min-width: 80px; }
+  .ch-tb thead .n, .ch-tb thead .nm { z-index: 3; }
+  .ch-tb td.ck { min-width: 64px; cursor: pointer; font-size: 22px; font-weight: 700; color: #fff; } .ch-tb td.ck:hover { background: var(--card); } .ch-tb td.ck.on { background: var(--accent); }
+  .ch-tb tfoot td { position: sticky; bottom: 0; background: #fff8f0; color: #e8590c; font-size: 15px; border-top: 1.5px solid var(--line); } .ch-tb tfoot .nm { font-size: 13px; }
   /* 토너먼트: 라운드마다 한 줄, 이긴 사람을 누르면 다음 라운드로 */
   [data-card="bracket"] { --accent: #f08c00; --card: #fff4e6; --line: #ffd8a8; }
-  .br-view { flex: 1; min-height: 0; overflow: auto; display: flex; gap: 18px; padding: 2px 2px 6px; font-family: "Wanted Sans", "Malgun Gothic", sans-serif; user-select: none; }
+  .br-view { flex: 1; min-height: 0; overflow: auto; display: flex; gap: 14px; justify-content: safe center; padding: 2px 2px 6px; font-family: "Wanted Sans", "Malgun Gothic", sans-serif; user-select: none; }
   .br-view:empty::before { content: "'👥 참가자 고르기'에서 학생을 고르면 대진표를 짜 줘요."; margin: auto; color: var(--muted); font-size: 14px; }
-  .br-col { flex: none; display: flex; flex-direction: column; min-width: 130px; } .br-col h5 { margin: 0 0 6px; text-align: center; font-size: 14px; font-weight: 600; color: var(--accent); }
+  .br-col { flex: none; display: flex; flex-direction: column; min-width: 160px; max-width: 220px; } .br-col h5 { margin: 0 0 6px; text-align: center; font-size: 15px; font-weight: 600; color: var(--accent); }
+  .br-col.right .br-p { text-align: right; } .br-col.right .br-p i { float: right; margin: 0 0 0 6px; }
+  .br-final { display: flex; flex-direction: column; gap: 10px; align-items: stretch; } .br-col.mid { min-width: 180px; }
   .br-ms { flex: 1; display: flex; flex-direction: column; justify-content: space-around; gap: 8px; }
   .br-m { position: relative; background: #fff; border: 2px solid var(--line); border-radius: 10px; overflow: hidden; }
-  .br-p { display: block; width: 100%; border: 0; background: none; text-align: left; padding: 5px 10px; font: 18px "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--ink); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .br-p { display: block; width: 100%; border: 0; background: none; text-align: left; padding: 6px 12px; font: 24px "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--ink); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .tool-card .br-m .br-p { border: 0; border-radius: 0; margin: 0; background: #fff; } .tool-card .br-m .br-p + .br-p { border-top: 1.5px solid var(--line); }
   .tool-card .br-m .br-p:hover:not(:disabled) { background: var(--card); } .tool-card .br-m .br-p.win { background: var(--accent); }
-  .br-p.win { background: var(--accent); color: #fff; font-weight: 700; } .br-p.win::after { content: " ✓"; }
+  .br-p.win { background: var(--accent); color: #fff; font-weight: 700; } .br-p i { font-style: normal; font-size: 14px; color: var(--muted); margin-right: 6px; } .br-p.win i { color: #fff3bf; }
   .br-p.lose { color: #adb5bd; text-decoration: line-through; } .br-p.wait, .br-p.bye { color: #ced4da; cursor: default; }
-  .br-champ { flex: none; align-self: center; text-align: center; min-width: 140px; padding: 14px; border-radius: 16px; background: var(--card); border: 2px dashed var(--line); }
-  .br-champ .cup { font-size: 46px; line-height: 1.2; } .br-champ b { display: block; font-size: 24px; color: var(--ink); } .br-champ small { color: var(--muted); font-size: 13px; }
+  .br-champ { flex: none; text-align: center; padding: 14px; border-radius: 16px; background: var(--card); border: 2px dashed var(--line); }
+  .br-champ .cup { font-size: 46px; line-height: 1.2; } .br-champ b { display: block; font-size: 30px; color: var(--ink); } .br-champ small { color: var(--muted); font-size: 13px; }
   .br-champ.done { border-style: solid; border-color: var(--accent); animation: rw-pop .7s ease-out; } .br-champ.done .cup { animation: al-ring .6s ease-in-out 3; }
   .br-foot { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; } .br-foot .sp { flex: 1; } .br-info { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--muted); }
   .tool-card .br-foot button { font-size: 13px; padding: 4px 10px; border-radius: 8px; }
@@ -727,13 +734,17 @@
   .rw-log .tm { color: var(--muted); font-size: 12px; } .rw-log .who { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .rw-log .why { color: var(--muted); }
   .rw-log b { color: #3b82f6; white-space: nowrap; } .rw-log b.neg { color: #e8590c; }
   .card-ed-head select { font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); border-radius: 8px; padding: 3px 6px; margin-left: auto; }
-  .rw-prices { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 4px 8px; font-size: 14px; }
+  .rw-prices { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 4px 8px; font-size: 15px; }
+  .rw-prices label i { flex: none; width: 36px; height: 47px; background: #f8f9fa; border-radius: 6px; overflow: hidden; } .rw-prices label i svg { display: block; width: 100%; height: 100%; }
+  .rw-tabs.sm { margin: 0 0 8px; } .tool-card .rw-tabs.sm button { font-size: 13px; padding: 2px 10px; }
+  .rw-unitrow { display: flex; align-items: center; gap: 8px; } .rw-bulk .sp { flex: 1; } .rw-bulk label { display: flex; gap: 4px; align-items: center; }
+  .rw-who { width: 300px; } .rw-who .g { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; } .rw-menu.rw-who .g button { justify-content: center; padding: 6px 4px; }
   .rw-prices label { display: flex; align-items: center; gap: 6px; padding: 2px 6px; border-radius: 8px; } .rw-prices label.on { background: #eef4ff; }
   .card-ed-list .rw-prices label > span { flex: 1; width: auto; text-align: left; color: var(--ink); } .rw-prices label input[type=number] { flex: none; width: 52px; }
   .rw-prices input[type=checkbox] { flex: none; width: 16px; height: 16px; margin: 0; }
   .rw-prices .g { grid-column: 1 / -1; margin-top: 6px; font-size: 13px; color: var(--muted); }
   .rw-prices input[type=number], .rw-bulk input { font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); border-radius: 6px; padding: 2px 6px; }
-  .rw-bulk { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 14px; margin-bottom: 6px; } .rw-bulk input { width: 60px; }
+  .rw-bulk { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 14px; margin-bottom: 6px; } .rw-bulk input { width: 60px; flex: none; }
   .tool-card .rw-bulk button, .tool-card .rw-add { font-size: 13px; padding: 3px 10px; border-radius: 8px; } .tool-card .rw-add { margin-top: 6px; }
   .rw-grid { flex: 1; min-height: 0; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); grid-auto-rows: max-content; gap: 8px; padding: 2px; user-select: none; }
   .rw-grid:empty::before { content: "설정 → 명단에 학생을 넣으면 학생 카드가 생겨요."; grid-column: 1 / -1; margin: auto; padding: 20px 0; color: var(--muted); font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; }
@@ -1089,7 +1100,7 @@
   </section>
   <section class="card tool-card" data-card="reward" id="rw-card">
     <p class="label">🏅 우리반 점수</p>
-    <div class="rw-bar"><span class="rw-count" id="rw-count"></span><span class="sp"></span><button class="rw-give" onclick="rwSendOpen(this)">🤝 주고받기</button><button class="rw-hist" onclick="rwLog()">📜 기록</button><button class="rw-set" onclick="rwSettings()">⚙ 설정</button></div>
+    <div class="rw-bar"><span class="rw-count" id="rw-count"></span><span class="sp"></span><button class="rw-dress" onclick="rwDressPick(this)" title="학생 아바타 꾸미기 (학생 카드를 오른쪽 클릭해도 돼요)">👕 꾸미기</button><button class="rw-give" onclick="rwSendOpen(this)">🤝 주고받기</button><button class="rw-hist" onclick="rwLog()">📜 기록</button><button class="rw-set" onclick="rwSettings()">⚙ 설정</button></div>
     <div class="rw-grid" id="rw-grid"></div>
     <div class="rw-foot"><span class="rw-sel"><button onclick="rwSel('all')">전체 선택</button><button onclick="rwSel('inv')">선택 반전</button><button onclick="rwSel('none')">선택 해제</button></span><span class="sp"></span><button class="rw-minus" onclick="rwGiveSel(this, -1)">− 노력해요</button><button class="main rw-plus" onclick="rwGiveSel(this, 1)">+ 칭찬해요</button></div>
   </section>
@@ -1101,10 +1112,10 @@
     <div class="rl-foot"><span class="rl-sum" id="rl-sum"></span><span class="sp"></span><button class="rl-give" id="rl-give" onclick="rlGive(this)" title="역할마다 정한 포인트를 맡은 사람에게 → 우리반 점수" hidden>🏅 포인트 주기</button><button class="rl-hist" onclick="rlHist(this)">📜 기록</button><button class="rl-print" onclick="rlPrint()" title="A4 세로 표로 출력">🖨️ 출력</button><button class="rl-reset" onclick="rlReset()" title="초기화">↺ 초기화</button><button class="rl-edit" onclick="rlEdit()">✎ 역할 정하기</button><button class="rl-save" onclick="rlSave(this)">💾 저장</button><button class="main rl-rand" onclick="rlRandom()">🎲 랜덤 배치</button></div>
   </section>
   <section class="card tool-card" data-card="check" id="ch-card">
-    <p class="label">✅ 확인 체크</p>
-    <div class="ch-top"><button class="ch-pick" id="ch-pick" onclick="chList(this)">항목 ▾</button><span class="sp"></span><span class="ch-sum" id="ch-sum"></span></div>
-    <div class="ch-grid" id="ch-grid"></div>
-    <div class="ch-foot"><button class="ch-only" id="ch-only" onclick="chOnly()">안 한 사람만</button><button onclick="chAll()">모두 했어요</button><button onclick="chClear()">↺ 지우기</button><span class="sp"></span><button class="main ch-new" onclick="chNew()">+ 새 항목</button></div>
+    <p class="label">✅ 체크표</p>
+    <div class="ch-top"><button class="ch-pick" id="ch-pick" onclick="chList(this)">표 ▾</button><span class="sp"></span><button class="main ch-new" onclick="chNew()">+ 새 표</button></div>
+    <div class="ch-wrap" id="ch-wrap"></div>
+    <div class="ch-foot"><button class="ch-minus" onclick="chMinus(this)" title="안 한 학생 점수를 우리반 점수에서 빼요">− 안 한 사람 점수 빼기</button><span class="sp"></span><button onclick="chClear()">↺ ✓ 지우기</button></div>
   </section>
   <section class="card tool-card" data-card="bracket" id="br-card">
     <p class="label">🏆 토너먼트</p>
@@ -1728,7 +1739,7 @@ const CARDS = [["topic", "✏️ 오늘의 주제", "board", "2", [340, 200]], [
   ["thermo", "🌡️ 학급 온도계", "popup", "1", [240, 260]], ["qr", "🔳 QR 만들기", "popup", "1", [240, 280]],
   ["notice", "📋 알림장", "popup", "2", [340, 320]],
   ["scores", "📊 성적 알리미", "popup", "2", [320, 280]], ["roles", "🧹 1인 1역", "popup", "2", [360, 360]], ["reward", "🏅 우리반 점수", "popup", "4", [420, 380]],
-  ["check", "✅ 확인 체크", "popup", "2", [320, 280]], ["bracket", "🏆 토너먼트", "popup", "4", [420, 320]]];
+  ["check", "✅ 체크표", "popup", "2", [340, 300]], ["bracket", "🏆 토너먼트", "popup", "4", [420, 320]]];
 const FITS = ["rules", "notice"]; // 글이 넘치면 카드가 아래로 커지는 카드
 const minOf = k => { const m = CARDS.find(c => c[0] === k)[4]; return FITS.includes(k) ? [m[0], Math.max(m[1], noteNeed(k))] : m; };
 function noteNeed(k) { // 글이 스크롤 없이 다 보이는 카드 높이(px)
@@ -1846,7 +1857,7 @@ function cardPop(k) {
   [c, np].filter(Boolean).forEach(winFix);
   c.before(mark); box.append(d.adoptNode(c)); if (np) d.body.append(d.adoptNode(np));
   pops[k] = { w, c, mark, np };
-  w.addEventListener("pagehide", () => cardBack(k)); // 창을 닫으면 보드로 돌아옴
+  w.addEventListener("pagehide", () => { if (!pops[k]) return; cardBack(k); if (!boardClosing && !extras.includes(k)) setLayout(k, { mode: "popup" }); }); // 창을 닫으면 카드도 내림 (아래쪽 바에서 다시 띄움)
   c.showPop(true); applyLayout();
 }
 function cardBack(k) {
@@ -1858,7 +1869,8 @@ function cardBack(k) {
   if (!p.w.closed) p.w.close();
   p.c.showPop(false); applyLayout();
 }
-addEventListener("pagehide", () => [...Object.values(pops).map(p => p.w), ...wins].forEach(w => w.close())); // 보드를 닫거나 새로 고치면 뗀 창도 닫음
+let boardClosing = false;
+addEventListener("pagehide", () => { boardClosing = true; [...Object.values(pops).map(p => p.w), ...wins].forEach(w => w.close()); }); // 보드를 닫거나 새로 고치면 뗀 창도 닫음 (카드 자리는 그대로)
 CARDS.forEach(([k]) => cardChrome(k));
 // 카드 크기를 칸 수로: 1=1칸, 2=가로 2칸, 4=2×2, full=한 줄 전체
 const cellsOf = (size, cols) => size === "full" ? cols : size === "4" ? 4 : +size || 1;
@@ -3597,9 +3609,8 @@ function rwDraw() {
       h("div", { class: "n" }, seNum(p) || ""), h("span", { class: "nm" }, seName(p)),
       h("span", { class: "rw-pt" }, String(s.pt)),
       h("div", { class: "rw-pm" }, h("button", { class: "p", title: "칭찬해요", onclick: e => { e.stopPropagation(); rwMenu(e.currentTarget, 1, [p]); } }, "+"), h("button", { class: "m", title: "노력해요", onclick: e => { e.stopPropagation(); rwMenu(e.currentTarget, -1, [p]); } }, "−")));
-    const av = h("div", { class: "rw-av", title: "아바타 꾸미기" }); av.innerHTML = avSvg(s.av, rwWear(p, s.wear));
-    av.onclick = e => { e.stopPropagation(); rwAvatar(p); };
-    t.append(av);
+    const av = h("div", { class: "rw-av" }); av.innerHTML = avSvg(s.av, rwWear(p, s.wear));
+    t.append(av); t.oncontextmenu = e => { e.preventDefault(); rwAvatar(p); };
     t.onclick = () => { rwPick.has(p) ? rwPick.delete(p) : rwPick.add(p); t.classList.toggle("sel", rwPick.has(p)); rwCount(); };
     return t;
   }));
@@ -3661,46 +3672,68 @@ function rwCheer(title, icon, who, d, why, isTry) {
   setTimeout(() => c.remove(), 2600);
 }
 // 설정: 점수 단위 · 칭찬해요/노력해요 목록 · 모든 점수 0으로
+let rwSetTab = "reason", rwShopTab = "hair";
 function rwSettings() {
   rwCard.querySelector(".card-ed")?.remove();
-  const list = reward.reasons.map(r => ({ ...r })), rows = h("div", { class: "rw-rows" });
+  const list = reward.reasons.map(r => ({ ...r })), rows = h("div", { class: "rw-rows" }), body = h("div", { class: "card-ed-list" });
   const unit = h("input", { class: "rw-unit", value: reward.unit, placeholder: "포인트, 으쓱, 개…" });
-  const draw = () => rows.replaceChildren(h("span", { class: "h" }, "이유"), h("span", { class: "h" }, "점수 (+/−)"), h("span"),
+  const drawRows = () => rows.replaceChildren(h("span", { class: "h" }, "이유"), h("span", { class: "h" }, "점수 (+/−)"), h("span"),
     ...list.flatMap((r, i) => {
       const t = h("input", { value: r.t, placeholder: "예: 숙제를 잘했어요" }), v = h("input", { type: "number", min: "-100", max: "100", value: String(r.pt) });
       t.oninput = () => r.t = t.value.trim(); v.oninput = () => r.pt = Math.round(+v.value || 0);
-      return [t, v, h("button", { class: "x", title: "빼기", onclick: () => { list.splice(i, 1); draw(); } }, "✕")];
+      return [t, v, h("button", { class: "x", title: "빼기", onclick: () => { list.splice(i, 1); drawRows(); } }, "✕")];
     }));
-  draw();
-  const price = Object.fromEntries(AV_ITEMS.filter(it => it.price).map(it => [it.id, avPrice(it)])), chosen = new Set(), shop = h("div", { class: "rw-prices" });
+  drawRows();
+  const price = Object.fromEntries(AV_ITEMS.filter(it => it.price).map(it => [it.id, avPrice(it)])), chosen = new Set();
   const bulk = h("input", { type: "number", min: "0", max: "999", value: "5", "aria-label": "가격" });
-  const drawShop = () => shop.replaceChildren(...AV_TABS.flatMap(([tab, tname]) => {
-    const its = AV_ITEMS.filter(it => it.price && (tab === "acc" ? ["head", "face", "neck"].includes(it.slot) : it.slot === tab));
-    const all = h("input", { type: "checkbox", title: tname + " 모두 고르기" }); all.checked = its.every(it => chosen.has(it.id));
-    all.onchange = () => { its.forEach(it => all.checked ? chosen.add(it.id) : chosen.delete(it.id)); drawShop(); };
-    return [h("label", { class: "g" }, all, tname), ...its.map(it => {
-      const c = h("input", { type: "checkbox" }), v = h("input", { type: "number", min: "0", max: "999", value: String(price[it.id]) });
-      c.checked = chosen.has(it.id); c.onchange = () => { c.checked ? chosen.add(it.id) : chosen.delete(it.id); drawShop(); };
+  const SAMPLE = { skin: 0, hair: 1 };
+  const draw = () => {
+    const tabs = h("div", { class: "rw-tabs" }, [["reason", "칭찬·노력 목록"], ["shop", "가게 가격"]].map(([k, t]) => h("button", { class: rwSetTab === k ? "on" : "", onclick: () => { rwSetTab = k; draw(); } }, t)));
+    if (rwSetTab === "reason") {
+      body.replaceChildren(tabs, h("label", { class: "rw-h rw-unitrow" }, "점수 단위", unit), rows,
+        h("button", { class: "rw-add", onclick: () => { list.push({ t: "", pt: 1 }); drawRows(); rows.querySelectorAll("input")[rows.querySelectorAll("input").length - 2]?.focus(); } }, "+ 이유 추가"));
+      return;
+    }
+    const its = AV_ITEMS.filter(it => it.price && (rwShopTab === "acc" ? ["head", "face", "neck"].includes(it.slot) : it.slot === rwShopTab));
+    const cats = h("div", { class: "rw-tabs sm" }, AV_TABS.map(([k, t]) => h("button", { class: rwShopTab === k ? "on" : "", onclick: () => { rwShopTab = k; draw(); } }, t)));
+    const all = h("input", { type: "checkbox" }); all.checked = its.length && its.every(it => chosen.has(it.id));
+    all.onchange = () => { its.forEach(it => all.checked ? chosen.add(it.id) : chosen.delete(it.id)); draw(); };
+    const grid = h("div", { class: "rw-prices" }, ...its.map(it => {
+      const c = h("input", { type: "checkbox" }), v = h("input", { type: "number", min: "0", max: "999", value: String(price[it.id]) }), pic = h("i");
+      pic.innerHTML = avSvg(SAMPLE, { [it.slot]: it.id, ...(it.slot === "bg" ? {} : { bg: "bg-none" }), ...(it.slot === "hair" ? { head: "" } : {}) });
+      c.checked = chosen.has(it.id); c.onchange = () => { c.checked ? chosen.add(it.id) : chosen.delete(it.id); draw(); };
       v.oninput = () => price[it.id] = Math.max(0, Math.round(+v.value || 0));
-      return h("label", { class: chosen.has(it.id) ? "on" : "" }, c, h("span", {}, it.name), v);
-    })];
-  }));
-  drawShop();
-  const bulkRow = h("div", { class: "rw-bulk" }, "고른 물건을 ", bulk, ` ${reward.unit.trim() || "점"}으로 `, h("button", { onclick: () => {
-    if (!chosen.size) return seConfirm(ed, "가격을 바꿀 물건을 먼저 골라요.", "확인", null);
-    chosen.forEach(id => price[id] = Math.max(0, Math.round(+bulk.value || 0))); drawShop();
-  } }, "바꾸기"), h("button", { onclick: () => { AV_ITEMS.forEach(it => it.price && (price[it.id] = it.price)); drawShop(); } }, "처음 가격으로"));
+      return h("label", { class: chosen.has(it.id) ? "on" : "" }, c, pic, h("span", {}, it.name), v);
+    }));
+    const bulkRow = h("div", { class: "rw-bulk" }, h("label", {}, all, "모두 고르기"), h("span", { class: "sp" }), `고른 ${chosen.size}개를 `, bulk, ` ${unit.value.trim() || "점"}으로 `, h("button", { onclick: () => {
+      if (!chosen.size) return seConfirm(ed, "가격을 바꿀 물건을 먼저 골라요.", "확인", null);
+      chosen.forEach(id => price[id] = Math.max(0, Math.round(+bulk.value || 0))); draw();
+    } }, "바꾸기"));
+    body.replaceChildren(tabs, cats, bulkRow, grid, h("p", { class: "rw-h" }, "0으로 하면 무료예요. ", h("button", { class: "rw-add", onclick: () => { AV_ITEMS.forEach(it => it.price && (price[it.id] = it.price)); draw(); } }, "모두 처음 가격으로")));
+  };
+  draw();
   const ok = h("button", { class: "main", onclick: () => {
     reward.unit = unit.value.trim() || "포인트"; reward.reasons = list.filter(r => r.t && r.pt);
     reward.prices = Object.fromEntries(Object.entries(price).filter(([id, v]) => v !== avItem(id).price));
     rwStore(); rwDraw(); ed.remove();
   } }, "완료");
   const zero = h("button", { class: "danger", onclick: async () => { if (await seConfirm(ed, "모든 학생의 점수를 0으로 할까요?\n산 물건과 점수 기록은 그대로 남아요.", "0으로")) { Object.values(reward.st).forEach(s => s.pt = 0); reward.log = [{ at: Date.now(), who: [], d: 0, why: "모든 점수 0으로" }, ...reward.log].slice(0, 1000); rwStore(); rwDraw(); } } }, "모든 점수 0으로");
-  const ed = h("div", { class: "card-ed" }, h("div", { class: "card-ed-head" }, h("b", {}, "점수 설정"), ok),
-    h("div", { class: "card-ed-list" }, h("label", { class: "rw-h" }, "점수 단위 ", unit), h("p", { class: "rw-h" }, "칭찬해요(+)·노력해요(−) 목록"), rows, h("button", { class: "rw-add", onclick: () => { list.push({ t: "", pt: 1 }); draw(); rows.querySelectorAll("input")[rows.querySelectorAll("input").length - 2]?.focus(); } }, "+ 이유 추가"),
-      h("p", { class: "rw-h" }, "가게 가격 (0이면 무료)"), bulkRow, shop),
-    h("div", { class: "card-ed-foot" }, zero));
+  const ed = h("div", { class: "card-ed" }, h("div", { class: "card-ed-head" }, h("b", {}, "점수 설정"), h("button", { onclick: () => ed.remove() }, "취소"), ok), body, h("div", { class: "card-ed-foot" }, h("span"), zero));
   rwCard.append(ed);
+}
+function popAt(btn, m, alignRight) { // 버튼 옆에 작은 팝업 (바깥을 누르면 닫힘)
+  const d = btn.ownerDocument, W = d.defaultView;
+  d.body.append(m); m.addEventListener("toggle", e => { if (e.newState === "closed") m.remove(); }); m.showPopover();
+  const r = btn.getBoundingClientRect();
+  m.style.left = Math.max(8, Math.min(alignRight ? r.right - m.offsetWidth : r.left, W.innerWidth - m.offsetWidth - 8)) + "px";
+  m.style.top = (r.bottom + 6 + m.offsetHeight < W.innerHeight ? r.bottom + 6 : Math.max(8, r.top - m.offsetHeight - 6)) + "px";
+}
+function rwDressPick(btn) { // 한 명을 골라 두었으면 바로, 아니면 누구를 꾸밀지 고르기
+  if (rwPick.size === 1) return rwAvatar([...rwPick][0]);
+  btn.ownerDocument.querySelector(".rw-menu")?.remove();
+  const m = h("div", { class: "rw-menu rw-who", popover: "auto" }, h("h4", {}, "누구를 꾸밀까요?"),
+    h("div", { class: "g" }, ...people().map(p => h("button", { onclick: () => { m.hidePopover(); rwAvatar(p); } }, seName(p)))));
+  popAt(btn, m, true);
 }
 // 아바타 꾸미기: 피부·머리색은 마음대로, 머리 모양·옷·장신구·배경은 점수로 사서 입고 벗기
 const AV_TABS = [["hair", "헤어"], ["top", "상의"], ["bottom", "하의"], ["shoes", "신발"], ["acc", "장신구"], ["bg", "배경"]];
@@ -3936,41 +3969,67 @@ setInterval(() => {
 }, 1000);
 setTimeout(alNext);
 
-// ───── 확인 체크: 항목(숙제, 가정통신문…)마다 누가 했는지. 이름을 누르면 ✓
-// chData = { list: [{ id, name, at, done: [학생] }], cur: 보고 있는 항목 id }
-let chData = { list: [], cur: "" }, chOnlyNot = false;
+// ───── 체크표: 표(숙제, 가정통신문…)마다 열을 여러 개(위 칸에 날짜 등을 직접 씀). 칸을 누르면 ✓
+// chData = { list: [{ id, name, at, cols: [{ id, head, done: [학생] }] }], cur: 보고 있는 표 id }   (저장 이름은 예전 그대로 "checks")
+let chData = { list: [], cur: "" };
 try { chData = Object.assign(chData, JSON.parse(localStorage.getItem("checks")) || {}); } catch (e) {}
+const chMD = t => { const d = new Date(t); return `${d.getMonth() + 1}/${d.getDate()}`; };
+chData.list.forEach(c => { if (!c.cols) { c.cols = [{ id: c.id + "a", head: chMD(c.at), done: c.done || [] }]; delete c.done; } }); // 예전 한 줄짜리 항목
 const chCard = document.getElementById("ch-card");
 const chStore = () => { try { localStorage.setItem("checks", JSON.stringify(chData)); } catch (e) {} };
 const chCur = () => chData.list.find(c => c.id === chData.cur) || chData.list[0];
+const chNewCol = head => ({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 5), head, done: [] });
 function chDraw() {
   const c = chCur(), ppl = people();
-  $s("ch-pick").textContent = c ? `${c.name} ▾` : "항목 ▾";
-  $s("ch-only").classList.toggle("on", chOnlyNot);
-  if (!c) { $s("ch-grid").replaceChildren(); $s("ch-sum").textContent = ""; return; }
-  c.done = c.done.filter(p => ppl.includes(p));
-  const shown = chOnlyNot ? ppl.filter(p => !c.done.includes(p)) : ppl;
-  $s("ch-grid").replaceChildren(...shown.map(p => h("div", { class: "ch-st" + (c.done.includes(p) ? " done" : ""), onclick: () => {
-    c.done = c.done.includes(p) ? c.done.filter(x => x !== p) : [...c.done, p]; chStore(); chDraw();
-    if (c.done.includes(p)) tone(880, 0, .08, "triangle", .15);
-  } }, h("i", {}, seNum(p) || ""), h("span", {}, seName(p)))));
-  $s("ch-sum").replaceChildren("한 사람 ", h("b", {}, String(c.done.length)), " · 안 한 사람 ", h("i", {}, String(ppl.length - c.done.length)));
+  $s("ch-pick").textContent = c ? `${c.name} ▾` : "표 ▾";
+  if (!c) return $s("ch-wrap").replaceChildren(h("p", { class: "ch-empty" }, "'+ 새 표'로 확인할 것을 만들어요. (예: 숙제, 가정통신문)"));
+  c.cols.forEach(col => col.done = col.done.filter(p => ppl.includes(p)));
+  const head = h("tr", {}, h("th", { class: "n" }, "번호"), h("th", { class: "nm" }, "이름"), ...c.cols.map((col, i) => {
+    const inp = h("input", { value: col.head, placeholder: "날짜", "aria-label": "열 이름" }); inp.oninput = () => { col.head = inp.value; chStore(); };
+    return h("th", {}, inp, h("button", { class: "x", title: "이 열 지우기", onclick: async () => {
+      if (col.done.length && !await seConfirm(chCard, `'${col.head || "이 열"}'을 지울까요? ✓ ${col.done.length}개도 지워져요.`, "지우기")) return;
+      c.cols.splice(i, 1); chStore(); chDraw();
+    } }, "✕"));
+  }), h("th", { class: "add" }, h("button", { title: "열 더하기 (오늘 날짜)", onclick: () => { c.cols.push(chNewCol(chMD(Date.now()))); chStore(); chDraw(); $s("ch-wrap").scrollLeft = 1e5; } }, "+")));
+  const body = ppl.map(p => h("tr", {}, h("td", { class: "n" }, seNum(p) || ""), h("td", { class: "nm" }, seName(p)), ...c.cols.map(col => {
+    const on = col.done.includes(p);
+    return h("td", { class: "ck" + (on ? " on" : ""), onclick: () => { col.done = on ? col.done.filter(x => x !== p) : [...col.done, p]; chStore(); chDraw(); if (!on) tone(880, 0, .08, "triangle", .15); } }, on ? "✓" : "");
+  }), h("td")));
+  const foot = h("tr", {}, h("td", { class: "n" }), h("td", { class: "nm" }, "안 한 사람"), ...c.cols.map(col => h("td", { class: "cnt" }, String(ppl.length - col.done.length))), h("td"));
+  const keep = $s("ch-wrap").scrollTop;
+  $s("ch-wrap").replaceChildren(h("table", { class: "ch-tb" }, h("thead", {}, head), h("tbody", {}, ...body), h("tfoot", {}, foot)));
+  $s("ch-wrap").scrollTop = keep;
 }
 async function chNew() {
-  const t = new Date(), name = await seAskText(chCard, "확인할 항목 이름", `${t.getMonth() + 1}/${t.getDate()} 숙제`, "만들기");
+  const name = await seAskText(chCard, "새 체크표 이름", "숙제", "만들기");
   if (!name?.trim()) return;
-  const c = { id: Date.now().toString(36), name: name.trim(), at: Date.now(), done: [] };
-  chData.list.unshift(c); chData.cur = c.id; chOnlyNot = false; chStore(); chDraw();
+  const c = { id: Date.now().toString(36), name: name.trim(), at: Date.now(), cols: [chNewCol(chMD(Date.now()))] };
+  chData.list.unshift(c); chData.cur = c.id; chStore(); chDraw();
 }
-function chList(btn) { // 항목 고르기 · ✕ 지우기
-  shelfMenu(btn, "✅ 확인 항목", chData.list.map(c => ({ icon: h("span", { class: "lk-ic", style: "background:#0ca678" }, "✓"), name: `${c.name} (${c.done.length}/${people().length})`, title: new Date(c.at).toLocaleDateString("ko-KR", { month: "long", day: "numeric" }) + " 만듦" })),
-    i => { chData.cur = chData.list[i].id; chOnlyNot = false; chStore(); chDraw(); },
-    async (i, m) => { if (await seConfirm(m, `'${chData.list[i].name}' 항목을 지울까요?`, "지우기")) { chData.list.splice(i, 1); chStore(); chDraw(); chList(btn); } },
-    "아직 항목이 없어요. '+ 새 항목'으로 만들어요.");
+function chList(btn) { // 표 고르기 · ✕ 지우기
+  shelfMenu(btn, "✅ 체크표", chData.list.map(c => ({ icon: h("span", { class: "lk-ic", style: "background:#0ca678" }, "✓"), name: c.name, title: `${c.cols.length}열 · ` + new Date(c.at).toLocaleDateString("ko-KR", { month: "long", day: "numeric" }) + " 만듦" })),
+    i => { chData.cur = chData.list[i].id; chStore(); chDraw(); },
+    async (i, m) => { if (await seConfirm(m, `'${chData.list[i].name}' 표를 지울까요?`, "지우기")) { chData.list.splice(i, 1); chStore(); chDraw(); chList(btn); } },
+    "아직 표가 없어요. '+ 새 표'로 만들어요.");
 }
-const chOnly = () => { chOnlyNot = !chOnlyNot; chDraw(); };
-function chAll() { const c = chCur(); if (!c) return chNew(); c.done = people().slice(); chStore(); chDraw(); }
-async function chClear() { const c = chCur(); if (c && c.done.length && await seConfirm(chCard, `'${c.name}'의 ✓를 모두 지울까요?`, "지우기")) { c.done = []; chStore(); chDraw(); } }
+async function chClear() { const c = chCur(); if (c && c.cols.some(x => x.done.length) && await seConfirm(chCard, `'${c.name}' 표의 ✓를 모두 지울까요? (열은 남아요)`, "지우기")) { c.cols.forEach(x => x.done = []); chStore(); chDraw(); } }
+function chMinus(btn) { // 고른 열에서 ✓ 없는 학생 점수를 우리반 점수에서 빼기 (점수 기록에도 남음)
+  const c = chCur(); if (!c?.cols.length) return;
+  btn.ownerDocument.querySelector(".rw-menu")?.remove();
+  const unit = reward.unit.trim() || "점", ppl = people();
+  const col = h("select", {}, ...c.cols.map((x, i) => { const o = h("option", { value: String(i) }, `${x.head || i + 1 + "열"} (안 한 사람 ${ppl.length - x.done.length}명)`); if (i === c.cols.length - 1) o.selected = true; return o; }));
+  const n = h("input", { type: "number", min: "1", max: "100", value: "1" }), why = h("input", { placeholder: "이유" }), err = h("p", { class: "rw-err" });
+  const setWhy = () => why.value = `${c.name} ${c.cols[+col.value].head || ""} 안 함`.replace(/\s+/g, " ").trim();
+  col.onchange = setWhy; setWhy();
+  const m = h("div", { class: "rw-menu rw-sendpop", popover: "auto" }, h("h4", {}, "− 안 한 사람 점수 빼기"), h("div", { class: "rw-send" }, "열", col, unit, n, "이유", why), err,
+    h("button", { class: "go", onclick: () => {
+      const x = c.cols[+col.value], who = ppl.filter(p => !x.done.includes(p)), v = Math.max(1, Math.round(+n.value || 1));
+      if (!who.length) return err.textContent = "모두 했어요. 뺄 사람이 없어요.";
+      m.hidePopover(); rwGrant([[who, -v, why.value.trim() || `${c.name} 안 함`]]); rwSound("try");
+      seConfirm(chCard, `${who.length}명에게서 ${v} ${unit}씩 뺐어요.\n(우리반 점수 → 📜 기록에 남아요)`, "확인", null);
+    } }, "빼기"));
+  popAt(btn, m);
+}
 setTimeout(chDraw);
 document.getElementById("roster").addEventListener("change", () => chDraw());
 
@@ -4003,23 +4062,26 @@ function brDraw() {
   if (S < 2) { view.replaceChildren(); $s("br-info").textContent = ""; return; }
   const R = Math.log2(S), name = n => n === 2 ? "결승" : n === 4 ? "4강" : `${n}강`, champ = brWin(R - 1, 0);
   let now = "";
-  const cols = Array.from({ length: R }, (_, r) => {
-    const ms = Array.from({ length: S / 2 ** (r + 1) }, (_, j) => {
-      const pair = brPair(r, j), w = brWin(r, j), live = pair[0] && pair[1];
-      if (live && w === undefined && !now) now = name(S / 2 ** r);
-      return h("div", { class: "br-m" }, ...pair.map(p => p === undefined ? h("button", { class: "br-p wait", disabled: "" }, "?")
-        : p === null ? h("button", { class: "br-p bye", disabled: "" }, "부전승")
-        : h("button", { class: "br-p" + (live && w === p ? " win" : live && w !== undefined ? " lose" : ""), ...(live ? {} : { disabled: "" }), title: live ? "누르면 이긴 사람 (한 번 더 누르면 취소)" : "", onclick: () => {
-          const k = r + "-" + j; if (bracket.win[k] === p) delete bracket.win[k]; else bracket.win[k] = p;
-          brStore(); brDraw();
-          if (bracket.win[k] && r === R - 1) rwSound("up"); else if (bracket.win[k]) tone(784, 0, .1, "triangle", .2);
-        } }, (seNum(p) ? seNum(p) + " " : "") + seName(p))));
-    });
-    return h("div", { class: "br-col" }, h("h5", {}, name(S / 2 ** r)), h("div", { class: "br-ms" }, ...ms));
+  const match = (r, j) => {
+    const pair = brPair(r, j), w = brWin(r, j), live = pair[0] && pair[1];
+    if (live && w === undefined && (!now || r < now[0])) now = [r, name(S / 2 ** r)];
+    return h("div", { class: "br-m" }, ...pair.map(p => p === undefined ? h("button", { class: "br-p wait", disabled: "" }, "?")
+      : p === null ? h("button", { class: "br-p bye", disabled: "" }, "부전승")
+      : h("button", { class: "br-p" + (live && w === p ? " win" : live && w !== undefined ? " lose" : ""), ...(live ? {} : { disabled: "" }), title: live ? "누르면 이긴 사람 (한 번 더 누르면 취소)" : "", onclick: () => {
+        const k = r + "-" + j; if (bracket.win[k] === p) delete bracket.win[k]; else bracket.win[k] = p;
+        brStore(); brDraw();
+        if (bracket.win[k] && r === R - 1) rwSound("up"); else if (bracket.win[k]) tone(784, 0, .1, "triangle", .2);
+      } }, h("i", {}, seNum(p) || ""), seName(p))));
+  };
+  // 왼쪽 반은 왼쪽에서, 오른쪽 반은 오른쪽에서 가운데 결승으로 모임
+  const side = right => Array.from({ length: R - 1 }, (_, r) => {
+    const M = S / 2 ** (r + 1), js = right ? [...Array(M / 2).keys()].map(x => x + M / 2) : [...Array(M / 2).keys()];
+    return h("div", { class: "br-col" + (right ? " right" : "") }, h("h5", {}, name(S / 2 ** r)), h("div", { class: "br-ms" }, ...js.map(j => match(r, j))));
   });
   const cup = h("div", { class: "br-champ" + (champ ? " done" : "") }, h("div", { class: "cup" }, "🏆"), h("b", {}, champ ? seName(champ) : "?"), h("small", {}, champ ? "우승!" : "우승"));
-  view.replaceChildren(...cols, cup);
-  $s("br-info").textContent = `${bracket.players.length}명` + (champ ? " · 끝났어요" : now ? ` · ${now} 진행 중` : "");
+  const mid = h("div", { class: "br-col mid" }, h("h5", {}, "결승"), h("div", { class: "br-ms" }, h("div", { class: "br-final" }, cup, match(R - 1, 0))));
+  view.replaceChildren(...side(false), mid, ...side(true).reverse());
+  $s("br-info").textContent = `${bracket.players.length}명` + (champ ? " · 끝났어요" : now ? ` · ${now[1]} 진행 중` : "");
 }
 function brSetup() { // 참가자 고르기 (처음엔 모두)
   brCard.querySelector(".card-ed")?.remove();
@@ -5796,10 +5858,10 @@ const TOURS = {
     { at: ".photo-box", text: "사진은 카드를 누른 뒤 Ctrl+V로 붙여 넣어도 돼요. 사진 위에 마우스를 올리면 버튼이 나와요. '☆ 저장'으로 보관함에 4장까지 넣어 두고 '🗂️ 보관함'에서 바로 바꿔 띄워요." },
     { text: "아래쪽 바 사진 버튼의 +로 사진 카드를 더 띄워요." }] },
   clock: { name: "🕰️ 시계", steps: [{ at: ".ck-modes", text: "디지털 · 아날로그 시계를 골라요." }, { at: ".ck-al", text: "⏰ 알람: 정한 시간에 소리와 큰 글로 알려요. 요일을 고르면 그 요일마다 울려요." }] },
-  check: { name: "✅ 확인 체크", steps: [
-    { at: ".ch-new", text: "확인할 항목(숙제, 가정통신문…)을 만들어요." },
-    { at: "#ch-grid", text: "이름을 누르면 ✓. 한 번 더 누르면 빠져요." },
-    { at: [".ch-pick", ".ch-only"], text: "항목을 바꾸거나 지워요. '안 한 사람만'으로 아직 안 한 학생만 볼 수 있어요." }] },
+  check: { name: "✅ 체크표", steps: [
+    { at: ".ch-new", text: "체크표(숙제, 가정통신문…)를 만들어요. '표 ▾'에서 바꾸거나 지워요." },
+    { at: "#ch-wrap", text: "칸을 누르면 ✓. 위 칸에는 날짜 등을 직접 쓰고, +로 열을 더해요. 맨 아래에 안 한 사람 수가 나와요." },
+    { at: ".ch-minus", text: "안 한 학생 점수를 우리반 점수에서 한꺼번에 빼요." }] },
   bracket: { name: "🏆 토너먼트", steps: [
     { at: ".br-set", text: "참가할 학생을 고르면 대진표를 짜 줘요. 사람이 모자라면 부전승이 생겨요." },
     { at: "#br-view", text: "이긴 사람 이름을 누르면 다음 라운드로 올라가요. 한 번 더 누르면 취소돼요." }] },
@@ -5836,7 +5898,7 @@ const TOURS = {
     { at: ".rw-tile", text: "학생 카드를 누르면 골라져요. 오른쪽 위 +·−로 그 학생에게 바로 줄 수도 있어요." },
     { at: ".rw-sel", text: "전체 선택 · 선택 반전 · 선택 해제" },
     { at: [".rw-plus", ".rw-minus"], text: "고른 학생에게 칭찬해요(+)·노력해요(−). 이유를 고르면 소리와 함께 크게 보여요." },
-    { at: ".rw-av", text: "아바타를 누르면 꾸며요. 머리·옷·장신구·배경은 점수로 사요." },
+    { at: ".rw-dress", text: "👕 꾸미기: 학생 아바타를 꾸며요 (학생 카드를 오른쪽 클릭해도 돼요). 머리·옷·장신구·배경은 점수로 사요." },
     { at: [".rw-give", ".rw-hist", ".rw-set"], text: "주고받기: 학생끼리 점수를 보내요. 기록: 점수가 바뀐 내역. 설정: 점수 단위·이유 목록·가게 가격." }] },
   roles: { name: "🧹 1인 1역", steps: [
     { at: ".rl-edit", text: "역할·하는 일·맡을 사람 수·기간·포인트(단위는 직접: 포인트·개·으쓱…, 비우면 안 씀)를 정해요. 아래에 몇 명까지 맡는지 합계가 나와요." },
