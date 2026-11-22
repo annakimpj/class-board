@@ -60,6 +60,9 @@
   .board:not(.free) .card-grip { display: none; }
   .card .card-full { right: 34px; }
   .card .card-pop { right: 60px; }
+  .card .card-pin { right: 86px; }
+  .card.pinned > .card-pin { opacity: 1; background: rgba(255, 255, 255, .3); } .card.pinned > .card-pin svg { fill: currentColor; }
+  .card.pinned > .card-grip { display: none; } .board.free > .card.pinned .label { cursor: default; }
   /* 다른 창으로 뗀 카드: 창을 꽉 채움 */
   .pop-body { display: block !important; }
   .pop-board { position: fixed !important; inset: env(titlebar-area-height, 0px) 0 0 0; margin: 0 !important; }
@@ -151,6 +154,7 @@
   #rule[contenteditable="true"] { background: #fff; box-shadow: 0 0 0 2px var(--line); }
   .hint { font-size: 13px; color: var(--muted); cursor: default; }
   .tools { flex: none; display: flex; align-items: center; gap: 8px; font-family: "Wanted Sans", "Malgun Gothic", sans-serif; }
+  .tools .tp-hist { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); background: #fff; color: var(--muted); border-radius: 999px; padding: 4px 10px; cursor: pointer; }
   .tools button { width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid var(--line); background: #fff; color: var(--accent);
                   font-size: 22px; line-height: 1; cursor: pointer; padding: 0; }
   .tools button:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
@@ -190,7 +194,7 @@
 
   /* 사진 */
   .photo-box { flex: 1; min-height: 0; position: relative; border-radius: 10px; overflow: hidden; display: grid; place-items: center; }
-  .photo-box img { width: 100%; height: 100%; object-fit: contain; }
+  .photo-box img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; } /* 칸 크기와 상관없이 사진 전체가 보이게 */
   .photo-box .empty, .photo-tools button { font: 15px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px dashed var(--line); background: #fff;
                     color: var(--muted); border-radius: 999px; padding: 6px 16px; cursor: pointer; }
   .photo-tools { position: absolute; right: 6px; bottom: 6px; display: flex; gap: 6px; opacity: 0; transition: opacity .15s; }
@@ -271,6 +275,10 @@
   #timer-card:not(.running) #timer-time::after { content: "✎"; font-size: .3em; color: var(--muted); }
   #timer-card:not(.running) #timer-time:hover { outline: 2px dashed var(--line); background: #fff; }
   .time-in { width: 5.2ch; font: inherit; text-align: center; border: 0; border-bottom: 3px solid var(--accent); background: none; color: var(--ink); outline: none; padding: 0; }
+  .tm-tabs { display: flex; justify-content: center; gap: 4px; }
+  .tm-pane { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 10px; } .tm-pane[hidden] { display: none; }
+  .sw-laps { margin: 0; padding: 0 0 0 2.2em; max-height: 30%; overflow-y: auto; font: 15px "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--muted); columns: 2; }
+  .sw-laps:empty { display: none; } .sw-laps li::marker { color: var(--accent); }
   #timer-card.done { animation: blink .5s 6 alternate; }
   #timer-card.done .big { color: var(--accent); }
   @keyframes blink { to { background: #ffd9cc; } }
@@ -648,6 +656,15 @@
   .nt-foot button, .nt-foot select { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); background: #fff; color: var(--ink); border-radius: 8px; padding: 4px 10px; cursor: pointer; }
   .nt-foot button:disabled { opacity: .35; cursor: default; }
   .nt-foot .main { background: var(--accent); border-color: var(--accent); color: #fff; }
+  /* 시계 */
+  [data-card="clock"] { --accent: #1c7ed6; --card: #e7f5ff; --line: #c5dff5; }
+  .ck-box { flex: 1; min-height: 0; display: grid; place-items: center; text-align: center; font-family: "Wanted Sans", "Malgun Gothic", sans-serif; }
+  .ck-digital b { display: block; font-weight: 600; font-size: clamp(28px, min(24cqw, 30cqh), 120px); line-height: 1.05; font-variant-numeric: tabular-nums; color: var(--ink); }
+  .ck-digital b small { font-size: .38em; color: var(--muted); font-weight: normal; margin-left: .15em; }
+  .ck-digital span, .ck-date { font-size: clamp(13px, 6cqw, 22px); color: var(--muted); }
+  .ck-analog { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+  .ck-analog svg { width: min(100%, 56cqh); height: auto; flex: none; }
+  .ck-modes { display: flex; justify-content: center; gap: 4px; }
   /* 1인 1역 */
   [data-card="roles"] { --accent: #2b8a3e; --card: #ebfbee; --line: #c3e6cb; }
   .rl-grid { flex: 1; min-height: 0; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); align-content: start; gap: 6px; }
@@ -716,6 +733,7 @@
   .lk-menu .lk-ctx button:hover { background: #e3f6f8; }
   .lk-menu .lk-ctx .del { color: #e2643f; }
   .shelf-menu { --accent: #495057; --line: #dee2e6; }
+  .lk-ic.tp-date { width: auto; padding: 0 5px; background: #e2643f; font-size: 11px; font-weight: normal; }
   .shelf-empty { margin: 0; padding: 12px 6px; color: var(--muted); font-size: 13px; }
   .ph-thumb { flex: none; width: 34px; height: 26px; object-fit: cover; border-radius: 4px; }
   .lk-ghost { position: fixed; z-index: 5; pointer-events: none; transform: translate(-50%, -120%); padding: 3px 12px; border-radius: 999px; background: var(--accent); color: #fff; white-space: nowrap; }
@@ -799,7 +817,7 @@
     <footer>
     <p class="rule-line"><span id="rule" spellcheck="false" title="더블클릭해서 고칠 수 있어요"></span> <span class="hint" id="hint" title="더블클릭하면 이 안내가 사라져요">(더블클릭해서 수정)</span></p>
     <div class="tools">
-      <label class="used" title="이 주제를 사용한 날짜 기록"><input type="checkbox" id="check"><span id="used">사용 체크</span></label>
+      <label class="used" title="이 주제를 사용한 날짜 기록"><input type="checkbox" id="check"><span id="used">사용 체크</span></label><button class="tp-hist" onclick="topicHist(this)" title="사용 기록">📜 기록</button>
       <button onclick="nextTopic()" title="다른 주제" aria-label="다른 주제">↻</button>
     </div>
     </footer>
@@ -836,6 +854,8 @@
   </section>
   <section class="card tool-card" data-card="timer" id="timer-card">
     <p class="label">⏱️ 타이머</p>
+    <div class="tm-tabs modes" role="tablist"><button data-tm="timer" class="on">타이머</button><button data-tm="sw">스톱워치</button></div>
+    <div class="tm-pane" data-pane="timer">
     <div class="big" id="timer-time" role="timer" aria-live="off" title="눌러서 시간 바꾸기 (예: 3:30)">05:00</div>
     <div class="bar"><i id="timer-bar"></i></div>
     <div class="chips">
@@ -845,6 +865,17 @@
     <div class="acts">
       <button class="main" id="timer-go" onclick="timerToggle()">시작</button><button class="again" onclick="timerReset()" title="00:00으로">↺ 0:00</button><button class="sfx" id="timer-sfx" onclick="timerSfx()" title="시작·멈춤·째깍 소리 켜기/끄기 (마지막 3초와 끝날 때 소리는 늘 나요)"></button>
     </div>
+    </div>
+    <div class="tm-pane" data-pane="sw" hidden>
+      <div class="big" id="sw-time">00:00.0</div>
+      <ol class="sw-laps" id="sw-laps"></ol>
+      <div class="acts"><button class="main" id="sw-go" onclick="swToggle()">시작</button><button onclick="swLap()" title="지금 시간을 기록">⏱ 기록</button><button class="again" onclick="swReset()">↺ 0:00</button></div>
+    </div>
+  </section>
+  <section class="card tool-card" data-card="clock" id="ck-card">
+    <p class="label">🕰️ 시계</p>
+    <div class="ck-box" id="ck-box"></div>
+    <div class="ck-modes modes"><button data-ck="digital">디지털</button><button data-ck="analog">아날로그</button></div>
   </section>
   <section class="card tool-card" data-card="picker">
     <p class="label">🎲 뽑기</p>
@@ -1484,6 +1515,14 @@ function renderHistory() {
   }
   box.append(ol);
 }
+// 오늘의 주제 '📜 기록': 사용 체크한 주제를 최근 순으로. 누르면 그 주제를 띄우고, ✕로 기록을 지우면 다시 나올 수 있어요
+function topicHist(btn) {
+  const rows = Object.entries(used).sort((a, b) => b[1].localeCompare(a[1]));
+  shelfMenu(btn, `📜 사용한 주제 ${rows.length}개`, rows.map(([t, d]) => ({ icon: h("span", { class: "lk-ic tp-date" }, d.slice(5).replace("-", "/")), name: t, title: t })),
+    i => { setCurrent(rows[i][0]); location.reload(); },
+    async (i, m) => { if (await seConfirm(m, "이 기록을 지울까요?\n지우면 이 주제가 다시 나올 수 있어요.", "지우기")) { delete used[rows[i][0]]; save(); topicHist(btn); } },
+    "아직 사용 체크한 주제가 없어요.");
+}
 async function copyLink() {
   const msg = document.getElementById("copied");
   try { await navigator.clipboard.writeText(APP_URL); msg.textContent = "복사됐어요!"; }
@@ -1529,7 +1568,7 @@ document.getElementById("today").textContent =
 // [이름, 표시, 처음 위치(board 보드 | popup 아래쪽 바), 처음 크기(칸), 최소 크기 px [가로, 세로]]
 const CARDS = [["topic", "✏️ 오늘의 주제", "board", "2", [340, 200]], ["timetable", "🕘 시간표", "board", "2", [320, 190]],
   ["memo", "📝 메모", "board", "1", [210, 180]], ["rules", "📌 우리반 규칙", "board", "1", [260, 230]], ["motto", "🏫 급훈", "popup", "2", [320, 170]], ["seat", "🪑 자리배치", "popup", "4", [480, 380]],
-  ["photo", "🖼️ 사진", "popup", "1", [200, 170]], ["timer", "⏱️ 타이머", "popup", "1", [240, 240]], ["picker", "🎲 뽑기", "popup", "1", [300, 260]],
+  ["photo", "🖼️ 사진", "popup", "1", [200, 170]], ["timer", "⏱️ 타이머", "popup", "1", [240, 260]], ["clock", "🕰️ 시계", "popup", "1", [200, 200]], ["picker", "🎲 뽑기", "popup", "1", [300, 260]],
   ["whiteboard", "🖍️ 화이트보드", "popup", "4", [420, 320]], ["dust", "😷 미세먼지·날씨", "board", "1", [190, 190]], ["noise", "🔉 소음 측정", "popup", "1", [240, 270]],
   ["thermo", "🌡️ 학급 온도계", "popup", "1", [240, 260]], ["qr", "🔳 QR 만들기", "popup", "1", [240, 280]],
   ["notice", "📋 알림장", "popup", "2", [340, 320]],
@@ -1594,7 +1633,7 @@ async function removeCard(k) { // 더 만든 카드는 닫으면 내용과 함�
   delete layout[k]; saveLayout(); extras = extras.filter(x => x !== k); saveExtras(); applyLayout();
 }
 function cardChrome(k) { // 카드마다 ⛶ 전체 화면, ✕ 닫기(아래쪽 바로), 크기 조절 모서리
-  const c = card(k), full = document.createElement("button"), down = document.createElement("button"), grip = document.createElement("span"), pop = document.createElement("button");
+  const c = card(k), full = document.createElement("button"), down = document.createElement("button"), grip = document.createElement("span"), pop = document.createElement("button"), pin = document.createElement("button");
   full.className = "card-down card-full";
   const showFull = on => { // 넓히기: 네 모서리가 바깥으로, 줄이기: 안쪽으로
     full.innerHTML = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="${on ? "M6 1v5H1M10 1v5h5M6 15v-5H1M10 15v-5h5" : "M1 6V1h5M15 6V1h-5M1 10v5h5M15 10v5h-5"}"/></svg>`;
@@ -1610,14 +1649,22 @@ function cardChrome(k) { // 카드마다 ⛶ 전체 화면, ✕ 닫기(아래쪽
   };
   c.showPop(false);
   pop.onclick = () => pops[k] ? cardBack(k) : cardPop(k);
+  pin.className = "card-down card-pin"; pin.title = "고정 (옮기기·크기 바꾸기·내리기를 막아요)"; pin.setAttribute("aria-label", "고정");
+  pin.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M6 1.5h4l-.6 4.2 2.6 2.3H4l2.6-2.3zM8 8v6.5"/></svg>';
+  pin.onclick = () => { const l = lay(k); l.pinned = !l.pinned; layout[k] = l; saveLayout(); c.classList.toggle("pinned", l.pinned); };
   down.className = "card-down"; down.textContent = "✕"; down.title = "닫기 (아래쪽 바에서 다시 띄울 수 있어요)"; down.setAttribute("aria-label", "닫기");
   down.onclick = async () => {
+    if (lay(k).pinned) return pinAsk(k);
     if (c.ownerDocument.fullscreenElement === c) await c.ownerDocument.exitFullscreen().catch(() => {}); // 전체 화면이면 먼저 빠져나와서 닫음
     cardBack(k); // 다른 창에 있으면 보드로 돌려놓고 닫음
     extras.includes(k) ? removeCard(k) : setLayout(k, { mode: "popup" });
   };
   grip.className = "card-grip"; grip.title = "끌어서 크기 조절";
-  c.append(pop, full, down, grip);
+  c.append(pin, pop, full, down, grip);
+}
+async function pinAsk(k) { // 고정한 카드를 옮기거나 내리려 할 때
+  const c = card(k);
+  if (await seConfirm(c, "고정된 카드예요.\n옮기거나 크기를 바꾸거나 내리려면 고정을 푸세요.", "고정 풀기", "그대로")) { const l = lay(k); l.pinned = false; layout[k] = l; saveLayout(); c.classList.remove("pinned"); }
 }
 // 새 창을 보드와 같은 모양으로: 글꼴·스타일, 키보드·붙여넣기 이벤트
 function winSetup(w, title) {
@@ -1697,6 +1744,12 @@ board.addEventListener("pointerdown", e => {
   const grip = e.target.classList.contains("card-grip");
   if (!grip && !e.target.closest(".label")) return;
   const k = c.dataset.card, l = lay(k);
+  if (l.pinned) { // 고정: 조금이라도 끌면 '고정을 푸세요'
+    const sx0 = e.clientX, sy0 = e.clientY, t0 = e.target;
+    const mv = ev => { if (Math.hypot(ev.clientX - sx0, ev.clientY - sy0) > 5) { off(); pinAsk(k); } }, off = () => { t0.removeEventListener("pointermove", mv); t0.removeEventListener("pointerup", off); };
+    t0.setPointerCapture(e.pointerId); t0.addEventListener("pointermove", mv); t0.addEventListener("pointerup", off);
+    return;
+  }
   c.style.zIndex = ++zTop;
   const B = board.getBoundingClientRect(), r = l.rect, r0 = { ...r }, sx = e.clientX, sy = e.clientY, t = e.target;
   t.setPointerCapture(e.pointerId); e.preventDefault();
@@ -1728,7 +1781,7 @@ function applyLayout() {
   CARDS.forEach(([k, name], i) => {
     const c = card(k), l = lay(k);
     c.style.order = i; c.dataset.size = l.size;
-    c.hidden = !pops[k] && l.mode !== "board";
+    c.hidden = !pops[k] && l.mode !== "board"; c.classList.toggle("pinned", !!l.pinned);
     if (!extras.includes(k)) { // 버튼은 늘 있음. 누르면 보드에 띄우기 ↔ 내리기, 메모·사진은 오른쪽 위 +로 한 장 더
       const b = document.createElement("button"), [icon, ...label] = name.split(" "), ic = document.createElement("i");
       ic.textContent = icon; b.append(ic, label.join(" ")); b.dataset.card = k;
@@ -1792,17 +1845,19 @@ function setLayout(k, change) {
 }
 async function resetPlaces() {
   if (!await seConfirm(document.getElementById("panel"), "카드 자리와 크기를 처음처럼 되돌릴까요? 적어 둔 내용은 그대로예요.", "되돌리기")) return;
-  for (const k in layout) { delete layout[k].rect; delete layout[k].locked; } // locked: 예전 📌 고정 값 정리
+  for (const k in layout) { if (!layout[k].pinned) delete layout[k].rect; delete layout[k].locked; } // 고정한 카드는 그대로. locked: 예전 📌 값 정리
   saveLayout(); applyLayout();
 }
-function cardStop(k) { // 닫은 카드에서 돌던 것 멈춤 (뽑기 애니메이션·소리, 소음 측정 마이크). 타이머는 닫아도 계속 (끝나면 다시 뜸)
+function cardStop(k) { // 닫은 카드에서 돌던 것 멈춤 (뽑기 애니메이션·소리, 소음 측정 마이크, 타이머·스톱워치)
   if (k === "picker") pickStop();
+  if (k === "timer") { if (tEnd) timerToggle(); if (swStart) swToggle(); } // 닫으면 타이머·스톱워치 멈춤 (소리도)
   if (k === "noise" && nStream) noiseToggle();
   if (k === "seat") { if (stOpen()) seTeachClose(); if ($s("se-form").matches(":popover-open")) $s("se-form").hidePopover(); }
 }
 function toggleCard(k) {
   if (pops[k]) { cardBack(k); return setLayout(k, { mode: "popup" }); } // 다른 창으로 뗀 카드: 보드로 돌려놓고 내림 (다시 누르면 보드에 붙음)
   if (lay(k).mode !== "board") return showCard(k);
+  if (lay(k).pinned) return pinAsk(k); // 고정한 카드는 내리지 않음
   if (document.fullscreenElement === card(k)) document.exitFullscreen().catch(() => {});
   setLayout(k, { mode: "popup" });
 }
@@ -2049,7 +2104,6 @@ function timerTick() {
   tLastSec = sec;
   if (!tLeft) {
     timerStop(); timerCard.classList.add("done"); beep();
-    if (lay("timer").mode === "popup") showCard("timer"); // 닫혀 있어도 끝나면 띄움
   }
   timerDraw();
 }
@@ -2060,6 +2114,29 @@ function timerSfx(flip) {
   const b = document.getElementById("timer-sfx"); b.textContent = "🔊 효과음"; b.classList.toggle("off", !tSfx);
 }
 timerSfx(false);
+// 스톱워치: 0.1초까지. '기록'으로 구간 시간을 남김 (최근 것이 위)
+let swStart = 0, swAcc = 0, swTick = 0, swLaps = [];
+const swNow = () => swAcc + (swStart ? Date.now() - swStart : 0);
+const swFmt = ms => { const t = Math.floor(ms / 100); return `${String(Math.floor(t / 600)).padStart(2, "0")}:${String(Math.floor(t / 10) % 60).padStart(2, "0")}.${t % 10}`; };
+function swDraw() {
+  document.getElementById("sw-time").textContent = swFmt(swNow());
+  document.getElementById("sw-go").textContent = swStart ? "멈춤" : "시작";
+  document.getElementById("sw-laps").replaceChildren(...swLaps.map((ms, i) => { const li = document.createElement("li"); li.value = swLaps.length - i; li.textContent = swFmt(ms); return li; }));
+}
+function swToggle() {
+  if (swStart) { swAcc += Date.now() - swStart; swStart = 0; clearInterval(swTick); }
+  else { swStart = Date.now(); swTick = setInterval(() => document.getElementById("sw-time").textContent = swFmt(swNow()), 100); }
+  swDraw();
+}
+function swLap() { if (swNow()) { swLaps.unshift(swNow()); swDraw(); } }
+function swReset() { clearInterval(swTick); swStart = swAcc = 0; swLaps = []; swDraw(); }
+function tmTab(t) {
+  document.querySelectorAll("#timer-card [data-tm]").forEach(b => b.classList.toggle("on", b.dataset.tm === t));
+  document.querySelectorAll("#timer-card [data-pane]").forEach(p => p.hidden = p.dataset.pane !== t);
+  try { localStorage.setItem("timer-tab", t); } catch (e) {}
+}
+document.querySelectorAll("#timer-card [data-tm]").forEach(b => b.onclick = () => tmTab(b.dataset.tm));
+try { tmTab(localStorage.getItem("timer-tab") || "timer"); } catch (e) {}
 function timerReset() { timerStop(); tTotal = tLeft = 0; timerCard.classList.remove("done"); timerDraw(); } // 00:00으로. + 버튼으로 다시 맞춤
 // 효과음: 파일 없이 브라우저에서 바로 만든 소리
 function tone(freq, at, dur, type = "sine", vol = .25) {
@@ -3211,6 +3288,28 @@ async function ntPick(v) {
 }
 try { ntHist = JSON.parse(localStorage.getItem("notice-hist")) || {}; } catch (e) {}
 setTimeout(ntDraw); // h는 아래에서 만들어짐
+
+// ───── 시계: 디지털(오전·오후 시:분, 초, 날짜) · 아날로그(바늘 셋). 고른 모양은 clock-mode에 저장
+let ckMode = "digital";
+try { ckMode = localStorage.getItem("clock-mode") || "digital"; } catch (e) {}
+function ckDraw() {
+  const box = document.getElementById("ck-box"), now = new Date(), H = now.getHours(), M = now.getMinutes(), S = now.getSeconds();
+  if (box.closest(".card").hidden) return; // 안 보이면 안 그림
+  const date = now.toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "long" });
+  if (ckMode === "digital") {
+    box.innerHTML = `<div class="ck-digital"><span>${H < 12 ? "오전" : "오후"}</span><b>${H % 12 || 12}:${String(M).padStart(2, "0")}<small>${String(S).padStart(2, "0")}</small></b><span>${date}</span></div>`;
+  } else {
+    const hand = (deg, len, w, col) => `<line x1="50" y1="50" x2="${50 + len * Math.sin(deg * Math.PI / 180)}" y2="${50 - len * Math.cos(deg * Math.PI / 180)}" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/>`;
+    let face = "";
+    for (let i = 0; i < 60; i++) { const a = i * 6 * Math.PI / 180, r1 = i % 5 ? 43 : 40; face += `<line x1="${50 + r1 * Math.sin(a)}" y1="${50 - r1 * Math.cos(a)}" x2="${50 + 46 * Math.sin(a)}" y2="${50 - 46 * Math.cos(a)}" stroke="${i % 5 ? "#c5ccd6" : "#495057"}" stroke-width="${i % 5 ? .6 : 1.4}"/>`; }
+    for (let n = 1; n <= 12; n++) { const a = n * 30 * Math.PI / 180; face += `<text x="${50 + 33 * Math.sin(a)}" y="${50 - 33 * Math.cos(a) + 3.2}" text-anchor="middle" font-size="9" fill="#343a40">${n}</text>`; }
+    box.innerHTML = `<div class="ck-analog"><svg viewBox="0 0 100 100" aria-label="${H % 12 || 12}시 ${M}분"><circle cx="50" cy="50" r="48" fill="#fff" stroke="var(--accent)" stroke-width="2"/>${face}`
+      + hand((H % 12) * 30 + M / 2, 22, 3.2, "#343a40") + hand(M * 6 + S / 10, 32, 2.2, "#343a40") + hand(S * 6, 36, .9, "#e03131") + `<circle cx="50" cy="50" r="2.2" fill="#e03131"/></svg><span class="ck-date">${date}</span></div>`;
+  }
+  document.querySelectorAll("#ck-card [data-ck]").forEach(b => b.classList.toggle("on", b.dataset.ck === ckMode));
+}
+document.querySelectorAll("#ck-card [data-ck]").forEach(b => b.onclick = () => { ckMode = b.dataset.ck; try { localStorage.setItem("clock-mode", ckMode); } catch (e) {} ckDraw(); });
+setInterval(ckDraw, 1000); ckDraw();
 
 // ───── 1인 1역: 역할(직업)마다 맡을 사람. 이름은 여러 명. 🎲로 명단에서 무작위, 💾로 날짜별 기록
 // roles = { list: [{ job, n(맡을 사람 수), who: ["1번 김하늘", …] }], hist: [{ at, list }] }
@@ -4965,10 +5064,12 @@ const TOURS = {
     { at: "#drawer-btn", text: "자주 안 쓰는 버튼은 끌어서 '서랍'에 넣어 두세요." },
     { at: () => tourCard()?.querySelector(".label"), text: "카드 제목 줄을 끌면 카드를 옮길 수 있어요." },
     { at: () => tourCard()?.querySelector(".card-grip"), text: "오른쪽 아래 모서리를 끌면 크기가 바뀌어요." },
-    { at: [() => tourCard()?.querySelector(".card-pop"), () => tourCard()?.querySelector(".card-full"), () => tourCard()?.querySelector(".card-down:not(.card-pop):not(.card-full)")], text: "왼쪽부터 ① 따로 창으로 떼기(다른 모니터로 옮길 수 있어요) ② 전체 화면 ③ 닫기(아래쪽 바로)" },
+    { at: () => tourCard()?.querySelector(".card-pin"), text: "📌 고정: 누르면 카드를 옮기거나 크기를 바꾸거나 내릴 수 없어요. 한 번 더 누르면 풀려요." },
+    { at: [() => tourCard()?.querySelector(".card-pop"), () => tourCard()?.querySelector(".card-full"), () => tourCard()?.querySelector(".card-down:not(.card-pop):not(.card-full):not(.card-pin)")], text: "왼쪽부터 ① 따로 창으로 떼기(다른 모니터로 옮길 수 있어요) ② 전체 화면 ③ 닫기(아래쪽 바로)" },
     { at: ".gear", text: "설정: 명단·시간표·로그인. '사용 방법'에서 이 안내를 다시 볼 수 있어요." }] },
   topic: { name: "✏️ 오늘의 주제", steps: [
     { at: ".used", text: "쓴 주제는 '사용 체크'하면 다시 나오지 않아요." },
+    { at: ".tp-hist", text: "📜 기록: 사용한 주제를 보고 다시 띄우거나 지워요." },
     { at: ".rule-line", text: "아래 글은 두 번 눌러 고칠 수 있어요." }] },
   timetable: { name: "🕘 시간표", steps: [
     { text: "시간표는 설정 → 시간표에서 연간시간표 파일(한글·워드·PDF)과 시정표를 넣어요. 수업이 없는 교시는 카드에 안 나와요." }] },
@@ -4986,7 +5087,9 @@ const TOURS = {
   photo: { name: "🖼️ 사진", steps: [
     { at: ".photo-box", text: "사진은 카드를 누른 뒤 Ctrl+V로 붙여 넣어도 돼요. 사진 위에 마우스를 올리면 버튼이 나와요. '☆ 저장'으로 보관함에 4장까지 넣어 두고 '🗂️ 보관함'에서 바로 바꿔 띄워요." },
     { text: "아래쪽 바 사진 버튼의 +로 사진 카드를 더 띄워요." }] },
+  clock: { name: "🕰️ 시계", steps: [{ at: ".ck-modes", text: "디지털 · 아날로그 시계를 골라요." }] },
   timer: { name: "⏱️ 타이머", steps: [
+    { at: ".tm-tabs", text: "타이머 · 스톱워치를 골라요. 스톱워치는 '⏱ 기록'으로 구간 시간을 남겨요." },
     { at: "#timer-time", text: "시간을 눌러 3:30처럼 직접 써도 돼요. + 버튼은 돌아가는 중에도 더해져요." },
     { at: "#timer-sfx", text: "효과음 켜기·끄기 (마지막 3초와 끝나는 소리는 늘 나요)" }] },
   picker: { name: "🎲 뽑기", steps: [
@@ -5066,8 +5169,9 @@ function tourRun(k) {
     if (k === "install") setTimeout(() => tourAuto("board"), 300); // 설치 안내 다음은 보드 안내
   };
   const place = () => {
-    const st = steps[i], els = tourEls(k, st.at);
+    const st = steps[i], els = tourEls(k, st.at), root = tourRoot(k), inCard = root && root !== document && !st.at;
     let r = null;
+    if (inCard) els.push(root); // 짚을 곳이 없는 단계: 카드 전체를 짚고 말풍선은 카드 가운데
     if (els.length) {
       const rs = els.map(e => e.getBoundingClientRect());
       r = { l: Math.min(...rs.map(x => x.left)) - 6, t: Math.min(...rs.map(x => x.top)) - 6, r: Math.max(...rs.map(x => x.right)) + 6, b: Math.max(...rs.map(x => x.bottom)) + 6 };
@@ -5083,7 +5187,8 @@ function tourRun(k) {
     const IW = Wn.innerWidth, IH = Wn.innerHeight, W = Math.min(320, IW - 24); tip.style.width = W + "px";
     const th = tip.offsetHeight;
     let x = (IW - W) / 2, y = (IH - th) / 2; // 짚을 곳이 없으면 가운데
-    if (r) { // 짚은 곳 아래, 자리가 없으면 위
+    if (inCard) { x = Math.max(12, Math.min((r.l + r.r) / 2 - W / 2, IW - W - 12)); y = Math.max(12, Math.min((r.t + r.b) / 2 - th / 2, IH - th - 12)); }
+    else if (r) { // 짚은 곳 아래, 자리가 없으면 위
       x = Math.max(12, Math.min((r.l + r.r) / 2 - W / 2, IW - W - 12));
       y = r.b + 12 + th < IH ? r.b + 12 : r.t - 12 - th >= 0 ? r.t - 12 - th : Math.max(12, IH - th - 12);
     }
