@@ -613,7 +613,8 @@
   /* 보상 정하기: 카드 안을 덮는 목록 */
   .card-ed { position: absolute; inset: 0; z-index: 4; display: flex; flex-direction: column; gap: 8px; padding: 12px 16px; background: #fff; border-radius: inherit;
            font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--ink); }
-  .card-ed-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .zoomy > :not(.label, .card-down, .card-grip, .card-ed, .se-ask, .rw-cheer) { zoom: var(--z, 1); }
+  .card-ed-head { display: flex; align-items: center; gap: 8px; } .card-ed-head > :first-child { margin-right: auto; } /* 제목은 왼쪽, 버튼은 모두 오른쪽 */
   .card-ed-list { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
   .card-ed-list label { display: flex; align-items: center; gap: 8px; }
   .card-ed-list label > span { width: 3em; flex: none; text-align: right; color: var(--accent); }
@@ -741,7 +742,7 @@
   .rw-log .row { display: grid; grid-template-columns: 64px minmax(0, 1fr) minmax(0, 1.2fr) auto; gap: 8px; align-items: baseline; padding: 5px 4px; border-bottom: 1px solid var(--line); }
   .rw-log .tm { color: var(--muted); font-size: 12px; } .rw-log .who { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .rw-log .why { color: var(--muted); }
   .rw-log b { color: #3b82f6; white-space: nowrap; } .rw-log b.neg { color: #e8590c; }
-  .card-ed-head select { font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); border-radius: 8px; padding: 3px 6px; margin-left: auto; }
+  .card-ed-head select { font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); border-radius: 8px; padding: 3px 6px; }
   .rw-prices { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 4px 8px; font-size: 15px; }
   .rw-prices label i { flex: none; width: 36px; height: 47px; background: #f8f9fa; border-radius: 6px; overflow: hidden; } .rw-prices label i svg { display: block; width: 100%; height: 100%; }
   .rw-tabs.sm { margin: 0 0 8px; } .tool-card .rw-tabs.sm button { font-size: 13px; padding: 2px 10px; }
@@ -1869,6 +1870,13 @@ function cardPop(k) {
   w.addEventListener("pagehide", () => { if (!pops[k]) return; cardBack(k); if (!boardClosing && !extras.includes(k)) setLayout(k, { mode: "popup" }); }); // 창을 닫으면 카드도 내림 (아래쪽 바에서 다시 띄움)
   c.showPop(true); applyLayout();
 }
+// 카드를 키우면 안의 글씨·칸도 같이 커짐 (1인 1역·우리반 점수·성적 알리미). 이 크기보다 크면 비율만큼 (작게는 안 함)
+const ZOOM_BASE = { roles: [600, 460], reward: [720, 520], scores: [560, 420] };
+const zoomRO = new ResizeObserver(es => es.forEach(({ target: c }) => {
+  const [bw, bh] = ZOOM_BASE[c.dataset.card];
+  if (c.clientWidth) c.style.setProperty("--z", Math.max(1, Math.min(c.clientWidth / bw, c.clientHeight / bh)).toFixed(3));
+}));
+setTimeout(() => Object.keys(ZOOM_BASE).forEach(k => { card(k).classList.add("zoomy"); zoomRO.observe(card(k)); }));
 function cardBack(k) {
   const p = pops[k];
   if (!p) return;

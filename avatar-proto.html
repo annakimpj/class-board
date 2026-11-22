@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>아바타 기본 캐릭터 시안</title>
+<style>
+  body { margin: 0; padding: 24px; background: #ffffff; }
+  .row { display: flex; gap: 40px; flex-wrap: wrap; align-items: flex-end; justify-content: center; }
+  .big svg { width: 330px; height: auto; display: block; }
+  .small { margin-top: 28px; gap: 18px; } .small svg { width: 72px; height: auto; display: block; }
+</style>
+</head>
+<body>
+<div class="row big" id="big"></div>
+<div class="row small" id="small"></div>
+<script>
+// ───── 그리기 도구 (96×128칸) ─────
+// 층(layer)마다 칠하고, 위 층이 아래 층과 맞닿은 가장자리는 진하게, 바깥은 짙은 갈색 테두리
+const W = 96, H = 140, LINE = "#3b2621";
+function canvas() { const a = () => Array.from({ length: H }, () => Array(W).fill(null)); return { c: a(), z: a(), part: a(), layer: 0, name: "" }; }
+function put(g, x, y, col) { x = Math.floor(x); y = Math.floor(y); if (x >= 0 && x < W && y >= 0 && y < H && col) { g.c[y][x] = col; g.z[y][x] = g.layer; g.part[y][x] = g.name; } }
+function at(g, x, y) { return g.part[y]?.[x]; }
+function ell(g, cx, cy, rx, ry, col, keep) { for (let y = Math.floor(cy - ry - 1); y <= cy + ry + 1; y++) for (let x = Math.floor(cx - rx - 1); x <= cx + rx + 1; x++) { const dx = (x + .5 - cx) / rx, dy = (y + .5 - cy) / ry; if (dx * dx + dy * dy <= 1 && (!keep || keep(x, y))) put(g, x, y, col); } }
+function poly(g, pts, col, keep) {
+  const ys = pts.map(p => p[1]);
+  for (let y = Math.floor(Math.min(...ys)); y <= Math.max(...ys); y++) {
+    const yy = y + .5, xs = [];
+    for (let i = 0; i < pts.length; i++) { const [x0, y0] = pts[i], [x1, y1] = pts[(i + 1) % pts.length]; if ((y0 <= yy && y1 > yy) || (y1 <= yy && y0 > yy)) xs.push(x0 + (yy - y0) / (y1 - y0) * (x1 - x0)); }
+    xs.sort((a, b) => a - b);
+    for (let i = 0; i + 1 < xs.length; i += 2) for (let x = Math.ceil(xs[i] - .5); x <= Math.floor(xs[i + 1] - .5); x++) if (!keep || keep(x, y)) put(g, x, y, col);
+  }
+}
+function rect(g, x0, y0, x1, y1, col) { for (let y = Math.ceil(y0); y <= y1; y++) for (let x = Math.ceil(x0); x <= x1; x++) put(g, x, y, col); }
+function line1(g, x0, y, x1, col) { for (let x = x0; x <= x1; x++) put(g, x, y, col); }
+// 부드러운 곡선 (2차 베지어), 굵기 w
+function curve(g, p0, p1, p2, col, w = 1) { const n = 80; for (let i = 0; i <= n; i++) { const t = i / n, x = (1 - t) ** 2 * p0[0] + 2 * (1 - t) * t * p1[0] + t * t * p2[0], y = (1 - t) ** 2 * p0[1] + 2 * (1 - t) * t * p1[1] + t * t * p2[1]; for (let k = 0; k < w; k++) put(g, x, y + k, col); } }
+// 머리카락 한 갈래: 위는 넓고 끝은 뾰족, bend만큼 휨
+function lock(g, top, tip, bend, width, col) {
+  const n = 40, L = [], R = [];
+  for (let i = 0; i <= n; i++) {
+    const t = i / n, mx = (top[0] + tip[0]) / 2 + bend, my = (top[1] + tip[1]) / 2;
+    const x = (1 - t) ** 2 * top[0] + 2 * (1 - t) * t * mx + t * t * tip[0], y = (1 - t) ** 2 * top[1] + 2 * (1 - t) * t * my + t * t * tip[1];
+    const w = width / 2 * (1 - t) ** .8; L.push([x - w, y]); R.unshift([x + w, y]);
+  }
+  poly(g, [...L, ...R], col);
+}
+const sym = f => { f(x => x, 1); f(x => W - x, -1); }; // 왼쪽(1)·오른쪽(-1)
+function mix(a, b, t) { const p = s => [1, 3, 5].map(i => parseInt(s.slice(i, i + 2), 16)); const A = p(a), B = p(b); return "#" + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, "0")).join(""); }
+function shade(g, part, col, test) { for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (at(g, x, y) === part && test(x, y)) g.c[y][x] = col; }
+function toSvg(g) {
+  const c = g.c.map(r => r.slice());
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { // 위 층 가장자리 진하게
+    const z = g.z[y][x]; if (z === null || g.noEdge.has(g.part[y][x])) continue;
+    if ([[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => { const zz = g.z[y + dy]?.[x + dx]; return zz != null && zz < z; })) c[y][x] = mix(g.c[y][x], LINE, .6);
+  }
+  let r = "";
+  const has = (x, y) => !!g.c[y]?.[x];
+  for (let y = -1; y <= H; y++) for (let x = -1; x <= W; x++) if (!has(x, y) && (has(x - 1, y) || has(x + 1, y) || has(x, y - 1) || has(x, y + 1))) r += `<rect x="${x}" y="${y}" width="1" height="1" fill="${LINE}"/>`;
+  c.forEach((row, y) => { for (let x = 0; x < W;) { const col = row[x]; if (!col) { x++; continue; } let n = 1; while (row[x + n] === col) n++; r += `<rect x="${x}" y="${y}" width="${n}" height="1" fill="${col}"/>`; x += n; } });
+  return `<svg viewBox="-1 -1 ${W + 2} ${H + 2}" shape-rendering="crispEdges">${r}</svg>`;
+}
+
+// ───── 색 ─────
+const SKIN = { s: "#ffefe5", S: "#f8dccd", blush: "#ffc6c2", blush2: "#ffb2ae", mouth: "#b8645c" };
+const EYE = { line: "#2e1c18", out: "#3d2620", iris: "#5b3828", iris2: "#7a4c36", iris3: "#a06c4e", pupil: "#2a1813", w: "#ffffff" };
+const HAIR = { base: "#6a4a40", sh: "#523830", deep: "#3d2823", hi: "#87655a", hi2: "#a5847a" };
+
+// ───── 몸 (남녀 같음): 팔·다리·목·얼굴 ─────
+function body(g, girl) {
+  const { s, S } = SKIN;
+  g.layer = 2; g.name = "skin";
+  sym(f => { poly(g, [[f(25), 92], [f(32), 92], [f(32), 101], [f(25), 101]], s); ell(g, f(28.5), 103, 4.8, 4.6, s); }); // 팔·손
+  rect(g, 38.5, 108, 45, 128, s); rect(g, 51, 108, 57.5, 128, s); // 다리
+  rect(g, 43, 74, 53, 84, s); shade(g, "skin", S, (x, y) => y <= 79 && x >= 43 && x <= 53); // 목 (턱 그림자)
+  g.layer = 4; g.name = "face";
+  sym(f => { ell(g, f(21.5), 60, 4.2, 5.8, s); ell(g, f(21.8), 60.5, 1.8, 3, S); }); // 귀
+  ell(g, 48, 51, 27, 25.5, s); ell(g, 48, 56, 24.5, 21, s); // 얼굴 (아래가 갸름)
+  for (const [cx, side] of [[35.5, -1], [60.5, 1]]) { // 눈
+    const cy = 59;
+    ell(g, cx, cy, 6.6, 7.6, EYE.out);
+    ell(g, cx, cy + .4, 5.6, 6.6, EYE.iris);
+    ell(g, cx, cy + 2.6, 4.8, 3.6, EYE.iris2, (x, y) => y >= cy + 1);
+    ell(g, cx, cy + 4.2, 3.4, 2, EYE.iris3, (x, y) => y >= cy + 3);
+    ell(g, cx + .3, cy - .6, 2.6, 3, EYE.pupil);
+    ell(g, cx - 2.3, cy - 2.6, 2, 2.3, EYE.w); // 큰 반짝이 (모두 왼쪽 위)
+    put(g, cx + 2.4, cy + 3.2, EYE.w); put(g, cx + 1.6, cy + 3.6, EYE.w);
+    curve(g, [cx - 7, cy - 5], [cx, cy - 10.5], [cx + 7, cy - 5], EYE.line, 2); // 위 속눈썹
+    if (girl) { curve(g, [cx + side * 6.5, cy - 5.5], [cx + side * 8.5, cy - 6.5], [cx + side * 9.6, cy - 8.4], EYE.line, 1); put(g, cx + side * 7.6, cy - 3.6, EYE.line); } // 여자: 속눈썹 날개
+    else put(g, cx + side * 7.2, cy - 5.6, EYE.line);
+    curve(g, [cx - side * 1, cy + 8], [cx + side * 3, cy + 8.4], [cx + side * 5.5, cy + 6.6], "#c99d8c", 1); // 아래 눈선 (연하게)
+  }
+  sym(f => { ell(g, f(29), 68.5, 5.6, 2.8, SKIN.blush); ell(g, f(29), 68.5, 3.4, 1.6, SKIN.blush2); put(g, f(27.5), 67.5, "#ffe1de"); put(g, f(30.5), 67.5, "#ffe1de"); }); // 볼
+  curve(g, [44.5, 70.5], [48, 74], [51.5, 70.5], SKIN.mouth, 1); // 입
+  sym(f => curve(g, [f(31), 45.5], [f(35.5), 43.5], [f(40), 45], "#9a7266", 1)); // 눈썹
+}
+function hairShadow(g) { shade(g, "face", SKIN.S, (x, y) => [1, 2, 3].some(d => at(g, x, y - d) === "hairF") || [1, 2].some(d => at(g, x - d, y) === "hairF" || at(g, x + d, y) === "hairF")); }
+
+// ───── 머리 공통: 둥근 윗머리 + 윤기 띠 ─────
+function crown(g) { g.layer = 6; g.name = "hairF"; ell(g, 48, 37, 33.5, 27, HAIR.base, (x, y) => y <= 46); }
+function crownLight(g) {
+  shade(g, "hairF", HAIR.hi, (x, y) => { const dx = (x + .5 - 48) / 25, dy = (y + .5 - 31) / 13, d = dx * dx + dy * dy; return d > .7 && d < 1.18 && y < 35 && y > 16; });
+  shade(g, "hairF", HAIR.hi2, (x, y) => { const dx = (x + .5 - 48) / 25, dy = (y + .5 - 31) / 13, d = dx * dx + dy * dy; return d > .86 && d < 1.0 && y < 30 && x < 52 && x > 28; });
+  shade(g, "hairF", HAIR.hi2, (x, y) => { const dx = (x + .5 - 41) / 10, dy = (y + .5 - 21.5) / 2.6; return dx * dx + dy * dy < 1; });
+}
+// ───── 남자: 가르마, 앞으로 흘러내린 부스스한 결 ─────
+function hairBoy(g, part) {
+  const { base, sh, deep } = HAIR;
+  if (part === "back") { g.layer = 1; g.name = "hairB"; ell(g, 48, 41, 34.5, 31, base); return; }
+  crown(g);
+  const L = [[[44, 26], [41, 52], 3, 14], [[38, 28], [32, 50.5], 2, 14], [[32, 30], [25, 49], 2, 13], [[27, 33], [20, 48], 1, 11], [[52, 26], [55, 51.5], -3, 14], [[58, 28], [63, 50], -2, 14], [[64, 30], [70.5, 49], -2, 13], [[69, 33], [76, 47.5], -1, 11], [[47.5, 25], [47, 49], 2, 8]];
+  L.forEach(([a, b, bend, w]) => lock(g, a, b, bend, w, base));
+  sym((f, s) => { lock(g, [f(19), 40], [f(17), 64], 2 * s, 9, base); lock(g, [f(22), 42], [f(23), 63], 0, 6, base); }); // 옆머리
+  sym((f, s) => { lock(g, [f(17), 36], [f(11), 33], s, 9, base); lock(g, [f(17.5), 46], [f(12.5), 50], -s, 8, base); lock(g, [f(25), 17], [f(21.5), 13], s, 9, base); }); // 부스스한 결 (짧고 둥글게)
+  lock(g, [47, 12], [44.5, 4.5], 2.5, 6, base); // 정수리 한 가닥
+  L.filter((_, i) => i % 2 === 0).forEach(([a, b, bend]) => curve(g, [a[0] + 1, a[1] + 8], [(a[0] + b[0]) / 2 + bend + 1.5, (a[1] + b[1]) / 2 + 2], [b[0] + .5, b[1] - 3], sh, 1));
+  shade(g, "hairF", sh, (x, y) => y > 47 && at(g, x, y + 3) !== "hairF");
+  curve(g, [47.5, 12], [47, 19], [47, 26], deep, 1);
+  sym(f => curve(g, [f(30), 16], [f(24), 24], [f(22), 33], sh, 1));
+  crownLight(g);
+}
+// ───── 여자: 일자 앞머리 + 길게 내린 머리 ─────
+function hairGirl(g, part) {
+  const { base, sh, deep, hi } = HAIR;
+  if (part === "back") {
+    g.layer = 1; g.name = "hairB";
+    ell(g, 48, 42, 35, 32, base);
+    sym(f => poly(g, [[f(14), 46], [f(28), 46], [f(29), 104], [f(24), 108], [f(19), 103], [f(15), 106], [f(13), 96], [f(11), 84]], base));
+    sym(f => { curve(g, [f(18), 60], [f(16), 82], [f(17), 101], sh, 1); curve(g, [f(24), 64], [f(23), 86], [f(25), 104], sh, 1); });
+    return;
+  }
+  crown(g);
+  const tipY = [47, 49.5, 48, 51, 52, 51.5, 49, 50.5, 48, 47.5];
+  for (let i = 0; i < 10; i++) { const x = 25 + i * 5.1; lock(g, [x, 30], [x + (i < 5 ? -.8 : .8), tipY[i]], i < 5 ? 1 : -1, 9.5, base); }
+  sym((f, s) => { lock(g, [f(21), 40], [f(20), 96], -3 * s, 11, base); lock(g, [f(25), 44], [f(26.5), 76], s, 6, base); }); // 얼굴 옆 머리
+  for (let i = 1; i < 10; i += 2) { const x = 25 + i * 5.1 - 2.5; curve(g, [x + 1, 37], [x + (i < 5 ? .5 : -.5), 42], [x + (i < 5 ? -.4 : .4), tipY[i] - 2], sh, 1); }
+  sym(f => { curve(g, [f(21), 56], [f(18.5), 74], [f(20), 92], sh, 1); curve(g, [f(24), 62], [f(23), 78], [f(22), 90], hi, 1); });
+  shade(g, "hairF", sh, (x, y) => y > 46 && y < 52 && at(g, x, y + 2) !== "hairF");
+  curve(g, [48, 12], [48, 20], [48, 29], deep, 1);
+  sym(f => curve(g, [f(30), 16], [f(24), 24], [f(22), 33], sh, 1));
+  crownLight(g);
+}
+// ───── 옷 (따로 갈아입는 아이템) ─────
+function tee(g) {
+  const t = "#fbf5ec", T = "#ece0cf", U = "#dccbb4";
+  g.layer = 5; g.name = "top";
+  poly(g, [[35, 80], [61, 80], [63.5, 106], [32.5, 106]], t);
+  sym(f => poly(g, [[f(36), 80.5], [f(28), 83], [f(23), 94], [f(32.5), 96.5], [f(35.5), 90]], t));
+  ell(g, 48, 80.4, 7, 3, U);
+  g.name = "skinN"; ell(g, 48, 79.6, 5.6, 2.1, SKIN.S, (x, y) => y < 81); g.name = "top";
+  shade(g, "top", T, (x, y) => (at(g, x + 2, y) !== "top" && x > 48) || y > 103 || (at(g, x, y + 2) !== "top" && y > 90 && y < 97));
+  sym(f => curve(g, [f(35), 93], [f(36.5), 98], [f(35.5), 104], T, 1));
+  curve(g, [41, 84], [48, 86.5], [55, 84], T, 1);
+}
+function shorts(g) {
+  const p = "#3e4a7c", P = "#2e375f", q = "#57649a";
+  g.layer = 4; g.name = "bottom";
+  poly(g, [[33, 104], [63, 104], [64, 114], [49.5, 114], [48, 108], [46.5, 114], [32, 114]], p);
+  rect(g, 32, 112, 46, 115, q); rect(g, 50, 112, 64, 115, q); line1(g, 32, 112, 46, P); line1(g, 50, 112, 64, P);
+  curve(g, [48, 104], [48, 106], [48, 108], P, 1);
+  shade(g, "bottom", P, (x, y) => (x > 58 && y < 112) || y <= 105);
+}
+function skirt(g) {
+  const p = "#3e4a7c", P = "#2e375f", q = "#57649a";
+  g.layer = 4; g.name = "bottom";
+  poly(g, [[34, 103], [62, 103], [67, 116], [29, 116]], p);
+  for (const x of [35, 40.5, 46, 51.5, 57, 62]) curve(g, [x + (x - 48) * .05, 106], [x + (x - 48) * .1, 110], [x + (x - 48) * .22, 115], P, 1);
+  for (const x of [37.5, 43, 48.5, 54, 59.5]) curve(g, [x + (x - 48) * .05, 107], [x + (x - 48) * .1, 110], [x + (x - 48) * .2, 114], q, 1);
+  line1(g, 34, 103, 62, P); line1(g, 34, 104, 62, P);
+}
+function socks(g) { g.layer = 3; g.name = "socks"; rect(g, 38, 124, 45.5, 130, "#ffffff"); rect(g, 50.5, 124, 58, 130, "#ffffff"); line1(g, 38, 125, 45, "#dcd6e6"); line1(g, 51, 125, 57, "#dcd6e6"); }
+function sneakers(g) {
+  g.layer = 5; g.name = "shoes";
+  sym(f => {
+    const cx = f(41.2);
+    ell(g, cx, 132, 6.6, 5.4, "#fdfbf8");
+    poly(g, [[cx - 6.6, 133], [cx + 6.6, 133], [cx + 6.4, 137.5], [cx - 6.4, 137.5]], "#fdfbf8");
+    line1(g, Math.ceil(cx - 6.4), 136, Math.floor(cx + 6.3), "#e2dbd2"); line1(g, Math.ceil(cx - 6.4), 137, Math.floor(cx + 6.3), "#cfc6bb");
+    curve(g, [cx - 4, 129], [cx, 127.5], [cx + 4, 129], "#cfd4e6", 1); put(g, cx - 1, 130.5, "#cfd4e6"); put(g, cx + 1.5, 130.5, "#cfd4e6");
+  });
+  shade(g, "shoes", "#ece6de", (x, y) => y > 131 && y < 136 && at(g, x + 2, y) !== "shoes");
+}
+// ───── 조립: 뒷머리 → 몸·얼굴 → 양말 → 하의 → 신발 → 상의 → 앞머리 (아이템마다 따로 바꿀 수 있음) ─────
+function draw(kind) {
+  const g = canvas(); g.noEdge = new Set(["skin", "skinN", "socks"]);
+  const hair = kind === "boy" ? hairBoy : hairGirl;
+  hair(g, "back"); body(g, kind === "girl"); socks(g);
+  kind === "boy" ? shorts(g) : skirt(g);
+  sneakers(g); tee(g); hair(g, "front"); hairShadow(g);
+  return toSvg(g);
+}
+for (const id of ["big", "small"]) for (const k of ["boy", "girl"]) { const d = document.createElement("div"); d.innerHTML = draw(k); document.getElementById(id).append(d); }
+</script>
+</body>
+</html>
