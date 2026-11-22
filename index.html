@@ -594,6 +594,7 @@
   .nt-foot { display: flex; gap: 6px; align-items: center; padding-top: 8px; }
   .nt-foot select { flex: 1; min-width: 0; }
   .nt-foot button, .nt-foot select { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); background: #fff; color: var(--ink); border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  .nt-foot button:disabled { opacity: .35; cursor: default; }
   .nt-foot .main { background: var(--accent); border-color: var(--accent); color: #fff; }
   /* 성적 알리미 */
   [data-card="scores"] { --accent: #5f3dc4; --card: #f1edff; --line: #d6ccf7; }
@@ -645,6 +646,10 @@
   .lk-sub-h { padding: 2px 6px 6px; color: var(--muted); font-size: 13px; }
   .lk-sub-h + :empty, .lk-sub .lk-empty { padding: 6px; color: var(--muted); font-size: 13px; }
   .lk-list.drop { box-shadow: inset 0 0 0 2px var(--accent); border-radius: 8px; }
+  .lk-ctx { position: fixed; z-index: 6; display: flex; flex-direction: column; min-width: 130px; padding: 4px; background: #fff; border-radius: 10px; box-shadow: 0 6px 22px rgba(60, 40, 20, .22); }
+  .lk-menu .lk-ctx button { border: 0; text-align: left; padding: 6px 10px; border-radius: 6px; }
+  .lk-menu .lk-ctx button:hover { background: #e3f6f8; }
+  .lk-menu .lk-ctx .del { color: #e2643f; }
   .lk-ghost { position: fixed; z-index: 5; pointer-events: none; transform: translate(-50%, -120%); padding: 3px 12px; border-radius: 999px; background: var(--accent); color: #fff; white-space: nowrap; }
   .se-ask label.se-ask-f { display: block; font-size: 13px; color: var(--muted); }
   .se-ask select.se-ask-in { padding: 5px 8px; }
@@ -836,7 +841,7 @@
   <section class="card" data-card="notice">
     <p class="label">📋 알림장</p>
     <div class="chalk"><p class="chalk-date" id="nt-date"></p><ol class="note rule-list chalk-list" data-key="notice" contenteditable="true" spellcheck="false" role="textbox" aria-multiline="true" aria-label="알림장"></ol></div>
-    <div class="nt-foot"><select id="nt-hist" onchange="ntPick(this)" aria-label="저장한 알림장"></select><button onclick="ntCopy()" id="nt-copy">📋 복사</button><button class="main" onclick="ntSave()" id="nt-save">💾 저장</button></div>
+    <div class="nt-foot"><select id="nt-hist" onchange="ntPick(this)" aria-label="저장한 알림장"></select><button onclick="ntCopy()" id="nt-copy">📋 복사</button><button onclick="ntDel()" id="nt-del" title="저장한 이 날짜 알림장 지우기" aria-label="저장한 이 날짜 알림장 지우기">🗑️</button><button class="main" onclick="ntSave()" id="nt-save">💾 저장</button></div>
   </section>
   <section class="card tool-card" data-card="scores" id="sc-card">
     <p class="label">📊 성적 알리미</p>
@@ -912,7 +917,8 @@
     </div>
   </div>
   <div class="st-foot">
-    <p></p>
+    <p class="sum" id="st-note"></p>
+    <button data-ic="reset" id="st-reset" onclick="seTeachReset()" title="고정한 학생만 남기고 미리 섞은 자리를 비워요">초기화</button>
     <button class="main" data-ic="shuffle" onclick="seRandom(true)">랜덤 섞기</button>
   </div>
 </div>
@@ -1002,11 +1008,11 @@
       <li><b>보드 카드</b> 제목을 끌어 옮기고, 오른쪽 아래 모서리로 크기를 바꿔요. 옮긴 자리와 크기는 앱을 껐다 켜도 그대로예요. ✕를 누르면 보드에서 닫히고 아래쪽 바로 들어가요. 닫아도 적어 둔 내용은 남아요. 제목 줄 맨 오른쪽 세 버튼 중 첫 번째(네모에서 화살표가 나가는 모양)를 누르면 카드가 따로 창으로 떨어져요. 그 창을 다른 모니터(TV)로 끌어 놓고 최대화하면 학생 화면에는 그 카드만 크게 보여요. 그 창을 닫거나 같은 버튼을 다시 누르면 보드로 돌아와요. 모니터가 두 대일 때 선생님 모드는 학생 화면에 뜨지 않아요. 자리배치를 떼어 선생님 모니터로 옮겼으면 그 창 안에 뜨고, 자리배치가 보드에 있으면 따로 창이 열려 메인 모니터로 가요. 처음 한 번 브라우저가 '창 관리' 허락을 물으면 허용을 눌러 주세요. 허용하지 않으면 '우리반 보드'라고만 쓰인 평범한 창이 열려요. 그 창을 선생님 모니터로 끌어 옮긴 뒤 두 번 누르면 선생님 모드가 열려요. 떼어 낸 카드도 아래쪽 바 버튼을 누르면 보드로 돌아와 내려가요.</li>
       <li><b>아래쪽 바</b> 모든 카드 버튼이 늘 있어요. 누르면 보드에 띄우고, 한 번 더 누르면 내려요. 보드에 떠 있는 카드는 아이콘에 테두리와 아래 점이 생겨요. 메모·사진은 버튼 오른쪽 위 +를 누르면 한 장 더 생겨요. 버튼을 옆으로 끌어 순서를 바꿀 수 있어요. 자주 안 쓰는 버튼은 끌어서 오른쪽 끝 '서랍'에 놓거나, '서랍'을 눌러 아래 목록에서 골라 넣어 두면 서랍 안에서 꺼내 써요.</li>
       <li><b>학급 온도계</b> +1°, +5°로 반 온도를 올리고 −1°로 내려요. 연필 버튼에서 5°마다 보상을 쓸 수 있어요(비워 둬도 돼요). 카드에는 다음 보상(예: 10°가 되면 ○○)이 나오고, 올릴 땐 올라가는 소리, 내릴 땐 내려가는 소리가 나요. 보상 온도를 넘거나 100°가 되면 소리와 함께 축하해요. ↻는 0°로 되돌려요.</li>
-      <li><b>즐겨찾기</b> 아래쪽 바의 🌐 즐겨찾기를 누르면 작은 메뉴가 떠요(바깥을 누르면 닫혀요). '+ 링크'로 자주 가는 주소를 넣고, 누르면 인터넷 창으로 열려요. '+ 폴더'로 폴더를 만들고, 폴더를 누르면 옆에 펼쳐져요. 링크를 끌어 폴더 위에 놓으면 폴더에 들어가고, 펼친 폴더의 링크를 왼쪽 목록에 놓으면 밖으로 나와요. ✎를 켜면 이름·주소·폴더를 바꾸거나 지울 수 있어요.</li>
-      <li><b>알림장</b> 칠판처럼 생긴 카드에 알아보기 쉬운 글씨로 알림장을 써요. Enter를 치면 다음 번호, 날짜는 오늘이에요. '📋 복사'를 누르면 날짜와 번호가 붙은 채로 복사돼서 다른 곳에 그대로 붙여 넣을 수 있어요(직접 골라 Ctrl+C 해도 번호가 붙어요). '💾 저장'은 날짜별로 저장하고, '지난 알림장 보기'에서 그날 것을 다시 불러와요. '＋ 오늘 새로 쓰기'로 빈 알림장을 시작해요. Tt에서 글씨 크기와 분필 색을 바꾸고 ⛶로 크게 띄워요.</li>
+      <li><b>즐겨찾기</b> 아래쪽 바의 🌐 즐겨찾기를 누르면 작은 메뉴가 떠요(바깥을 누르면 닫혀요). '+ 링크'로 자주 가는 주소를 넣고, 누르면 인터넷 창으로 열려요. '+ 폴더'로 폴더를 만들고, 폴더를 누르면 옆에 펼쳐져요. 링크를 끌어 폴더 위에 놓으면 폴더에 들어가고, 펼친 폴더의 링크를 왼쪽 목록에 놓으면 밖으로 나와요. 줄을 오른쪽 버튼으로 누르면 이름 바꾸기·삭제가 나와요. ✎를 켜면 이름·주소·폴더를 바꾸거나 지울 수 있어요.</li>
+      <li><b>알림장</b> 칠판처럼 생긴 카드에 알아보기 쉬운 글씨로 알림장을 써요. Enter를 치면 다음 번호, 날짜는 오늘이에요. '📋 복사'를 누르면 날짜와 번호가 붙은 채로 복사돼서 다른 곳에 그대로 붙여 넣을 수 있어요(직접 골라 Ctrl+C 해도 번호가 붙어요). '💾 저장'은 날짜별로 저장하고, '지난 알림장 보기'에서 그날 것을 다시 불러와요. '＋ 오늘 새로 쓰기'로 빈 알림장을 시작해요. 🗑️는 지금 보고 있는 날짜로 저장한 알림장을 지워요(칠판 글은 남아요). 글이 많아지면 카드가 아래로 커져요. Tt에서 글씨 크기와 분필 색을 바꾸고 ⛶로 크게 띄워요.</li>
       <li><b>성적 알리미</b> '✎ 점수 넣기'에서 평가 이름·만점과 학생마다 점수를 넣어요(엑셀에서 점수 한 줄을 복사해 첫 칸에 붙여넣으면 아래로 채워져요). 카드에는 이름만 보이고, 이름을 누르면 그 학생 점수만 크게 나와요. 한 번 본 학생은 흐리게 바뀌어요. 점수도 다른 내용처럼 이 컴퓨터(로그인하면 서버)에 저장돼요.</li>
       <li><b>QR 만들기</b> 칸에 주소나 글을 넣으면 바로 QR이 생겨요. 아래쪽 바 버튼의 +로 QR 카드를 여러 장 띄울 수 있어요. 자주 쓰는 건 '☆ 저장'으로 이름을 붙여 보관함에 넣고, 오른쪽 아래 '보관함'에서 눌러 바로 띄워요. ⛶ 전체 화면으로 크게 띄워 학생들이 찍게 하세요. 인터넷 없이 이 컴퓨터에서 만들어요.</li>
-      <li><b>자리배치</b> 처음 한 번 설정 버튼에서 모양(분단: 혼자·짝꿍과 앉기와 분단 수 / 모둠: 모둠 인원 / 직접 그리기: 명단 인원만큼 자리를 고르고, 필요하면 '방향 돌리기'로 ㄷ자처럼 옆을 보게)과 짝꿍 조건(상관없이·이성끼리·동성끼리·성별 고르게, 이전 짝꿍과 같이 안 앉기)을 정하면 계속 유지돼요. 성별은 설정 → 명단에서 이름과 함께 정해요. 평소에는 '자동 자리배치'(한 자리씩 나타나요), 그 아래 '오늘 날짜로 저장', 출력만 누르면 돼요. 출력은 학생 시점(칠판이 위)·교사 시점(칠판이 아래)·둘 다 중에서 골라 A4 가로로 크게 나와요. 이름을 끌어 다른 자리에 놓거나, 이름을 누른 뒤 다른 자리를 누르면 서로 자리를 바꾸고, 칠판 옆 '상하전환'으로 위아래를 바꿔요. 손으로 자리를 바꾸면 오른쪽 아래에 되돌리기·다시 하기와 '원래대로'(마지막으로 자동 배치한 자리로)가 나와요. 대형을 만들면 많이 쓰는 공개 모둠으로 묶여요(혼자 앉기는 한 줄, 짝꿍은 4~6명). 미리보기에서 책상이나 모둠을 끌어 옮기고 '간격 맞추기'로 줄과 간격을 똑같이 맞춰요. 모둠을 바꾸려면 책상을 고르고(Shift+누르기, 빈 곳을 끌어 네모로) '모둠으로 묶기'를 눌러요. 혼자 앉기에서는 짝꿍 대신 모둠 성별 조건(상관없이·성별 고르게)을 골라요. 모둠 상자 아래 이름(1모둠…)을 누르면 이름을 바꿀 수 있어요. 자리배치도 이름 옆 작은 별은 선생님 모드예요(고정, 분리, 기록). 분리에서 같이 앉으면 안 되는 학생을 비밀 그룹으로 묶고 1~4순위를 정해요(1순위를 가장 먼저 떨어뜨려요). 같은 그룹은 짝꿍·앞뒤·좌우·같은 모둠으로 앉지 않아요. 다 지킬 수 없으면 바로 앉히지 않고 먼저 물어봐요.</li>
+      <li><b>자리배치</b> 처음 한 번 설정 버튼에서 모양(분단: 혼자·짝꿍과 앉기와 분단 수 / 모둠: 모둠 인원 / 직접 그리기: 명단 인원만큼 자리를 고르고, 필요하면 '방향 돌리기'로 ㄷ자처럼 옆을 보게)과 짝꿍 조건(상관없이·이성끼리·동성끼리·성별 고르게, 이전 짝꿍과 같이 안 앉기)을 정하면 계속 유지돼요. 성별은 설정 → 명단에서 이름과 함께 정해요. 평소에는 '자동 자리배치'(한 자리씩 나타나요), 그 아래 '오늘 날짜로 저장', 출력만 누르면 돼요. 출력은 학생 시점(칠판이 위)·교사 시점(칠판이 아래)·둘 다 중에서 골라 A4 가로로 크게 나와요. 이름을 끌어 다른 자리에 놓거나, 이름을 누른 뒤 다른 자리를 누르면 서로 자리를 바꾸고, 칠판 옆 '상하전환'으로 위아래를 바꿔요. 손으로 자리를 바꾸면 오른쪽 아래에 되돌리기·다시 하기와 '원래대로'(마지막으로 자동 배치한 자리로)가 나와요. 대형을 만들면 많이 쓰는 공개 모둠으로 묶여요(혼자 앉기는 한 줄, 짝꿍은 4~6명). 미리보기에서 책상이나 모둠을 끌어 옮기고 '간격 맞추기'로 줄과 간격을 똑같이 맞춰요. 모둠을 바꾸려면 책상을 고르고(Shift+누르기, 빈 곳을 끌어 네모로) '모둠으로 묶기'를 눌러요. 혼자 앉기에서는 짝꿍 대신 모둠 성별 조건(상관없이·성별 고르게)을 골라요. 모둠 상자 아래 이름(1모둠…)을 누르면 이름을 바꿀 수 있어요. 자리배치도 이름 옆 작은 별은 선생님 모드예요(고정, 분리, 기록). 선생님 모드에서 바꾼 것은 학생 화면에 바로 나오지 않아요. 선생님 모드의 '랜덤 섞기'는 다음 자리를 미리 섞어 두는 것이고, 보드에서 '자동 자리배치'를 누를 때 그 자리로 앉아요. 미리 섞지 않았으면 고정·분리를 지키며 나머지 학생만 새로 섞어요. '초기화'는 미리 섞은 자리를 비워요(고정·분리는 그대로). 선생님 모드에서는 소리가 나지 않아요. 분리에서 같이 앉으면 안 되는 학생을 비밀 그룹으로 묶고 1~4순위를 정해요(1순위를 가장 먼저 떨어뜨려요). 같은 그룹은 짝꿍·앞뒤·좌우·같은 모둠으로 앉지 않아요. 다 지킬 수 없으면 바로 앉히지 않고 먼저 물어봐요.</li>
       <li><b>로그인</b> 설정 → 로그인에서 구글로 로그인하면 보드가 서버에 저장되고, 다른 컴퓨터에서 같은 계정으로 로그인하면 같은 보드가 나와요.</li>
       <li><b>준비물</b> 시간표 카드 오른쪽 칸에 쓰면 저장돼요.</li>
       <li><b>명단 사진</b> 설정 → 명단에서 명렬표 사진(PNG·JPEG)도 가져올 수 있어요. 글자 인식이라 틀린 이름이 있을 수 있으니 가져온 뒤 표에서 꼭 확인해 주세요. 처음 한 번은 글자 인식 자료를 받느라 조금 걸려요.</li>
@@ -1434,7 +1440,7 @@ async function resetRoster() {
     ["roster", "gender", "pick"].forEach(k => localStorage.removeItem(k));
     const st = JSON.parse(localStorage.getItem("seat")), sec = JSON.parse(localStorage.getItem("seat-secret"));
     if (st?.cur) { st.cur.seats = {}; localStorage.setItem("seat", JSON.stringify(st)); }
-    if (sec) { Object.assign(sec, { fixed: {}, histFixed: {}, groups: [], issue: "" }); localStorage.setItem("seat-secret", JSON.stringify(sec)); }
+    if (sec) { Object.assign(sec, { fixed: {}, histFixed: {}, groups: [], issue: "" }); delete sec.draft; localStorage.setItem("seat-secret", JSON.stringify(sec)); }
   } catch (e) {}
   location.reload();
 }
@@ -1468,15 +1474,17 @@ const CARDS = [["topic", "✏️ 오늘의 주제", "board", "2", [340, 200]], [
   ["thermo", "🌡️ 학급 온도계", "popup", "1", [240, 260]], ["qr", "🔳 QR 만들기", "popup", "1", [240, 280]],
   ["notice", "📋 알림장", "popup", "2", [340, 320]],
   ["scores", "📊 성적 알리미", "popup", "2", [320, 280]]];
-const minOf = k => { const m = CARDS.find(c => c[0] === k)[4]; return k === "rules" ? [m[0], Math.max(m[1], rulesNeed())] : m; };
-function rulesNeed() { // 규칙이 스크롤 없이 다 보이는 카드 높이(px)
-  const c = card("rules"), n = c.querySelector(".note");
+const FITS = ["rules", "notice"]; // 글이 넘치면 카드가 아래로 커지는 카드
+const minOf = k => { const m = CARDS.find(c => c[0] === k)[4]; return FITS.includes(k) ? [m[0], Math.max(m[1], noteNeed(k))] : m; };
+function noteNeed(k) { // 글이 스크롤 없이 다 보이는 카드 높이(px)
+  const c = card(k), n = c.querySelector(".note");
   if (c.hidden || !c.offsetHeight) return 0;
-  return Math.ceil(c.offsetHeight - n.clientHeight + [...n.children].reduce((t, li) => t + li.offsetHeight, 0));
+  const a = n.firstElementChild, z = n.lastElementChild, H = a ? z.getBoundingClientRect().bottom - a.getBoundingClientRect().top : 0; // 줄마다 소수점까지 (반올림하면 조금씩 모자람)
+  return Math.ceil(c.offsetHeight - n.clientHeight + H);
 }
-function rulesFit() {
-  const l = layout.rules, c = card("rules"), B = board.clientHeight, need = rulesNeed();
-  if (!l?.rect || l.mode !== "board" || !board.classList.contains("free") || !need || !B) return;
+function noteFit(k) {
+  const l = layout[k], c = card(k), B = board.clientHeight, need = noteNeed(k);
+  if (!l?.rect || l.mode !== "board" || pops[k] || !board.classList.contains("free") || !need || !B) return;
   c.style.minHeight = need + "px";
   if (l.rect.h * B < need - 1) { l.rect.h = Math.min(1, need / B); l.rect.y = Math.min(l.rect.y, 1 - l.rect.h); c.style.top = l.rect.y * 100 + "%"; c.style.height = l.rect.h * 100 + "%"; saveLayout(); }
 }
@@ -1755,8 +1763,8 @@ function initNote(el) {
     else if (old) el.textContent = old;
   } catch (e) {}
   fill();
-  el.addEventListener("input", () => { fill(); try { localStorage.setItem(key, el.innerHTML); } catch (e) {} if (rules) rulesFit(); });
-  if (rules) new ResizeObserver(() => rulesFit()).observe(el.closest(".card"));
+  el.addEventListener("input", () => { fill(); try { localStorage.setItem(key, el.innerHTML); } catch (e) {} if (FITS.includes(k)) noteFit(k); });
+  if (FITS.includes(k)) new ResizeObserver(() => noteFit(k)).observe(el.closest(".card"));
   el.addEventListener("paste", e => { e.preventDefault(); document.execCommand("insertText", false, e.clipboardData.getData("text/plain")); }); // 붙여넣기는 글자만
   el.addEventListener("drop", e => e.preventDefault());
 }
@@ -1807,7 +1815,7 @@ function initNoteTools(ta) {
   try { st = JSON.parse(localStorage.getItem(key)) || {}; } catch (e) {}
   const apply = () => {
     ta.style.fontSize = st.fs ? st.fs + "px" : ""; ta.style.color = st.color || "";
-    if (ta.dataset.key === "rules") rulesFit(); // 글씨가 커지면 카드도
+    if (FITS.includes(ta.dataset.key)) noteFit(ta.dataset.key); // 글씨가 커지면 카드도
     pop.querySelectorAll(".dot").forEach(d => d.classList.toggle("on", d.dataset.c === (st.color || COLORS[0])));
     try { localStorage.setItem(key, JSON.stringify(st)); } catch (e) {}
   };
@@ -3029,6 +3037,7 @@ function ntDraw() {
   $s("nt-date").textContent = ntLabel(ntDay) + " 알림장";
   $s("nt-hist").replaceChildren(h("option", { value: "" }, "지난 알림장 보기"), h("option", { value: "new" }, "＋ 오늘 새로 쓰기"),
     ...Object.keys(ntHist).sort().reverse().map(d => h("option", { value: d }, ntLabel(d) + (d === ntDay ? " (지금)" : ""))));
+  $s("nt-del").disabled = !ntHist[ntDay];
 }
 const ntLines = lis => lis.map(li => li.textContent.trim()).filter(Boolean);
 const ntText = lis => ntLines(lis).map((t, i) => `${i + 1}. ${t}`).join("\n");
@@ -3052,6 +3061,10 @@ ntEl.addEventListener("copy", e => {
 function ntSave() {
   ntHist[ntDay] = ntEl.innerHTML; jset("notice-hist", ntHist); ntDraw();
   const b = $s("nt-save"); b.textContent = "저장했어요"; setTimeout(() => b.textContent = "💾 저장", 1500);
+}
+async function ntDel() { // 저장한 것만 지움. 칠판에 쓴 글은 그대로
+  if (!ntHist[ntDay] || !await seConfirm(card("notice"), `저장한 ${ntLabel(ntDay)} 알림장을 지울까요?\n칠판에 쓴 글은 그대로 있어요.`, "지우기")) return;
+  delete ntHist[ntDay]; jset("notice-hist", ntHist); ntDraw();
 }
 async function ntPick(sel) {
   const v = sel.value; sel.value = "";
@@ -3141,6 +3154,7 @@ function lkRow(x) {
     lkEditing ? [h("button", { class: "lk-x", title: "고치기", "aria-label": "고치기", onpointerdown: e => e.stopPropagation(), onclick: stop(lkEdit) }, "✎"),
       h("button", { class: "lk-x del", title: "지우기", "aria-label": "지우기", onpointerdown: e => e.stopPropagation(), onclick: stop(lkDelete) }, "✕")] : folder ? h("span", { class: "lk-more" }, "›") : null);
   row.onpointerdown = e => lkDown(e, x, row);
+  row.oncontextmenu = e => { e.preventDefault(); lkCtx(e, x); };
   return row;
 }
 function lkDraw() {
@@ -3232,6 +3246,20 @@ async function lkDelete(x) {
   const kids = links.filter(y => y.in === x.id).length;
   if (!await seConfirm(lkMenu, x.type === "folder" ? `'${x.name}' 폴더를 지울까요?${kids ? `\n안에 있는 링크 ${kids}개도 함께 지워져요.` : ""}` : `'${x.name}'을 지울까요?`, "지우기")) return;
   links = links.filter(y => y !== x && y.in !== x.id); lkSave();
+}
+// 오른쪽 버튼 메뉴: 이름 바꾸기·삭제. 다른 곳을 누르면 닫힘
+function lkCtx(e, x) {
+  lkMenu.querySelector(".lk-ctx")?.remove();
+  const close = () => m.remove(), m = h("div", { class: "lk-ctx" },
+    h("button", { onclick: () => { close(); lkRename(x); } }, "✎ 이름 바꾸기"),
+    h("button", { class: "del", onclick: () => { close(); lkDelete(x); } }, "🗑️ 삭제"));
+  m.style.left = Math.min(e.clientX, innerWidth - 150) + "px"; m.style.top = Math.min(e.clientY, innerHeight - 80) + "px";
+  lkMenu.append(m);
+}
+lkMenu.addEventListener("pointerdown", e => { if (!e.target.closest(".lk-ctx")) lkMenu.querySelector(".lk-ctx")?.remove(); }, true);
+async function lkRename(x) {
+  const v = await seAskFields(lkMenu, x.type === "folder" ? "폴더 이름 바꾸기" : "이름 바꾸기", [{ label: "이름", value: x.name }], "바꾸기");
+  if (v?.[0]) { x.name = v[0].slice(0, 30); lkSave(); }
 }
 function lkToggleEdit() { lkEditing = !lkEditing; lkDraw(); }
 
@@ -3890,7 +3918,9 @@ try {
 //  seat (공개) = { cur: { name, form, desks: [{id, x, y, z?, g?}], seats: {책상 id: 학생} }, hist: [cur 모양 + id, date], flip, fx: "one"|"all" }
 //    form = { type: "col", w: 1|2, k(분단 수) } | { type: "group", size(모둠 인원), merge } | { type: "free", cells: ["행,열"…] }
 //    책상은 form으로 만듦. x, y는 책상 단위(가로 1, 세로 .7), z가 같으면 같은 모둠·짝, g는 화면에 묶어 그릴 분단·모둠 번호
-//  seat-secret (교사만) = { fixed: {책상 id: 학생}, histFixed: {기록 id: fixed}, groups: [{name, color, pri, m: [학생…]}], gmode, noPrev, issue }
+//  seat-secret (교사만) = { fixed: {책상 id: 학생}, histFixed: {기록 id: fixed}, groups: [{name, color, pri, m: [학생…]}], gmode, noPrev, issue, draft? }
+//    draft = 선생님 모드에서 '랜덤 섞기'로 미리 섞어 둔 자리 {책상 id: 학생}. 학생 화면(seats)은 그대로이고, 보드에서 '자동 자리배치'를 누를 때 이 자리로 앉힘
+//    고정(fixed)도 학생 화면과 따로: 다음 자동 자리배치부터 지켜짐
 //  gender = {학생: "M"|"F"}
 const DW = 1, DH = .7;
 const jget = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) || d; } catch (e) { return d; } };
@@ -3925,7 +3955,7 @@ function seUndoDraw() {
   u.hidden = !seUndo.length && !seRedo.length;
   a.disabled = !seUndo.length; b.disabled = !seRedo.length; c.disabled = !seBase || JSON.stringify(seBase) === JSON.stringify(sc().seats);
 }
-function seMoveHome(p, to, from) { seUndo.push(clone(sc().seats)); seRedo = []; seAssign(p, to, from, false); }
+function seMoveHome(p, to, from) { seUndo.push(clone(sc().seats)); seRedo = []; seAssign(p, to, from); }
 function seUndoDo(d) {
   const from = d < 0 ? seUndo : seRedo, to = d < 0 ? seRedo : seUndo;
   if (!from.length || seBusy) return;
@@ -3942,7 +3972,9 @@ function seRedraw() { document.querySelector(".seat-star").classList.toggle("set
 function seClean() {
   const ppl = new Set(people()), c = sc(), ids = new Set(c.desks.map(d => d.id));
   for (const k in c.seats) if (!ids.has(k) || !ppl.has(c.seats[k])) delete c.seats[k];
-  for (const k in seatSec.fixed) if (c.seats[k] !== seatSec.fixed[k]) delete seatSec.fixed[k];
+  for (const k in seatSec.fixed) if (!ids.has(k) || !ppl.has(seatSec.fixed[k])) delete seatSec.fixed[k];
+  const D = seatSec.draft;
+  if (D) for (const k in D) if (!ids.has(k) || !ppl.has(D[k])) delete D[k];
   seatSec.groups = seatSec.groups.map(g => ({ ...g, m: g.m.filter(x => ppl.has(x)) })).filter(g => g.m.length);
 }
 
@@ -4035,12 +4067,13 @@ function seTidy(D, cg, rg, rp = DH + .15, stack = true) { // stack: 세로 칸(�
 // 화면 배치: 칠판은 늘 책상들 한가운데 정면. 상하 반전이면 칠판이 아래로 가고 앞줄도 아래로 (좌우는 그대로)
 // 공개 화면(보드·출력): 자동 자리배치 전이라 고정한 학생만 앉아 있으면 아무도 안 보임 (학생들이 고정을 눈치채지 않게)
 const seHideFixed = () => { const S = sc().seats, ids = Object.keys(S); return ids.length > 0 && ids.every(id => seatSec.fixed[id] === S[id]); };
-function seLayout(flip, pub, mirror) { // mirror: 좌우도 뒤집기 (출력 '교사 시점' = 180도 돌린 모습)
+const seTeachSeats = () => seatSec.draft || seatSec.fixed; // 선생님 모드에 보이는 자리
+function seLayout(flip, pub, mirror, seats = sc().seats) { // mirror: 좌우도 뒤집기 (출력 '교사 시점' = 180도 돌린 모습). seats: 그릴 자리 (선생님 모드는 따로)
   const c = sc(), D = c.desks, hide = pub && seHideFixed(), off = flip ? 0 : 1.2, hasG = D.some(d => d.g !== undefined), pad = hasG ? .5 : 0;
   const x0 = Math.min(...D.map(d => d.x)), x1 = Math.max(...D.map(d => d.x + dWd(d))), y0 = Math.min(...D.map(d => d.y)), y1 = Math.max(...D.map(d => d.y + dHd(d)));
   const W = x1 - x0 + 1, Hd = y1 - y0 + .6 + 2 * pad, sx = .5 - x0, sy = .3 + pad - y0, bw = Math.min(Math.max((x1 - x0) * .55, 2.5), 7);
   // face: 그 자리 학생이 보는 쪽 (0 위, 90 오른쪽, 180 아래, 270 왼쪽). 상하 반전이면 위·아래만 바뀜
-  const desks = D.map(d => { const y = d.y + sy, w = dWd(d), hh = dHd(d), r = d.rot || 0; return { d, w, h: hh, x: mirror ? W - d.x - sx - w : d.x + sx, y: (flip ? Hd - y - hh : y) + off, face: flip && !(r % 180) ? (r + 180) % 360 : r, person: hide ? undefined : c.seats[d.id] }; });
+  const desks = D.map(d => { const y = d.y + sy, w = dWd(d), hh = dHd(d), r = d.rot || 0; return { d, w, h: hh, x: mirror ? W - d.x - sx - w : d.x + sx, y: (flip ? Hd - y - hh : y) + off, face: flip && !(r % 180) ? (r + 180) % 360 : r, person: hide ? undefined : seats[d.id] }; });
   const boxes = {};
   for (const t of desks) if (t.d.g !== undefined) { const b = boxes[t.d.g] ||= { g: t.d.g, x0: 1e9, y0: 1e9, x1: -1e9, y1: -1e9 }; b.x0 = Math.min(b.x0, t.x); b.y0 = Math.min(b.y0, t.y); b.x1 = Math.max(b.x1, t.x + t.w); b.y1 = Math.max(b.y1, t.y + t.h); }
   return { W, H: Hd + 1.2, board: { x: W / 2 - bw / 2, y: flip ? Hd + .45 : .25, w: bw, h: .55 }, desks,
@@ -4055,7 +4088,7 @@ function seDraw(box, mode) {
     h("li", {}, "'자동 자리배치'를 누르면 학생들이 한 자리씩 앉아요. 명단과 성별은 설정 → 명단에서 넣어요."),
     h("li", {}, "이름을 끌어 다른 자리에 놓으면 서로 자리를 바꿔요."),
     h("li", {}, "저장 버튼으로 오늘 날짜 기록을 남기고, 출력 버튼으로 인쇄해요."))) : "");
-  const L = seLayout(!!seat.flip, mode === "home"), cw = box.clientWidth, ch = box.clientHeight, u = Math.min(cw / L.W, ch / L.H), ox = (cw - L.W * u) / 2, oy = (ch - L.H * u) / 2;
+  const L = seLayout(!!seat.flip, mode === "home", false, mode === "teach" ? seTeachSeats() : sc().seats), cw = box.clientWidth, ch = box.clientHeight, u = Math.min(cw / L.W, ch / L.H), ox = (cw - L.W * u) / 2, oy = (ch - L.H * u) / 2;
   const at = (el, x, y, w, hh) => { Object.assign(el.style, { left: ox + x * u + "px", top: oy + y * u + "px", width: w * u + "px", height: hh * u + "px" }); return el; };
   const board = at(h("div", { class: "sb" }, h("span", {}, "칠판"), h("button", { class: "sb-flip", title: "칠판을 위·아래로 (상하 반전)", onclick: seFlip }, ic("flip"), "상하전환")), L.board.x, L.board.y, L.board.w, L.board.h);
   board.style.fontSize = Math.max(12, u * .3) + "px";
@@ -4106,18 +4139,30 @@ function seDrag(e, label, onDrop) {
   e.preventDefault();
 }
 // 학생 옮기기: 앉은 학생 위에 놓으면 서로 자리 교환. lock이면(선생님 모드) 놓은 자리에 미리 지정(🔒)
-function seAssign(person, to, from, lock) {
+function seAssign(person, to, from) {
   const S = sc().seats, other = S[to];
   if (other === person) return;
   for (const k in S) if (S[k] === person) delete S[k];
   if (other) { if (from) S[from] = other; }
   S[to] = person;
-  if (lock) { seatSec.fixed[to] = person; seUndo = []; seRedo = []; } // 선생님 모드에서 고정하면 손으로 바꾼 기록은 비움 (되돌리다 고정이 풀리지 않게)
+  seClean(); seatStore();
+}
+// 선생님 모드: 놓은 자리에 고정(🔒). 학생 화면 자리는 그대로. 미리 섞은 자리가 있으면 거기서도 옮김 (그 자리 학생은 원래 자리로)
+function seTeachPut(p, to) {
+  const F = seatSec.fixed, D = seatSec.draft;
+  for (const k in F) if (F[k] === p) delete F[k];
+  F[to] = p;
+  if (D && D[to] !== p) {
+    const from = Object.keys(D).find(k => D[k] === p), other = D[to];
+    if (from) delete D[from];
+    if (other && from) D[from] = other;
+    D[to] = p;
+  }
   seClean(); seatStore();
 }
 let seSwap = null; // 보드에서 눌러 고른 자리 id
 function seMapDown(e, mode) {
-  const el = e.target.closest(".sd"), id = el?.dataset.id, p = id && !(mode === "home" && seHideFixed()) && sc().seats[id];
+  const el = e.target.closest(".sd"), id = el?.dataset.id, p = id && (mode === "teach" ? seTeachSeats()[id] : !seHideFixed() && sc().seats[id]);
   if (!el || seBusy) return;
   const swapTo = () => { const a = seSwap; seSwap = null; if (a === id || !sc().seats[a]) return seRedraw(); seMoveHome(sc().seats[a], id, a); };
   if (!p) { if (mode === "home" && seSwap) swapTo(); return; } // 고른 학생을 빈자리로
@@ -4128,7 +4173,7 @@ function seMapDown(e, mode) {
       return;
     }
     const to = t.closest(".sd")?.dataset.id;
-    if (to && to !== id) mode === "teach" ? seAssign(p, to, id, true) : seMoveHome(p, to, id);
+    if (to && to !== id) mode === "teach" ? seTeachPut(p, to) : seMoveHome(p, to, id);
   });
 }
 $s("seat-mini").addEventListener("pointerdown", e => seMapDown(e, "home"));
@@ -4303,14 +4348,19 @@ async function seRandom(teach) {
   const host = teach ? $s("seat-ed") : card("seat");
   if (!teach && Object.keys(sc().seats).length && !await seConfirm(host, "지금 자리를 새로 섞을까요?", "섞기")) return;
   seSwap = null;
-  const r = seAuto();
+  // 보드: 선생님 모드에서 미리 섞어 둔 자리가 있으면 그 자리로 앉힘 (한 번 쓰면 비움). 없으면 고정·분리를 지키며 새로 섞음
+  // 선생님 모드: 미리 섞어 두기만 함. 학생 화면은 그대로
+  const draft = !teach && seatSec.draft;
+  const r = draft ? { best: draft } : seAuto();
   if (!r.best) return seMsg(r.text, true);
-  seatSec.issue = r.sepBad ? r.text : ""; jset("seat-secret", seatSec);
+  if (!draft) { seatSec.issue = r.sepBad ? r.text : ""; jset("seat-secret", seatSec); }
   if (r.sepBad && !await seConfirm(host, teach ? r.text + "\n\n그래도 이 자리로 앉힐까요?" : "이번에는 자리를 정하지 못했어요.", "그래도 앉히기"))
     return;
-  sc().seats = r.best; seNewBase(); seClean(); seatStore();
+  if (teach) seatSec.draft = r.best;
+  else { sc().seats = r.best; delete seatSec.draft; seNewBase(); }
+  seClean(); seatStore();
   seMsg(teach && r.bad ? r.text : "", true); // 선생님 모드에서만 못 지킨 조건을 보여 줌
-  const els = [...(teach ? $s("st-map") : $s("seat-mini")).querySelectorAll(".sd[data-id]")], S = sc().seats;
+  const els = [...(teach ? $s("st-map") : $s("seat-mini")).querySelectorAll(".sd[data-id]")], S = r.best;
   const fill = el => { const p = S[el.dataset.id]; el.replaceChildren(...(p ? [h("i", {}, seNum(p)), h("b", {}, seName(p))] : [])); el.classList.toggle("empty", !p); };
   if (!els.length) return;
   seBusy = true;
@@ -4319,8 +4369,8 @@ async function seRandom(teach) {
   els.forEach(el => { el.replaceChildren(); el.classList.add("empty"); });
   let i = 0;
   const next = () => {
-    if (i >= order.length) { seBusy = false; seRedraw(); melody([523, 659, 784, 1047], .09, "triangle", .25); return; }
-    const el = order[i++]; fill(el); el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); tone(700 + i * 15, 0, .05, "triangle", .12);
+    if (i >= order.length) { seBusy = false; seRedraw(); if (!teach) melody([523, 659, 784, 1047], .09, "triangle", .25); return; }
+    const el = order[i++]; fill(el); el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); if (!teach) tone(700 + i * 15, 0, .05, "triangle", .12); // 선생님 모드는 소리 없이
     setTimeout(next, Math.max(90, 2400 / order.length));
   };
   next();
@@ -4503,7 +4553,7 @@ async function seFormApply() {
   const changed = !keep || JSON.stringify(D) !== JSON.stringify(c.desks);
   c.name = sf.name; seatSec.gmode = sf.gmode; seatSec.noPrev = !sfNoPair() && sf.noPrev; c.form = form; c.gv = 1;
   if (changed) c.desks = D;
-  if (!keep) { c.seats = {}; seatSec.fixed = {}; delete c.gnames; seBase = null; seUndo = []; seRedo = []; }
+  if (!keep) { c.seats = {}; seatSec.fixed = {}; delete seatSec.draft; delete c.gnames; seBase = null; seUndo = []; seRedo = []; }
   fm.hidePopover(); seatStore();
   seMsg("");
 }
@@ -4515,7 +4565,7 @@ document.addEventListener("fullscreenchange", () => {
 
 // ── 선생님 모드: 자리 미리 지정(🔒), 두 학생 떨어뜨리기, 분리 그룹, 기록. 학생 화면·출력에는 안 나옴
 let stTab = "fix", sePick = new Set();
-async function seTeachAsk() { if (await seConfirm(card("seat"), "경고! 모드를 바꿀 준비되셨나요?", "네, 바꾸기")) seTeachOpen(); }
+async function seTeachAsk() { if (await seConfirm(card("seat"), "화면을 바꿀까요?", "바꾸기")) seTeachOpen(); }
 // 모니터가 여러 대이고 자리배치가 보드에 있으면(= 학생이 보는 화면), 선생님 모드는 따로 창을 열어 메인 모니터에 띄움
 // 자리배치를 다른 창으로 뗐으면 그 창 안에 띄움
 let teachWin = null;
@@ -4547,6 +4597,11 @@ async function teachPlace(w) {
     return x >= s.left && x < s.left + s.width && y >= s.top && y < s.top + s.height;
   } catch (e) { return false; }
 }
+async function seTeachReset() {
+  if (seBusy || !seatSec.draft) return;
+  if (!await seConfirm($s("seat-ed"), "고정한 학생만 남기고 미리 섞은 자리를 비울까요?\n고정과 분리는 그대로예요. 학생 화면도 그대로예요.", "초기화")) return;
+  delete seatSec.draft; seMsg(""); seatStore();
+}
 function seTeachClose() {
   const w = teachWin, ed = w?.document.getElementById("seat-ed") || $s("seat-ed");
   ed.hidden = true;
@@ -4555,15 +4610,20 @@ function seTeachClose() {
 }
 document.querySelectorAll("#st-tabs [data-t]").forEach(b => b.onclick = () => { stTab = b.dataset.t; seTeachSide(); });
 function seStudentChip(p) {
-  const seated = Object.values(sc().seats).includes(p), fixedP = Object.values(seatSec.fixed).includes(p);
+  const seated = Object.values(seTeachSeats()).includes(p), fixedP = Object.values(seatSec.fixed).includes(p);
   const chip = h("span", { class: `se-chip${seated ? " seated" : ""}`, title: "끌어서 자리에 놓기" }, fixedP ? ic("lock") : null, seName(p));
   chip.onpointerdown = e => seDrag(e, seName(p), t => {
     const desk = t?.closest(".sd");
-    if (desk) seAssign(p, desk.dataset.id, Object.keys(sc().seats).find(k => sc().seats[k] === p), true);
+    if (desk) seTeachPut(p, desk.dataset.id);
   });
   return chip;
 }
+function seTeachNote() {
+  $s("st-note").textContent = seatSec.draft ? "미리 섞어 둔 자리예요. 보드에서 '자동 자리배치'를 누르면 이 자리로 앉아요." : "고정한 학생만 보여요. '랜덤 섞기'로 다음 자리를 미리 섞어 둘 수 있어요. 학생 화면은 바뀌지 않아요.";
+  $s("st-reset").disabled = !seatSec.draft;
+}
 function seTeachSide() {
+  seTeachNote();
   if (stTab === "sep") { document.querySelectorAll("#st-tabs [data-t]").forEach(b => b.classList.toggle("on", b.dataset.t === stTab)); return seSepDraw(); }
   document.querySelectorAll("#st-tabs [data-t]").forEach(b => b.classList.toggle("on", b.dataset.t === stTab));
   const pane = $s("st-pane"), ppl = people(), re = () => { seatStore(); };
