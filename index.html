@@ -674,14 +674,14 @@
   .tool-card .rw-foot .rw-minus { border-color: #ffc078; color: #d9480f; }
   .rw-grid { flex: 1; min-height: 0; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); grid-auto-rows: max-content; gap: 8px; padding: 2px; user-select: none; }
   .rw-grid:empty::before { content: "설정 → 명단에 학생을 넣으면 학생 카드가 생겨요."; grid-column: 1 / -1; margin: auto; padding: 20px 0; color: var(--muted); font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; }
-  .rw-tile { position: relative; height: 112px; background: #fff; border-radius: 14px; border: 2px solid transparent; box-shadow: 0 1px 3px rgba(40, 60, 100, .1); padding: 8px 10px; cursor: pointer; font-family: "Wanted Sans", "Malgun Gothic", sans-serif; overflow: hidden; }
+  .rw-tile { position: relative; height: 120px; background: #fff; border-radius: 14px; border: 2px solid transparent; box-shadow: 0 1px 3px rgba(40, 60, 100, .1); padding: 8px 10px; cursor: pointer; font-family: "Wanted Sans", "Malgun Gothic", sans-serif; overflow: hidden; }
   .rw-tile.sel { border-color: var(--accent); background: #f3f7ff; }
   .rw-tile.sel::after { content: "✓"; position: absolute; left: 8px; bottom: 8px; width: 20px; height: 20px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 13px; display: grid; place-items: center; }
   .rw-tile .n { font-size: 15px; color: var(--muted); line-height: 1; }
   .rw-tile .nm { display: block; font-size: 19px; color: var(--ink); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 62%; }
   .rw-pt { position: absolute; left: 8px; bottom: 34px; display: flex; align-items: center; gap: 3px; padding: 1px 9px 1px 6px; border-radius: 999px; background: var(--accent); color: #fff; font-size: 16px; font-weight: 700; }
   .rw-tile.sel .rw-pt { bottom: 34px; }
-  .rw-av { position: absolute; right: 6px; bottom: 4px; width: 58px; height: 58px; image-rendering: pixelated; }
+  .rw-av { position: absolute; right: 6px; bottom: 5px; width: 54px; height: 72px; border-radius: 8px; overflow: hidden; } .rw-av svg { width: 100%; height: 100%; display: block; }
   .rw-av:hover { transform: scale(1.06); }
   .rw-pm { position: absolute; top: 6px; right: 6px; display: flex; gap: 3px; }
   .tool-card .rw-pm button { width: 26px; height: 26px; padding: 0; border-radius: 50%; font-size: 16px; line-height: 1; display: grid; place-items: center; }
@@ -702,16 +702,19 @@
   .rw-rows .h { color: var(--muted); } .rw-h { margin: 12px 0 6px; font-size: 13px; color: var(--muted); }
   .rw-shop { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 6px; }
   .rw-item { background: #fff; border: 1.5px solid var(--line); border-radius: 10px; padding: 6px; text-align: center; font-size: 13px; }
-  .rw-item svg { width: 48px; height: 48px; image-rendering: pixelated; display: block; margin: 0 auto 2px; }
+  .rw-item svg { width: 54px; height: 72px; border-radius: 6px; image-rendering: pixelated; display: block; margin: 0 auto 2px; }
   .rw-item small { display: block; color: var(--muted); }
   .tool-card .rw-item button { margin-top: 4px; font-size: 12px; padding: 2px 10px; border-radius: 999px; }
   .tool-card .rw-item button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .rw-me { display: flex; gap: 14px; align-items: center; } .rw-me svg { width: 112px; height: 112px; image-rendering: pixelated; background: var(--card); border-radius: 14px; }
+  .rw-me { display: flex; gap: 14px; align-items: center; } .rw-me svg { flex: none; width: 96px; height: 128px; background: var(--card); border-radius: 12px; }
+  .rw-me .rw-pick { margin-top: 8px; } .rw-pick > span { font-size: 12px; color: var(--muted); width: 38px; }
+  .rw-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin: 12px 0 8px; }
+  .tool-card .rw-tabs button { font-size: 14px; padding: 4px 12px; border-radius: 999px; } .tool-card .rw-tabs button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .rw-item.worn { border-color: var(--accent); }
   .rw-me b { font-size: 22px; font-weight: normal; } .rw-me .rw-pt { position: static; display: inline-flex; margin-top: 6px; }
   .rw-pick { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
   .tool-card .rw-pick button { padding: 2px; border-radius: 10px; } .tool-card .rw-pick button.on { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
-  .rw-pick svg { width: 40px; height: 40px; display: block; image-rendering: pixelated; }
-  .tool-card .rw-pick .sw { width: 26px; height: 26px; border-radius: 50%; }
+  .tool-card .rw-pick .sw { width: 22px; height: 22px; padding: 0; border-radius: 50%; }
   .rw-send { display: grid; grid-template-columns: auto 1fr; gap: 8px 10px; align-items: center; font-size: 14px; }
   .rw-send select, .rw-send input { font: 15px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); border-radius: 8px; padding: 4px 8px; }
   /* 1인 1역 */
@@ -3399,13 +3402,91 @@ function ckDraw() {
 document.querySelectorAll("#ck-card [data-ck]").forEach(b => b.onclick = () => { ckMode = b.dataset.ck; try { localStorage.setItem("clock-mode", ckMode); } catch (e) {} ckDraw(); });
 setInterval(ckDraw, 1000); ckDraw();
 
-const AV = {"bases": {"cat": ["................", ".OO..........OO.", ".OPO........OPO.", ".OPBO......OBPO.", ".OBBOOOOOOOOBBO.", "OBBBBBBBBBBBBBBO", "OBBBBBBBBBBBBBBO", "OBBEEBBBBBBEEBBO", "OBBEWBBBBBBWEBBO", "OBPPBBBBBBBBPPBO", "OBBBBBBNNBBBBBBO", "OBBBBBLLLLBBBBBO", ".OBBBBBLLBBBBBO.", "..OBBBBBBBBBBO..", "...OOOOOOOOOO...", "................"], "bear": ["................", ".OOO........OOO.", "OBBBO......OBBBO", "OBLBOOOOOOOOBLBO", ".OBBBBBBBBBBBBO.", "OBBBBBBBBBBBBBBO", "OBBBBBBBBBBBBBBO", "OBBEEBBBBBBEEBBO", "OBBEWBBBBBBWEBBO", "OBBBBBLLLLBBBBBO", "OBPBBLLNNLLBBPBO", "OBBBBLLLLLLBBBBO", ".OBBBBBLLBBBBBO.", "..OBBBBBBBBBBO..", "...OOOOOOOOOO...", "................"], "rabbit": ["..OO........OO..", ".OBPO......OPBO.", ".OBPO......OPBO.", ".OBPO......OPBO.", "..OBOOOOOOOOBO..", ".OBBBBBBBBBBBBO.", "OBBBBBBBBBBBBBBO", "OBBEEBBBBBBEEBBO", "OBBEWBBBBBBWEBBO", "OBPPBBBBBBBBPPBO", "OBBBBBBNNBBBBBBO", "OBBBBBLLLLBBBBBO", ".OBBBBBLLBBBBBO.", "..OBBBBBBBBBBO..", "...OOOOOOOOOO...", "................"], "chick": ["................", ".......OO.......", "....OOOBBOOO....", "...OBBBBBBBBO...", "..OBBBBBBBBBBO..", ".OBBBBBBBBBBBBO.", ".OBBBBBBBBBBBBO.", "OBBEEBBBBBBEEBBO", "OBBEWBBBBBBWEBBO", "OBPPBBBKKBBBPPBO", "OBBBBBKKKKBBBBBO", "OBBBBBBBBBBBBBBO", ".OBBBBBBBBBBBBO.", "..OBBBBBBBBBBO..", "...OOOOOOOOOO...", "................"]}, "items": [{"id": "ribbon", "name": "리본", "slot": "head", "price": 10, "px": ["................", "...........R.R..", "..........RRWRR.", "...........R.R..", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................"]}, {"id": "bowtie", "name": "나비넥타이", "slot": "neck", "price": 10, "px": ["................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", ".....R....R.....", ".....RRRRRR.....", ".....R....R....."]}, {"id": "glasses", "name": "안경", "slot": "face", "price": 15, "px": ["................", "................", "................", "................", "................", "................", "..OOOO....OOOO..", "..O..OOOOOO..O..", "..O..O....O..O..", "..OOOO....OOOO..", "................", "................", "................", "................", "................", "................"]}, {"id": "scarf", "name": "목도리", "slot": "neck", "price": 15, "px": ["................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "...SSSSSSSSSS...", "...SWSWSWSWSS...", ".........SS....."]}, {"id": "hat", "name": "모자", "slot": "head", "price": 20, "px": ["....HHHHHHHH....", "....HHHHHHHH....", "....hhhhhhhh....", "..HHHHHHHHHHHH..", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................"]}, {"id": "sunglasses", "name": "선글라스", "slot": "face", "price": 25, "px": ["................", "................", "................", "................", "................", "................", "..OOOO....OOOO..", "..ODDOOOOOODDO..", "..ODDO....ODDO..", "..OOOO....OOOO..", "................", "................", "................", "................", "................", "................"]}, {"id": "headphones", "name": "헤드폰", "slot": "head", "price": 30, "px": ["................", "................", "................", "....DDDDDDDD....", "...D........D...", "..D..........D..", ".CC..........CC.", ".CC..........CC.", ".CC..........CC.", "................", "................", "................", "................", "................", "................", "................"]}, {"id": "crown", "name": "왕관", "slot": "head", "price": 50, "px": ["....Y..YY..Y....", "....YY.YY.YY....", "....YYYYYYYY....", "....YRYYYYRY....", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................"]}]};
-// ───── 우리반 점수: 학생마다 점수와 픽셀 아바타. 장신구는 점수로 사서 꾸밈 (가격은 정해져 있음). 칭찬해요·노력해요는 교사가 고친 목록에서
-// reward = { unit, reasons: [{ t, pt }], st: { "1번 김하늘": { pt, av: { base, color }, own: [장신구 id], wear: { head, face, neck } } }, log: [{ at, who: [학생], d, why }] }
+// ───── 우리반 점수: 학생마다 점수와 픽셀 아바타. 머리·옷·장신구·배경은 점수로 사서 꾸밈 (가격은 정해져 있음). 칭찬해요·노력해요는 교사가 고친 목록에서
+// reward = { unit, reasons: [{ t, pt }], st: { "1번 김하늘": { pt, av: { skin, hair(색) }, own: [산 물건 id], wear: { hair, top, bottom, shoes, head, face, neck, bg } } }, log: [{ at, who: [학생], d, why }] }
 // 나중에 학생이 직접 꾸미는 사이트도 이 자료(로그인하면 서버에도 저장)를 그대로 쓰면 됨
-const AV_COLORS = [["#f4a259", "#fde2c0"], ["#9c6b45", "#e5c29f"], ["#f1f3f5", "#ffffff"], ["#ffd43b", "#fff3bf"], ["#74c0fc", "#d0ebff"], ["#b197fc", "#e5dbff"], ["#8ce99a", "#d3f9d8"], ["#ff8787", "#ffe3e3"]];
-const AV_BASES = [["cat", "고양이", 0], ["bear", "곰", 1], ["rabbit", "토끼", 2], ["chick", "병아리", 3]];
-const AV_PAL = { O: "#2b2420", E: "#2b2420", W: "#ffffff", P: "#ff9aa2", N: "#2b2420", K: "#f08c00", R: "#e64980", H: "#4263eb", h: "#ffd43b", D: "#343a40", C: "#e03131", Y: "#fcc419", S: "#e03131", G: "#a5d8ff" };
+// ───── 픽셀 아바타 (24×32, 사람 모양). 그림은 "글자x0,y0,x1,y1" 네모 칠하기로 적음. ~ 는 좌우 대칭도 함께 칠함
+const AV_SKIN = [["#ffe3cf", "#f2c4a6"], ["#f8cfa5", "#e3ad7f"], ["#d9a074", "#bd8156"], ["#a26a45", "#82512f"]];
+const AV_HAIR = [["#2e2b36", "#1a1820", "#55516a"], ["#5b3a29", "#3d2619", "#86604a"], ["#9a6532", "#74491f", "#c08a52"], ["#ecc45c", "#c99c33", "#f8e3a0"], ["#c9463c", "#972f28", "#ec7a6f"], ["#3f63c8", "#2a4590", "#7393ea"], ["#ec8fb8", "#cc6795", "#f8c2da"], ["#e9ecef", "#bfc5cc", "#ffffff"]];
+const AV_FIX = { k: "#2b2430", e: "#2b2430", w: "#ffffff", c: "#ffb1b5", m: "#b8504a", g: "#ffd43b", G: "#f08c00", r: "#e03131", R: "#a61e1e", d: "#343a40", D: "#868e96", l: "#a5d8ff", n: "#ffffff" };
+const AV_BODY = "s6,4,17,4 s5,5,18,5 s4,6,19,14 s5,15,18,15 s6,16,17,16 ~s3,10,3,12 ~S3,11 ~e7,10,8,12 w8,10 w16,10 ~c5,13,6,13 m11,14,12,14 S10,17,13,17 s7,18,16,23 ~s5,18,6,25 ~s8,25,10,28";
+// 슬롯 그리는 순서: 뒷머리 → 몸 → 하의 → 신발 → 상의 → 목 → 앞머리 → 얼굴 → 머리 장신구
+const AV_ITEMS = [
+  // 헤어 (b: 뒷머리, f: 앞머리)
+  { id: "h-short", slot: "hair", name: "짧은 머리", price: 0, f: "h8,2,15,2 h6,3,17,3 ~h4,4,5,4 h5,4,18,4 h4,5,19,7 h4,8,19,8 H5,8,8,8 H15,8,18,8 s10,8 s13,8 ~h3,6,3,10 ~H4,9,4,10 j9,3,11,3 j7,4,8,4" },
+  { id: "h-bob", slot: "hair", name: "단발", price: 0, b: "h3,5,20,17", f: "h8,2,15,2 h6,3,17,3 h5,4,18,4 h4,5,19,8 h4,9,19,9 s8,9 s12,9 s15,9 ~H5,9,6,9 ~h2,7,4,16 ~H3,16,5,17 ~h5,10,5,15 ~H2,12,2,16 j9,3,11,3 j7,4,8,5" },
+  { id: "h-long", slot: "hair", name: "긴 머리", price: 25, b: "h3,5,20,23 ~H2,9,2,22 ~H3,23,5,24", f: "h8,2,15,2 h6,3,17,3 h5,4,18,4 h4,5,19,8 h4,9,19,9 s9,9 s14,9 ~H5,9,6,9 ~h2,7,4,18 ~h5,10,5,13 ~H2,14,3,18 j9,3,11,3 j7,4,8,5" },
+  { id: "h-pony", slot: "hair", name: "포니테일", price: 20, b: "h19,6,22,8 h20,9,22,15 h19,16,21,18 H21,10,22,16 r19,6,20,7", f: "h8,2,15,2 h6,3,17,3 h5,4,18,4 h4,5,19,8 h4,9,8,9 h15,9,19,9 h10,9,13,9 s11,9 ~H4,9,5,9 ~h3,6,3,11 j9,3,11,3 j7,4,8,5" },
+  { id: "h-twin", slot: "hair", name: "양갈래", price: 30, b: "~h0,7,3,9 ~h0,10,2,19 ~H0,15,1,20 ~r2,6,3,7", f: "h8,2,15,2 h6,3,17,3 h5,4,18,4 h4,5,19,8 h4,9,19,9 s8,9 s11,9,12,9 s15,9 ~H4,9,5,9 ~h3,6,3,11 j9,3,11,3 j7,4,8,5" },
+  { id: "h-bun", slot: "hair", name: "똥머리", price: 30, f: "h9,0,14,0 h8,1,15,1 H9,2,14,2 j10,0,11,0 h7,3,16,3 h5,4,18,4 h4,5,19,8 h4,9,19,9 s9,9 s14,9 ~H5,9,6,9 ~h3,6,3,11 j8,4,10,4" },
+  { id: "h-spiky", slot: "hair", name: "뾰족 머리", price: 25, f: "h7,0 h11,0 h15,0 h6,1,8,1 h10,1,12,1 h14,1,16,1 h5,2,18,2 h4,3,19,7 ~h3,2 ~h3,4,3,9 h4,8,19,8 ~H5,8,7,8 H11,8,12,8 s9,8 s14,8 j8,2,9,2 j6,3,7,3" },
+  { id: "h-curly", slot: "hair", name: "곱슬 머리", price: 35, b: "~h2,6,4,15 ~H2,14,4,15", f: "h7,1,9,1 h11,1,12,1 h14,1,16,1 h5,2,18,2 h4,3,19,7 ~h3,3,3,10 ~h2,5,2,13 h4,8,19,8 ~H4,8,5,8 H9,8 H14,8 s7,8 s11,8,12,8 s16,8 ~j6,3,7,3 j11,2,12,2" },
+  // 상의 (full: 하의를 덮음)
+  { id: "t-tee", slot: "top", name: "티셔츠", price: 0, c: { t: "#f8f9fa", T: "#d5dbe1" }, p: "t7,18,16,23 s10,18,13,18 ~t5,18,6,20 ~T7,19,7,23 T8,23,15,23 ~T5,20,6,20" },
+  { id: "t-stripe", slot: "top", name: "줄무늬 티", price: 15, c: { t: "#ffffff", T: "#dee2e6", u: "#4c6ef5" }, p: "t7,18,16,23 s10,18,13,18 ~t5,18,6,20 u7,19,16,19 u7,21,16,21 ~u5,19,6,19 u8,23,15,23 ~T7,20 ~T7,22" },
+  { id: "t-hood", slot: "top", name: "후드티", price: 25, c: { t: "#74c0fc", T: "#4dabf7", u: "#a5d8ff" }, p: "T8,17,15,17 t7,18,16,23 T10,18,13,18 ~t5,18,6,23 ~T5,23,6,23 u9,21,14,22 n10,19 n13,19 n10,20 n13,20 ~T7,19,7,23" },
+  { id: "t-jacket", slot: "top", name: "노란 재킷", price: 30, c: { t: "#fcc419", T: "#e0a800", u: "#ffc9d6" }, p: "t7,18,16,23 u10,18,13,23 ~T9,18,9,20 ~t5,18,6,23 ~T5,23,6,23 ~T7,22,8,23 ~T7,19,7,21" },
+  { id: "t-uniform", slot: "top", name: "교복", price: 35, c: { t: "#364fc7", T: "#2b3f9e", u: "#ffffff" }, p: "t7,18,16,23 u10,18,13,19 ~u9,18 r11,19,12,22 ~t5,18,6,23 ~T5,23,6,23 ~T7,19,7,23 T8,23,15,23 g9,20 g9,22" },
+  { id: "t-dress", slot: "top", name: "원피스", price: 40, full: 1, c: { t: "#ff8fab", T: "#e0607e", u: "#ffffff" }, p: "t7,18,16,21 s10,18,13,18 u10,18,13,18 ~t5,18,6,19 t7,22,16,23 t6,24,17,25 t5,26,18,27 T5,27,18,27 ~T8,24 ~T11,25 u7,21,16,21" },
+  // 하의
+  { id: "b-jeans", slot: "bottom", name: "청바지", price: 0, c: { p: "#4f6fb3", P: "#3a5592" }, p: "p7,24,16,24 ~p8,25,10,28 ~P10,25,10,28 ~P8,28,10,28" },
+  { id: "b-shorts", slot: "bottom", name: "반바지", price: 10, c: { p: "#8b6b4a", P: "#6b5034" }, p: "p7,24,16,24 ~p8,25,10,26 ~P8,26,10,26" },
+  { id: "b-skirt", slot: "bottom", name: "치마", price: 15, c: { p: "#e8590c", P: "#c2410c" }, p: "p7,24,16,24 p7,25,16,25 p6,26,17,26 P6,26 P9,26 P12,26 P15,26 P17,26" },
+  { id: "b-pants", slot: "bottom", name: "체크 바지", price: 20, c: { p: "#6c757d", P: "#495057", u: "#868e96" }, p: "p7,24,16,24 ~p8,25,10,28 ~u8,26,10,26 ~u9,25,9,28 ~P8,28,10,28" },
+  // 신발
+  { id: "s-sneak", slot: "shoes", name: "운동화", price: 0, c: { o: "#ffffff", O: "#adb5bd" }, p: "~o7,29,10,29 ~O7,30,10,30" },
+  { id: "s-red", slot: "shoes", name: "빨간 구두", price: 10, c: { o: "#e03131", O: "#a61e1e" }, p: "~o7,29,10,29 ~O7,30,10,30 ~n8,29" },
+  { id: "s-boot", slot: "shoes", name: "장화", price: 15, c: { o: "#fab005", O: "#e67700" }, p: "~o8,27,10,29 ~o7,29 ~O7,30,10,30" },
+  { id: "s-brown", slot: "shoes", name: "갈색 구두", price: 15, c: { o: "#7a4b2a", O: "#4f2e17" }, p: "~o7,29,10,29 ~O7,30,10,30" },
+  // 장신구 (예전 장신구 이름 그대로: 이미 산 것은 그대로 가짐)
+  { id: "ribbon", slot: "head", name: "리본", price: 10, p: "r15,3 r17,3 r15,5 r17,5 R16,4 r14,4 r18,4" },
+  { id: "clip", slot: "head", name: "꽃핀", price: 10, p: "n16,5 n18,5 n17,4 n17,6 g17,5" },
+  { id: "bowtie", slot: "neck", name: "나비넥타이", price: 10, p: "~r9,18,10,18 ~r9,19 R11,18,12,18" },
+  { id: "glasses", slot: "face", name: "안경", price: 15, p: "~k6,9,9,9 ~k6,13,9,13 ~k6,10,6,12 ~k9,10,9,12 k10,10,13,10" },
+  { id: "scarf", slot: "neck", name: "목도리", price: 15, p: "r8,17,15,18 n9,17 n11,17 n13,17 R14,19,15,22 n14,20" },
+  { id: "hat", slot: "head", name: "모자", price: 20, p: "l6,1,17,1 l5,2,18,4 d5,4,18,4 d4,5,21,5 n10,2,12,3" },
+  { id: "sunglasses", slot: "face", name: "선글라스", price: 25, p: "~k6,9,9,9 ~k6,10,9,12 ~D7,10 k10,10,13,10" },
+  { id: "headphones", slot: "head", name: "헤드폰", price: 30, p: "D6,1,17,1 ~D4,2,5,3 ~D3,4,3,8 ~r2,9,4,12 ~R2,12,4,12" },
+  { id: "crown", slot: "head", name: "왕관", price: 50, p: "g7,0 g11,0,12,0 g16,0 g7,1,8,1 g10,1,13,1 g15,1,16,1 g7,2,16,3 G7,3,16,3 r9,2 l12,2 r14,2" },
+  // 배경
+  { id: "bg-none", slot: "bg", name: "없음", price: 0, p: "" },
+  { id: "bg-sky", slot: "bg", name: "하늘", price: 20, c: { a: "#a5d8ff", A: "#d0ebff", b: "#69db7c", B: "#40c057" }, p: "a0,0,23,15 A0,16,23,25 n3,5,7,6 n2,6 n16,9,20,10 n15,10 b0,26,23,31 B0,26,23,26 B4,29 B12,28 B19,30" },
+  { id: "bg-class", slot: "bg", name: "교실", price: 30, c: { a: "#fff4d6", A: "#2f6e4f", b: "#c08a52", B: "#9a6532" }, p: "a0,0,23,23 B1,3,22,15 A2,4,21,14 n4,6,7,6 n4,8,9,8 n13,11,18,11 n20,13 b0,24,23,31 B0,24,23,24 B0,28,23,28 B6,25,6,27 B17,29,17,31" },
+  { id: "bg-park", slot: "bg", name: "공원", price: 30, c: { a: "#c5f6fa", A: "#2b8a3e", b: "#8ce99a", B: "#7a4b2a" }, p: "a0,0,23,31 A0,6,4,13 A1,4,3,5 B2,14,2,22 A19,8,23,15 A20,6,22,7 B21,16,21,22 b0,23,23,31 A0,23,23,23 g11,2 g10,3,12,3 g11,4" },
+  { id: "bg-night", slot: "bg", name: "밤하늘", price: 40, c: { a: "#1c2541", A: "#3a506b" }, p: "a0,0,23,31 A0,24,23,31 g18,2,20,4 a17,2 a17,3 g3,3 g8,6 g21,9 g2,12 g14,1 g6,17 g22,15 n12,4 n4,8" },
+  { id: "bg-beach", slot: "bg", name: "바다", price: 40, c: { a: "#d0ebff", A: "#339af0", b: "#ffe8a3", B: "#1c7ed6" }, p: "a0,0,23,17 g19,2,21,4 A0,18,23,24 B0,20,23,20 B3,23,8,23 B15,22,20,22 n5,19 n17,21 b0,25,23,31 G4,28 G18,29" },
+  { id: "bg-street", slot: "bg", name: "거리", price: 50, c: { a: "#e7f5ff", A: "#f3c6c6", b: "#ced4da", B: "#868e96" }, p: "a0,0,23,31 A0,2,5,24 A18,4,23,24 B1,5,3,8 B1,12,3,15 B19,7,22,10 B19,13,22,16 n2,6 n20,8 b0,25,23,31 B0,25,23,25 n10,28,13,28 n4,29,7,29 n16,29,19,29" },
+];
+const AV_REQ = { hair: "h-short", top: "t-tee", bottom: "b-jeans", shoes: "s-sneak", bg: "bg-none" }; // 늘 입고 있는 슬롯 (없으면 기본)
+const avItem = id => AV_ITEMS.find(x => x.id === id);
+function avPaint(spec, set) {
+  if (spec) spec.split(" ").forEach(tok => {
+    const mir = tok[0] === "~", ch = tok[mir ? 1 : 0], [x0, y0, x1 = x0, y1 = y0] = tok.slice(mir ? 2 : 1).split(",").map(Number);
+    for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) { set(x, y, ch); if (mir) set(23 - x, y, ch); }
+  });
+}
+// av = { skin, hair }, wear = { hair, top, bottom, shoes, neck, face, head, bg }
+function avSvg(av, wear = {}) {
+  const w = { ...AV_REQ, ...wear }, [s, S] = AV_SKIN[av.skin] || AV_SKIN[0], [hc, H, j] = AV_HAIR[av.hair] || AV_HAIR[0];
+  const base = { ...AV_FIX, s, S, h: hc, H, j };
+  const it = sl => avItem(w[sl]) || avItem(AV_REQ[sl]);
+  const bg = [], ch = [];
+  const lay = (grid, spec, c) => { const pal = { ...base, ...c }; avPaint(spec, (x, y, k) => { if (x >= 0 && x < 24 && y >= 0 && y < 32 && pal[k]) (grid[y] ||= [])[x] = pal[k]; }); };
+  const bgI = it("bg"); lay(bg, bgI?.p, bgI?.c);
+  const hair = it("hair"), top = it("top");
+  lay(ch, hair.b); lay(ch, AV_BODY);
+  if (!top.full) lay(ch, it("bottom").p, it("bottom").c);
+  lay(ch, it("shoes").p, it("shoes").c); lay(ch, top.p, top.c);
+  for (const sl of ["neck"]) { const x = avItem(w[sl]); x && lay(ch, x.p, x.c); }
+  lay(ch, hair.f);
+  for (const sl of ["face", "head"]) { const x = avItem(w[sl]); x && lay(ch, x.p, x.c); }
+  const has = (x, y) => !!ch[y]?.[x];
+  const out = [];
+  for (let y = 0; y < 32; y++) for (let x = 0; x < 24; x++) if (!has(x, y) && (has(x - 1, y) || has(x + 1, y) || has(x, y - 1) || has(x, y + 1))) (out[y] ||= [])[x] = AV_FIX.k;
+  let r = "";
+  for (const g of [bg, out, ch]) g.forEach((row, y) => { if (!row) return; for (let x = 0; x < 24;) { const c = row[x]; if (!c) { x++; continue; } let n = 1; while (row[x + n] === c) n++; r += `<rect x="${x}" y="${y}" width="${n}" height="1" fill="${c}"/>`; x += n; } });
+  return `<svg viewBox="0 0 24 32" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`;
+}
 const RW_REASONS = [{ t: "숙제를 잘했어요", pt: 1 }, { t: "발표를 잘했어요", pt: 1 }, { t: "친구를 도와줬어요", pt: 2 }, { t: "정리를 잘했어요", pt: 1 }, { t: "수업 시간에 떠들었어요", pt: -1 }, { t: "숙제를 안 했어요", pt: -1 }];
 let reward = { unit: "포인트", reasons: RW_REASONS, st: {}, log: [] };
 try { reward = Object.assign(reward, JSON.parse(localStorage.getItem("reward")) || {}); } catch (e) {}
@@ -3413,17 +3494,14 @@ let rwPick = new Set();
 const rwCard = document.getElementById("rw-card");
 const rwStore = () => { try { localStorage.setItem("reward", JSON.stringify(reward)); } catch (e) {} };
 const rwHash = t => [...t].reduce((a, c) => a * 31 + c.charCodeAt(0) >>> 0, 7);
-function rwSt(p) { // 처음 보는 학생은 이름으로 동물·색을 정해 둠 (나중에 바꿀 수 있어요)
-  if (!reward.st[p]) { const k = rwHash(seName(p)), b = AV_BASES[k % 4]; reward.st[p] = { pt: 0, av: { base: b[0], color: b[2] }, own: [], wear: {} }; }
-  return reward.st[p];
-}
-// 16×16 픽셀 그림 → SVG (같은 색이 이어지면 한 칸으로 합쳐 가볍게)
-function avSvg(av, wear = {}, extra) {
-  const [body, light] = AV_COLORS[av.color] || AV_COLORS[0], pal = { ...AV_PAL, B: body, L: light };
-  const layers = [AV.bases[av.base] || AV.bases.cat, ...["neck", "face", "head"].map(sl => AV.items.find(x => x.id === wear[sl])?.px).filter(Boolean), extra].filter(Boolean);
-  let rects = "";
-  for (const px of layers) px.forEach((row, y) => { for (let x = 0; x < 16;) { const ch = row[x]; if (ch === "." || !pal[ch]) { x++; continue; } let w = 1; while (row[x + w] === ch) w++; rects += `<rect x="${x}" y="${y}" width="${w}" height="1" fill="${pal[ch]}"/>`; x += w; } });
-  return `<svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true">${rects}</svg>`;
+function rwSt(p) { // 처음 보는 학생은 이름으로 머리 모양·색을 정해 둠 (나중에 바꿀 수 있어요)
+  const s = reward.st[p] ||= { pt: 0, own: [], wear: {} };
+  if (!s.av || s.av.base !== undefined) { // 처음이거나 예전 동물 아바타 → 사람 아바타로 (산 장신구는 그대로)
+    const k = rwHash(seName(p));
+    s.av = { skin: k % 2, hair: k % 3 };
+    s.wear = { ...Object.fromEntries(Object.entries(s.wear || {}).filter(([sl, id]) => avItem(id)?.slot === sl)), hair: k % 5 < 2 ? "h-short" : "h-bob" };
+  }
+  return s;
 }
 function rwDraw() {
   const ppl = people(), unit = reward.unit.trim() || "점";
@@ -3499,28 +3577,34 @@ function rwSettings() {
     h("div", { class: "card-ed-foot" }, h("button", { onclick: () => { list.push({ t: "", pt: 1 }); draw(); rows.querySelectorAll("input")[rows.querySelectorAll("input").length - 2]?.focus(); } }, "+ 이유 추가"), zero));
   rwCard.append(ed);
 }
-// 아바타 꾸미기: 동물·색은 마음대로, 장신구는 점수로 사서 입고 벗기
+// 아바타 꾸미기: 피부·머리색은 마음대로, 머리 모양·옷·장신구·배경은 점수로 사서 입고 벗기
+const AV_TABS = [["hair", "헤어"], ["top", "상의"], ["bottom", "하의"], ["shoes", "신발"], ["acc", "장신구"], ["bg", "배경"]];
+let rwTab = "hair";
 function rwAvatar(p) {
   rwCard.querySelector(".card-ed")?.remove();
   const s = rwSt(p), unit = reward.unit.trim() || "점", body = h("div", { class: "card-ed-list" });
+  const save = () => { rwStore(); draw(); rwDraw(); };
   const draw = () => {
     const me = h("div", { class: "rw-me" }); me.innerHTML = avSvg(s.av, s.wear);
-    me.append(h("div", {}, h("b", {}, seName(p)), h("br"), h("span", { class: "rw-pt" }, `★ ${s.pt} ${unit}`)));
-    const bases = h("div", { class: "rw-pick" }, AV_BASES.map(([id, name]) => { const b = h("button", { class: s.av.base === id ? "on" : "", title: name, onclick: () => { s.av.base = id; rwStore(); draw(); rwDraw(); } }); b.innerHTML = avSvg({ base: id, color: s.av.color }); return b; }));
-    const colors = h("div", { class: "rw-pick" }, AV_COLORS.map(([c], i) => h("button", { class: "sw" + (s.av.color === i ? " on" : ""), style: `background:${c}`, "aria-label": "색", onclick: () => { s.av.color = i; rwStore(); draw(); rwDraw(); } })));
-    const shop = h("div", { class: "rw-shop" }, AV.items.map(it => {
-      const has = s.own.includes(it.id), worn = s.wear[it.slot] === it.id, pic = h("div"); pic.innerHTML = avSvg(s.av, {}, it.px);
-      const act = has ? h("button", { class: worn ? "on" : "", onclick: () => { worn ? delete s.wear[it.slot] : s.wear[it.slot] = it.id; rwStore(); draw(); rwDraw(); } }, worn ? "벗기" : "입기")
+    const sw = (list, key, label) => h("div", { class: "rw-pick" }, h("span", {}, label), ...list.map((c, i) => h("button", { class: "sw" + (s.av[key] === i ? " on" : ""), style: `background:${c[0]}`, "aria-label": label, onclick: () => { s.av[key] = i; save(); } })));
+    me.append(h("div", {}, h("b", {}, seName(p)), h("br"), h("span", { class: "rw-pt" }, `★ ${s.pt} ${unit}`), sw(AV_SKIN, "skin", "피부"), sw(AV_HAIR, "hair", "머리색")));
+    const tabs = h("div", { class: "rw-tabs" }, AV_TABS.map(([k, t]) => h("button", { class: rwTab === k ? "on" : "", onclick: () => { rwTab = k; draw(); } }, t)));
+    const items = AV_ITEMS.filter(it => rwTab === "acc" ? ["head", "face", "neck"].includes(it.slot) : it.slot === rwTab);
+    const shop = h("div", { class: "rw-shop" }, items.map(it => {
+      const has = !it.price || s.own.includes(it.id), must = it.slot in AV_REQ, worn = (s.wear[it.slot] || AV_REQ[it.slot]) === it.id, bg = it.slot === "bg";
+      const pic = h("div"); pic.innerHTML = avSvg(s.av, { ...s.wear, [it.slot]: it.id, ...(bg ? {} : { bg: "bg-none" }), ...(rwTab === "hair" ? { head: "" } : {}) });
+      const act = has ? h("button", { class: worn ? "on" : "", onclick: () => { if (worn) { if (must) return; delete s.wear[it.slot]; } else s.wear[it.slot] = it.id; save(); } },
+          worn ? (must ? (bg ? "골랐어요" : "입는 중") : "벗기") : bg ? "고르기" : "입기")
         : h("button", { onclick: async () => {
           if (s.pt < it.price) return seConfirm(rwCard, `${it.name}은(는) ${it.price} ${unit}예요. ${it.price - s.pt} ${unit} 더 모아요!`, "확인", null);
           if (!await seConfirm(rwCard, `${seName(p)}: ${it.name}을(를) ${it.price} ${unit}에 살까요?`, "사기")) return;
           s.pt -= it.price; s.own.push(it.id); s.wear[it.slot] = it.id;
           reward.log = [{ at: Date.now(), who: [p], d: -it.price, why: `${it.name} 샀어요` }, ...reward.log].slice(0, 1000);
-          rwStore(); draw(); rwDraw(); melody([784, 988, 1319], .07, "square", .15);
+          save(); melody([784, 988, 1319], .07, "square", .15);
         } }, `${it.price} ${unit}`);
-      return h("div", { class: "rw-item" }, pic.firstChild, h("span", {}, it.name), h("small", {}, has ? "가지고 있어요" : "가게"), act);
+      return h("div", { class: "rw-item" + (worn ? " worn" : "") }, pic.firstChild, h("span", {}, it.name), h("small", {}, !it.price ? "기본" : has ? "가지고 있어요" : "가게"), act);
     }));
-    body.replaceChildren(me, h("p", { class: "rw-h" }, "동물"), bases, h("p", { class: "rw-h" }, "색"), colors, h("p", { class: "rw-h" }, `장신구 (점수로 사요 · ${unit})`), shop);
+    body.replaceChildren(me, tabs, shop);
   };
   draw();
   const ed = h("div", { class: "card-ed" }, h("div", { class: "card-ed-head" }, h("b", {}, "아바타 꾸미기"), h("button", { class: "main", onclick: () => ed.remove() }, "닫기")), body);
@@ -5425,7 +5509,7 @@ const TOURS = {
     { at: ".rw-tile", text: "학생 카드를 누르면 골라져요. 오른쪽 위 +·−로 그 학생에게 바로 줄 수도 있어요." },
     { at: ".rw-bar", text: "전체 선택 · 선택 반전 · 선택 해제" },
     { at: [".rw-plus", ".rw-minus"], text: "고른 학생에게 칭찬해요(+)·노력해요(−). 이유를 고르면 소리와 함께 크게 보여요." },
-    { at: ".rw-av", text: "아바타를 누르면 꾸며요. 장신구는 점수로 사요." },
+    { at: ".rw-av", text: "아바타를 누르면 꾸며요. 머리·옷·장신구·배경은 점수로 사요." },
     { at: [".rw-set", ".rw-send"], text: "설정: 점수 단위(포인트·으쓱…)와 이유 목록. 주고받기: 학생끼리 점수를 보내요." }] },
   roles: { name: "🧹 1인 1역", steps: [
     { at: ".rl-edit", text: "역할·하는 일·맡을 사람 수·기간·포인트(단위는 직접: 포인트·개·으쓱…, 비우면 안 씀)를 정해요. 아래에 몇 명까지 맡는지 합계가 나와요." },
