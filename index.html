@@ -197,6 +197,7 @@
   .photo-box:hover .photo-tools, .photo-tools:focus-within { opacity: 1; }
   .photo-tools button { border-style: solid; padding: 3px 12px; font-size: 13px; }
   .ph-empty { display: flex; flex-direction: column; align-items: center; gap: 8px; } .ph-empty[hidden] { display: none; }
+  .ph-hint { font: 12px "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--muted); }
   .ph-empty .ph-shelf { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; border: 0; background: none; color: var(--muted); cursor: pointer; }
 
   /* 타이머·사람 뽑기 */
@@ -369,6 +370,7 @@
   .st-head { display: flex; align-items: flex-start; gap: 12px; } .st-head > div { flex: 1; } .st-head b { font-weight: normal; font-size: 19px; color: #c98a00; }
   .st-body { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 12px; min-height: 0; }
   .st-map { background: #fff; border-radius: 14px; box-shadow: 0 1px 2px rgba(60, 40, 20, .05), 0 8px 24px rgba(60, 40, 20, .06); }
+  .st-chk { display: flex; align-items: center; gap: 4px; font-size: 14px; white-space: nowrap; cursor: pointer; }
   .st-foot { display: flex; align-items: center; gap: 12px; } .st-foot p { flex: 1; } .st-foot .main { padding: 8px 22px !important; font-size: 16px !important; border-radius: 999px !important; }
   .warn-tag { background: #e03131; color: #fff; border-radius: 4px; padding: 0 6px; margin-right: 4px; font-size: 12px; }
   .se-side { display: flex; flex-direction: column; min-height: 0; background: #fff; border-radius: 14px; box-shadow: 0 1px 2px rgba(60, 40, 20, .05), 0 8px 24px rgba(60, 40, 20, .06); }
@@ -391,11 +393,12 @@
   .se-msg:empty { display: none; }
   @media (max-width: 820px) { .st-body { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1.2fr) minmax(0, 1fr); } }
   /* 처음 안내: 해당 부분을 네모로 짚고 말풍선으로 한 단계씩 */
-  .tour { position: fixed; inset: 0; z-index: 60; } .tour.dim { background: rgba(30, 20, 10, .45); }
+  .tour { position: fixed; inset: 0; z-index: 60; cursor: pointer; } .tour.dim { background: rgba(30, 20, 10, .45); }
   .tour-hole { position: fixed; border: 3px solid #ffd43b; border-radius: 10px; box-shadow: 0 0 0 9999px rgba(30, 20, 10, .45); pointer-events: none; transition: all .25s; }
   .tour-tip { position: fixed; box-sizing: border-box; background: #fff; color: var(--ink); border-radius: 14px; padding: 14px 16px 12px; box-shadow: 0 12px 40px rgba(0, 0, 0, .3);
               font: 15px/1.5 "Wanted Sans", "Malgun Gothic", sans-serif; transition: top .25s, left .25s; }
   .tour-tip small { color: var(--muted); font-size: 12px; }
+  .tour-tip { cursor: default; } .tour-any { display: block; margin-top: 8px; text-align: right; }
   .tour-tip p { margin: 4px 0 12px; font-size: 16px; word-break: keep-all; }
   .tour-tip .row { display: flex; gap: 6px; align-items: center; } .tour-tip .sp { flex: 1; }
   .tour-tip button { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid #e6dccf; background: #fff; color: var(--ink); border-radius: 999px; padding: 4px 14px; cursor: pointer; }
@@ -404,11 +407,15 @@
   .tour-tip button.lite { border: 0; color: var(--muted); padding: 4px 6px; }
   /* 사용 방법: 카드별 탭, 단계마다 실제 화면 조각 */
   .mail-btn { display: inline-block; padding: 6px 16px; border-radius: 8px; background: #e2643f; color: #fff; text-decoration: none; white-space: nowrap; }
+  #seat-ed.hp-measure { left: -10000px !important; right: auto !important; visibility: hidden; }
+  .board > .card.hp-measure { position: fixed !important; left: -10000px !important; top: 0 !important; width: 460px !important; height: 380px !important; visibility: hidden; } /* 사용 방법 그림용으로 잠깐 */
   .hp-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 14px; }
   .hp-tabs button { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid #e6dccf; background: #fff; color: var(--ink); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
   .hp-tabs button.on { background: var(--ink); border-color: var(--ink); color: #fff; }
   .hp-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; } .hp-head h3 { margin: 0; font-weight: normal; font-size: 20px; flex: 1; }
   #panel .hp-head button { font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; border: 0; border-radius: 999px; padding: 7px 18px; background: #2f7d8c; color: #fff; cursor: pointer; } /* 설정 창 단추보다 눈에 띄게 */
+  .hp-sub { display: flex; gap: 4px; margin-top: 10px; }
+  #panel .hp-sub button { font-size: 13px; border-radius: 999px; padding: 3px 12px; } #panel .hp-sub button.on { background: #2f7d8c; border-color: #2f7d8c; color: #fff; }
   .hp-steps { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; margin-top: 12px; }
   .hp-step { background: #fff; border-radius: 14px; padding: 10px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 1px 2px rgba(60, 40, 20, .05), 0 6px 18px rgba(60, 40, 20, .06); }
   .hp-step p { margin: 0; display: flex; gap: 8px; align-items: flex-start; font-size: 14px; line-height: 1.5; word-break: keep-all; }
@@ -417,7 +424,8 @@
   .hp-wrap { display: flex; gap: 4px; align-items: center; flex: none; box-sizing: border-box; padding: 6px; border-radius: 10px; box-shadow: 0 0 0 3px #ffd43b; background: var(--card, #fff); transform-origin: center; pointer-events: none; }
   .hp-wrap * { white-space: nowrap; }
   .hp-shot > .hp-wrap { box-shadow: 0 0 0 3px #ffd43b !important; }
-  .hp-shot > .hp-wrap.card { display: flex !important; flex-direction: row !important; background: var(--accent); border: 0; padding: 6px; overflow: visible; min-width: 0; min-height: 0; } /* 제목 줄 버튼은 흰색이라 카드 색 위에 */
+  .hp-shot > .hp-wrap.card { display: flex !important; flex-direction: row !important; background: #fff; }
+  .hp-shot > .hp-wrap.hp-bar { background: var(--accent); border: 0; padding: 6px; overflow: visible; min-width: 0; min-height: 0; } /* 제목 줄 버튼은 흰색이라 카드 색 위에 */
   .hp-wrap { justify-content: center; }
   .hp-wrap .hp-target { position: relative !important; inset: auto !important; transform: none !important; margin: 0 !important; opacity: 1 !important; flex: none; }
   .hp-ed button { font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1px solid #e6dccf; background: #fff; color: var(--ink); border-radius: 8px; padding: 4px 10px; }
@@ -640,6 +648,19 @@
   .nt-foot button, .nt-foot select { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); background: #fff; color: var(--ink); border-radius: 8px; padding: 4px 10px; cursor: pointer; }
   .nt-foot button:disabled { opacity: .35; cursor: default; }
   .nt-foot .main { background: var(--accent); border-color: var(--accent); color: #fff; }
+  /* 1인 1역 */
+  [data-card="roles"] { --accent: #2b8a3e; --card: #ebfbee; --line: #c3e6cb; }
+  .rl-grid { flex: 1; min-height: 0; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); align-content: start; gap: 6px; }
+  .rl-grid:empty::before { content: "'✎ 역할 정하기'에서 역할을 넣어요."; grid-column: 1 / -1; margin: auto; padding: 20px 0; color: var(--muted); font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; }
+  .rl-tile { background: #fff; border-radius: 10px; padding: 6px 10px; border: 1.5px solid var(--line); font: 15px/1.35 "Wanted Sans", "Malgun Gothic", sans-serif; }
+  .rl-tile b { display: block; font-weight: normal; font-size: 13px; color: var(--accent); }
+  .rl-tile span { font-size: 17px; color: var(--ink); word-break: keep-all; } .rl-tile span.none { color: var(--muted); font-size: 14px; }
+  .rl-tile.pop { animation: seat-pop .45s ease-out; }
+  .rl-foot { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; padding-right: 8px; } .rl-foot .sp { flex: 1; }
+  .tool-card .rl-foot button { font-size: 13px; padding: 3px 10px; border-radius: 8px; } .tool-card .rl-foot .main { padding: 3px 12px; }
+  .rl-rows { display: grid; grid-template-columns: minmax(0, 1.2fr) 56px minmax(0, 2fr) auto; gap: 4px 6px; align-items: center; font-size: 13px; }
+  .rl-rows input { font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); border-radius: 6px; padding: 3px 6px; min-width: 0; }
+  .rl-rows .h { color: var(--muted); }
   /* 성적 알리미 */
   [data-card="scores"] { --accent: #5f3dc4; --card: #f1edff; --line: #d6ccf7; }
   .sc-top { display: flex; gap: 6px; align-items: center; }
@@ -807,7 +828,7 @@
   <section class="card" data-card="photo">
     <p class="label">🖼️ 사진</p>
     <div class="photo-box">
-      <div class="ph-empty"><button class="empty">+ 사진 넣기</button><button class="ph-shelf">🗂️ 보관함</button></div>
+      <div class="ph-empty"><button class="empty">+ 사진 넣기</button><small class="ph-hint">카드를 누르고 Ctrl+V로 붙여 넣어도 돼요</small><button class="ph-shelf">🗂️ 보관함</button></div>
       <img alt="우리반 사진" hidden>
       <div class="photo-tools" hidden><button class="ph-keep" title="보관함에 넣기 (4장까지)">☆ 저장</button><button class="ph-shelf">🗂️ 보관함</button><button class="ph-change">바꾸기</button><button class="ph-del">지우기</button></div>
     </div>
@@ -899,6 +920,11 @@
     <div class="sc-grid" id="sc-grid"></div>
     <p class="sub" id="sc-hint">이름을 누르면 그 학생 점수만 크게 보여요</p>
   </section>
+  <section class="card tool-card" data-card="roles" id="rl-card">
+    <p class="label">🧹 1인 1역</p>
+    <div class="rl-grid" id="rl-grid"></div>
+    <div class="rl-foot"><button class="rl-hist" onclick="rlHist(this)">📜 기록</button><span class="sp"></span><button class="rl-edit" onclick="rlEdit()">✎ 역할 정하기</button><button class="rl-save" onclick="rlSave(this)">💾 저장</button><button class="main rl-rand" onclick="rlRandom()">🎲 랜덤 배치</button></div>
+  </section>
   <section class="card wb-card" data-card="whiteboard">
     <p class="label">🖍️ 화이트보드</p>
     <span class="wb-pages" aria-label="화이트보드 고르기"></span>
@@ -968,6 +994,7 @@
   </div>
   <div class="st-foot">
     <p class="sum" id="st-note"></p>
+    <label class="st-chk"><input type="checkbox" id="st-nosame" onchange="seatSec.noSame = this.checked; jset('seat-secret', seatSec)"> 이전에 앉았던 자리 다시 안 앉기</label>
     <button data-ic="reset" id="st-reset" onclick="seTeachReset()" title="고정한 학생만 남기고 미리 섞은 자리를 비워요">초기화</button>
     <button class="main" data-ic="shuffle" onclick="seRandom(true)">랜덤 섞기</button>
   </div>
@@ -1506,7 +1533,7 @@ const CARDS = [["topic", "✏️ 오늘의 주제", "board", "2", [340, 200]], [
   ["whiteboard", "🖍️ 화이트보드", "popup", "4", [420, 320]], ["dust", "😷 미세먼지·날씨", "board", "1", [190, 190]], ["noise", "🔉 소음 측정", "popup", "1", [240, 270]],
   ["thermo", "🌡️ 학급 온도계", "popup", "1", [240, 260]], ["qr", "🔳 QR 만들기", "popup", "1", [240, 280]],
   ["notice", "📋 알림장", "popup", "2", [340, 320]],
-  ["scores", "📊 성적 알리미", "popup", "2", [320, 280]]];
+  ["scores", "📊 성적 알리미", "popup", "2", [320, 280]], ["roles", "🧹 1인 1역", "popup", "2", [340, 260]]];
 const FITS = ["rules", "notice"]; // 글이 넘치면 카드가 아래로 커지는 카드
 const minOf = k => { const m = CARDS.find(c => c[0] === k)[4]; return FITS.includes(k) ? [m[0], Math.max(m[1], noteNeed(k))] : m; };
 function noteNeed(k) { // 글이 스크롤 없이 다 보이는 카드 높이(px)
@@ -1898,6 +1925,14 @@ let phShelf = [];
 try { phShelf = JSON.parse(localStorage.getItem("photo-shelf")) || []; } catch (e) {}
 const phSaveShelf = () => { try { localStorage.setItem("photo-shelf", JSON.stringify(phShelf)); } catch (e) {} };
 const phUrl = v => v?.startsWith("shelf:") ? localStorage.getItem("photoshelf-" + v.slice(6)) : v; // 카드에 저장된 값 → 사진
+let phLast = null;
+document.addEventListener("pointerdown", () => phLast = null, true); // 다른 데를 누르면 풀림 (사진 카드를 누르면 바로 다시 정해짐)
+document.addEventListener("paste", e => { // 사진 카드를 누른 뒤 Ctrl+V: 그 카드에 사진 (화이트보드 붙여넣기보다 먼저)
+  if (!phLast?.isConnected || e.target.closest?.("input, textarea, [contenteditable='true']")) return;
+  const f = [...(e.clipboardData?.files || [])].find(x => x.type.startsWith("image/"));
+  if (!f) return;
+  e.preventDefault(); e.stopImmediatePropagation(); phLast.loadPhoto(f);
+}, true);
 const phCards = () => [...document.querySelectorAll('.card[data-card^="photo"]')];
 function initPhoto(c) {
   const k = c.dataset.card, input = c.querySelector("input[type=file]"), img = c.querySelector("img");
@@ -1936,10 +1971,9 @@ function initPhoto(c) {
     },
     "아직 저장한 사진이 없어요. 사진을 띄운 뒤 '☆ 저장'을 눌러요."));
   del.onclick = () => set(null);
-  input.addEventListener("change", async () => {
-    const file = input.files[0];
-    input.value = "";
-    if (!file) return;
+  input.addEventListener("change", () => { const file = input.files[0]; input.value = ""; if (file) c.loadPhoto(file); });
+  c.addEventListener("pointerdown", () => phLast = c); // 붙여넣기는 마지막으로 누른 사진 카드에
+  c.loadPhoto = async file => {
     try {
       const bmp = await createImageBitmap(file);
       const r = Math.min(1, 1600 / Math.max(bmp.width, bmp.height));
@@ -1948,7 +1982,7 @@ function initPhoto(c) {
       cv.getContext("2d").drawImage(bmp, 0, 0, cv.width, cv.height);
       set(cv.toDataURL("image/jpeg", 0.85));
     } catch (e) { seConfirm(c, "이 파일은 사진으로 열 수 없어요.", "확인", null); }
-  });
+  };
   try { show(localStorage.getItem(k)); } catch (e) { show(null); }
 }
 document.querySelectorAll('.card[data-card^="photo"]').forEach(initPhoto);
@@ -3178,6 +3212,61 @@ async function ntPick(v) {
 try { ntHist = JSON.parse(localStorage.getItem("notice-hist")) || {}; } catch (e) {}
 setTimeout(ntDraw); // h는 아래에서 만들어짐
 
+// ───── 1인 1역: 역할(직업)마다 맡을 사람. 이름은 여러 명. 🎲로 명단에서 무작위, 💾로 날짜별 기록
+// roles = { list: [{ job, n(맡을 사람 수), who: ["1번 김하늘", …] }], hist: [{ at, list }] }
+let roles = { list: [], hist: [] };
+try { roles = Object.assign(roles, JSON.parse(localStorage.getItem("roles")) || {}); } catch (e) {}
+const rlCard = document.getElementById("rl-card");
+function rlStore() { try { localStorage.setItem("roles", JSON.stringify(roles)); } catch (e) {} }
+function rlDraw(anim) {
+  const tiles = roles.list.map(r => h("div", { class: "rl-tile" }, h("b", {}, r.job || "역할"), h("span", { class: r.who.length ? "" : "none" }, r.who.length ? r.who.map(seName).join(", ") : "아직 없어요")));
+  $s("rl-grid").replaceChildren(...tiles);
+  if (anim) tiles.forEach((t, i) => setTimeout(() => { t.classList.add("pop"); tone(600 + i * 25, 0, .05, "triangle", .1); }, i * 70));
+}
+function rlRandom() { // 명단을 섞어 역할마다 정한 수만큼. 사람이 남으면 앞 역할부터 한 명씩 더
+  if (!roles.list.length) return rlEdit();
+  const ppl = shuffle(people().slice());
+  if (!ppl.length) return seConfirm(rlCard, "설정 → 명단에 학생을 먼저 넣어 주세요.", "확인", null);
+  roles.list.forEach(r => r.who = []);
+  let i = 0;
+  for (const r of roles.list) for (let k = 0; k < (+r.n || 1) && i < ppl.length; k++) r.who.push(ppl[i++]);
+  for (let j = 0; i < ppl.length; j = (j + 1) % roles.list.length) roles.list[j].who.push(ppl[i++]);
+  rlStore(); rlDraw(true);
+  setTimeout(() => melody([523, 659, 784, 1047], .09, "triangle", .25), roles.list.length * 70);
+}
+function rlSave(b) {
+  if (!roles.list.length) return;
+  roles.hist = [{ at: Date.now(), list: clone(roles.list) }, ...roles.hist].slice(0, 30); rlStore();
+  b.textContent = "저장했어요"; setTimeout(() => b.textContent = "💾 저장", 1500);
+}
+function rlHist(btn) { // 지난 기록: 누르면 불러오고 ✕로 지움
+  const when = t => new Date(t).toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "short" });
+  shelfMenu(btn, "📜 1인 1역 기록", roles.hist.map(x => ({ icon: h("span", { class: "lk-ic", style: "background:#2b8a3e" }, "역"), name: when(x.at), title: x.list.map(r => `${r.job}: ${r.who.map(seName).join(", ")}`).join("\n") })),
+    i => { roles.list = clone(roles.hist[i].list); rlStore(); rlDraw(); },
+    async (i, m) => { if (await seConfirm(m, `${when(roles.hist[i].at)} 기록을 지울까요?`, "지우기")) { roles.hist.splice(i, 1); rlStore(); rlHist(btn); } },
+    "아직 저장한 기록이 없어요. '💾 저장'을 누르면 남아요.");
+}
+function rlEdit() { // 역할 이름 · 맡을 사람 수 · 이름(쉼표로 여러 명, 비워 두고 🎲로 정해도 돼요)
+  rlCard.querySelector(".card-ed")?.remove();
+  const rows = h("div", { class: "rl-rows" });
+  const list = roles.list.map(r => ({ ...r, who: r.who.slice() }));
+  const draw = () => rows.replaceChildren(h("span", { class: "h" }, "역할"), h("span", { class: "h" }, "몇 명"), h("span", { class: "h" }, "이름 (쉼표로 여러 명)"), h("span"),
+    ...list.flatMap((r, i) => {
+      const job = h("input", { value: r.job, placeholder: "예: 칠판 지우기" }), n = h("input", { type: "number", min: "1", max: "10", value: String(r.n || 1) }), who = h("input", { value: r.who.map(seName).join(", ") });
+      job.oninput = () => r.job = job.value.trim(); n.oninput = () => r.n = Math.max(1, +n.value || 1);
+      who.oninput = () => r.who = who.value.split(/[,，]/).map(x => x.trim()).filter(Boolean).map(x => people().find(p => seName(p) === x) || x);
+      return [job, n, who, h("button", { class: "x", title: "이 역할 빼기", onclick: () => { list.splice(i, 1); draw(); } }, "✕")];
+    }));
+  draw();
+  const add = h("button", { onclick: () => { list.push({ job: "", n: 1, who: [] }); draw(); rows.querySelectorAll("input")[rows.querySelectorAll("input").length - 3]?.focus(); } }, "+ 역할 추가");
+  const ok = h("button", { class: "main", onclick: () => { roles.list = list.filter(r => r.job || r.who.length); rlStore(); rlDraw(); ed.remove(); } }, "완료");
+  const ed = h("div", { class: "card-ed" }, h("div", { class: "card-ed-head" }, h("b", {}, "역할 정하기"), ok), h("div", { class: "card-ed-list" }, rows), h("div", { class: "card-ed-foot" }, add));
+  rlCard.append(ed);
+  if (!list.length) add.click();
+}
+setTimeout(rlDraw); // h는 아래쪽에서 만들어짐
+document.getElementById("roster").addEventListener("change", () => rlDraw());
+
 // ───── 성적 알리미: 수행평가 점수를 한 명씩 눌러 보여 줌. 카드에는 이름만, 점수는 누른 학생 것만 크게
 // scores = { tests: [{ id, name, max, s: { "1번 김하늘": "18" } }], cur }
 let scores = { tests: [], cur: null };
@@ -4328,7 +4417,7 @@ function seGeo() {
 }
 const pairKey = (a, b) => [a, b].sort().join("|");
 // 어긴 조건 목록 [{who: [학생…], text}]
-function seViol(S, mode, G, prev) {
+function seViol(S, mode, G, prev, last) { // last: 지난 자리 (이전 자리 다시 안 앉기). 고정 학생은 빼고
   const where = {}, out = [];
   for (const k in S) if (S[k]) where[S[k]] = G.byId[k];
   for (const g of seatSec.groups) {
@@ -4348,6 +4437,7 @@ function seViol(S, mode, G, prev) {
     if ((mode === "mixed" || mode === "same") && ga && gb && (mode === "mixed" ? ga === gb : ga !== gb)) out.push({ who: [a, b], w: 1, text: `${seName(a)}·${seName(b)}: ${mode === "mixed" ? "이성 짝이 아니에요" : "동성 짝이 아니에요"}` });
     if (prev?.has(pairKey(a, b))) out.push({ who: [a, b], w: 1, text: `${seName(a)}·${seName(b)}: 이전 짝꿍과 또 앉았어요` });
   }
+  if (last) for (const k in S) if (S[k] && last[k] === S[k] && seatSec.fixed[k] !== S[k]) out.push({ who: [S[k]], w: 10, text: `${seName(S[k])}: 지난번과 같은 자리예요` }); // 성별·짝 조건(1)보다 먼저, 분리(100~)보다는 나중
   if (mode === "balance") { // 모둠마다(모둠이 없으면 줄마다) 남녀 수 차이가 1명 넘지 않게
     const cnt = {};
     for (const k in S) { const p = S[k], gg = p && gender[p]; if (!gg) continue; const d = G.byId[k], key = d.g !== undefined ? "g" + d.g : G.solo ? "줄" + Math.round(d.y / .5) : G.zone[k]; (cnt[key] ||= { M: [], F: [] })[gg].push(p); }
@@ -4377,6 +4467,7 @@ function seAuto() {
     for (const id of free.slice().sort((a, b) => back(a) - back(b))) if (e > 0 && !empty.has(id)) { empty.add(id); e--; }
     use = free.filter(id => !empty.has(id));
   }
+  const last = seatSec.noSame ? { ...c.seats } : null; // 지금 학생 화면 자리 = 이전에 앉았던 자리
   const prev = seatSec.noPrev ? new Set(G.pairs.filter(([x, y]) => c.seats[x] && c.seats[y]).map(([x, y]) => pairKey(c.seats[x], c.seats[y]))) : null; // 지금 짝 = 이전 짝꿍
   const pre = []; // 해 보기 전에 알 수 있는 충돌
   const nz = new Set(Object.values(G.sep)).size;
@@ -4385,7 +4476,7 @@ function seAuto() {
   if (mode === "mixed") { const m = people().filter(p => gender[p] === "M").length, f = people().filter(p => gender[p] === "F").length; if (Math.abs(m - f) > 1) pre.push(`남학생 ${m}명, 여학생 ${f}명이라 모든 짝을 이성끼리 할 수는 없어요.`); }
   const seatOf = S => { const w = {}; for (const k in S) if (S[k]) w[S[k]] = k; return w; };
   const swap = (S, a, b) => { const t = S[a]; if (S[b]) S[a] = S[b]; else delete S[a]; if (t) S[b] = t; else delete S[b]; };
-  const costOf = S => seViol(S, mode, G, prev).reduce((n, v) => n + v.w, 0);
+  const costOf = S => seViol(S, mode, G, prev, last).reduce((n, v) => n + v.w, 0);
   let best = null, bestCost = Infinity;
   const t0 = performance.now();
   while (performance.now() - t0 < 600 && bestCost > 0) {
@@ -4394,7 +4485,7 @@ function seAuto() {
     movers.forEach((p, i) => S[order[i]] = p);
     let cost = costOf(S);
     for (let it = 0; it < 250 && cost > 0; it++) {
-      const V = seViol(S, mode, G, prev), top = Math.max(...V.map(v => v.w)); // 벌점 큰(우선순위 높은) 조건부터 고침
+      const V = seViol(S, mode, G, prev, last), top = Math.max(...V.map(v => v.w)); // 벌점 큰(우선순위 높은) 조건부터 고침
       let bad = shuffle(V.filter(v => v.w === top).flatMap(v => v.who).filter(p => !fixedP.has(p)));
       if (!bad.length) bad = shuffle(V.flatMap(v => v.who).filter(p => !fixedP.has(p)));
       if (!bad.length) break;
@@ -4406,7 +4497,7 @@ function seAuto() {
     }
     if (cost < bestCost) { bestCost = cost; best = { ...S }; }
   }
-  const V = seViol(best, mode, G, prev).sort((a, b) => b.w - a.w), sepV = [...new Set(V.filter(v => v.sep).map(v => v.text))], oth = [...new Set(V.filter(v => !v.sep).map(v => v.text))];
+  const V = seViol(best, mode, G, prev, last).sort((a, b) => b.w - a.w), sepV = [...new Set(V.filter(v => v.sep).map(v => v.text))], oth = [...new Set(V.filter(v => !v.sep).map(v => v.text))];
   const list = a => `· ${a.slice(0, 8).join("\n· ")}${a.length > 8 ? `\n… 외 ${a.length - 8}개` : ""}`;
   const text = [sepV.length ? `학생 분리 조건을 모두 지키는 자리를 찾지 못했어요.\n지키지 못한 분리:\n${list(sepV)}` : "",
     oth.length ? `지키지 못한 짝꿍 조건:\n${list(oth)}` : "", pre.join("\n")].filter(Boolean).join("\n\n") || "조건을 모두 지켜서 배치했어요.";
@@ -4744,7 +4835,7 @@ function seStudentChip(p) {
 }
 function seTeachNote() {
   $s("st-note").textContent = seatSec.draft ? "미리 섞어 둔 자리예요. 보드에서 '자동 자리배치'를 누르면 이 자리로 앉아요." : "고정한 학생만 보여요. '랜덤 섞기'로 다음 자리를 미리 섞어 둘 수 있어요. 학생 화면은 바뀌지 않아요.";
-  $s("st-reset").disabled = !seatSec.draft;
+  $s("st-reset").disabled = !seatSec.draft; $s("st-nosame").checked = !!seatSec.noSame;
 }
 function seTeachSide() {
   seTeachNote();
@@ -4893,7 +4984,7 @@ const TOURS = {
     { at: 'button[data-ic="print"]', text: "출력: 학생 시점 · 교사 시점 · 둘 다 (A4 가로)" },
     { at: ".seat-star", text: "☆는 특별 모드예요." }] },
   photo: { name: "🖼️ 사진", steps: [
-    { at: ".photo-box", text: "사진 위에 마우스를 올리면 버튼이 나와요. '☆ 저장'으로 보관함에 4장까지 넣어 두고 '🗂️ 보관함'에서 바로 바꿔 띄워요." },
+    { at: ".photo-box", text: "사진은 카드를 누른 뒤 Ctrl+V로 붙여 넣어도 돼요. 사진 위에 마우스를 올리면 버튼이 나와요. '☆ 저장'으로 보관함에 4장까지 넣어 두고 '🗂️ 보관함'에서 바로 바꿔 띄워요." },
     { text: "아래쪽 바 사진 버튼의 +로 사진 카드를 더 띄워요." }] },
   timer: { name: "⏱️ 타이머", steps: [
     { at: "#timer-time", text: "시간을 눌러 3:30처럼 직접 써도 돼요. + 버튼은 돌아가는 중에도 더해져요." },
@@ -4923,6 +5014,10 @@ const TOURS = {
     { at: "#nt-save", text: "저장: 날짜별로 남겨요." },
     { at: "#nt-hist", text: "지난 알림장을 불러오거나 ✕로 지워요. 칠판에 떠 있는 날 것을 지우면 칠판 글도 지워져요." },
     { text: "번호는 첫 줄의 '1.'만 붙어요. 한 내용을 두 줄로 쓸 수 있게 나머지 번호는 직접 써요." }] },
+  roles: { name: "🧹 1인 1역", steps: [
+    { at: ".rl-edit", text: "역할(직업)과 맡을 사람 수를 정해요. 이름을 직접 쓸 수도 있어요 (쉼표로 여러 명)." },
+    { at: ".rl-rand", text: "명단에서 무작위로 정해요. 사람이 남으면 앞 역할부터 한 명씩 더 들어가요." },
+    { at: [".rl-save", ".rl-hist"], text: "저장해 두면 '📜 기록'에서 다시 불러와요." }] },
   scores: { name: "📊 성적 알리미", steps: [
     { at: ".sc-top button", text: "'✎ 점수 넣기': 평가 이름·만점·학생 점수 (엑셀 한 줄 붙여넣기도 돼요)" },
     { at: "#sc-grid", text: "이름을 누르면 그 학생 점수만 크게 보여요." }] },
@@ -4979,12 +5074,12 @@ function tourRun(k) {
       Object.assign(hole.style, { left: r.l + "px", top: r.t + "px", width: r.r - r.l + "px", height: r.b - r.t + "px" });
     }
     hole.hidden = !r; ov.classList.toggle("dim", !r);
-    const last = i === steps.length - 1, extra = st.btn && installEvt ? h("button", { class: "go", onclick: st.btn[1] }, st.btn[0]) : null;
+    const last = i === steps.length - 1, hint = h("small", { class: "tour-any" }, "아무 데나 눌러도 넘어가요"), extra = st.btn && installEvt ? h("button", { class: "go", onclick: st.btn[1] }, st.btn[0]) : null;
     tip.replaceChildren(h("small", {}, `${T.name} · ${i + 1} / ${steps.length}`), h("p", {}, st.text), ...(extra ? [extra] : []),
       h("div", { class: "row" }, h("button", { class: "lite", title: "이 안내를 닫아요", onclick: () => end("skip") }, "건너뛰기"),
         h("button", { class: "lite", title: "앞으로 처음 안내를 띄우지 않아요 (설정 → 사용 방법에서 다시 볼 수 있어요)", onclick: () => end("off") }, "다시 보지 않기"), h("span", { class: "sp" }),
         i ? h("button", { onclick: () => { i--; place(); } }, "이전") : null,
-        h("button", { class: "main", onclick: () => { if (last) end("done"); else { i++; place(); } } }, last ? "끝" : "다음")));
+        h("button", { class: "main", onclick: () => { if (last) end("done"); else { i++; place(); } } }, last ? "끝" : "다음")), i ? "" : hint);
     const IW = Wn.innerWidth, IH = Wn.innerHeight, W = Math.min(320, IW - 24); tip.style.width = W + "px";
     const th = tip.offsetHeight;
     let x = (IW - W) / 2, y = (IH - th) / 2; // 짚을 곳이 없으면 가운데
@@ -4996,6 +5091,7 @@ function tourRun(k) {
     tip.querySelector(".main").focus();
   };
   const key = e => { if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); end("skip"); } };
+  ov.onclick = e => { if (!e.target.closest("button")) { if (i === steps.length - 1) end("done"); else { i++; place(); } } }; // 아무 데나 눌러도 다음
   tourNow = k; D.body.append(ov); place();
   Wn.addEventListener("resize", place); D.addEventListener("keydown", key, true);
 }
@@ -5014,10 +5110,20 @@ board.addEventListener("pointerdown", e => { const c = e.target.closest(".card")
 
 // 설정 → 사용 방법: 카드별 탭, 단계마다 실제 화면 조각을 노란 네모로. '화면에서 따라 하기'는 위 안내를 바로 띄움
 let hpTopic = "board";
-const hpTopics = () => [["install"], ["board"], ...CARDS.filter(([k]) => !extras.includes(k)).map(([k]) => [k]), ["links"], ["teach"], ["etc"]].filter(([k]) => TOURS[k]);
-function hpDraw(k = hpTopic) {
+const hpTopics = () => [["install"], ["board"], ...CARDS.filter(([k]) => !extras.includes(k)).map(([k]) => [k]), ["links"], ["etc"]].filter(([k]) => TOURS[k]);
+const HP_SUB = { seat: ["seat", "teach"], teach: ["seat", "teach"] }; // 자리배치 안의 작은 탭
+let hpRun = 0;
+const hpTick = () => new Promise(r => { requestAnimationFrame(() => requestAnimationFrame(r)); setTimeout(r, 120); }); // 그려질 틈. 창이 뒤에 있어 화면을 안 그려도 넘어가게
+async function hpDraw(k = hpTopic) {
   hpTopic = k;
-  $s("hp-tabs").replaceChildren(...hpTopics().map(([t]) => h("button", { class: t === k ? "on" : "", onclick: () => hpDraw(t) }, TOURS[t].name)));
+  const run = ++hpRun, c = k === "teach" ? null : CARDS.some(x => x[0] === k) && card(k), hide = c && c.hidden && !pops[k];
+  const ed = k === "teach" && !stOpen() && $s("seat-ed");
+  if (ed) { ed.classList.add("hp-measure"); ed.hidden = false; seDraw($s("st-map"), "teach"); seTeachSide(); await hpTick(); try { if (run === hpRun) hpBuild(k); } finally { ed.hidden = true; ed.classList.remove("hp-measure"); } return; }
+  if (hide) { c.hidden = false; c.classList.add("hp-measure"); await hpTick(); } // 그려질 틈(크기에 맞춰 다시 그림)
+  try { if (run === hpRun) hpBuild(k); } finally { if (hide) { c.classList.remove("hp-measure"); c.hidden = true; } }
+}
+function hpBuild(k) {
+  $s("hp-tabs").replaceChildren(...hpTopics().map(([t]) => h("button", { class: t === k || HP_SUB[k]?.[0] === t ? "on" : "", onclick: () => hpDraw(t) }, TOURS[t].name)));
   const T = TOURS[k], live = k === "board" || CARDS.some(c => c[0] === k);
   const go = live ? h("button", { onclick: () => { togglePanel(false); if (k !== "board" && lay(k).mode !== "board") showCard(k); setTimeout(() => tourRun(k), 450); } }, "▶ 화면에서 따라 하기") : null;
   const shots = [];
@@ -5026,7 +5132,8 @@ function hpDraw(k = hpTopic) {
     if (shot) shots.push(shot);
     return h("div", { class: "hp-step" }, shot, h("p", {}, h("span", { class: "hp-n" }, String(n + 1)), st.text));
   });
-  $s("hp-body").replaceChildren(h("div", { class: "hp-head" }, h("h3", {}, T.name), go), h("div", { class: "hp-steps" }, steps),
+  const sub = HP_SUB[k] ? h("div", { class: "hp-sub" }, HP_SUB[k].map(t => h("button", { class: t === k ? "on" : "", onclick: () => hpDraw(t) }, TOURS[t].name))) : null;
+  $s("hp-body").replaceChildren(h("div", { class: "hp-head" }, h("h3", {}, T.name), go), sub || "", h("div", { class: "hp-steps" }, steps),
     h("div", { class: "hp-auto" }, h("label", {}, h("input", { type: "checkbox", ...(tourSt.off ? {} : { checked: "" }), onchange: e => { tourSt.off = !e.target.checked; tourSave(); } }), " 처음 쓰는 카드에 안내 띄우기"),
       h("button", { onclick: () => { tourSt = { seen: {}, off: false }; tourSave(); togglePanel(false); setTimeout(tourStart, 300); } }, "안내를 처음부터 다시 보기"))); // 설정을 닫고 바로 처음 안내부터
   requestAnimationFrame(() => shots.forEach(sh => { // 칸에 맞게 줄임
@@ -5040,11 +5147,13 @@ function hpShot(k, at) {
   if (!at) return null;
   const els = [].concat(at).map(q => typeof q === "function" ? q() : tourRoot(k)?.querySelector(q)).filter(Boolean);
   if (!els.length) return null;
-  const from = els[0].closest(".card"), wrap = h("div", { class: "hp-wrap " + (els[0].closest("#seat-ed") ? "hp-ed " : "") + (from ? (els[0].parentElement === from ? from.className : from.className.replace(/\bcard\b/, "")) : ""), ...(from ? { "data-card": from.dataset.card } : {}), inert: "" });
+  const from = els[0].closest(".card"), wrap = h("div", { class: "hp-wrap " + (els[0].closest("#seat-ed") ? "hp-ed " : "") + (from ? (els[0].parentElement === from ? from.className + (els[0].matches(".label, .card-down, .card-grip") ? " hp-bar" : "") : from.className.replace(/\bcard\b/, "")).replace("hp-measure", "") : ""), ...(from ? { "data-card": from.dataset.card } : {}), inert: "" });
   let W = 0, H = 0, sized = true;
   for (const el of els) {
     const cl = el.cloneNode(true), r = el.getBoundingClientRect();
     cl.hidden = false;
+    const cvs = [el, ...el.querySelectorAll("canvas")].filter(x => x.tagName === "CANVAS"), ccs = [cl, ...cl.querySelectorAll("canvas")].filter(x => x.tagName === "CANVAS");
+    cvs.forEach((o, n) => { try { if (o.width && o.height) ccs[n].getContext("2d").drawImage(o, 0, 0); } catch (e) {} }); // 복사하면 캔버스 그림은 비어서 옮겨 그림
     if (r.width) { cl.style.width = r.width + "px"; cl.style.height = r.height + "px"; W += r.width; H = Math.max(H, r.height); } else sized = false;
     let node = cl; // 카드까지의 부모를 껍데기만 복사해 감쌈: '.seat-tools button'처럼 부모로 정한 모양이 그대로 나오게
     cl.classList.add("hp-target");
