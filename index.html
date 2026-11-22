@@ -388,6 +388,35 @@
   .se-msg.warn, #seat-msg.warn { background: #fff4ea; color: #a5431c; }
   .se-msg:empty { display: none; }
   @media (max-width: 820px) { .st-body { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1.2fr) minmax(0, 1fr); } }
+  /* 처음 안내: 해당 부분을 네모로 짚고 말풍선으로 한 단계씩 */
+  .tour { position: fixed; inset: 0; z-index: 60; } .tour.dim { background: rgba(30, 20, 10, .45); }
+  .tour-hole { position: fixed; border: 3px solid #ffd43b; border-radius: 10px; box-shadow: 0 0 0 9999px rgba(30, 20, 10, .45); pointer-events: none; transition: all .25s; }
+  .tour-tip { position: fixed; box-sizing: border-box; background: #fff; color: var(--ink); border-radius: 14px; padding: 14px 16px 12px; box-shadow: 0 12px 40px rgba(0, 0, 0, .3);
+              font: 15px/1.5 "Wanted Sans", "Malgun Gothic", sans-serif; transition: top .25s, left .25s; }
+  .tour-tip small { color: var(--muted); font-size: 12px; }
+  .tour-tip p { margin: 4px 0 12px; font-size: 16px; word-break: keep-all; }
+  .tour-tip .row { display: flex; gap: 6px; align-items: center; } .tour-tip .sp { flex: 1; }
+  .tour-tip button { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid #e6dccf; background: #fff; color: var(--ink); border-radius: 999px; padding: 4px 14px; cursor: pointer; }
+  .tour-tip button.main { background: #e2643f; border-color: #e2643f; color: #fff; }
+  .tour-tip button.lite { border: 0; color: var(--muted); padding: 4px 6px; }
+  /* 사용 방법: 카드별 탭, 단계마다 실제 화면 조각 */
+  .hp-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 14px; }
+  .hp-tabs button { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid #e6dccf; background: #fff; color: var(--ink); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
+  .hp-tabs button.on { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .hp-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; } .hp-head h3 { margin: 0; font-weight: normal; font-size: 20px; flex: 1; }
+  .hp-head button { font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; border: 0; border-radius: 999px; padding: 6px 16px; background: #e2643f; color: #fff; cursor: pointer; }
+  .hp-steps { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; margin-top: 12px; }
+  .hp-step { background: #fff; border-radius: 14px; padding: 10px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 1px 2px rgba(60, 40, 20, .05), 0 6px 18px rgba(60, 40, 20, .06); }
+  .hp-step p { margin: 0; display: flex; gap: 8px; align-items: flex-start; font-size: 14px; line-height: 1.5; word-break: keep-all; }
+  .hp-n { flex: none; width: 24px; height: 24px; border-radius: 50%; background: #ffd43b; display: grid; place-items: center; font-size: 13px; font-weight: 700; }
+  .hp-shot { height: 120px; border-radius: 10px; background: var(--bg) radial-gradient(#e2d9ca 1px, transparent 1.2px) 0 0 / 14px 14px; display: flex; align-items: center; justify-content: center; overflow: hidden; } /* flex: 넘치는 그림도 가운데 기준으로 줄어듦 */
+  .hp-wrap { display: flex; gap: 4px; align-items: center; flex: none; box-sizing: border-box; padding: 6px; border-radius: 10px; box-shadow: 0 0 0 3px #ffd43b; background: var(--card, #fff); transform-origin: center; pointer-events: none; }
+  .hp-wrap * { white-space: nowrap; }
+  .hp-shot > .hp-wrap { box-shadow: 0 0 0 3px #ffd43b !important; }
+  .hp-shot > .hp-wrap.card { display: flex !important; flex-direction: row !important; background: var(--accent); border: 0; padding: 6px; overflow: visible; min-width: 0; min-height: 0; } /* 제목 줄 버튼은 흰색이라 카드 색 위에 */
+  .hp-wrap > * { position: relative !important; inset: auto !important; transform: none !important; margin: 0 !important; opacity: 1 !important; }
+  .hp-auto { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 18px; font-size: 13px; color: var(--muted); align-items: center; }
+  .hp-auto button { font: inherit; border: 1.5px solid #e6dccf; background: #fff; border-radius: 999px; padding: 3px 12px; cursor: pointer; }
   /* 카드·창 안에 뜨는 확인 창 */
   .se-ask { position: absolute; inset: 0; z-index: 30; display: grid; place-items: center; background: rgba(250, 247, 242, .72); border-radius: inherit; app-region: no-drag; -webkit-app-region: no-drag; }
   .se-ask > div { max-width: min(400px, 90%); background: #fff; border-radius: 14px; padding: 18px 20px 14px; box-shadow: 0 10px 34px rgba(60, 40, 20, .22); font: 15px/1.55 "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--ink); }
@@ -448,7 +477,7 @@
          font: 16px/1.6 "Wanted Sans", "Malgun Gothic", sans-serif; app-region: no-drag; -webkit-app-region: no-drag; }
   #panel .panel-title { grid-column: 1 / -1; margin: 0 0 14px 12px; font-size: 20px; }
   #panel nav { display: flex; flex-direction: column; gap: 2px; }
-  #panel button { font: inherit; font-size: 15px; border: 1px solid #e6dccf; background: #fff; color: var(--ink); border-radius: 8px; padding: 5px 12px; cursor: pointer; }
+  #panel button:not(:where(.hp-wrap *)) { font: inherit; font-size: 15px; border: 1px solid #e6dccf; background: #fff; color: var(--ink); border-radius: 8px; padding: 5px 12px; cursor: pointer; }
   #panel nav button { border: 0; background: none; text-align: left; padding: 8px 12px; color: var(--muted); }
   #panel nav button:hover { color: var(--ink); }
   #panel nav .on { background: #fff; color: var(--ink); box-shadow: inset 3px 0 0 var(--accent), 0 1px 3px rgba(60, 40, 20, .08); }
@@ -482,12 +511,12 @@
   #panel .roster-table .gx button { border-radius: 0; padding: 4px 10px; }
   #panel .roster-table .gx button.on[data-g="M"] { background: #1c7ed6; color: #fff; }
   #panel .roster-table .gx button.on[data-g="F"] { background: #e03131; color: #fff; }
-  #panel input:not([type]) { flex: 1; font: inherit; padding: 4px 10px; border: 1.5px solid var(--line); border-radius: 8px; background: #fff; }
+  #panel input:not([type]):not(:where(.hp-wrap *)) { flex: 1; font: inherit; padding: 4px 10px; border: 1.5px solid var(--line); border-radius: 8px; background: #fff; }
   #panel .danger { background: var(--accent); border-color: var(--accent); color: #fff; }
   #panel h3 { font-weight: normal; font-size: 17px; color: var(--ink); margin: 22px 0 4px; padding-top: 18px; border-top: 1px solid #f1e9dd; }
   #panel h3:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
   /* 글꼴 위아래가 잘리지 않게 줄 높이와 높이를 넉넉히 */
-  #panel select { font: inherit; line-height: 1.4; height: 36px; padding: 0 28px 0 10px; border: 1.5px solid var(--line); border-radius: 8px; background: #fff; }
+  #panel select:not(:where(.hp-wrap *)) { font: inherit; line-height: 1.4; height: 36px; padding: 0 28px 0 10px; border: 1.5px solid var(--line); border-radius: 8px; background: #fff; }
   .tt-bells { display: grid; grid-template-columns: max-content; gap: 4px; }
   .tt-bells > div { display: flex; align-items: center; gap: 4px; white-space: nowrap; }
   .tt-bells .off { margin-left: 6px; color: var(--muted); font-size: 14px; }
@@ -592,7 +621,14 @@
   .chalk-list li::before { background: none; border: 2px solid #fdfdf6; box-sizing: border-box; color: #fdfdf6; }
   .chalk .note-tools { right: 6px; bottom: 4px; }
   .nt-foot { display: flex; gap: 6px; align-items: center; padding-top: 8px; }
-  .nt-foot select { flex: 1; min-width: 0; }
+  .nt-foot { position: relative; }
+  .nt-foot .nt-hist { flex: 1; min-width: 0; text-align: left; }
+  .nt-menu { position: absolute; left: 0; right: 0; bottom: calc(100% + 4px); z-index: 5; max-height: 240px; overflow-y: auto; padding: 4px; background: #fff; border: 1.5px solid var(--line); border-radius: 10px;
+             box-shadow: 0 8px 24px rgba(60, 40, 20, .18); font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; }
+  .nt-row { display: flex; align-items: center; border-radius: 6px; } .nt-row:hover { background: var(--card); }
+  .nt-foot .nt-menu button { border: 0; background: none; border-radius: 6px; }
+  .nt-foot .nt-menu .pick { flex: 1; text-align: left; padding: 6px 8px; }
+  .nt-foot .nt-menu .x { color: var(--muted); padding: 4px 8px; } .nt-foot .nt-menu .x:hover { color: #e2643f; }
   .nt-foot button, .nt-foot select { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); background: #fff; color: var(--ink); border-radius: 8px; padding: 4px 10px; cursor: pointer; }
   .nt-foot button:disabled { opacity: .35; cursor: default; }
   .nt-foot .main { background: var(--accent); border-color: var(--accent); color: #fff; }
@@ -690,6 +726,8 @@
   .dust-main .face, .noise-meter .face { font-size: clamp(36px, min(18cqw, 16cqh), 64px); line-height: 1; }
   .dust-main b { font-weight: normal; font-size: clamp(24px, 10cqw, 34px); color: var(--grade, var(--ink)); }
   .dust-chips { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; font-size: 18px; }
+  .dust-wx { margin: 0; text-align: center; font: 15px "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--ink); } .dust-wx:empty { display: none; }
+  .dust-wx small { color: var(--muted); font-size: 13px; }
   .dust-chips span { border-radius: 999px; padding: 2px 10px; color: #fff; background: var(--grade); }
   .dust-set { display: flex; flex-direction: column; gap: 6px; font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; }
   .dust-set input { flex: 1; min-width: 0; font: inherit; padding: 3px 8px; border: 1.5px solid var(--line); border-radius: 8px; }
@@ -715,11 +753,11 @@
   <section class="card topic-card" data-card="topic">
     <p class="label">
     <svg width="26" height="26" viewBox="0 0 64 64" aria-hidden="true">
-      <g transform="rotate(-45 32 32)">
+      <g transform="rotate(-45 32 32)" stroke="#2b2420" stroke-width="2.6" stroke-linejoin="round"><!-- 다른 이모지처럼 검은 테두리 -->
         <rect x="10" y="25" width="10" height="14" rx="3" fill="#f7b6c2"/>
         <rect x="19" y="25" width="5" height="14" fill="#c9d6e8"/>
         <rect x="24" y="25" width="24" height="14" fill="#ffe08a"/>
-        <rect x="24" y="30" width="24" height="4" fill="#ffd166"/>
+        <rect x="24" y="30" width="24" height="4" fill="#ffd166" stroke="none"/>
         <polygon points="48,25 58,32 48,39" fill="#f6d7b0"/>
         <polygon points="55,30 58,32 55,34" fill="#6b5b53"/>
       </g>
@@ -793,15 +831,16 @@
       </div>
       <!-- 방법마다 정할 것: 오른쪽 아래 작게 -->
       <div class="pick-opt">
-        <button id="edit-btn" onclick="toggleEdit()"></button>
+        <button id="pick-hist" onclick="pickHist()" hidden title="지난 순서 뽑기 결과">📜 기록</button><button id="edit-btn" onclick="toggleEdit()"></button>
         <label class="groups" id="pick-groups-row" title="모둠 수" hidden>모둠 <input type="number" id="pick-groups" min="2" max="20" value="6"></label>
       </div>
     </div>
   </section>
   <section class="card tool-card" data-card="dust">
-    <p class="label">😷 미세먼지</p>
+    <p class="label">😷 미세먼지·날씨</p>
     <div class="dust-main" id="dust-main"><span class="face" id="dust-face">🌫️</span><b id="dust-grade">지역을 정해 주세요</b></div>
     <div class="dust-chips" id="dust-chips"></div>
+    <p class="dust-wx" id="dust-wx"></p>
     <p class="sub" id="dust-place"></p>
     <div class="dust-set" id="dust-set" hidden>
       <button onclick="dustHere()">📍 지금 이 컴퓨터 위치로 (추천)</button>
@@ -841,7 +880,7 @@
   <section class="card" data-card="notice">
     <p class="label">📋 알림장</p>
     <div class="chalk"><p class="chalk-date" id="nt-date"></p><ol class="note rule-list chalk-list" data-key="notice" contenteditable="true" spellcheck="false" role="textbox" aria-multiline="true" aria-label="알림장"></ol></div>
-    <div class="nt-foot"><select id="nt-hist" onchange="ntPick(this)" aria-label="저장한 알림장"></select><button onclick="ntCopy()" id="nt-copy">📋 복사</button><button onclick="ntDel()" id="nt-del" title="저장한 이 날짜 알림장 지우기" aria-label="저장한 이 날짜 알림장 지우기">🗑️</button><button class="main" onclick="ntSave()" id="nt-save">💾 저장</button></div>
+    <div class="nt-foot"><button id="nt-hist" class="nt-hist" onclick="ntList()" aria-haspopup="true">지난 알림장 보기 ▾</button><button onclick="ntCopy()" id="nt-copy">📋 복사</button><button class="main" onclick="ntSave()" id="nt-save">💾 저장</button></div>
   </section>
   <section class="card tool-card" data-card="scores" id="sc-card">
     <p class="label">📊 성적 알리미</p>
@@ -882,7 +921,7 @@
       </div>
       <div class="tt-right">
         <div class="tt-box">
-          <p class="sub"><svg class="bag-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8.5V7a4 2.6 0 0 1 8 0v1.5" fill="none" stroke="#8a5a2b" stroke-width="2" stroke-linecap="round"/><rect x="2" y="8" width="20" height="13" rx="3.5" fill="#f59f00"/><rect x="2" y="8" width="20" height="4.5" rx="2.2" fill="#e67700"/><rect x="6" y="14.5" width="12" height="4.5" rx="1.5" fill="#ffd43b"/></svg>준비물</p>
+          <p class="sub"><svg class="bag-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8.5V7a4 2.6 0 0 1 8 0v1.5" fill="none" stroke="#2b2420" stroke-width="2" stroke-linecap="round"/><g stroke="#2b2420" stroke-width="1.2"><rect x="2" y="8" width="20" height="13" rx="3.5" fill="#f59f00"/><rect x="2" y="8" width="20" height="4.5" rx="2.2" fill="#e67700"/><rect x="6" y="14.5" width="12" height="4.5" rx="1.5" fill="#ffd43b"/></g></svg>준비물</p>
           <div class="note" data-key="supplies" contenteditable="true" spellcheck="false" role="textbox" aria-multiline="true" aria-label="준비물"></div>
         </div>
         <div class="tt-box">
@@ -995,33 +1034,8 @@
     <p id="copied" class="sum"></p>
   </section>
   <section id="tab-help" hidden>
-    <ul>
-      <li><b>오늘의 주제</b> ↻로 다른 주제를 뽑아요. 쓴 주제는 '사용 체크'하면 다시 나오지 않아요. '2줄 이상 쓰기'는 더블클릭해서 고쳐요.</li>
-      <li><b>메모 · 우리반 규칙</b> 카드를 눌러 바로 쓰면 저절로 저장돼요. 글자를 끌어서 고른 뒤 오른쪽 아래 Tt에서 색을 고르면 그 글자만 바뀌어요. 메모는 아래쪽 바 버튼을 누를 때마다 한 장씩 더 생겨요(더 만든 메모는 닫으면 지워져요).</li>
-      <li><b>사진</b> '사진 넣기'로 사진을 고르세요. 사진 위에 마우스를 올리면 바꾸기·지우기 버튼이 나와요. 아래쪽 바 버튼을 누를 때마다 사진 카드가 한 장씩 더 생겨요.</li>
-      <li><b>타이머</b> 30초·1·3·5·10분을 고르거나, 가운데 시간(00:00)을 눌러 3:30처럼 직접 쓰고 '시작'. +1은 1분 더하기예요. 시간이 끝나면 소리가 나고 카드가 깜빡여요. 아래 '🔊 효과음'으로 시작·멈춤·째깍 소리를 끄고 켜요(마지막 3초와 끝날 때 소리는 늘 나요).</li>
-      <li><b>뽑기</b> <u>전체</u>: 설정 → 명단에 우리 반 이름을 한 줄에 하나씩(숫자만 쓰면 번호로). <u>선택</u>: 오른쪽 아래 '✎ 고르기'로 뽑을 사람만 골라요('처음부터'를 누르면 고른 사람도 비워져요). <u>모둠</u>: 오른쪽 아래에 모둠 수를 정해요. <u>직접입력</u>: 오른쪽 아래 '✎ 쓰기'로 그때그때 뽑을 것을 써요. <u>순서</u>: 명단 전체가 이름 구슬이 되어 긴 핀볼 코스(경사로·범퍼·도는 막대·쐐기)를 굴러 내려가요. 화면은 맨 앞 구슬을 따라 내려가고, 맨 아래 구멍으로 빠진 순서대로 1등부터 정해요. 한 번 뽑힌 것은 모두 뽑힐 때까지 다시 나오지 않고, '처음부터'로 다시 시작해요.</li>
-      <li><b>미세먼지</b> 최고·좋음·보통·나쁨·최악 다섯 단계로 보여 줘요. '지역 설정'에서 '지금 위치로'를 누르거나 시·군 이름(예: 수원시)으로 찾으세요. Open-Meteo(무료 공개 자료)의 예보값이라 에어코리아 측정소 값과 조금 다를 수 있어요. 30분마다 새로 받아요.</li>
-      <li><b>소음 측정</b> '측정 시작'을 누르고 마이크를 허락하면 소리 크기를 막대로 보여 줘요. 기준(검은 선)을 1초 넘게 넘으면 경고음이 나고 오늘 경고 횟수가 쌓여요. '🔔 경고'로 직접 경고를 줄 수도 있어요. 소리는 이 컴퓨터 안에서만 재고, 녹음하거나 보내지 않아요.</li>
-      <li><b>화이트보드</b> ✏️ 펜을 누르면 색과 굵기를 골라 그려요. T 글상자는 누른 뒤 보드(사진 위도 돼요)를 클릭해 써요. 사진은 복사해서 Ctrl+V(또는 끌어다 놓기). 옮기기에서 사진·글상자·펜 선을 끌어 옮기고, 오른쪽 아래 파란 점으로 크기를 바꾸고(글상자는 글씨도 같이 커져요), 오른쪽 위 ✕나 Delete로 지워요. 빈 곳에서 끌어 네모를 그리면 그 안에 통째로 들어온 것이 함께 골라지고(조금 걸친 건 빠져요), Shift를 누른 채 여러 개를 눌러도 골라져요. '묶기'로 한 덩어리로 묶어요('풀기'로 다시 나눠요). 글상자는 두 번 클릭하면 고치고, 글상자를 고르면 위에 나오는 Tt로 글씨 크기·색을 바꿔요. 여러 개나 묶음은 점선 상자 오른쪽 아래 파란 점으로 한꺼번에 크기를 바꿔요. ↶나 Ctrl+Z로 되돌려요. 제목 줄 오른쪽 1~4 버튼으로 화이트보드를 4개까지 따로 써요.</li>
-      <li><b>시간표</b> 설정 → 시간표에서 연간시간표 파일(한글·워드·PDF)과 시정표를 넣으면, 지금 몇 교시인지와 다음 시간을 알려 줘요. 표에 없는 주는 '매주 기본 시간표'를 써요.</li>
-      <li><b>보드 카드</b> 제목을 끌어 옮기고, 오른쪽 아래 모서리로 크기를 바꿔요. 옮긴 자리와 크기는 앱을 껐다 켜도 그대로예요. ✕를 누르면 보드에서 닫히고 아래쪽 바로 들어가요. 닫아도 적어 둔 내용은 남아요. 제목 줄 맨 오른쪽 세 버튼 중 첫 번째(네모에서 화살표가 나가는 모양)를 누르면 카드가 따로 창으로 떨어져요. 그 창을 다른 모니터(TV)로 끌어 놓고 최대화하면 학생 화면에는 그 카드만 크게 보여요. 그 창을 닫거나 같은 버튼을 다시 누르면 보드로 돌아와요. 모니터가 두 대일 때 선생님 모드는 학생 화면에 뜨지 않아요. 자리배치를 떼어 선생님 모니터로 옮겼으면 그 창 안에 뜨고, 자리배치가 보드에 있으면 따로 창이 열려 메인 모니터로 가요. 처음 한 번 브라우저가 '창 관리' 허락을 물으면 허용을 눌러 주세요. 허용하지 않으면 '우리반 보드'라고만 쓰인 평범한 창이 열려요. 그 창을 선생님 모니터로 끌어 옮긴 뒤 두 번 누르면 선생님 모드가 열려요. 떼어 낸 카드도 아래쪽 바 버튼을 누르면 보드로 돌아와 내려가요.</li>
-      <li><b>아래쪽 바</b> 모든 카드 버튼이 늘 있어요. 누르면 보드에 띄우고, 한 번 더 누르면 내려요. 보드에 떠 있는 카드는 아이콘에 테두리와 아래 점이 생겨요. 메모·사진은 버튼 오른쪽 위 +를 누르면 한 장 더 생겨요. 버튼을 옆으로 끌어 순서를 바꿀 수 있어요. 자주 안 쓰는 버튼은 끌어서 오른쪽 끝 '서랍'에 놓거나, '서랍'을 눌러 아래 목록에서 골라 넣어 두면 서랍 안에서 꺼내 써요.</li>
-      <li><b>학급 온도계</b> +1°, +5°로 반 온도를 올리고 −1°로 내려요. 연필 버튼에서 5°마다 보상을 쓸 수 있어요(비워 둬도 돼요). 카드에는 다음 보상(예: 10°가 되면 ○○)이 나오고, 올릴 땐 올라가는 소리, 내릴 땐 내려가는 소리가 나요. 보상 온도를 넘거나 100°가 되면 소리와 함께 축하해요. ↻는 0°로 되돌려요.</li>
-      <li><b>즐겨찾기</b> 아래쪽 바의 🌐 즐겨찾기를 누르면 작은 메뉴가 떠요(바깥을 누르면 닫혀요). '+ 링크'로 자주 가는 주소를 넣고, 누르면 인터넷 창으로 열려요. '+ 폴더'로 폴더를 만들고, 폴더를 누르면 옆에 펼쳐져요. 링크를 끌어 폴더 위에 놓으면 폴더에 들어가고, 펼친 폴더의 링크를 왼쪽 목록에 놓으면 밖으로 나와요. 줄을 오른쪽 버튼으로 누르면 이름 바꾸기·삭제가 나와요. ✎를 켜면 이름·주소·폴더를 바꾸거나 지울 수 있어요.</li>
-      <li><b>알림장</b> 칠판처럼 생긴 카드에 알아보기 쉬운 글씨로 알림장을 써요. Enter를 치면 다음 번호, 날짜는 오늘이에요. '📋 복사'를 누르면 날짜와 번호가 붙은 채로 복사돼서 다른 곳에 그대로 붙여 넣을 수 있어요(직접 골라 Ctrl+C 해도 번호가 붙어요). '💾 저장'은 날짜별로 저장하고, '지난 알림장 보기'에서 그날 것을 다시 불러와요. '＋ 오늘 새로 쓰기'로 빈 알림장을 시작해요. 🗑️는 지금 보고 있는 날짜로 저장한 알림장을 지워요(칠판 글은 남아요). 글이 많아지면 카드가 아래로 커져요. Tt에서 글씨 크기와 분필 색을 바꾸고 ⛶로 크게 띄워요.</li>
-      <li><b>성적 알리미</b> '✎ 점수 넣기'에서 평가 이름·만점과 학생마다 점수를 넣어요(엑셀에서 점수 한 줄을 복사해 첫 칸에 붙여넣으면 아래로 채워져요). 카드에는 이름만 보이고, 이름을 누르면 그 학생 점수만 크게 나와요. 한 번 본 학생은 흐리게 바뀌어요. 점수도 다른 내용처럼 이 컴퓨터(로그인하면 서버)에 저장돼요.</li>
-      <li><b>QR 만들기</b> 칸에 주소나 글을 넣으면 바로 QR이 생겨요. 아래쪽 바 버튼의 +로 QR 카드를 여러 장 띄울 수 있어요. 자주 쓰는 건 '☆ 저장'으로 이름을 붙여 보관함에 넣고, 오른쪽 아래 '보관함'에서 눌러 바로 띄워요. ⛶ 전체 화면으로 크게 띄워 학생들이 찍게 하세요. 인터넷 없이 이 컴퓨터에서 만들어요.</li>
-      <li><b>자리배치</b> 처음 한 번 설정 버튼에서 모양(분단: 혼자·짝꿍과 앉기와 분단 수 / 모둠: 모둠 인원 / 직접 그리기: 명단 인원만큼 자리를 고르고, 필요하면 '방향 돌리기'로 ㄷ자처럼 옆을 보게)과 짝꿍 조건(상관없이·이성끼리·동성끼리·성별 고르게, 이전 짝꿍과 같이 안 앉기)을 정하면 계속 유지돼요. 성별은 설정 → 명단에서 이름과 함께 정해요. 평소에는 '자동 자리배치'(한 자리씩 나타나요), 그 아래 '오늘 날짜로 저장', 출력만 누르면 돼요. 출력은 학생 시점(칠판이 위)·교사 시점(칠판이 아래)·둘 다 중에서 골라 A4 가로로 크게 나와요. 이름을 끌어 다른 자리에 놓거나, 이름을 누른 뒤 다른 자리를 누르면 서로 자리를 바꾸고, 칠판 옆 '상하전환'으로 위아래를 바꿔요. 손으로 자리를 바꾸면 오른쪽 아래에 되돌리기·다시 하기와 '원래대로'(마지막으로 자동 배치한 자리로)가 나와요. 대형을 만들면 많이 쓰는 공개 모둠으로 묶여요(혼자 앉기는 한 줄, 짝꿍은 4~6명). 미리보기에서 책상이나 모둠을 끌어 옮기고 '간격 맞추기'로 줄과 간격을 똑같이 맞춰요. 모둠을 바꾸려면 책상을 고르고(Shift+누르기, 빈 곳을 끌어 네모로) '모둠으로 묶기'를 눌러요. 혼자 앉기에서는 짝꿍 대신 모둠 성별 조건(상관없이·성별 고르게)을 골라요. 모둠 상자 아래 이름(1모둠…)을 누르면 이름을 바꿀 수 있어요. 자리배치도 이름 옆 작은 별은 선생님 모드예요(고정, 분리, 기록). 선생님 모드에서 바꾼 것은 학생 화면에 바로 나오지 않아요. 선생님 모드의 '랜덤 섞기'는 다음 자리를 미리 섞어 두는 것이고, 보드에서 '자동 자리배치'를 누를 때 그 자리로 앉아요. 미리 섞지 않았으면 고정·분리를 지키며 나머지 학생만 새로 섞어요. '초기화'는 미리 섞은 자리를 비워요(고정·분리는 그대로). 선생님 모드에서는 소리가 나지 않아요. 분리에서 같이 앉으면 안 되는 학생을 비밀 그룹으로 묶고 1~4순위를 정해요(1순위를 가장 먼저 떨어뜨려요). 같은 그룹은 짝꿍·앞뒤·좌우·같은 모둠으로 앉지 않아요. 다 지킬 수 없으면 바로 앉히지 않고 먼저 물어봐요.</li>
-      <li><b>로그인</b> 설정 → 로그인에서 구글로 로그인하면 보드가 서버에 저장되고, 다른 컴퓨터에서 같은 계정으로 로그인하면 같은 보드가 나와요.</li>
-      <li><b>준비물</b> 시간표 카드 오른쪽 칸에 쓰면 저장돼요.</li>
-      <li><b>명단 사진</b> 설정 → 명단에서 명렬표 사진(PNG·JPEG)도 가져올 수 있어요. 글자 인식이라 틀린 이름이 있을 수 있으니 가져온 뒤 표에서 꼭 확인해 주세요. 처음 한 번은 글자 인식 자료를 받느라 조금 걸려요.</li>
-      <li><b>창 옮기기</b> 맨 위 줄을 잡고 끌어요. 창 크기는 모서리를 끌어 조절해요. 창이 좁으면 카드가 아래로 쌓여요.</li>
-      <li><b>앱 설치 (Edge)</b> 이 주소를 Edge로 열고 주소창 오른쪽 설치 아이콘을 눌러요. 안 보이면 … 메뉴 → 앱 → '이 사이트를 앱으로 설치'.</li>
-      <li><b>앱 설치 (Chrome)</b> 주소창 오른쪽 설치 아이콘, 또는 ⋮ 메뉴 → 전송, 저장, 공유 → '페이지를 앱으로 설치'.</li>
-      <li><b>켤 때 자동 실행 (Edge)</b> 주소창에 edge://apps 입력 → 이 앱의 … → '장치 로그인 시 시작'.</li>
-      <li><b>저장 위치</b> 메모, 규칙, 사진, 사용 기록은 모두 이 컴퓨터에만 저장돼요. 인터넷으로 보내지 않아요.</li>
-    </ul>
+    <div class="hp-tabs" id="hp-tabs"></div>
+    <div id="hp-body"></div>
   </section>
   <section id="tab-account" hidden>
     <p class="sum">구글 계정으로 로그인하면 이 보드(명단·메모·급훈·시간표·카드 배치·사진·화이트보드)가 서버에 저장돼요. 다른 컴퓨터에서 같은 계정으로 로그인하면 같은 보드가 나와요. 고칠 때마다 몇 초 뒤 저절로 저장돼요.</p>
@@ -1400,6 +1414,7 @@ function openTab(name) {
   panel.querySelectorAll("nav [data-tab]").forEach(b => b.classList.toggle("on", b.dataset.tab === name));
   panel.querySelectorAll("section").forEach(s => s.hidden = s.id !== "tab-" + name);
   if (name === "history") renderHistory();
+  if (name === "help") hpDraw(); else $s("hp-body")?.replaceChildren(); // 화면 조각(복사본)은 볼 때만 둠
   if (name === "time") ttEditor();
 }
 function togglePanel(open) { panel.hidden = !open; if (open) openTab("time"); }
@@ -1470,7 +1485,7 @@ document.getElementById("today").textContent =
 const CARDS = [["topic", "✏️ 오늘의 주제", "board", "2", [340, 200]], ["timetable", "🕘 시간표", "board", "2", [320, 190]],
   ["memo", "📝 메모", "board", "1", [210, 180]], ["rules", "📌 우리반 규칙", "board", "1", [260, 230]], ["motto", "🏫 급훈", "popup", "2", [320, 170]], ["seat", "🪑 자리배치", "popup", "4", [480, 380]],
   ["photo", "🖼️ 사진", "popup", "1", [200, 170]], ["timer", "⏱️ 타이머", "popup", "1", [240, 240]], ["picker", "🎲 뽑기", "popup", "1", [300, 260]],
-  ["whiteboard", "🖍️ 화이트보드", "popup", "4", [420, 320]], ["dust", "😷 미세먼지", "board", "1", [190, 190]], ["noise", "🔉 소음 측정", "popup", "1", [240, 270]],
+  ["whiteboard", "🖍️ 화이트보드", "popup", "4", [420, 320]], ["dust", "😷 미세먼지·날씨", "board", "1", [190, 190]], ["noise", "🔉 소음 측정", "popup", "1", [240, 270]],
   ["thermo", "🌡️ 학급 온도계", "popup", "1", [240, 260]], ["qr", "🔳 QR 만들기", "popup", "1", [240, 280]],
   ["notice", "📋 알림장", "popup", "2", [340, 320]],
   ["scores", "📊 성적 알리미", "popup", "2", [320, 280]]];
@@ -1737,6 +1752,7 @@ async function resetPlaces() {
 function cardStop(k) { // 닫은 카드에서 돌던 것 멈춤 (뽑기 애니메이션·소리, 소음 측정 마이크). 타이머는 닫아도 계속 (끝나면 다시 뜸)
   if (k === "picker") pickStop();
   if (k === "noise" && nStream) noiseToggle();
+  if (k === "seat") { if (stOpen()) seTeachClose(); if ($s("se-form").matches(":popover-open")) $s("se-form").hidePopover(); }
 }
 function toggleCard(k) {
   if (pops[k]) { cardBack(k); return setLayout(k, { mode: "popup" }); } // 다른 창으로 뗀 카드: 보드로 돌려놓고 내림 (다시 누르면 보드에 붙음)
@@ -1748,6 +1764,7 @@ function showCard(k) { // 아래쪽 바에서 누르면 보드에 바로 맨 앞
   if (pops[k]) return pops[k].w.focus();
   if (MULTI[k] && lay(k).mode === "board") { addCard(k); return; }
   setLayout(k, { mode: "board" }); card(k).style.zIndex = ++zTop;
+  if (typeof tourAuto === "function") setTimeout(() => tourAuto(k.split("-")[0]), 400); // 처음 띄우면 안내
 }
 applyLayout();
 
@@ -2121,7 +2138,7 @@ function pickInfo() {
   pickLeft.textContent = !all.length ? empty[pk.mode] : pk.mode !== "order" ? `남은 ${left.length} / ${all.length}`
     : pk.order ? "빠진 순서예요" : `${all.length}명 · '뽑기'를 누르면 구슬이 떨어져요`;
   document.querySelectorAll(".modes [data-mode]").forEach(b => b.classList.toggle("on", b.dataset.mode === pk.mode));
-  editBtn.hidden = pk.mode === "group"; groupsRow.hidden = pk.mode !== "group";
+  editBtn.hidden = pk.mode === "group"; groupsRow.hidden = pk.mode !== "group"; document.getElementById("pick-hist").hidden = pk.mode !== "order";
   editBtn.textContent = pickEdit.hidden ? EDIT_LABEL[pk.mode] : "✓ 완료";
   if (pickGo.disabled) return left; // 뽑는 중에는 카드를 다시 그리지 않음
   // 이름 카드: 뽑힌 건 회색 줄긋기, 방금 뽑힌 건 강조. 다 보이도록 글씨를 줄여 맞춤
@@ -2192,6 +2209,18 @@ function pickOne() {
   step();
 }
 // 처음부터: 뽑힌 기록을 비움. 선택은 고른 사람도 비움
+// 순서 뽑기 기록: 끝날 때마다 저장(최근 30번). 누르면 그 결과를 다시 띄움
+function pickHist() {
+  const c = card("picker"); c.querySelector(".card-ed")?.remove();
+  const close = h("button", { class: "main", onclick: () => ed.remove() }, "닫기"), list = h("div", { class: "card-ed-list" });
+  const ed = h("div", { class: "card-ed" }, h("div", { class: "card-ed-head" }, h("b", {}, "순서 뽑기 기록"), close), list);
+  const when = t => new Date(t).toLocaleString("ko-KR", { month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" });
+  const draw = () => list.replaceChildren(...((pk.hist || []).length ? pk.hist.map((x, i) => h("div", { class: "qr-item" },
+    h("button", { class: "pick", onclick: () => { pk.order = x.order.slice(); pkSave(); pickInfo(); ed.remove(); } }, h("span", {}, when(x.at)), h("small", {}, x.order.slice(0, 5).map((p, j) => `${j + 1}등 ${seName(p)}`).join(" · ") + (x.order.length > 5 ? " …" : ""))),
+    h("button", { class: "x", title: "기록 지우기", "aria-label": "기록 지우기", onclick: async () => { if (await seConfirm(c, `${when(x.at)} 기록을 지울까요?`, "지우기")) { pk.hist.splice(i, 1); pkSave(); draw(); } } }, "✕")))
+    : [h("p", { class: "none" }, "아직 기록이 없어요. 순서 뽑기를 끝까지 하면 저절로 남아요.")]));
+  draw(); c.append(ed); close.focus();
+}
 function pickReset() { pk.picked[pk.mode] = []; if (pk.mode === "select") pk.chosen = []; pkWin = null; if (pk.mode === "order") delete pk.order; pkSave(); pickInfo(); }
 // 순서 뽑기 (핀볼): 이름 구슬이 긴 코스를 굴러 내려가고, 맨 아래 깔때기 구멍으로 빠진 순서가 곧 순서
 // 코스는 화면 높이의 몇 배로 길고, 화면은 맨 앞 구슬을 따라 아래로 내려감. 진짜로 굴려서 정함 (미리 정해 두지 않음)
@@ -2328,6 +2357,7 @@ function pickRace(all) {
   const inPoly = (x, y, P) => { let c = false; for (let i = 0, j = P.length - 1; i < P.length; j = i++) if ((P[i][1] > y) !== (P[j][1] > y) && x < (P[j][0] - P[i][0]) * (y - P[i][1]) / (P[j][1] - P[i][1]) + P[i][0]) c = !c; return c; };
   const draw = () => {
     const dpr = devicePixelRatio || 1, SW = cv.clientWidth, SH = cv.clientHeight, k = SW / W, now = performance.now(), fdt = Math.min(.05, (now - fxT) / 1000);
+    if (!SW || !SH) return; // 카드를 내려 안 보이면 그리지 않음 (크기 0인 캔버스는 그릴 수 없음)
     fxT = now;
     if (now - listT > 200) renderList(); // 순위 목록은 0.2초마다 새로
     if (cv.width !== Math.round(SW * dpr) || cv.height !== Math.round(SH * dpr)) { cv.width = Math.round(SW * dpr); cv.height = Math.round(SH * dpr); } // 화면 픽셀 그대로 그려서 안 깨지게
@@ -2457,7 +2487,7 @@ function pickRace(all) {
     balls.filter(b => !b.out).sort((a, b) => b.y - a.y).forEach(b => { b.out = true; finish(b); }); // 2분이 지나도 안 나온 구슬은 더 내려간 순서로
     banner = { txt: "FINISH!", until: performance.now() + 1500, blink: true }; burst(W / 2, camY + VH * .45, 24, ["#ffd43b", "#fff6c8", "#7c5cff", "#8ea2ff"]);
     const outro = setInterval(draw, 50); // 끝 글자 깜빡임만 그림 (구슬은 이미 다 들어옴)
-    setTimeout(() => { clearInterval(outro); if (run !== pkRun) return; pk.order = order; pkSave(); pickGo.disabled = false; pickInfo(); melody([523, 659, 784, 1047], .1, "triangle", .3); }, 1500);
+    setTimeout(() => { clearInterval(outro); if (run !== pkRun) return; pk.order = order; pk.hist = [{ at: Date.now(), order: order.slice() }, ...(pk.hist || [])].slice(0, 30); pkSave(); pickGo.disabled = false; pickInfo(); melody([523, 659, 784, 1047], .1, "triangle", .3); }, 1500);
   };
   document.fonts.load('16px "Galmuri11"').catch(() => {}); document.fonts.load('12px "GalmuriMono9"').catch(() => {});
   const t0 = performance.now(), intro = setInterval(draw, 50); // 출발 전 3·2·1 글자를 그리기만
@@ -3035,9 +3065,7 @@ let ntHist = {}, ntDay = localStorage.getItem("notice-day") || iso(new Date());
 const ntLabel = d => new Date(d + "T00:00").toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "long" });
 function ntDraw() {
   $s("nt-date").textContent = ntLabel(ntDay) + " 알림장";
-  $s("nt-hist").replaceChildren(h("option", { value: "" }, "지난 알림장 보기"), h("option", { value: "new" }, "＋ 오늘 새로 쓰기"),
-    ...Object.keys(ntHist).sort().reverse().map(d => h("option", { value: d }, ntLabel(d) + (d === ntDay ? " (지금)" : ""))));
-  $s("nt-del").disabled = !ntHist[ntDay];
+  if (ntEl.closest(".card").querySelector(".nt-menu")) ntList(true); // 열려 있으면 다시 그림
 }
 const ntLines = lis => lis.map(li => li.textContent.trim()).filter(Boolean);
 const ntText = lis => ntLines(lis).map((t, i) => `${i + 1}. ${t}`).join("\n");
@@ -3062,12 +3090,28 @@ function ntSave() {
   ntHist[ntDay] = ntEl.innerHTML; jset("notice-hist", ntHist); ntDraw();
   const b = $s("nt-save"); b.textContent = "저장했어요"; setTimeout(() => b.textContent = "💾 저장", 1500);
 }
-async function ntDel() { // 저장한 것만 지움. 칠판에 쓴 글은 그대로
-  if (!ntHist[ntDay] || !await seConfirm(card("notice"), `저장한 ${ntLabel(ntDay)} 알림장을 지울까요?\n칠판에 쓴 글은 그대로 있어요.`, "지우기")) return;
-  delete ntHist[ntDay]; jset("notice-hist", ntHist); ntDraw();
+// 지난 알림장 목록: 날짜를 누르면 불러오고, ✕로 저장한 것을 지움 (칠판 글은 그대로). 바깥을 누르면 닫힘
+function ntList(redraw) {
+  const foot = $s("nt-hist").parentElement, old = foot.querySelector(".nt-menu");
+  if (old && !redraw) return old.remove();
+  const m = h("div", { class: "nt-menu" }, h("div", { class: "nt-row" }, h("button", { class: "pick", onclick: () => { m.remove(); ntPick("new"); } }, "＋ 오늘 새로 쓰기")),
+    ...Object.keys(ntHist).sort().reverse().map(d => h("div", { class: "nt-row" },
+      h("button", { class: "pick", onclick: () => { m.remove(); ntPick(d); } }, ntLabel(d) + (d === ntDay ? " (지금)" : "")),
+      h("button", { class: "x", title: "저장한 이 알림장 지우기", "aria-label": "저장한 이 알림장 지우기", onclick: () => ntDel(d) }, "✕"))));
+  if (old) return old.replaceWith(m);
+  foot.append(m);
+  const out = e => { // 지우고 다시 그려도 지금 떠 있는 목록을 찾아 닫음
+    const cur = foot.querySelector(".nt-menu");
+    if (!cur) return document.removeEventListener("pointerdown", out, true);
+    if (!cur.contains(e.target) && e.target !== $s("nt-hist") && !e.target.closest(".se-ask")) { cur.remove(); document.removeEventListener("pointerdown", out, true); }
+  };
+  document.addEventListener("pointerdown", out, true);
 }
-async function ntPick(sel) {
-  const v = sel.value; sel.value = "";
+async function ntDel(d) { // 저장한 것만 지움. 칠판에 쓴 글은 그대로
+  if (!ntHist[d] || !await seConfirm(card("notice"), `저장한 ${ntLabel(d)} 알림장을 지울까요?\n칠판에 쓴 글은 그대로 있어요.`, "지우기")) return;
+  delete ntHist[d]; jset("notice-hist", ntHist); ntDraw();
+}
+async function ntPick(v) {
   if (!v || v === ntDay) return;
   const dirty = ntLines([...ntEl.querySelectorAll("li")]).length && ntEl.innerHTML !== ntHist[ntDay];
   if (dirty && !await seConfirm(card("notice"), "지금 알림장은 저장하지 않았어요. 그래도 바꿀까요?", "바꾸기")) return;
@@ -3796,6 +3840,7 @@ async function dustLoad() {
   const main = document.getElementById("dust-grade"), chips = document.getElementById("dust-chips");
   document.getElementById("dust-place").textContent = dustPlace ? "📍 " + dustPlace.name : "";
   if (!dustPlace) return;
+  wxLoad();
   try {
     const r = await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${dustPlace.lat}&longitude=${dustPlace.lon}&current=pm10,pm2_5&timezone=Asia%2FSeoul`);
     const c = (await r.json()).current;
@@ -3810,6 +3855,16 @@ async function dustLoad() {
     }));
     document.getElementById("dust-place").textContent = `📍 ${dustPlace.name} · ${c.time.slice(11, 16)} 기준`;
   } catch (e) { main.textContent = "불러오지 못했어요"; main.style.removeProperty("--grade"); chips.replaceChildren(); }
+}
+// 날씨: 같은 지역의 지금 기온·날씨, 오늘 최저·최고 (Open-Meteo, 키 없음)
+const wxIcon = c => c === 0 ? "☀️" : c <= 2 ? "🌤️" : c === 3 ? "☁️" : c <= 48 ? "🌫️" : c <= 57 ? "🌦️" : c <= 67 ? "🌧️" : c <= 77 ? "🌨️" : c <= 82 ? "🌧️" : c <= 86 ? "🌨️" : "⛈️";
+async function wxLoad() {
+  const el = document.getElementById("dust-wx");
+  try {
+    const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${dustPlace.lat}&longitude=${dustPlace.lon}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=Asia%2FSeoul&forecast_days=1`);
+    const d = await r.json(), t = v => Math.round(v) + "°";
+    el.replaceChildren(`${wxIcon(d.current.weather_code)} ${t(d.current.temperature_2m)} `, h("small", {}, `최저 ${t(d.daily.temperature_2m_min[0])} · 최고 ${t(d.daily.temperature_2m_max[0])}`));
+  } catch (e) { el.textContent = ""; }
 }
 function dustSet(place) {
   dustPlace = place;
@@ -4180,7 +4235,7 @@ $s("seat-mini").addEventListener("pointerdown", e => seMapDown(e, "home"));
 $s("st-map").addEventListener("pointerdown", e => seMapDown(e, "teach"));
 
 // ── 조건: 두 책상 사이 관계 (책상 단위). 짝: 바로 옆에 붙음, 좌우: 같은 줄 옆자리(통로 건너 포함), 앞뒤: 같은 칸 앞뒷자리
-const seRel = (a, b) => { const dx = Math.abs(a.x - b.x), dy = Math.abs(a.y - b.y); return { pair: dy < .35 && dx <= DW + .15, side: dy < .35 && dx <= 1.95, front: dx < .5 && dy <= 1.2 }; }; // 한 줄 = 앞뒤 1.2 안
+const seRel = (a, b) => { const dx = Math.abs(a.x - b.x), dy = Math.abs(a.y - b.y); return { pair: dy < .35 && dx <= DW + .15, side: dy < .35 && dx <= 1.95, front: dx < .5 && dy <= 1.2, diag: dx >= .5 && dx <= 1.95 && dy >= .35 && dy <= 1.2 }; }; // 한 줄 = 앞뒤 1.2 안, 대각선 = 옆줄의 앞뒤
 // 모둠: 같은 z끼리, z가 없으면(자유형) 맞닿은 책상끼리
 function seZones() {
   const D = sc().desks, zone = {};
@@ -4214,7 +4269,7 @@ function seViol(S, mode, G, prev) {
       const a = where[g.m[i]], b = where[g.m[j]];
       if (!a || !b) continue;
       const r = seRel(a, b), same = G.sep[a.id] === G.sep[b.id] && G.seps[G.sep[a.id]] > 1;
-      const why = same ? (G.sepKind === "짝" ? "짝꿍이에요" : `같은 ${G.sepKind}이에요`) : r.pair ? "짝꿍이에요" : r.side ? "좌우로 붙어 있어요" : r.front ? "앞뒤로 붙어 있어요" : "";
+      const why = same ? (G.sepKind === "짝" ? "짝꿍이에요" : `같은 ${G.sepKind}이에요`) : r.pair ? "짝꿍이에요" : r.side ? "좌우로 붙어 있어요" : r.front ? "앞뒤로 붙어 있어요" : r.diag ? "대각선으로 붙어 있어요" : "";
       if (why) out.push({ who: [g.m[i], g.m[j]], w, sep: true, text: `[${pr}순위 ${g.name}] ${seName(g.m[i])}·${seName(g.m[j])}: ${why}` });
     }
   }
@@ -4727,6 +4782,205 @@ document.addEventListener("keydown", e => {
   if ($s("se-form").matches(":popover-open")) $s("se-form").hidePopover(); else if (stOpen()) seTeachClose();
 });
 seClean(); seRedraw();
+
+// ───── 처음 쓰는 선생님을 위한 안내: 해당 부분을 네모로 짚으며 한 단계씩 (설정 → 사용 방법에서도 같은 단계로 보여 줌)
+// 보드 안내는 처음 켤 때, 카드 안내는 그 카드를 처음 띄우거나 처음 누를 때. at: 짚을 곳(카드 안 선택자, 보드는 전체에서. 여러 개면 한꺼번에), 없으면 말풍선만
+// 자리배치 안내는 학생 화면에 뜰 수 있어 선생님 모드 이야기는 넣지 않음 (사용 방법에만)
+const TOURS = {
+  board: { name: "🧭 처음 시작", steps: [
+    { at: ".dock", text: "아래쪽 바예요. 버튼을 누르면 카드가 보드에 뜨고, 한 번 더 누르면 내려가요. 옆으로 끌면 순서가 바뀌어요." },
+    { at: "#drawer-btn", text: "자주 안 쓰는 버튼은 끌어서 '서랍'에 넣어 두세요." },
+    { at: () => tourCard()?.querySelector(".label"), text: "카드 제목 줄을 끌면 카드를 옮길 수 있어요." },
+    { at: () => tourCard()?.querySelector(".card-grip"), text: "오른쪽 아래 모서리를 끌면 크기가 바뀌어요." },
+    { at: [() => tourCard()?.querySelector(".card-pop"), () => tourCard()?.querySelector(".card-full"), () => tourCard()?.querySelector(".card-down:not(.card-pop):not(.card-full)")], text: "왼쪽부터 ① 따로 창으로 떼기(TV 같은 다른 모니터로) ② 전체 화면 ③ 닫기(아래쪽 바로)" },
+    { at: ".gear", text: "설정: 명단·시간표·로그인. '사용 방법'에서 이 안내를 다시 볼 수 있어요." }] },
+  topic: { name: "✏️ 오늘의 주제", steps: [
+    { at: "#topic", text: "오늘 이야기할 주제예요." },
+    { at: ".tools button", text: "↻를 누르면 다른 주제가 나와요." },
+    { at: ".used", text: "쓴 주제는 '사용 체크'하면 다시 나오지 않아요." },
+    { at: ".rule-line", text: "아래 글은 두 번 눌러 고칠 수 있어요." }] },
+  timetable: { name: "🕘 시간표", steps: [
+    { at: ".tt-left", text: "지금 몇 교시인지와 오늘 시간표가 보여요." },
+    { at: ".tt-right", text: "준비물과 숙제를 써요. 저절로 저장돼요." },
+    { text: "시간표는 설정 → 시간표에서 연간시간표 파일(한글·워드·PDF)과 시정표를 넣어요." }] },
+  memo: { name: "📝 메모", steps: [
+    { at: ".note", text: "눌러서 바로 쓰면 저절로 저장돼요." },
+    { at: ".note-tools", text: "글자를 골라 Tt에서 크기·색을 바꿔요." },
+    { text: "아래쪽 바 메모 버튼 오른쪽 위 +를 누르면 메모가 한 장 더 생겨요." }] },
+  rules: { name: "📌 우리반 규칙", steps: [
+    { at: ".note", text: "한 줄에 규칙 하나. Enter를 치면 다음 번호가 붙어요. 많아지면 카드가 아래로 커져요." },
+    { at: ".note-tools", text: "Tt에서 글씨 크기·색을 바꿔요." }] },
+  motto: { name: "🏫 급훈", steps: [{ at: ".motto", text: "눌러서 급훈을 써요." }] },
+  seat: { name: "🪑 자리배치", steps: [
+    { at: 'button[data-ic="set"]', text: "처음 한 번: 자리 모양(분단·모둠·직접 그리기)과 짝꿍 조건을 정해요." },
+    { at: 'button[data-ic="shuffle"]', text: "자동 자리배치: 학생들이 한 자리씩 앉아요." },
+    { at: ".seat-mini", text: "이름을 끌거나, 누른 뒤 다른 자리를 누르면 서로 바꿔요. 바꾸면 오른쪽 아래에 되돌리기·원래대로가 나와요." },
+    { at: "#seat-save", text: "오늘 날짜로 저장하면 위 목록에서 다시 볼 수 있어요." },
+    { at: 'button[data-ic="print"]', text: "출력: 학생 시점 · 교사 시점 · 둘 다 (A4 가로)" }] },
+  photo: { name: "🖼️ 사진", steps: [
+    { at: ".photo-box", text: "'+ 사진 넣기'로 사진을 골라요. 사진 위에 마우스를 올리면 바꾸기·지우기가 나와요." },
+    { text: "아래쪽 바 사진 버튼의 +로 사진 카드를 더 띄워요." }] },
+  timer: { name: "⏱️ 타이머", steps: [
+    { at: ".chips", text: "시간을 골라요. +1은 1분 더하기예요." },
+    { at: "#timer-time", text: "시간을 눌러 3:30처럼 직접 써도 돼요." },
+    { at: "#timer-go", text: "시작·멈춤. 끝나면 소리가 나고 카드가 깜빡여요." },
+    { at: "#timer-sfx", text: "효과음 켜기·끄기 (마지막 3초와 끝나는 소리는 늘 나요)" }] },
+  picker: { name: "🎲 뽑기", steps: [
+    { at: ".modes", text: "뽑는 방법: 전체 · 선택 · 모둠 · 순서(핀볼) · 직접입력" },
+    { at: "#pick-go", text: "뽑기! 한 번 뽑힌 사람은 모두 뽑힐 때까지 안 나와요." },
+    { at: ".pick-bottom .acts button:not(.main)", text: "처음부터: 뽑힌 기록을 비워요." },
+    { at: ".pick-opt", text: "방법마다 고르기·쓰기·모둠 수. 순서 뽑기는 '📜 기록'에서 지난 결과를 봐요." }] },
+  whiteboard: { name: "🖍️ 화이트보드", steps: [
+    { at: ".wb-tools", text: "옮기기 · 펜 · 글상자 · 되돌리기 · 모두 지우기" },
+    { at: "#wb", text: "여기에 그려요. 사진은 복사해서 Ctrl+V(또는 끌어다 놓기)." },
+    { at: ".wb-pages", text: "화이트보드를 4장까지 따로 써요." },
+    { text: "옮기기 도구로 사진·글·선을 끌어 옮기고, 파란 점으로 크기를 바꿔요. 지우기는 Delete." }] },
+  dust: { name: "😷 미세먼지·날씨", steps: [
+    { at: "#dust-set-btn", text: "처음 한 번 '지역 설정'에서 지역을 정해요." },
+    { at: "#dust-main", text: "미세먼지 5단계: 최고 · 좋음 · 보통 · 나쁨 · 최악" },
+    { at: "#dust-wx", text: "날씨와 기온 (지금 · 오늘 최저 · 최고)" }] },
+  noise: { name: "🔉 소음 측정", steps: [
+    { at: "#noise-go", text: "'측정 시작'을 누르고 마이크를 허락해요. 녹음하거나 보내지 않아요." },
+    { at: ".noise-th", text: "기준을 1초 넘게 넘으면 경고음이 나요." },
+    { at: ".noise-count", text: "오늘 경고 횟수가 쌓여요. 🔔로 직접 경고도 줘요." }] },
+  thermo: { name: "🌡️ 학급 온도계", steps: [
+    { at: ".acts", text: "칭찬할 때 온도를 올려요. ↻는 0°로." },
+    { at: ".th-pen", text: "연필: 5°마다 보상을 정해요 (비워 둬도 돼요)." },
+    { at: ".th-goal", text: "다음 보상이 여기 보여요." }] },
+  qr: { name: "🔳 QR 만들기", steps: [
+    { at: ".qr-in", text: "주소나 글을 넣으면 QR이 바로 생겨요." },
+    { at: ".qr-keep", text: "자주 쓰는 건 '☆ 저장'으로 보관함에 넣어요." },
+    { at: ".qr-shelf-btn", text: "보관함에서 눌러 바로 띄워요." },
+    { text: "⛶ 전체 화면으로 크게 띄워 학생들이 찍게 하세요. 아래쪽 바 +로 여러 장 띄워요." }] },
+  notice: { name: "📋 알림장", steps: [
+    { at: ".chalk", text: "칠판에 알림장을 써요. Enter를 치면 다음 번호." },
+    { at: "#nt-copy", text: "복사: 날짜·번호가 붙은 채로 다른 곳에 붙여 넣어요." },
+    { at: "#nt-save", text: "저장: 날짜별로 남겨요." },
+    { at: "#nt-hist", text: "지난 알림장을 불러오거나 ✕로 지워요." }] },
+  scores: { name: "📊 성적 알리미", steps: [
+    { at: ".sc-top button", text: "'✎ 점수 넣기': 평가 이름·만점·학생 점수 (엑셀 한 줄 붙여넣기도 돼요)" },
+    { at: "#sc-grid", text: "이름을 누르면 그 학생 점수만 크게 보여요." }] },
+  links: { name: "🌐 즐겨찾기", steps: [
+    { text: "아래쪽 바 🌐 즐겨찾기를 누르면 메뉴가 떠요." },
+    { text: "'+ 링크'로 주소를, '+ 폴더'로 폴더를 만들어요." },
+    { text: "링크를 끌어 폴더 위에 놓으면 폴더로 들어가요." },
+    { text: "오른쪽 버튼: 이름 바꾸기 · 삭제" }] },
+  teach: { name: "☆ 선생님 모드", steps: [
+    { text: "자리배치 ☆를 누르면 열려요. 모니터가 두 대면 선생님 모니터에만 떠요(처음에 '창 관리' 허락)." },
+    { text: "고정: 이름을 자리로 끌어 놓으면 그 자리에 고정돼요." },
+    { text: "분리: 같이 앉으면 안 되는 학생을 묶으면 짝·앞뒤·좌우·대각선·같은 모둠으로 안 앉아요." },
+    { text: "랜덤 섞기는 다음 자리를 미리 섞어 두기만 해요. 보드에서 '자동 자리배치'를 누를 때 그 자리로 앉아요." },
+    { text: "초기화: 미리 섞은 자리를 비워요(고정·분리는 그대로)." }] },
+  etc: { name: "⚙️ 설치·저장", steps: [
+    { text: "앱 설치(Edge): 주소창 오른쪽 설치 아이콘 → 설치. 안 보이면 … → 앱 → 이 사이트를 앱으로 설치" },
+    { text: "켤 때 자동 실행(Edge): edge://apps → 이 앱의 … → 장치 로그인 시 시작" },
+    { text: "로그인: 설정 → 로그인. 다른 컴퓨터에서도 같은 보드가 나와요." },
+    { text: "명단 사진: 설정 → 명단에서 명렬표 사진도 가져와요. 틀린 글자는 꼭 확인!" },
+    { text: "저장: 이 컴퓨터에 저장돼요(로그인하면 서버에도)." }] },
+};
+let tourSt = { seen: {}, off: false }, tourNow = null;
+try { tourSt = Object.assign(tourSt, JSON.parse(localStorage.getItem("tour")) || {}); } catch (e) {}
+const tourSave = () => { try { localStorage.setItem("tour", JSON.stringify(tourSt)); } catch (e) {} };
+const tourRoot = k => k === "board" ? document : card(k);
+const tourEls = (k, at) => at ? [].concat(at).map(q => typeof q === "function" ? q() : tourRoot(k)?.querySelector(q)).filter(el => el && el.getClientRects().length) : [];
+// 보드 안내에서 짚을 카드: 제목 줄이 다른 카드에 가리지 않은 카드 (안내를 띄우기 전에 정해 둠)
+let tourCardEl = null;
+const tourCard = () => tourCardEl?.isConnected ? tourCardEl : (tourCardEl = [...board.querySelectorAll(":scope > .card:not([hidden])")].find(c => {
+  const r = c.querySelector(".label").getBoundingClientRect(), el = document.elementFromPoint(r.left + r.width / 3, r.top + r.height / 2);
+  return el && c.contains(el);
+}) || board.querySelector(":scope > .card:not([hidden])")); // 다 가려졌으면(설정 창이 열려 있을 때 등) 첫 카드
+// how: done(끝까지) · skip(건너뛰기: 이 안내는 다시 안 뜸) · off(다시 보지 않기: 처음 안내를 모두 끔)
+function tourRun(k) {
+  const T = TOURS[k];
+  if (!T || tourNow) return;
+  tourCardEl = null; // 이번 안내에 쓸 카드를 지금(안내 화면을 덮기 전) 다시 고름
+  const steps = T.steps.filter(st => !st.at || tourEls(k, st.at).length);
+  if (!steps.length) return;
+  let i = 0;
+  const hole = h("div", { class: "tour-hole" }), tip = h("div", { class: "tour-tip", role: "dialog" }), ov = h("div", { class: "tour" }, hole, tip);
+  const end = how => {
+    ov.remove(); removeEventListener("resize", place); document.removeEventListener("keydown", key, true); tourNow = null;
+    tourSt.seen[k] = 1; if (how === "off") tourSt.off = true; tourSave();
+  };
+  const place = () => {
+    const st = steps[i], els = tourEls(k, st.at);
+    let r = null;
+    if (els.length) {
+      const rs = els.map(e => e.getBoundingClientRect());
+      r = { l: Math.min(...rs.map(x => x.left)) - 6, t: Math.min(...rs.map(x => x.top)) - 6, r: Math.max(...rs.map(x => x.right)) + 6, b: Math.max(...rs.map(x => x.bottom)) + 6 };
+      Object.assign(hole.style, { left: r.l + "px", top: r.t + "px", width: r.r - r.l + "px", height: r.b - r.t + "px" });
+    }
+    hole.hidden = !r; ov.classList.toggle("dim", !r);
+    const last = i === steps.length - 1;
+    tip.replaceChildren(h("small", {}, `${T.name} · ${i + 1} / ${steps.length}`), h("p", {}, st.text),
+      h("div", { class: "row" }, h("button", { class: "lite", title: "이 안내를 닫아요", onclick: () => end("skip") }, "건너뛰기"),
+        h("button", { class: "lite", title: "앞으로 처음 안내를 띄우지 않아요 (설정 → 사용 방법에서 다시 볼 수 있어요)", onclick: () => end("off") }, "다시 보지 않기"), h("span", { class: "sp" }),
+        i ? h("button", { onclick: () => { i--; place(); } }, "이전") : null,
+        h("button", { class: "main", onclick: () => { if (last) end("done"); else { i++; place(); } } }, last ? "끝" : "다음")));
+    const W = Math.min(320, innerWidth - 24); tip.style.width = W + "px";
+    const th = tip.offsetHeight;
+    let x = (innerWidth - W) / 2, y = (innerHeight - th) / 2; // 짚을 곳이 없으면 가운데
+    if (r) { // 짚은 곳 아래, 자리가 없으면 위
+      x = Math.max(12, Math.min((r.l + r.r) / 2 - W / 2, innerWidth - W - 12));
+      y = r.b + 12 + th < innerHeight ? r.b + 12 : r.t - 12 - th >= 0 ? r.t - 12 - th : Math.max(12, innerHeight - th - 12);
+    }
+    tip.style.left = x + "px"; tip.style.top = y + "px";
+    tip.querySelector(".main").focus();
+  };
+  const key = e => { if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); end("skip"); } };
+  tourNow = k; document.body.append(ov); place();
+  addEventListener("resize", place); document.addEventListener("keydown", key, true);
+}
+function tourAuto(k) { // 처음 한 번만. 보드 안내를 본 뒤에 카드 안내
+  if (tourSt.off || tourSt.seen[k] || tourNow || !TOURS[k] || !panel.hidden) return;
+  if (k !== "board" && (!tourSt.seen.board || !card(k) || card(k).hidden || pops[k])) return;
+  tourRun(k);
+}
+setTimeout(() => tourAuto("board"), 1200);
+board.addEventListener("pointerdown", e => { const c = e.target.closest(".card"); if (c) setTimeout(() => tourAuto(c.dataset.card.split("-")[0]), 400); }, true); // 보드에 처음부터 있던 카드는 처음 누를 때
+
+// 설정 → 사용 방법: 카드별 탭, 단계마다 실제 화면 조각을 노란 네모로. '화면에서 따라 하기'는 위 안내를 바로 띄움
+let hpTopic = "board";
+const hpTopics = () => [["board"], ...CARDS.filter(([k]) => !extras.includes(k)).map(([k]) => [k]), ["links"], ["teach"], ["etc"]].filter(([k]) => TOURS[k]);
+function hpDraw(k = hpTopic) {
+  hpTopic = k;
+  $s("hp-tabs").replaceChildren(...hpTopics().map(([t]) => h("button", { class: t === k ? "on" : "", onclick: () => hpDraw(t) }, TOURS[t].name)));
+  const T = TOURS[k], live = k === "board" || CARDS.some(c => c[0] === k);
+  const go = live ? h("button", { onclick: () => { togglePanel(false); if (k !== "board" && lay(k).mode !== "board") showCard(k); setTimeout(() => tourRun(k), 450); } }, "▶ 화면에서 따라 하기") : null;
+  const shots = [];
+  const steps = T.steps.map((st, n) => {
+    const shot = hpShot(k, st.at);
+    if (shot) shots.push(shot);
+    return h("div", { class: "hp-step" }, shot, h("p", {}, h("span", { class: "hp-n" }, String(n + 1)), st.text));
+  });
+  $s("hp-body").replaceChildren(h("div", { class: "hp-head" }, h("h3", {}, T.name), go), h("div", { class: "hp-steps" }, steps),
+    h("div", { class: "hp-auto" }, h("label", {}, h("input", { type: "checkbox", ...(tourSt.off ? {} : { checked: "" }), onchange: e => { tourSt.off = !e.target.checked; tourSave(); } }), " 처음 쓰는 카드에 안내 띄우기"),
+      h("button", { onclick: () => { tourSt = { seen: {}, off: false }; tourSave(); hpDraw(); } }, "안내를 처음부터 다시 보기")));
+  requestAnimationFrame(() => shots.forEach(sh => { // 칸에 맞게 줄임
+    const w = sh.firstChild; if (!w) return;
+    const k2 = Math.min(1, (sh.clientWidth - 16) / w.offsetWidth, (sh.clientHeight - 16) / w.offsetHeight);
+    w.style.transform = `scale(${k2})`;
+  }));
+}
+// 짚을 곳을 복사해 그림처럼 보여 줌 (카드 색·모양은 카드에서 가져옴)
+function hpShot(k, at) {
+  if (!at) return null;
+  const els = [].concat(at).map(q => typeof q === "function" ? q() : tourRoot(k)?.querySelector(q)).filter(Boolean);
+  if (!els.length) return null;
+  const from = els[0].closest(".card"), wrap = h("div", { class: "hp-wrap " + (from ? (els[0].parentElement === from ? from.className : from.className.replace(/\bcard\b/, "")) : ""), ...(from ? { "data-card": from.dataset.card } : {}), inert: "" });
+  let W = 0, H = 0, sized = true;
+  for (const el of els) {
+    const cl = el.cloneNode(true), r = el.getBoundingClientRect();
+    cl.hidden = false;
+    if (r.width) { cl.style.width = r.width + "px"; cl.style.height = r.height + "px"; W += r.width; H = Math.max(H, r.height); } else sized = false;
+    let node = cl; // 카드까지의 부모를 껍데기만 복사해 감쌈: '.seat-tools button'처럼 부모로 정한 모양이 그대로 나오게
+    if (from) for (let a = el.parentElement; a && a !== from; a = a.parentElement) { const sh = a.cloneNode(false); sh.hidden = false; sh.append(node); node = sh; }
+    wrap.append(node);
+  }
+  // 카드 칸은 글씨 크기를 카드 크기에 맞추느라(container-type) 내용으로 커지지 않음 → 실제 크기를 정해 줌. 숨은 카드라 크기를 모르면 내용대로
+  if (sized) { wrap.style.width = W + 4 * (els.length - 1) + 12 + "px"; wrap.style.height = H + 12 + "px"; } else wrap.style.containerType = "normal";
+  return h("div", { class: "hp-shot" }, wrap);
+}
 
 // ───── 로그인·동기화 (Firebase, 무료 Spark 요금제) ─────
 // 서버 구조: boards/{uid} = { ls: 글로 된 설정 전부, photos: 사진 카드 이름들, updatedAt }
