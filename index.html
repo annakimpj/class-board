@@ -43,6 +43,7 @@
   .card { background: var(--card); border: 1.5px solid var(--line); border-top: 6px solid var(--accent); border-radius: 16px;
           padding: 12px 18px 14px; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
   .card[hidden] { display: none; }
+  body:not(.ready) .board > .card { visibility: hidden; } /* 배치를 정하기 전 깜빡임 막기 */
   .card[data-size="2"] { grid-column: span 2; }
   .card[data-size="4"] { grid-column: span 2; grid-row: span 2; }
   .card[data-size="full"] { grid-column: 1 / -1; }
@@ -852,6 +853,21 @@
   .sc-show .pts small { font-size: .3em; color: var(--muted); }
   .sc-show .tip { font-size: 13px; color: var(--muted); margin-top: 8px; }
   @keyframes sc-in { from { transform: scale(.6); opacity: 0; } }
+  /* 모든 평가 한 번에: 과목 카드 여러 장 (학생 혼자 보는 화면이라 글자는 작게) */
+  .sc-show.all { justify-content: flex-start; padding: 14px 12px; gap: 10px; overflow-y: auto; }
+  .sc-show.all .who { font-size: clamp(16px, 5cqw, 26px); color: var(--ink); }
+  .sc-subjs { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+  .sc-subj { width: clamp(130px, 28cqw, 200px); border: 1.5px solid var(--line); border-radius: 14px; padding: 10px 8px; text-align: center; background: var(--card); animation: sc-in .4s ease-out; }
+  .sc-subj b { display: block; font-weight: 600; font-size: 15px; color: var(--muted); }
+  .sc-subj .res { font-size: clamp(20px, 6cqw, 32px); font-weight: 700; color: var(--accent); margin: 4px 0 2px; }
+  .sc-subj .res small { font-size: .5em; color: var(--muted); }
+  .sc-subj .task { font-size: 12px; color: var(--muted); line-height: 1.35; word-break: keep-all; }
+  .sc-files .card-ed-list > * + * { margin-top: 8px; }
+  .sc-files .sc-meta { display: flex; align-items: center; gap: 6px; font-size: 14px; }
+  .sc-files .sc-list label { display: flex; align-items: center; gap: 6px; padding: 3px 0; font-size: 14px; }
+  .sc-files .sc-list small { color: var(--muted); }
+  .sc-files .sc-prev { font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .sc-files .sc-meta input { flex: 1; min-width: 0; }
   .card-ed .sc-rows { display: grid; grid-template-columns: auto 1fr 70px; gap: 4px 8px; align-items: center; }
   .card-ed .sc-rows input, .card-ed .sc-meta input { font: inherit; border: 1.5px solid var(--line); border-radius: 8px; padding: 3px 8px; min-width: 0; }
   .card-ed .sc-meta { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
@@ -868,6 +884,12 @@
   .lk-menu button { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); background: #fff; color: var(--ink); border-radius: 8px; padding: 2px 8px; cursor: pointer; }
   .lk-menu #lk-edit.on { background: var(--accent); border-color: var(--accent); color: #fff; }
   .lk-list { max-height: 60vh; overflow-y: auto; }
+  .tp-find { width: 100%; box-sizing: border-box; margin: 2px 0 6px; padding: 6px 10px; font: 15px "GangwonEdu", "Malgun Gothic", sans-serif;
+             border: 1.5px solid #eee5d8; border-radius: 10px; outline: none; }
+  .tp-find:focus { border-color: var(--accent, #f2643d); }
+  .shelf-menu:has(.tp-find) { width: 340px; }
+  .shelf-menu:has(.tp-find) .lk-list { max-height: 270px; }
+  .shelf-menu:has(.tp-find) .lk-name { white-space: normal; overflow: visible; text-overflow: clip; word-break: keep-all; }
   .lk-list:empty::before { content: "'+ 링크'로 자주 가는 주소를 넣어요."; display: block; padding: 14px 6px; color: var(--muted); font-size: 13px; }
   .lk-row { display: flex; align-items: center; gap: 8px; padding: 5px 6px; border-radius: 8px; cursor: pointer; user-select: none; touch-action: none; }
   .lk-row:hover, .lk-row.open { background: #e3f6f8; }
@@ -975,7 +997,7 @@
     <footer>
     <p class="rule-line"><span id="rule" spellcheck="false" title="더블클릭해서 고칠 수 있어요"></span> <span class="hint" id="hint" title="더블클릭하면 이 안내가 사라져요">(더블클릭해서 수정)</span></p>
     <div class="tools">
-      <label class="used" title="이 주제를 사용한 날짜 기록"><input type="checkbox" id="check"><span id="used">사용 체크</span></label><button class="tp-hist" onclick="topicHist(this)" title="사용 기록">📜 기록</button>
+      <label class="used" title="이 주제를 사용한 날짜 기록"><input type="checkbox" id="check"><span id="used">사용 체크</span></label><button class="tp-hist" onclick="topicFind(this)" title="주제 찾기" aria-label="주제 찾기">🔍</button><button class="tp-hist" onclick="topicHist(this)" title="사용 기록">📜 기록</button>
       <button onclick="nextTopic()" title="다른 주제" aria-label="다른 주제">↻</button>
     </div>
     </footer>
@@ -1106,7 +1128,7 @@
   </section>
   <section class="card tool-card" data-card="scores" id="sc-card">
     <p class="label">📊 성적 알리미</p>
-    <div class="sc-top"><select id="sc-test" aria-label="평가 고르기"></select><button onclick="scEdit()">✎ 점수 넣기</button></div>
+    <div class="sc-top"><select id="sc-test" aria-label="평가 고르기"></select><button onclick="scEdit()">✎ 점수 넣기</button><button onclick="scFiles()" title="나이스 평가결과 PDF 넣기·평가 지우기">📄 결과지</button></div>
     <div class="sc-grid" id="sc-grid"></div>
     <p class="sub" id="sc-hint">이름을 누르면 그 학생 점수만 크게 보여요</p>
   </section>
@@ -1316,6 +1338,7 @@
 </div>
 <script src="avatar.js"></script>
 <script>
+setTimeout(() => document.body.classList.add("ready"), 2000); // 혹시 아래에서 오류가 나도 2초 뒤엔 카드를 보여 줌
 // 다른 창(듀얼 모니터)으로 뗀 카드: { 카드: { w: 창, c: 카드, mark: 보드에 돌아올 자리, np: 글자 도구 창 } }
 // 카드를 통째로 그 창으로 옮김. 그래서 id·선택자로 찾을 때 뗀 창도 같이 찾고, 키보드·붙여넣기·전체 화면 알림도 그 창에 똑같이 붙임
 const pops = {}, docEvents = [], wins = new Set(); // wins: 카드 말고 따로 연 창 (선생님 모드)
@@ -1721,6 +1744,30 @@ function topicHist(btn) {
     async (i, m) => { if (await seConfirm(m, "이 기록을 지울까요?\n지우면 이 주제가 다시 나올 수 있어요.", "지우기")) { delete used[rows[i][0]]; save(); topicHist(btn); } },
     "아직 사용 체크한 주제가 없어요.");
 }
+// 오늘의 주제 '🔍': 낱말로 주제를 찾아 누르면 바로 띄움 (띄어쓰기 무시, 쓴 주제는 날짜 표시)
+function topicFind(btn) {
+  document.querySelector(".shelf-menu")?.remove();
+  const list = h("div", { class: "lk-list" });
+  const q = h("input", { class: "tp-find", placeholder: "낱말로 찾기 (예: 피자, 친구, AI)", "aria-label": "주제 찾기" });
+  const m = h("div", { class: "lk-menu shelf-menu", popover: "auto" }, h("div", { class: "lk-head" }, h("b", {}, "🔍 주제 찾기")), q, list);
+  q.oninput = () => {
+    const w = q.value.replace(/\s/g, ""), hits = w ? TOPICS.filter(t => t.replace(/\s/g, "").includes(w)) : [];
+    list.replaceChildren(...(hits.length ? hits.slice(0, 50).map(t => {
+      const row = h("div", { class: "lk-row", title: "오늘의 주제로 띄우기" }, h("span", { class: "lk-name" }, t),
+        used[t] ? h("span", { class: "lk-ic tp-date" }, used[t].slice(5).replace("-", "/")) : null);
+      row.onclick = () => { m.hidePopover(); setCurrent(t); location.reload(); };
+      return row;
+    }) : [h("p", { class: "shelf-empty" }, w ? "찾는 주제가 없어요." : "낱말을 쓰면 맞는 주제가 나와요.")]));
+  };
+  q.oninput();
+  document.body.append(m);
+  m.addEventListener("toggle", e => { if (e.newState === "closed") m.remove(); });
+  m.showPopover();
+  const r = btn.getBoundingClientRect(); // 버튼 위쪽에, 찾은 목록이 늘어나도 아래로 자라게 맨 위 자리를 고정
+  m.style.left = Math.max(8, Math.min(r.right - 340, innerWidth - 348)) + "px";
+  m.style.top = Math.max(8, r.top - 360) + "px";
+  q.focus();
+}
 async function copyLink() {
   const msg = document.getElementById("copied");
   try { await navigator.clipboard.writeText(APP_URL); msg.textContent = "복사됐어요!"; }
@@ -2107,6 +2154,7 @@ function showCard(k) { // 아래쪽 바에서 누르면 보드에 바로 맨 앞
   if (typeof tourAuto === "function") setTimeout(() => tourAuto(k.split("-")[0]), 400); // 처음 띄우면 안내
 }
 applyLayout();
+document.body.classList.add("ready"); // 자리·보이기를 다 정한 뒤에 카드를 보여 줌 (새로고침 때 모든 카드가 잠깐 보이던 것 막기)
 
 // 메모·우리반 규칙·준비물: 쓰는 대로 저장. 몇 글자만 색을 바꿀 수 있게 HTML로 note-html-<칸>에 저장 (예전 글자만 있던 note-<칸>은 처음 한 번 옮겨 옴)
 function initNote(el) {
@@ -4140,15 +4188,17 @@ document.getElementById("roster").addEventListener("change", () => rlDraw());
 let scores = { tests: [], cur: null };
 try { scores = Object.assign(scores, JSON.parse(localStorage.getItem("scores")) || {}); } catch (e) {}
 const scCard = document.getElementById("sc-card"), scSeen = new Set();
-const scTest = () => scores.tests.find(t => t.id === scores.cur) || scores.tests[0];
+const ALL = "__all"; // 평가 고르기의 '모든 평가 한 번에'
+const scTest = () => scores.cur === ALL ? null : scores.tests.find(t => t.id === scores.cur) || scores.tests[0];
 function scSave() { try { localStorage.setItem("scores", JSON.stringify(scores)); } catch (e) {} scDraw(); }
 function scDraw() {
   const t = scTest(), sel = document.getElementById("sc-test");
-  sel.replaceChildren(...(scores.tests.length ? scores.tests.map(x => h("option", { value: x.id }, x.name)) : [h("option", { value: "" }, "평가를 먼저 만들어 주세요")]));
-  if (t) sel.value = t.id;
-  const ppl = people();
-  document.getElementById("sc-hint").textContent = !ppl.length ? "설정 → 명단을 먼저 넣어 주세요" : !t ? "'✎ 점수 넣기'에서 평가를 만들어요" : "이름을 누르면 그 학생 점수만 크게 보여요";
-  document.getElementById("sc-grid").replaceChildren(...(t ? ppl.map(p => h("button", { class: (scSeen.has(t.id + p) ? "seen" : "") + (t.s[p] ? "" : " none"), onclick: () => scShow(p) }, h("small", {}, seNum(p) + "번"), seName(p))) : []));
+  const all = scores.cur === ALL && scores.tests.length;
+  sel.replaceChildren(...(scores.tests.length ? [h("option", { value: ALL }, "📚 모든 평가 한 번에"), ...scores.tests.map(x => h("option", { value: x.id }, x.name))] : [h("option", { value: "" }, "평가를 먼저 만들어 주세요")]));
+  if (all) sel.value = ALL; else if (t) sel.value = t.id;
+  const ppl = people(), key = all ? ALL : t?.id, has = p => all ? scores.tests.some(x => x.s[p]) : t.s[p];
+  document.getElementById("sc-hint").textContent = !ppl.length ? "설정 → 명단을 먼저 넣어 주세요" : !scores.tests.length ? "'📄 결과지'로 나이스 결과지를 넣거나 '✎ 점수 넣기'에서 평가를 만들어요" : all ? "이름을 누르면 그 학생의 모든 평가 결과가 보여요" : "이름을 누르면 그 학생 점수만 크게 보여요";
+  document.getElementById("sc-grid").replaceChildren(...(key ? ppl.map(p => h("button", { class: (scSeen.has(key + p) ? "seen" : "") + (has(p) ? "" : " none"), onclick: () => all ? scShowAll(p) : scShow(p) }, h("small", {}, seNum(p) + "번"), seName(p))) : []));
 }
 document.getElementById("sc-test").addEventListener("change", e => { scores.cur = e.target.value; scSave(); });
 function scShow(p) { // 카드 안을 덮는 큰 점수. 누르면 닫힘
@@ -4160,9 +4210,111 @@ function scShow(p) { // 카드 안을 덮는 큰 점수. 누르면 닫힘
     h("div", { class: "tip" }, v ? "눌러서 닫기" : "점수를 아직 넣지 않았어요 · 눌러서 닫기"));
   scCard.append(box);
 }
+function scShowAll(p) { // 모든 평가: 과목·평가요소·결과 카드. 결과 없는 평가는 뺌. 누르면 닫힘
+  scCard.querySelector(".sc-show")?.remove();
+  const mine = scores.tests.filter(x => x.s[p]);
+  const box = h("div", { class: "sc-show all", onclick: () => { box.remove(); scSeen.add(ALL + p); scDraw(); } },
+    h("div", { class: "who" }, `${seNum(p)}번 ${seName(p)}`),
+    mine.length ? h("div", { class: "sc-subjs" }, mine.map(x => h("div", { class: "sc-subj" }, h("b", {}, x.name),
+      h("div", { class: "res" }, x.s[p], x.max ? h("small", {}, ` / ${x.max}`) : null), x.task ? h("div", { class: "task" }, x.task) : null)))
+      : h("div", { class: "tip" }, "아직 넣은 결과가 없어요"),
+    h("div", { class: "tip" }, "눌러서 닫기"));
+  scCard.append(box);
+}
+// ── 나이스 '평가결과' PDF: 표가 옆으로 누워 있어 학생마다 세로 한 칸. 왼쪽 줄 이름(반/번호·성명·영역·평가요소·단계)의 높이로 줄을,
+//    번호의 가로 위치로 학생 칸을 나눔. 과목 이름은 PDF에 없어서 영역으로 짐작하고 고칠 수 있게 함
+const AREA_SUBJ = [[/듣기|말하기|읽기|쓰기|문법|문학|매체/, "국어"], [/수와 연산|변화와 관계|도형|측정|자료와 가능성|규칙성/, "수학"],
+  [/지리|역사|정치|경제|사회·문화|일반사회/, "사회"], [/운동과 에너지|물질|생명|지구와 우주|과학과 사회/, "과학"],
+  [/듣기|말하기|읽기|쓰기/, "영어"], [/연주|가창|감상|창작|표현|생활화/, "음악"], [/체험|표현|감상/, "미술"], [/운동|건강|스포츠|안전/, "체육"],
+  [/자신과의 관계|타인과의 관계|사회·공동체|자연·초월/, "도덕"], [/기술|가정|생활|발명/, "실과"]];
+const joinWrap = ls => ls.reduce((a, l) => !a ? l : /(^|\s)\S$/.test(a) ? a + l : a + " " + l, ""); // 칸 안 줄바꿈: 한 글자로 끝난 줄은 다음 줄에 붙임
+async function readResultPdf(buf) {
+  const pdfjs = await import(PDFJS + "build/pdf.min.mjs");
+  pdfjs.GlobalWorkerOptions.workerSrc = PDFJS + "build/pdf.worker.min.mjs";
+  const doc = await pdfjs.getDocument({ data: new Uint8Array(buf), cMapUrl: PDFJS + "cmaps/", cMapPacked: true }).promise;
+  const out = { area: "", task: "", rows: [] }, LABELS = ["반/번호", "성명", "영역", "성취기준", "평가요소", "단계", "평가결과"];
+  for (let pg = 1; pg <= doc.numPages; pg++) {
+    const items = (await (await doc.getPage(pg)).getTextContent()).items.filter(i => i.str.trim()).map(i => ({ s: i.str.trim(), x: i.transform[4], y: i.transform[5] }));
+    const labs = LABELS.map(n => ({ n, it: items.find(i => i.s === n) })).filter(l => l.it).sort((a, b) => a.it.y - b.it.y);
+    const lab = n => labs.find(l => l.n === n);
+    if (!lab("반/번호") || !lab("단계")) continue;
+    const lx = lab("반/번호").it.x;
+    const band = n => { const i = labs.findIndex(l => l.n === n), y = labs[i].it.y; // 그 줄의 위아래 경계
+      return [i ? (labs[i - 1].it.y + y) / 2 : -1e9, i < labs.length - 1 ? (labs[i + 1].it.y + y) / 2 : 1e9]; };
+    const inBand = n => { if (!lab(n)) return []; const [lo, hi] = band(n); return items.filter(i => i.y > lo && i.y < hi && i.x > lx + 20 && !LABELS.includes(i.s)); };
+    const cols = inBand("반/번호").filter(i => /^\d+$/.test(i.s)).sort((a, b) => a.x - b.x);
+    if (!cols.length) continue;
+    const gap = cols.length > 1 ? (cols.at(-1).x - cols[0].x) / (cols.length - 1) : 60;
+    const colOf = it => { const c = cols.reduce((a, b) => Math.abs(b.x - it.x) < Math.abs(a.x - it.x) ? b : a); return Math.abs(c.x - it.x) < gap * .6 ? c : null; };
+    const per = n => { const m = new Map(cols.map(c => [c, []])); for (const it of inBand(n)) { const c = colOf(it); if (c) m.get(c).push(it); } return m; };
+    const names = per("성명"), tasks = per("평가요소"), steps = per("단계");
+    const txt = (its, glue) => glue(its.sort((a, b) => a.x - b.x || b.y - a.y).map(i => i.s));
+    out.area = out.area || inBand("영역")[0]?.s || "";
+    for (const c of cols) {
+      const res = steps.get(c).filter(i => /매우\s*잘함|잘함|보통|노력\s*요함|^[상중하]$|^[ABCDE]$/.test(i.s)).map(i => i.s).join(" ");
+      out.task = out.task || txt(tasks.get(c), joinWrap);
+      const nameGlue = a => a.reduce((x, l) => !x ? l : /[A-Za-z]$/.test(x) && /^[A-Za-z]{1,3}$/.test(l) ? x + l : x + " " + l, ""); // 영어 이름 줄바꿈(VIKTOROVI|CH) 붙이기
+      out.rows.push({ n: c.s, name: txt(names.get(c), nameGlue), res });
+    }
+  }
+  return out;
+}
+function scFiles() { // 결과지 넣기와 평가 지우기 (카드 안 목록)
+  scCard.querySelector(".card-ed")?.remove();
+  const file = h("input", { type: "file", accept: ".pdf", multiple: "", hidden: "" });
+  const list = h("div", { class: "sc-list" }), body = h("div", { class: "sc-body" });
+  const drawList = () => list.replaceChildren(...(scores.tests.length ? scores.tests.map(t => h("label", {}, h("input", { type: "checkbox", value: t.id }), t.name,
+    h("small", {}, ` · ${Object.keys(t.s).length}명${t.task ? " · " + t.task : ""}`))) : [h("p", { class: "sc-prev" }, "아직 넣은 평가가 없어요.")]));
+  const del = h("button", { class: "danger", onclick: async () => {
+    const ids = [...list.querySelectorAll("input:checked")].map(i => i.value);
+    if (!ids.length) return;
+    if (!await seConfirm(scCard, `고른 평가 ${ids.length}개와 그 결과를 지울까요?`, "지우기")) return;
+    scores.tests = scores.tests.filter(t => !ids.includes(t.id));
+    if (!scores.tests.some(t => t.id === scores.cur)) scores.cur = scores.tests.length ? ALL : null;
+    scSave(); drawList();
+  } }, "고른 평가 지우기");
+  file.onchange = async () => { for (const f of [...file.files]) await scImport(f, body); file.value = ""; drawList(); };
+  const ed = h("div", { class: "card-ed sc-files" },
+    h("div", { class: "card-ed-head" }, h("b", {}, "📄 결과지"), h("button", { class: "main", onclick: () => { ed.remove(); scDraw(); } }, "완료")),
+    h("div", { class: "card-ed-list" }, // 작은 카드에서도 한 번에 스크롤
+      h("p", { class: "sc-prev" }, "나이스에서 받은 '평가결과' PDF를 넣으면 평가가 저절로 만들어져요. 여러 개를 한 번에 골라도 돼요."),
+      h("button", { onclick: () => file.click() }, "📄 결과지 PDF 고르기"), file, body,
+      h("b", {}, "넣은 평가"), list),
+    h("div", { class: "card-ed-foot" }, del));
+  scCard.append(ed); drawList();
+}
+async function scImport(f, body) { // PDF 하나 → 과목·평가요소를 확인하고 추가
+  let r;
+  try { r = await readResultPdf(await f.arrayBuffer()); } catch (e) { r = null; }
+  if (!r || !r.rows.length) { body.append(h("p", { class: "sc-prev" }, `'${f.name}'에서 결과를 찾지 못했어요. 나이스 '평가결과' PDF인지 확인해 주세요.`)); return; }
+  if (!people().length) { // 명단이 비었으면 결과지의 번호·이름으로 채움
+    roster.value = r.rows.map(x => `${x.n} ${x.name}`).join("\n");
+    try { localStorage.setItem("roster", roster.value); } catch (e) {}
+    roster.dispatchEvent(new Event("change"));
+  }
+  const ppl = people(), keyOf = x => ppl.find(p => seNum(p) === x.n) || `${x.n}번 ${x.name}`;
+  const subj = h("input", { value: (AREA_SUBJ.find(([re]) => re.test(r.area)) || [, "과목"])[1], placeholder: "과목" });
+  const task = h("input", { value: r.task, placeholder: "평가요소 (짧게)" });
+  return new Promise(done => {
+    const box = h("div", { class: "sc-imp" },
+      h("p", { class: "sc-prev" }, `${f.name} · ${r.rows.length}명${r.area ? " · 영역 " + r.area : ""}`),
+      h("div", { class: "sc-meta" }, "과목", subj), h("div", { class: "sc-meta" }, "평가요소", task),
+      h("p", { class: "sc-prev" }, r.rows.map(x => `${x.n} ${seName(keyOf(x))} ${x.res || "—"}`).join(" · ")),
+      h("div", { class: "card-ed-foot" },
+        h("button", { onclick: () => { box.remove(); done(); } }, "넣지 않기"),
+        h("button", { class: "main", onclick: () => {
+          const t = { id: String(Date.now()), name: subj.value.trim() || "과목", task: task.value.trim(), max: "", s: {} };
+          for (const x of r.rows) if (x.res) t.s[keyOf(x)] = x.res;
+          scores.tests.push(t); scores.cur = ALL; scSave();
+          box.replaceChildren(h("p", { class: "sc-prev" }, `✓ '${t.name}' 평가를 넣었어요 (${Object.keys(t.s).length}명)`)); done();
+        } }, "이 평가 넣기")));
+    body.append(box); subj.focus(); subj.select();
+  });
+}
 function scEdit() { // 평가 만들기·점수 넣기 (카드 안 목록). 엑셀에서 점수 한 줄을 복사해 첫 칸에 붙여넣으면 아래로 채워짐
   const ppl = people();
   if (!ppl.length) return seConfirm(scCard, "설정 → 명단을 먼저 넣어 주세요.", "확인", null);
+  if (scores.cur === ALL) scores.cur = scores.tests[0]?.id || null;
   let t = scTest();
   if (!t) { t = { id: String(Date.now()), name: "수행평가 1", max: "", s: {} }; scores.tests.push(t); scores.cur = t.id; }
   scCard.querySelector(".card-ed")?.remove();
