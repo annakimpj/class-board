@@ -695,23 +695,26 @@
   .ch-tb thead th input { width: 64px; font: 15px "Wanted Sans", "Malgun Gothic", sans-serif; text-align: center; border: 1.5px solid var(--line); border-radius: 6px; padding: 2px 3px; background: #fff; color: var(--ink); }
   .ch-tb thead th .x { border: 0; background: none; color: #adb5bd; padding: 0 0 0 2px; font-size: 12px; cursor: pointer; }
   .tool-card .ch-tb thead .add button { width: 26px; height: 26px; padding: 0; border-radius: 50%; font-size: 16px; }
-  .ch-tb .n { position: sticky; left: 0; z-index: 1; width: 36px; color: var(--muted); font-size: 14px; } .ch-tb .nm { position: sticky; left: 36px; z-index: 1; text-align: left; white-space: nowrap; min-width: 80px; }
+  .ch-tb .n { position: sticky; left: 0; z-index: 1; width: 36px; color: var(--muted); font-size: 14px; } .ch-tb .nm { position: sticky; left: 36px; z-index: 1; text-align: left; white-space: nowrap; min-width: 80px; } .ch-tb tbody .nm { font-size: 26px; }
   .ch-tb thead .n, .ch-tb thead .nm { z-index: 3; }
-  .ch-tb td.ck { min-width: 64px; cursor: pointer; font-size: 22px; font-weight: 700; color: #fff; } .ch-tb td.ck:hover { background: var(--card); } .ch-tb td.ck.on { background: var(--accent); }
+  .ch-tb td.ck { min-width: 64px; cursor: pointer; font-size: 26px; font-weight: 700; color: #fff; } .ch-tb td.ck:hover { background: var(--card); } .ch-tb td.ck.on { background: var(--accent); }
   .ch-tb tfoot td { position: sticky; bottom: 0; background: #fff8f0; color: #e8590c; font-size: 15px; border-top: 1.5px solid var(--line); } .ch-tb tfoot .nm { font-size: 13px; }
   /* 토너먼트: 라운드마다 한 줄, 이긴 사람을 누르면 다음 라운드로 */
   [data-card="bracket"] { --accent: #f08c00; --card: #fff4e6; --line: #ffd8a8; }
-  .br-view { flex: 1; min-height: 0; overflow: auto; display: flex; gap: 14px; justify-content: safe center; padding: 2px 2px 6px; font-family: "Wanted Sans", "Malgun Gothic", sans-serif; user-select: none; }
+  .br-view { position: relative; flex: 1; min-height: 0; overflow: auto; display: flex; gap: 40px; justify-content: safe center; padding: 2px 2px 6px; font-family: "Wanted Sans", "Malgun Gothic", sans-serif; user-select: none; }
   .br-view:empty::before { content: "'👥 참가자 고르기'에서 학생을 고르면 대진표를 짜 줘요."; margin: auto; color: var(--muted); font-size: 14px; }
-  .br-col { flex: none; display: flex; flex-direction: column; min-width: 160px; max-width: 220px; } .br-col h5 { margin: 0 0 6px; text-align: center; font-size: 15px; font-weight: 600; color: var(--accent); }
+  .br-col { flex: none; display: flex; flex-direction: column; min-width: 190px; max-width: 300px; } .br-col h5 { margin: 0 0 6px; text-align: center; font-size: 18px; font-weight: 600; color: var(--accent); }
   .br-col.right .br-p { text-align: right; } .br-col.right .br-p i { float: right; margin: 0 0 0 6px; }
-  .br-final { display: flex; flex-direction: column; gap: 10px; align-items: stretch; } .br-col.mid { min-width: 180px; }
+  .br-final { display: flex; flex-direction: column; gap: 10px; align-items: stretch; } .br-col.mid { min-width: 210px; }
   .br-ms { flex: 1; display: flex; flex-direction: column; justify-content: space-around; gap: 8px; }
-  .br-m { position: relative; background: #fff; border: 2px solid var(--line); border-radius: 10px; overflow: hidden; }
-  .br-p { display: block; width: 100%; border: 0; background: none; text-align: left; padding: 6px 12px; font: 24px "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--ink); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .tool-card .br-m .br-p { border: 0; border-radius: 0; margin: 0; background: #fff; } .tool-card .br-m .br-p + .br-p { border-top: 1.5px solid var(--line); }
+  .br-m { position: relative; z-index: 1; background: #fff; border: 2px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .br-p { display: block; width: 100%; border: 0; background: none; text-align: left; padding: 6px 14px; font: clamp(28px, 2.6cqw, 46px) "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--ink); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tool-card .br-m .br-p { border: 0; border-radius: 0; margin: 0; background: #fff; font-size: clamp(28px, 2.6cqw, 46px); line-height: 1.25; } .tool-card .br-m .br-p + .br-p { border-top: 1.5px solid var(--line); }
   .tool-card .br-m .br-p:hover:not(:disabled) { background: var(--card); } .tool-card .br-m .br-p.win { background: var(--accent); }
-  .br-p.win { background: var(--accent); color: #fff; font-weight: 700; } .br-p i { font-style: normal; font-size: 14px; color: var(--muted); margin-right: 6px; } .br-p.win i { color: #fff3bf; }
+  .br-p.win { background: var(--accent); color: #fff; font-weight: 700; }
+  .br-lines { position: absolute; left: 0; top: 0; pointer-events: none; overflow: visible; }
+  .br-lines path { fill: none; stroke: var(--line); stroke-width: 3; stroke-linejoin: round; } .br-lines path.done { stroke: var(--accent); stroke-width: 4; }
+  .br-p i { font-style: normal; font-size: .55em; color: var(--muted); margin-right: 6px; } .br-p.win i { color: #fff3bf; }
   .br-p.lose { color: #adb5bd; text-decoration: line-through; } .br-p.wait, .br-p.bye { color: #ced4da; cursor: default; }
   .br-champ { flex: none; text-align: center; padding: 14px; border-radius: 16px; background: var(--card); border: 2px dashed var(--line); }
   .br-champ .cup { font-size: 46px; line-height: 1.2; } .br-champ b { display: block; font-size: 30px; color: var(--ink); } .br-champ small { color: var(--muted); font-size: 13px; }
@@ -752,7 +755,7 @@
   .rw-tile.sel { border-color: var(--accent); background: #f3f7ff; }
   .rw-tile.sel::after { content: "✓"; position: absolute; left: 8px; bottom: 8px; width: 20px; height: 20px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 13px; display: grid; place-items: center; }
   .rw-tile .n { font-size: 15px; color: var(--muted); line-height: 1; }
-  .rw-tile .nm { display: block; font-size: 19px; color: var(--ink); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 62%; }
+  .rw-tile .nm { display: block; font-size: 26px; line-height: 1.2; color: var(--ink); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 62%; }
   .rw-pt { position: absolute; left: 8px; bottom: 34px; display: flex; align-items: center; gap: 3px; padding: 1px 9px 1px 6px; border-radius: 999px; background: var(--accent); color: #fff; font-size: 16px; font-weight: 700; }
   .rw-tile.sel .rw-pt { bottom: 34px; }
   .rw-av { position: absolute; right: 6px; bottom: 5px; width: 55px; height: 72px; border-radius: 8px; overflow: hidden; } .rw-av svg { width: 100%; height: 100%; display: block; }
@@ -887,7 +890,8 @@
   .se-ask select.se-ask-in { padding: 5px 8px; }
   /* 아래쪽 바 버튼 끌어서 순서 바꾸기 */
   #launch button { touch-action: none; }
-  #launch button.dragging { opacity: .55; background: var(--card); }
+  #launch button.dragging, .drawer-items button.dragging { opacity: .55; background: var(--card); }
+  .drawer-items button { touch-action: none; }
   .dock #drawer-btn.drop { background: #e9f5f7; box-shadow: -12px 0 0 #fff, 12px 0 0 #fff, inset 0 0 0 2px #2f7d8c; }
   /* 보드에 떠 있는 카드 버튼: 아이콘 테두리와 아래 점 */
   .dock button, .drawer-items button { position: relative; }
@@ -1100,7 +1104,7 @@
   </section>
   <section class="card tool-card" data-card="reward" id="rw-card">
     <p class="label">🏅 우리반 점수</p>
-    <div class="rw-bar"><span class="rw-count" id="rw-count"></span><span class="sp"></span><button class="rw-dress" onclick="rwDressPick(this)" title="학생 아바타 꾸미기 (학생 카드를 오른쪽 클릭해도 돼요)">👕 꾸미기</button><button class="rw-give" onclick="rwSendOpen(this)">🤝 주고받기</button><button class="rw-hist" onclick="rwLog()">📜 기록</button><button class="rw-set" onclick="rwSettings()">⚙ 설정</button></div>
+    <div class="rw-bar"><span class="rw-count" id="rw-count"></span><span class="sp"></span><button class="rw-dress" onclick="rwDressPick(this)" title="학생 아바타 꾸미기 (학생 카드를 오른쪽 클릭해도 돼요)">👕 꾸미기</button><button class="rw-give" onclick="rwSendOpen(this)">🤝 주고받기</button><button class="rw-hist" onclick="rwLog()">📜 기록</button><button class="rw-set" onclick="rwSettings()">⚙️ 설정</button></div>
     <div class="rw-grid" id="rw-grid"></div>
     <div class="rw-foot"><span class="rw-sel"><button onclick="rwSel('all')">전체 선택</button><button onclick="rwSel('inv')">선택 반전</button><button onclick="rwSel('none')">선택 해제</button></span><span class="sp"></span><button class="rw-minus" onclick="rwGiveSel(this, -1)">− 노력해요</button><button class="main rw-plus" onclick="rwGiveSel(this, 1)">+ 칭찬해요</button></div>
   </section>
@@ -1916,6 +1920,7 @@ new ResizeObserver(() => board.classList.contains("free") && placeCards()).obser
 // 제목 줄을 끌면 옮기기, 오른쪽 아래 모서리를 끌면 크기 조절
 board.addEventListener("pointerdown", e => {
   const c = e.target.closest(".card");
+  if (c && board.classList.contains("free") && c.style.zIndex != zTop) c.style.zIndex = ++zTop; // 누른 카드는 맨 앞으로 (고정한 카드도)
   if (!c || !board.classList.contains("free") || document.fullscreenElement) return; // 전체 화면에선 안 옮김
   const grip = e.target.classList.contains("card-grip");
   if (!grip && !e.target.closest(".label")) return;
@@ -2009,8 +2014,31 @@ document.getElementById("launch").addEventListener("pointerdown", e => {
       drawer = [...drawer, b.dataset.card]; try { localStorage.setItem("drawer", JSON.stringify(drawer)); } catch (er) {}
       return applyLayout();
     }
-    dockOrder = [...launch.children].map(x => x.dataset.card).concat(dockOrder.filter(k => !launch.querySelector(`[data-card="${k}"]`)));
-    try { localStorage.setItem("dock-order", JSON.stringify(dockOrder)); } catch (er) {}
+    dockSaveOrder();
+  };
+  addEventListener("pointermove", move); addEventListener("pointerup", up); addEventListener("pointercancel", up);
+});
+function dockSaveOrder() { // 아래쪽 바 + 서랍의 지금 순서를 기억
+  const keys = [...document.getElementById("launch").children, ...document.getElementById("drawer-items").children].map(x => x.dataset.card);
+  dockOrder = keys.concat(dockOrder.filter(k => !keys.includes(k)));
+  try { localStorage.setItem("dock-order", JSON.stringify(dockOrder)); } catch (er) {}
+}
+document.getElementById("drawer-items").addEventListener("pointerdown", e => { // 서랍 안: 위아래·옆으로 끌어서 순서 바꾸기
+  const b = e.target.closest("button"), box = e.currentTarget;
+  if (!b || e.button || e.target.closest(".dock-add")) return;
+  const sx = e.clientX, sy = e.clientY;
+  let moved = false;
+  const move = ev => {
+    if (!moved && Math.hypot(ev.clientX - sx, ev.clientY - sy) < 8) return;
+    if (!moved) { moved = true; b.classList.add("dragging"); }
+    const over = [...box.children].find(o => { const r = o.getBoundingClientRect(); return o !== b && ev.clientX >= r.left && ev.clientX <= r.right && ev.clientY >= r.top && ev.clientY <= r.bottom; });
+    if (over) { const r = over.getBoundingClientRect(); if (ev.clientX < r.left + r.width / 2) over.before(b); else over.after(b); }
+  };
+  const up = () => {
+    removeEventListener("pointermove", move); removeEventListener("pointerup", up); removeEventListener("pointercancel", up);
+    if (!moved) return;
+    b.classList.remove("dragging"); dockDragged = true; setTimeout(() => dockDragged = false, 0);
+    dockSaveOrder();
   };
   addEventListener("pointermove", move); addEventListener("pointerup", up); addEventListener("pointercancel", up);
 });
@@ -4065,7 +4093,7 @@ function brDraw() {
   const match = (r, j) => {
     const pair = brPair(r, j), w = brWin(r, j), live = pair[0] && pair[1];
     if (live && w === undefined && (!now || r < now[0])) now = [r, name(S / 2 ** r)];
-    return h("div", { class: "br-m" }, ...pair.map(p => p === undefined ? h("button", { class: "br-p wait", disabled: "" }, "?")
+    return h("div", { class: "br-m", "data-k": r + "-" + j }, ...pair.map(p => p === undefined ? h("button", { class: "br-p wait", disabled: "" }, "?")
       : p === null ? h("button", { class: "br-p bye", disabled: "" }, "부전승")
       : h("button", { class: "br-p" + (live && w === p ? " win" : live && w !== undefined ? " lose" : ""), ...(live ? {} : { disabled: "" }), title: live ? "누르면 이긴 사람 (한 번 더 누르면 취소)" : "", onclick: () => {
         const k = r + "-" + j; if (bracket.win[k] === p) delete bracket.win[k]; else bracket.win[k] = p;
@@ -4081,8 +4109,25 @@ function brDraw() {
   const cup = h("div", { class: "br-champ" + (champ ? " done" : "") }, h("div", { class: "cup" }, "🏆"), h("b", {}, champ ? seName(champ) : "?"), h("small", {}, champ ? "우승!" : "우승"));
   const mid = h("div", { class: "br-col mid" }, h("h5", {}, "결승"), h("div", { class: "br-ms" }, h("div", { class: "br-final" }, cup, match(R - 1, 0))));
   view.replaceChildren(...side(false), mid, ...side(true).reverse());
+  brLines();
   $s("br-info").textContent = `${bracket.players.length}명` + (champ ? " · 끝났어요" : now ? ` · ${now[1]} 진행 중` : "");
 }
+function brLines() { // 경기에서 다음 경기로 ㄱ자 선. 승부가 난 길은 진하게
+  const view = $s("br-view"); view.querySelector(".br-lines")?.remove();
+  if (!view.offsetWidth || !bracket.seeds.length) return;
+  const V = view.getBoundingClientRect(), by = {};
+  view.querySelectorAll(".br-m").forEach(m => by[m.dataset.k] = m);
+  const at = el => { const r = el.getBoundingClientRect(); return { l: r.left - V.left + view.scrollLeft, r: r.right - V.left + view.scrollLeft, y: r.top - V.top + view.scrollTop + r.height / 2 }; };
+  let on = "", off = "";
+  for (const k in by) {
+    const [r, j] = k.split("-").map(Number), p = by[(r + 1) + "-" + (j >> 1)]; if (!p) continue;
+    const a = at(by[k]), b = at(p), right = a.l > b.r, x1 = right ? a.l : a.r, x2 = right ? b.r : b.l, xm = (x1 + x2) / 2;
+    const d = `M${x1} ${a.y}H${xm}V${b.y}H${x2}`;
+    if (brWin(r, j)) on += d; else off += d;
+  }
+  view.insertAdjacentHTML("afterbegin", `<svg class="br-lines" width="${view.scrollWidth}" height="${view.scrollHeight}" aria-hidden="true"><path d="${off}"/><path class="done" d="${on}"/></svg>`);
+}
+new ResizeObserver(() => brLines()).observe(document.getElementById("br-view"));
 function brSetup() { // 참가자 고르기 (처음엔 모두)
   brCard.querySelector(".card-ed")?.remove();
   const ppl = people(), on = new Set(bracket.players.filter(p => ppl.includes(p)).length ? bracket.players.filter(p => ppl.includes(p)) : ppl);
