@@ -400,6 +400,7 @@
   .tour-tip .row { display: flex; gap: 6px; align-items: center; } .tour-tip .sp { flex: 1; }
   .tour-tip button { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid #e6dccf; background: #fff; color: var(--ink); border-radius: 999px; padding: 4px 14px; cursor: pointer; }
   .tour-tip button.main { background: #e2643f; border-color: #e2643f; color: #fff; }
+  .tour-tip button.go { display: block; margin: -4px 0 12px; background: #2f7d8c; border-color: #2f7d8c; color: #fff; padding: 6px 18px; font-size: 14px; }
   .tour-tip button.lite { border: 0; color: var(--muted); padding: 4px 6px; }
   /* 사용 방법: 카드별 탭, 단계마다 실제 화면 조각 */
   .mail-btn { display: inline-block; padding: 6px 16px; border-radius: 8px; background: #e2643f; color: #fff; text-decoration: none; white-space: nowrap; }
@@ -407,7 +408,7 @@
   .hp-tabs button { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid #e6dccf; background: #fff; color: var(--ink); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
   .hp-tabs button.on { background: var(--ink); border-color: var(--ink); color: #fff; }
   .hp-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; } .hp-head h3 { margin: 0; font-weight: normal; font-size: 20px; flex: 1; }
-  .hp-head button { font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; border: 0; border-radius: 999px; padding: 6px 16px; background: #e2643f; color: #fff; cursor: pointer; }
+  #panel .hp-head button { font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; border: 0; border-radius: 999px; padding: 7px 18px; background: #2f7d8c; color: #fff; cursor: pointer; } /* 설정 창 단추보다 눈에 띄게 */
   .hp-steps { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; margin-top: 12px; }
   .hp-step { background: #fff; border-radius: 14px; padding: 10px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 1px 2px rgba(60, 40, 20, .05), 0 6px 18px rgba(60, 40, 20, .06); }
   .hp-step p { margin: 0; display: flex; gap: 8px; align-items: flex-start; font-size: 14px; line-height: 1.5; word-break: keep-all; }
@@ -417,7 +418,10 @@
   .hp-wrap * { white-space: nowrap; }
   .hp-shot > .hp-wrap { box-shadow: 0 0 0 3px #ffd43b !important; }
   .hp-shot > .hp-wrap.card { display: flex !important; flex-direction: row !important; background: var(--accent); border: 0; padding: 6px; overflow: visible; min-width: 0; min-height: 0; } /* 제목 줄 버튼은 흰색이라 카드 색 위에 */
-  .hp-wrap > * { position: relative !important; inset: auto !important; transform: none !important; margin: 0 !important; opacity: 1 !important; }
+  .hp-wrap { justify-content: center; }
+  .hp-wrap .hp-target { position: relative !important; inset: auto !important; transform: none !important; margin: 0 !important; opacity: 1 !important; flex: none; }
+  .hp-ed button { font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1px solid #e6dccf; background: #fff; color: var(--ink); border-radius: 8px; padding: 4px 10px; }
+  .hp-ed button.main { background: #2f7d8c; border-color: #2f7d8c; color: #fff; }
   .hp-auto { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 18px; font-size: 13px; color: var(--muted); align-items: center; }
   .hp-auto button { font: inherit; border: 1.5px solid #e6dccf; background: #fff; border-radius: 999px; padding: 3px 12px; cursor: pointer; }
   /* 카드·창 안에 뜨는 확인 창 */
@@ -621,7 +625,8 @@
   .card .chalk .note { color: #fdfdf6; font: 26px/1.45 "Wanted Sans", "Malgun Gothic", sans-serif; }
   .card .chalk .note:focus { background: rgba(255, 255, 255, .06); box-shadow: none; border-radius: 6px; }
   .chalk-list li { border-bottom-color: rgba(255, 255, 255, .22); }
-  .chalk-list li::before { background: none; border: 2px solid #fdfdf6; box-sizing: border-box; color: #fdfdf6; }
+  .chalk-list li::before { display: none; } /* 한 내용을 두 줄로 쓸 수도 있어서 번호는 첫 줄의 '1.'만. 나머지는 직접 씀 */
+  .chalk-list li:first-child::before { display: inline; content: "1."; width: auto; height: auto; border: 0; border-radius: 0; background: none; color: #fdfdf6; margin-right: .3em; font: inherit; line-height: inherit; }
   .chalk .note-tools { right: 6px; bottom: 4px; }
   .nt-foot { display: flex; gap: 6px; align-items: center; padding-top: 8px; }
   .nt-foot { position: relative; }
@@ -3114,8 +3119,9 @@ function ntDraw() {
   if (ntEl.closest(".card").querySelector(".nt-menu")) ntList(true); // 열려 있으면 다시 그림
 }
 const ntLines = lis => lis.map(li => li.textContent.trim()).filter(Boolean);
-const ntText = lis => ntLines(lis).map((t, i) => `${i + 1}. ${t}`).join("\n");
-const ntHtml = lis => `<ol>${ntLines(lis).map(t => `<li>${t.replace(/&/g, "&amp;").replace(/</g, "&lt;")}</li>`).join("")}</ol>`;
+const ntShown = lis => ntLines(lis).map((t, i) => i === 0 && lis[0] === ntEl.firstElementChild ? "1. " + t : t); // 칠판에 보이는 그대로 (첫 줄만 '1.')
+const ntText = lis => ntShown(lis).join("\n");
+const ntHtml = lis => `<p>${ntShown(lis).map(t => t.replace(/&/g, "&amp;").replace(/</g, "&lt;")).join("<br>")}</p>`;
 function ntCopyTo(cb, lis, withDate) { // 다른 곳에 붙여 넣어도 날짜·번호가 그대로
   const date = $s("nt-date").textContent;
   cb.setData("text/plain", (withDate ? date + "\n" : "") + ntText(lis));
@@ -3153,9 +3159,12 @@ function ntList(redraw) {
   };
   document.addEventListener("pointerdown", out, true);
 }
-async function ntDel(d) { // 저장한 것만 지움. 칠판에 쓴 글은 그대로
-  if (!ntHist[d] || !await seConfirm(card("notice"), `저장한 ${ntLabel(d)} 알림장을 지울까요?\n칠판에 쓴 글은 그대로 있어요.`, "지우기")) return;
-  delete ntHist[d]; jset("notice-hist", ntHist); ntDraw();
+async function ntDel(d) { // 칠판에 그날 알림장이 떠 있으면 칠판 글도 지움. 다른 날 것을 지우면 칠판은 그대로
+  const onBoard = d === ntDay;
+  if (!ntHist[d] || !await seConfirm(card("notice"), `저장한 ${ntLabel(d)} 알림장을 지울까요?\n${onBoard ? "칠판에 떠 있는 글도 함께 지워져요." : "칠판에 쓴 글은 그대로 있어요."}`, "지우기")) return;
+  delete ntHist[d]; jset("notice-hist", ntHist);
+  if (onBoard) { ntDay = iso(new Date()); localStorage.removeItem("notice-day"); ntEl.innerHTML = ""; ntEl.dispatchEvent(new Event("input")); }
+  ntDraw();
 }
 async function ntPick(v) {
   if (!v || v === ntDay) return;
@@ -4692,13 +4701,14 @@ async function seTeachOpen() {
     const d = winSetup(w, "자리배치"); // 창 이름에도 '선생님'이 안 보이게
     w.addEventListener("pagehide", () => { if (teachWin === w) seTeachClose(); }); // 창을 닫으면 선생님 모드도 닫힘
     if (!await teachPlace(w)) { // 메인 모니터로 못 옮겼으면 평범한 보드 화면처럼 덮어 둠. 선생님 모니터로 끌어 옮긴 뒤 두 번 누르면 열림
-      const cover = h("div", { class: "teach-cover", title: "두 번 누르면 열려요", ondblclick: () => cover.remove() }, h("b", {}, "우리반 보드"),
+      const cover = h("div", { class: "teach-cover", title: "두 번 누르면 열려요", ondblclick: () => { cover.remove(); setTimeout(() => tourAuto("teach"), 300); } }, h("b", {}, "우리반 보드"),
         h("span", {}, new Date().toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "long" })));
       d.body.append(cover);
     }
   }
   teachWin?.focus();
   seHost($s("seat-ed")); $s("seat-ed").hidden = false; seMsg(""); seDraw($s("st-map"), "teach"); seTeachSide();
+  setTimeout(() => tourAuto("teach"), 500); // 처음 열 때 자세한 안내 (덮개가 있으면 걷은 뒤)
 }
 // 창을 메인 모니터 가운데로. 모니터 정보는 브라우저가 처음 한 번 '창 관리' 허락을 물어봄
 async function teachPlace(w) {
@@ -4845,13 +4855,26 @@ seClean(); seRedraw();
 // ───── 처음 쓰는 선생님을 위한 안내: 해당 부분을 네모로 짚으며 한 단계씩 (설정 → 사용 방법에서도 같은 단계로 보여 줌)
 // 보드 안내는 처음 켤 때, 카드 안내는 그 카드를 처음 띄우거나 처음 누를 때. at: 짚을 곳(카드 안 선택자, 보드는 전체에서. 여러 개면 한꺼번에), 없으면 말풍선만
 // 자리배치 안내는 학생 화면에 뜰 수 있어 선생님 모드 이야기는 넣지 않음 (사용 방법에만)
+// 처음 켤 때 맨 먼저: 앱으로 설치 (엣지·크롬에 맞춰). 이미 앱으로 열었으면 건너뜀
+const isApp = () => !matchMedia("(display-mode: browser)").matches, isEdge = /Edg\//.test(navigator.userAgent), isChrome = !isEdge && /Chrome\//.test(navigator.userAgent);
+let installEvt = null; // 브라우저가 '설치할 수 있어요'를 알려 주면 그 자리에서 바로 설치 버튼을 띄움
+addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; });
+const INSTALL_STEPS = [
+  { text: "먼저 앱으로 설치해 주세요. 바탕화면·작업 표시줄에서 바로 켜고, 주소창 없이 넓게 써요.", btn: ["지금 설치하기", () => installEvt?.prompt().catch(() => {})] },
+  ...(isEdge ? [
+    { text: "엣지: 주소창 오른쪽 '앱 설치' 아이콘(네모에 +)을 누르고 '설치'. 안 보이면 오른쪽 위 … → 앱 → '이 사이트를 앱으로 설치'" },
+    { text: "켤 때 저절로 열리게: 주소창에 edge://apps → 우리반 보드의 … → '장치 로그인 시 시작'" }]
+  : isChrome ? [
+    { text: "크롬: 주소창 오른쪽 설치 아이콘(모니터에 ↓)을 누르고 '설치'. 안 보이면 오른쪽 위 ⋮ → 전송, 저장, 공유 → '페이지를 앱으로 설치'" },
+    { text: "설치한 앱을 작업 표시줄에 고정해 두면 매일 바로 켤 수 있어요." }]
+  : [{ text: "엣지나 크롬으로 이 주소를 열면 앱으로 설치할 수 있어요." }])];
 const TOURS = {
   board: { name: "🧭 처음 시작", steps: [
     { at: ".dock", text: "아래쪽 바예요. 버튼을 누르면 카드가 보드에 뜨고, 한 번 더 누르면 내려가요. 옆으로 끌면 순서가 바뀌어요." },
     { at: "#drawer-btn", text: "자주 안 쓰는 버튼은 끌어서 '서랍'에 넣어 두세요." },
     { at: () => tourCard()?.querySelector(".label"), text: "카드 제목 줄을 끌면 카드를 옮길 수 있어요." },
     { at: () => tourCard()?.querySelector(".card-grip"), text: "오른쪽 아래 모서리를 끌면 크기가 바뀌어요." },
-    { at: [() => tourCard()?.querySelector(".card-pop"), () => tourCard()?.querySelector(".card-full"), () => tourCard()?.querySelector(".card-down:not(.card-pop):not(.card-full)")], text: "왼쪽부터 ① 따로 창으로 떼기(TV 같은 다른 모니터로) ② 전체 화면 ③ 닫기(아래쪽 바로)" },
+    { at: [() => tourCard()?.querySelector(".card-pop"), () => tourCard()?.querySelector(".card-full"), () => tourCard()?.querySelector(".card-down:not(.card-pop):not(.card-full)")], text: "왼쪽부터 ① 따로 창으로 떼기(다른 모니터로 옮길 수 있어요) ② 전체 화면 ③ 닫기(아래쪽 바로)" },
     { at: ".gear", text: "설정: 명단·시간표·로그인. '사용 방법'에서 이 안내를 다시 볼 수 있어요." }] },
   topic: { name: "✏️ 오늘의 주제", steps: [
     { at: ".used", text: "쓴 주제는 '사용 체크'하면 다시 나오지 않아요." },
@@ -4867,7 +4890,8 @@ const TOURS = {
     { at: 'button[data-ic="set"]', text: "처음 한 번: 자리 모양(분단·모둠·직접 그리기)과 짝꿍 조건을 정해요." },
     { at: ".seat-mini", text: "이름을 끌거나, 누른 뒤 다른 자리를 누르면 서로 바꿔요. 오른쪽 아래 '원래대로'로 자동 배치한 자리로 돌아가요." },
     { at: "#seat-save", text: "오늘 날짜로 저장하면 위 목록에서 다시 볼 수 있어요." },
-    { at: 'button[data-ic="print"]', text: "출력: 학생 시점 · 교사 시점 · 둘 다 (A4 가로)" }] },
+    { at: 'button[data-ic="print"]', text: "출력: 학생 시점 · 교사 시점 · 둘 다 (A4 가로)" },
+    { at: ".seat-star", text: "☆는 특별 모드예요." }] },
   photo: { name: "🖼️ 사진", steps: [
     { at: ".photo-box", text: "사진 위에 마우스를 올리면 버튼이 나와요. '☆ 저장'으로 보관함에 4장까지 넣어 두고 '🗂️ 보관함'에서 바로 바꿔 띄워요." },
     { text: "아래쪽 바 사진 버튼의 +로 사진 카드를 더 띄워요." }] },
@@ -4895,9 +4919,10 @@ const TOURS = {
     { at: ".qr-shelf-btn", text: "보관함에서 눌러 바로 띄워요." },
     { text: "⛶ 전체 화면으로 크게 띄워 학생들이 찍게 하세요. 아래쪽 바 +로 여러 장 띄워요." }] },
   notice: { name: "📋 알림장", steps: [
-    { at: "#nt-copy", text: "복사: 날짜·번호가 붙은 채로 다른 곳에 붙여 넣어요." },
+    { at: "#nt-copy", text: "복사: 날짜와 함께 보이는 그대로 다른 곳에 붙여 넣어요." },
     { at: "#nt-save", text: "저장: 날짜별로 남겨요." },
-    { at: "#nt-hist", text: "지난 알림장을 불러오거나 ✕로 지워요." }] },
+    { at: "#nt-hist", text: "지난 알림장을 불러오거나 ✕로 지워요. 칠판에 떠 있는 날 것을 지우면 칠판 글도 지워져요." },
+    { text: "번호는 첫 줄의 '1.'만 붙어요. 한 내용을 두 줄로 쓸 수 있게 나머지 번호는 직접 써요." }] },
   scores: { name: "📊 성적 알리미", steps: [
     { at: ".sc-top button", text: "'✎ 점수 넣기': 평가 이름·만점·학생 점수 (엑셀 한 줄 붙여넣기도 돼요)" },
     { at: "#sc-grid", text: "이름을 누르면 그 학생 점수만 크게 보여요." }] },
@@ -4905,15 +4930,16 @@ const TOURS = {
     { text: "'+ 링크'로 주소를, '+ 폴더'로 폴더를 만들어요." },
     { text: "링크를 끌어 폴더 위에 놓으면 폴더로 들어가요." },
     { text: "오른쪽 버튼: 이름 바꾸기 · 삭제" }] },
-  teach: { name: "☆ 선생님 모드", steps: [
-    { text: "자리배치 ☆를 누르면 열려요. 모니터가 두 대면 선생님 모니터에만 떠요(처음에 '창 관리' 허락)." },
-    { text: "고정: 이름을 자리로 끌어 놓으면 그 자리에 고정돼요." },
-    { text: "분리: 같이 앉으면 안 되는 학생을 묶으면 짝·앞뒤·좌우·대각선·같은 모둠으로 안 앉아요." },
-    { text: "랜덤 섞기는 다음 자리를 미리 섞어 두기만 해요. 보드에서 '자동 자리배치'를 누를 때 그 자리로 앉아요." },
-    { text: "초기화: 미리 섞은 자리를 비워요(고정·분리는 그대로)." }] },
-  etc: { name: "⚙️ 설치·저장", steps: [
-    { text: "앱 설치(Edge): 주소창 오른쪽 설치 아이콘 → 설치. 안 보이면 … → 앱 → 이 사이트를 앱으로 설치" },
-    { text: "켤 때 자동 실행(Edge): edge://apps → 이 앱의 … → 장치 로그인 시 시작" },
+  teach: { name: "☆ 선생님 모드", steps: [ // 선생님 모드를 처음 열 때 (선생님 모니터에만 뜸)
+    { at: "#st-map", text: "선생님만 보는 자리표예요. 여기서 바꾼 건 학생 화면에 바로 나오지 않아요." },
+    { at: '#st-tabs [data-t="fix"]', text: "고정: 이름을 자리로 끌어 놓으면 그 자리에 고정돼요. 자물쇠 자리를 누르면 풀려요." },
+    { at: '#st-tabs [data-t="sep"]', text: "분리: 같이 앉으면 안 되는 학생을 묶으면 짝·앞뒤·좌우·대각선·같은 모둠으로 안 앉아요." },
+    { at: '#st-tabs [data-t="hist"]', text: "기록: 저장한 자리를 불러오거나 지워요." },
+    { at: ".st-foot .main", text: "랜덤 섞기: 다음 자리를 미리 섞어 둬요. 보드에서 '자동 자리배치'를 누를 때 이 자리로 앉아요." },
+    { at: "#st-reset", text: "초기화: 미리 섞은 자리를 비워요. 고정·분리는 그대로예요." },
+    { text: "모니터가 두 대면 선생님 모드는 선생님 모니터에만 떠요. 처음에 브라우저가 '창 관리'를 물으면 허용해 주세요." }] },
+  install: { name: "📲 앱으로 설치", steps: INSTALL_STEPS },
+  etc: { name: "⚙️ 로그인·저장", steps: [
     { text: "로그인: 설정 → 로그인. 다른 컴퓨터에서도 같은 보드가 나와요." },
     { text: "명단 사진: 설정 → 명단에서 명렬표 사진도 가져와요. 틀린 글자는 꼭 확인!" },
     { text: "저장: 이 컴퓨터에 저장돼요(로그인하면 서버에도)." }] },
@@ -4921,7 +4947,7 @@ const TOURS = {
 let tourSt = { seen: {}, off: false }, tourNow = null;
 try { tourSt = Object.assign(tourSt, JSON.parse(localStorage.getItem("tour")) || {}); } catch (e) {}
 const tourSave = () => { try { localStorage.setItem("tour", JSON.stringify(tourSt)); } catch (e) {} };
-const tourRoot = k => k === "board" ? document : card(k);
+const tourRoot = k => k === "board" || k === "install" ? document : k === "teach" ? $s("seat-ed") : card(k);
 const tourEls = (k, at) => at ? [].concat(at).map(q => typeof q === "function" ? q() : tourRoot(k)?.querySelector(q)).filter(el => el && el.getClientRects().length) : [];
 // 보드 안내에서 짚을 카드: 제목 줄이 다른 카드에 가리지 않은 카드 (안내를 띄우기 전에 정해 둠)
 let tourCardEl = null;
@@ -4936,11 +4962,13 @@ function tourRun(k) {
   tourCardEl = null; // 이번 안내에 쓸 카드를 지금(안내 화면을 덮기 전) 다시 고름
   const steps = T.steps.filter(st => !st.at || tourEls(k, st.at).length);
   if (!steps.length) return;
+  const D = tourRoot(k)?.ownerDocument || document, Wn = D.defaultView; // 선생님 모드처럼 다른 창에 있으면 그 창에 띄움
   let i = 0;
   const hole = h("div", { class: "tour-hole" }), tip = h("div", { class: "tour-tip", role: "dialog" }), ov = h("div", { class: "tour" }, hole, tip);
   const end = how => {
-    ov.remove(); removeEventListener("resize", place); document.removeEventListener("keydown", key, true); tourNow = null;
+    ov.remove(); Wn.removeEventListener("resize", place); D.removeEventListener("keydown", key, true); tourNow = null;
     tourSt.seen[k] = 1; if (how === "off") tourSt.off = true; tourSave();
+    if (k === "install") setTimeout(() => tourAuto("board"), 300); // 설치 안내 다음은 보드 안내
   };
   const place = () => {
     const st = steps[i], els = tourEls(k, st.at);
@@ -4951,37 +4979,42 @@ function tourRun(k) {
       Object.assign(hole.style, { left: r.l + "px", top: r.t + "px", width: r.r - r.l + "px", height: r.b - r.t + "px" });
     }
     hole.hidden = !r; ov.classList.toggle("dim", !r);
-    const last = i === steps.length - 1;
-    tip.replaceChildren(h("small", {}, `${T.name} · ${i + 1} / ${steps.length}`), h("p", {}, st.text),
+    const last = i === steps.length - 1, extra = st.btn && installEvt ? h("button", { class: "go", onclick: st.btn[1] }, st.btn[0]) : null;
+    tip.replaceChildren(h("small", {}, `${T.name} · ${i + 1} / ${steps.length}`), h("p", {}, st.text), ...(extra ? [extra] : []),
       h("div", { class: "row" }, h("button", { class: "lite", title: "이 안내를 닫아요", onclick: () => end("skip") }, "건너뛰기"),
         h("button", { class: "lite", title: "앞으로 처음 안내를 띄우지 않아요 (설정 → 사용 방법에서 다시 볼 수 있어요)", onclick: () => end("off") }, "다시 보지 않기"), h("span", { class: "sp" }),
         i ? h("button", { onclick: () => { i--; place(); } }, "이전") : null,
         h("button", { class: "main", onclick: () => { if (last) end("done"); else { i++; place(); } } }, last ? "끝" : "다음")));
-    const W = Math.min(320, innerWidth - 24); tip.style.width = W + "px";
+    const IW = Wn.innerWidth, IH = Wn.innerHeight, W = Math.min(320, IW - 24); tip.style.width = W + "px";
     const th = tip.offsetHeight;
-    let x = (innerWidth - W) / 2, y = (innerHeight - th) / 2; // 짚을 곳이 없으면 가운데
+    let x = (IW - W) / 2, y = (IH - th) / 2; // 짚을 곳이 없으면 가운데
     if (r) { // 짚은 곳 아래, 자리가 없으면 위
-      x = Math.max(12, Math.min((r.l + r.r) / 2 - W / 2, innerWidth - W - 12));
-      y = r.b + 12 + th < innerHeight ? r.b + 12 : r.t - 12 - th >= 0 ? r.t - 12 - th : Math.max(12, innerHeight - th - 12);
+      x = Math.max(12, Math.min((r.l + r.r) / 2 - W / 2, IW - W - 12));
+      y = r.b + 12 + th < IH ? r.b + 12 : r.t - 12 - th >= 0 ? r.t - 12 - th : Math.max(12, IH - th - 12);
     }
     tip.style.left = x + "px"; tip.style.top = y + "px";
     tip.querySelector(".main").focus();
   };
   const key = e => { if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); end("skip"); } };
-  tourNow = k; document.body.append(ov); place();
-  addEventListener("resize", place); document.addEventListener("keydown", key, true);
+  tourNow = k; D.body.append(ov); place();
+  Wn.addEventListener("resize", place); D.addEventListener("keydown", key, true);
 }
-function tourAuto(k) { // 처음 한 번만. 보드 안내를 본 뒤에 카드 안내
+// 처음 한 번만: 설치 → 보드 → 카드는 처음 띄우거나 누를 때, 선생님 모드는 처음 열 때(덮개를 걷은 뒤)
+function tourAuto(k) {
   if (tourSt.off || tourSt.seen[k] || tourNow || !TOURS[k] || !panel.hidden) return;
-  if (k !== "board" && (!tourSt.seen.board || !card(k) || card(k).hidden || pops[k])) return;
+  if (k === "install") { if (isApp()) return; }
+  else if (k === "board") { if (!isApp() && !tourSt.seen.install) return; }
+  else if (k === "teach") { if (!stOpen() || $s("seat-ed").ownerDocument.querySelector(".teach-cover")) return; }
+  else if (!tourSt.seen.board || !card(k) || card(k).hidden || pops[k]) return;
   tourRun(k);
 }
-setTimeout(() => tourAuto("board"), 1200);
+const tourStart = () => tourAuto(isApp() ? "board" : "install");
+setTimeout(tourStart, 1200);
 board.addEventListener("pointerdown", e => { const c = e.target.closest(".card"); if (c) setTimeout(() => tourAuto(c.dataset.card.split("-")[0]), 400); }, true); // 보드에 처음부터 있던 카드는 처음 누를 때
 
 // 설정 → 사용 방법: 카드별 탭, 단계마다 실제 화면 조각을 노란 네모로. '화면에서 따라 하기'는 위 안내를 바로 띄움
 let hpTopic = "board";
-const hpTopics = () => [["board"], ...CARDS.filter(([k]) => !extras.includes(k)).map(([k]) => [k]), ["links"], ["teach"], ["etc"]].filter(([k]) => TOURS[k]);
+const hpTopics = () => [["install"], ["board"], ...CARDS.filter(([k]) => !extras.includes(k)).map(([k]) => [k]), ["links"], ["teach"], ["etc"]].filter(([k]) => TOURS[k]);
 function hpDraw(k = hpTopic) {
   hpTopic = k;
   $s("hp-tabs").replaceChildren(...hpTopics().map(([t]) => h("button", { class: t === k ? "on" : "", onclick: () => hpDraw(t) }, TOURS[t].name)));
@@ -4995,7 +5028,7 @@ function hpDraw(k = hpTopic) {
   });
   $s("hp-body").replaceChildren(h("div", { class: "hp-head" }, h("h3", {}, T.name), go), h("div", { class: "hp-steps" }, steps),
     h("div", { class: "hp-auto" }, h("label", {}, h("input", { type: "checkbox", ...(tourSt.off ? {} : { checked: "" }), onchange: e => { tourSt.off = !e.target.checked; tourSave(); } }), " 처음 쓰는 카드에 안내 띄우기"),
-      h("button", { onclick: () => { tourSt = { seen: {}, off: false }; tourSave(); hpDraw(); } }, "안내를 처음부터 다시 보기")));
+      h("button", { onclick: () => { tourSt = { seen: {}, off: false }; tourSave(); togglePanel(false); setTimeout(tourStart, 300); } }, "안내를 처음부터 다시 보기"))); // 설정을 닫고 바로 처음 안내부터
   requestAnimationFrame(() => shots.forEach(sh => { // 칸에 맞게 줄임
     const w = sh.firstChild; if (!w) return;
     const k2 = Math.min(1, (sh.clientWidth - 16) / w.offsetWidth, (sh.clientHeight - 16) / w.offsetHeight);
@@ -5007,14 +5040,15 @@ function hpShot(k, at) {
   if (!at) return null;
   const els = [].concat(at).map(q => typeof q === "function" ? q() : tourRoot(k)?.querySelector(q)).filter(Boolean);
   if (!els.length) return null;
-  const from = els[0].closest(".card"), wrap = h("div", { class: "hp-wrap " + (from ? (els[0].parentElement === from ? from.className : from.className.replace(/\bcard\b/, "")) : ""), ...(from ? { "data-card": from.dataset.card } : {}), inert: "" });
+  const from = els[0].closest(".card"), wrap = h("div", { class: "hp-wrap " + (els[0].closest("#seat-ed") ? "hp-ed " : "") + (from ? (els[0].parentElement === from ? from.className : from.className.replace(/\bcard\b/, "")) : ""), ...(from ? { "data-card": from.dataset.card } : {}), inert: "" });
   let W = 0, H = 0, sized = true;
   for (const el of els) {
     const cl = el.cloneNode(true), r = el.getBoundingClientRect();
     cl.hidden = false;
     if (r.width) { cl.style.width = r.width + "px"; cl.style.height = r.height + "px"; W += r.width; H = Math.max(H, r.height); } else sized = false;
     let node = cl; // 카드까지의 부모를 껍데기만 복사해 감쌈: '.seat-tools button'처럼 부모로 정한 모양이 그대로 나오게
-    if (from) for (let a = el.parentElement; a && a !== from; a = a.parentElement) { const sh = a.cloneNode(false); sh.hidden = false; sh.append(node); node = sh; }
+    cl.classList.add("hp-target");
+    if (from) for (let a = el.parentElement; a && a !== from; a = a.parentElement) { const sh = a.cloneNode(false); sh.hidden = false; sh.style.display = "contents"; sh.append(node); node = sh; } // contents: 부모 상자의 줄·간격은 빼고 모양(선택자)만
     wrap.append(node);
   }
   // 카드 칸은 글씨 크기를 카드 크기에 맞추느라(container-type) 내용으로 커지지 않음 → 실제 크기를 정해 줌. 숨은 카드라 크기를 모르면 내용대로
