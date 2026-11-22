@@ -520,19 +520,42 @@
 
   /* 학급 온도계 */
   [data-card="thermo"] { --accent: #e03131; --card: #fff0f0; --line: #f5c6c6; }
-  .th-main { flex: 1; min-height: 0; display: flex; align-items: stretch; justify-content: center; gap: 18px; }
-  .th-tube { position: relative; width: 22px; margin: 4px 0 22px; border-radius: 14px; background: #fff; border: 3px solid var(--line); }
-  .th-tube i { position: absolute; left: 3px; right: 3px; bottom: 0; border-radius: 9px; background: linear-gradient(to top, #e03131, #ff8787); transition: height .4s; }
-  .th-bulb { position: absolute; left: 50%; bottom: -24px; width: 34px; height: 34px; transform: translateX(-50%); border-radius: 50%; background: #e03131; border: 3px solid var(--line); }
+  .th-main { flex: 1; min-height: 0; display: flex; align-items: stretch; justify-content: center; gap: 18px; padding-left: 34px; }
+  .th-tube { position: relative; flex: none; width: 22px; margin: 6px 0 24px; border-radius: 14px; background: #fff; border: 3px solid var(--line); }
+  #th-fill { position: absolute; left: 3px; right: 3px; bottom: 0; border-radius: 9px; background: linear-gradient(to top, #e03131, #ff8787); }
+  .th-bulb { position: absolute; left: 50%; bottom: -26px; width: 34px; height: 34px; transform: translateX(-50%); border-radius: 50%; background: #e03131; border: 3px solid var(--line); z-index: 1; }
+  /* 눈금: 왼쪽에 10도마다 숫자, 5도마다 짧은 금. 보상을 정한 온도는 오른쪽에 🎁 */
+  .th-tick { position: absolute; right: calc(100% + 3px); width: 6px; height: 0; border-top: 1.5px solid #c9a0a0; }
+  .th-tick.major { width: 10px; }
+  .th-tick span { position: absolute; right: 13px; top: -.65em; font: 11px/1.2 "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--muted); }
+  .th-gift { position: absolute; left: calc(100% + 5px); transform: translateY(50%); font-size: 12px; line-height: 1; filter: grayscale(1); opacity: .55; transition: filter .3s, opacity .3s; }
+  .th-gift.got { filter: none; opacity: 1; }
   .th-info { display: flex; flex-direction: column; justify-content: center; gap: 6px; min-width: 0; }
   .tool-card .th-info .big { flex: none; color: var(--accent); font-size: clamp(28px, min(18cqw, 20cqh), 72px); }
-  .th-goal { font: 14px/1.4 "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--muted); text-align: center; }
-  #th-reward { display: inline-block; min-width: 4em; color: var(--ink); font-size: 16px; outline: none; border-bottom: 1.5px dashed var(--line); cursor: text; }
-  #th-reward:empty::before { content: "보상 쓰기"; color: #d9a3a3; }
+  .th-goal { display: flex; align-items: center; justify-content: center; gap: 4px; font: 15px/1.4 "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--ink); text-align: center; }
+  .th-goal span b { color: var(--accent); }
+  .tool-card .th-pen { flex: none; width: 28px; height: 28px; padding: 0; display: grid; place-items: center; color: var(--accent); }
+  .th-pen svg { width: 16px; height: 16px; }
+  #thermo-card.hit .th-info .big { animation: th-pop .6s ease-in-out 2; }
   #thermo-card.full .th-info .big { animation: th-pop .6s ease-in-out 3; }
   @keyframes th-pop { 50% { transform: scale(1.25); } }
+  /* 보상 정하기: 카드 안을 덮는 목록 */
+  .th-ed { position: absolute; inset: 0; z-index: 4; display: flex; flex-direction: column; gap: 8px; padding: 12px 16px; background: #fff; border-radius: inherit;
+           font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--ink); }
+  .th-ed-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .th-ed-list { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+  .th-ed-list label { display: flex; align-items: center; gap: 8px; }
+  .th-ed-list label > span { width: 3em; flex: none; text-align: right; color: var(--accent); }
+  .th-ed-list input { flex: 1; min-width: 0; font: inherit; border: 1.5px solid var(--line); border-radius: 8px; padding: 4px 8px; }
   /* QR 만들기 */
   [data-card="qr"] { --accent: #495057; --card: #f1f3f5; --line: #dee2e6; }
+  .qr-row { display: flex; gap: 6px; } .qr-row #qr-in { flex: 1; }
+  .qr-saved { display: flex; flex-wrap: wrap; gap: 4px; max-height: 60px; overflow-y: auto; }
+  .qr-saved:empty { display: none; }
+  .tool-card .qr-saved button { font-size: 12px; padding: 2px 4px 2px 10px; display: inline-flex; align-items: center; gap: 2px; max-width: 100%; }
+  .tool-card .qr-saved button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .qr-saved b { font-weight: normal; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .qr-saved i { font-style: normal; padding: 0 6px; opacity: .6; } .qr-saved i:hover { opacity: 1; }
   #qr-in { font: 15px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); border-radius: 8px; padding: 6px 10px; background: #fff; color: var(--ink); min-width: 0; }
   .qr-box { flex: 1; min-height: 0; position: relative; display: grid; place-items: center; }
   #qr-cv { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); image-rendering: pixelated; }
@@ -552,7 +575,7 @@
   .drawer-pick label:has(:focus-visible) { outline: 2px solid #4a5568; outline-offset: 1px; }
   .drawer-pick input { position: absolute; opacity: 0; width: 0; height: 0; }
   /* 타이머 효과음 켜기·끄기: 제목 줄 오른쪽 */
-  #timer-card .sfx { position: absolute; top: 7px; right: 66px; z-index: 3; border: 0; border-radius: 6px; background: rgba(255, 255, 255, .2); color: #fff; font-size: 12px; padding: 3px 8px; }
+  #timer-card .acts .sfx { padding: 7px 12px; font-size: 13px; color: var(--muted); border-color: var(--line); }
   #timer-card .sfx.off { opacity: .6; text-decoration: line-through; }
   /* 미세먼지 */
   [data-card="dust"]  { --accent: #6b7f99; --card: #eef2f7; --line: #d3dbe6; }
@@ -637,7 +660,6 @@
   </section>
   <section class="card tool-card" data-card="timer" id="timer-card">
     <p class="label">⏱️ 타이머</p>
-    <button class="sfx" id="timer-sfx" onclick="timerSfx()" title="시작·멈춤·째깍 소리 켜기/끄기 (마지막 3초와 끝날 때 소리는 늘 나요)"></button>
     <div class="big" id="timer-time" role="timer" aria-live="off" title="눌러서 시간 바꾸기 (예: 3:30)">05:00</div>
     <div class="bar"><i id="timer-bar"></i></div>
     <div class="chips">
@@ -645,7 +667,7 @@
       <button onclick="timerSet(5)">5분</button><button onclick="timerSet(10)">10분</button><button onclick="timerAdd(1)" title="1분 더하기">+1</button>
     </div>
     <div class="acts">
-      <button class="main" id="timer-go" onclick="timerToggle()">시작</button><button class="again" onclick="timerReset()">↺ 다시</button>
+      <button class="main" id="timer-go" onclick="timerToggle()">시작</button><button class="again" onclick="timerReset()">↺ 다시</button><button class="sfx" id="timer-sfx" onclick="timerSfx()" title="시작·멈춤·째깍 소리 켜기/끄기 (마지막 3초와 끝날 때 소리는 늘 나요)"></button>
     </div>
   </section>
   <section class="card tool-card" data-card="picker">
@@ -698,14 +720,16 @@
   <section class="card tool-card" data-card="thermo" id="thermo-card">
     <p class="label">🌡️ 학급 온도계</p>
     <div class="th-main">
-      <div class="th-tube" aria-hidden="true"><i id="th-fill"></i><b class="th-bulb"></b></div>
-      <div class="th-info"><div class="big" id="th-val" aria-live="polite">0°</div><p class="th-goal">100°가 되면<br><span id="th-reward" contenteditable="plaintext-only" spellcheck="false" role="textbox" aria-label="100도가 되면 받을 보상"></span></p></div>
+      <div class="th-tube" id="th-tube" aria-hidden="true"><i id="th-fill"></i><b class="th-bulb"></b></div>
+      <div class="th-info"><div class="big" id="th-val" aria-live="polite">0°</div>
+        <p class="th-goal"><span id="th-next"></span><button class="th-pen" onclick="thEdit()" title="보상 정하기" aria-label="보상 정하기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1-5L15.5 4.5a2.1 2.1 0 0 1 3 0l1 1a2.1 2.1 0 0 1 0 3L9 19zM13.5 6.5l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p></div>
     </div>
     <div class="acts"><button class="main" onclick="thAdd(1)">+1°</button><button onclick="thAdd(5)">+5°</button><button onclick="thAdd(-1)">−1°</button><button onclick="thReset()" title="0°로 되돌리기">↻</button></div>
   </section>
   <section class="card tool-card" data-card="qr">
     <p class="label">🔳 QR 만들기</p>
-    <input id="qr-in" placeholder="주소나 글을 넣으세요" aria-label="QR로 만들 주소나 글" spellcheck="false" autocomplete="off">
+    <div class="qr-row"><input id="qr-in" placeholder="주소나 글을 넣으세요" aria-label="QR로 만들 주소나 글" spellcheck="false" autocomplete="off"><button onclick="qrKeep()" title="자주 쓰는 QR로 저장">☆ 저장</button></div>
+    <div class="qr-saved" id="qr-saved"></div>
     <div class="qr-box"><canvas id="qr-cv" hidden></canvas><p class="sub" id="qr-msg"></p></div>
   </section>
   <section class="card wb-card" data-card="whiteboard">
@@ -837,8 +861,8 @@
   <section id="tab-roster" hidden>
     <p class="sum">뽑기와 자리배치에 쓰는 우리 반 명단이에요. 성별(남·여)은 자리배치의 짝꿍 조건에 써요. 한글·PDF 명렬표 파일에서 가져오거나, 아래 표에 번호와 이름을 직접 쓰세요. 가져온 뒤에도 표에서 바로 고칠 수 있어요. 이름 없이 번호만 써도 번호로 뽑아요. 쓰는 대로 저장돼요.</p>
     <div class="row">
-      <button onclick="document.getElementById('roster-file').click()">파일에서 가져오기 (한글 · 워드 · PDF)</button>
-      <input type="file" id="roster-file" accept=".hwp,.hwpx,.doc,.docx,.pdf" hidden>
+      <button onclick="document.getElementById('roster-file').click()">파일에서 가져오기 (한글 · 워드 · PDF · 사진)</button>
+      <input type="file" id="roster-file" accept=".hwp,.hwpx,.doc,.docx,.pdf,.png,.jpg,.jpeg" hidden>
     </div>
     <p class="sum" id="roster-msg"></p>
     <textarea id="roster" hidden></textarea><!-- 저장용: "번호 이름" 한 줄씩. 보이는 건 아래 표 -->
@@ -856,7 +880,7 @@
       <li><b>오늘의 주제</b> ↻로 다른 주제를 뽑아요. 쓴 주제는 '사용 체크'하면 다시 나오지 않아요. '2줄 이상 쓰기'는 더블클릭해서 고쳐요.</li>
       <li><b>메모 · 우리반 규칙</b> 카드를 눌러 바로 쓰면 저절로 저장돼요. 글자를 끌어서 고른 뒤 오른쪽 아래 Tt에서 색을 고르면 그 글자만 바뀌어요. 메모는 아래쪽 바 버튼을 누를 때마다 한 장씩 더 생겨요(더 만든 메모는 닫으면 지워져요).</li>
       <li><b>사진</b> '사진 넣기'로 사진을 고르세요. 사진 위에 마우스를 올리면 바꾸기·지우기 버튼이 나와요. 아래쪽 바 버튼을 누를 때마다 사진 카드가 한 장씩 더 생겨요.</li>
-      <li><b>타이머</b> 30초·1·3·5·10분을 고르거나, 가운데 시간(00:00)을 눌러 3:30처럼 직접 쓰고 '시작'. +1은 1분 더하기예요. 시간이 끝나면 소리가 나고 카드가 깜빡여요. 제목 줄 '🔊 효과음'으로 시작·멈춤·째깍 소리를 끄고 켜요(마지막 3초와 끝날 때 소리는 늘 나요).</li>
+      <li><b>타이머</b> 30초·1·3·5·10분을 고르거나, 가운데 시간(00:00)을 눌러 3:30처럼 직접 쓰고 '시작'. +1은 1분 더하기예요. 시간이 끝나면 소리가 나고 카드가 깜빡여요. 아래 '🔊 효과음'으로 시작·멈춤·째깍 소리를 끄고 켜요(마지막 3초와 끝날 때 소리는 늘 나요).</li>
       <li><b>뽑기</b> <u>전체</u>: 설정 → 명단에 우리 반 이름을 한 줄에 하나씩(숫자만 쓰면 번호로). <u>선택</u>: 오른쪽 아래 '✎ 고르기'로 뽑을 사람만 골라요. <u>모둠</u>: 오른쪽 아래에 모둠 수를 정해요. <u>직접입력</u>: 오른쪽 아래 '✎ 쓰기'로 그때그때 뽑을 것을 써요. <u>순서</u>: 명단 전체가 이름 구슬이 되어 긴 핀볼 코스(경사로·범퍼·도는 막대·쐐기)를 굴러 내려가요. 화면은 맨 앞 구슬을 따라 내려가고, 맨 아래 구멍으로 빠진 순서대로 1등부터 정해요. 한 번 뽑힌 것은 모두 뽑힐 때까지 다시 나오지 않고, '처음부터'로 다시 시작해요.</li>
       <li><b>미세먼지</b> '지역 설정'에서 '지금 위치로'를 누르거나 시·군 이름(예: 수원시)으로 찾으세요. Open-Meteo(무료 공개 자료)의 예보값이라 에어코리아 측정소 값과 조금 다를 수 있어요. 30분마다 새로 받아요.</li>
       <li><b>소음 측정</b> '측정 시작'을 누르고 마이크를 허락하면 소리 크기를 막대로 보여 줘요. 기준(검은 선)을 1초 넘게 넘으면 경고음이 나고 오늘 경고 횟수가 쌓여요. '🔔 경고'로 직접 경고를 줄 수도 있어요. 소리는 이 컴퓨터 안에서만 재고, 녹음하거나 보내지 않아요.</li>
@@ -864,11 +888,12 @@
       <li><b>시간표</b> 설정 → 시간표에서 연간시간표(한글 파일 또는 표 붙여넣기)와 시정표를 넣으면, 지금 몇 교시인지와 다음 시간을 알려 줘요. 표에 없는 주는 '매주 기본 시간표'를 써요.</li>
       <li><b>보드 카드</b> 제목을 끌어 옮기고, 오른쪽 아래 모서리로 크기를 바꿔요. 옮긴 자리와 크기는 앱을 껐다 켜도 그대로예요. ✕를 누르면 보드에서 닫히고 아래쪽 바로 들어가요. 닫아도 적어 둔 내용은 남아요.</li>
       <li><b>아래쪽 바</b> 보드에서 닫은 카드가 들어가요. 누르면 보드에 다시 나와요. 자주 안 쓰는 버튼은 오른쪽 끝 '서랍'을 눌러 아래 목록에서 골라 넣어 두면 서랍 안에서 꺼내 써요.</li>
-      <li><b>학급 온도계</b> +1°, +5°로 반 온도를 올리고 −1°로 내려요. 100°가 되면 소리와 함께 축하해요. '100°가 되면' 아래를 눌러 보상을 써 두세요. ↻는 0°로 되돌려요.</li>
+      <li><b>학급 온도계</b> +1°, +5°로 반 온도를 올리고 −1°로 내려요. 연필 버튼에서 5°마다 보상을 쓸 수 있어요(비워 둬도 돼요). 카드에는 다음 보상(예: 10°가 되면 ○○)이 나오고, 보상 온도를 넘거나 100°가 되면 소리와 함께 축하해요. ↻는 0°로 되돌려요.</li>
       <li><b>QR 만들기</b> 칸에 주소나 글을 넣으면 바로 QR이 생겨요. ⛶ 전체 화면으로 크게 띄워 학생들이 찍게 하세요. 인터넷 없이 이 컴퓨터에서 만들어요.</li>
       <li><b>자리배치</b> 처음 한 번 설정 버튼에서 모양(분단: 혼자·짝꿍과 앉기와 분단 수 / 모둠: 모둠 인원 / 직접 그리기: 명단 인원만큼 자리를 고르고, 필요하면 '방향 돌리기'로 ㄷ자처럼 옆을 보게)과 짝꿍 조건(상관없이·이성끼리·동성끼리·성별 고르게, 이전 짝꿍과 같이 안 앉기)을 정하면 계속 유지돼요. 성별은 설정 → 명단에서 이름과 함께 정해요. 평소에는 '자동 자리배치'(한 자리씩 나타나요), 그 아래 '오늘 날짜로 저장', 출력만 누르면 돼요. 출력은 학생 시점(칠판이 위)·교사 시점(칠판이 아래)·둘 다 중에서 골라 A4 가로로 크게 나와요. 이름을 끌어 다른 자리에 놓거나, 이름을 누른 뒤 다른 자리를 누르면 서로 자리를 바꾸고, 칠판 옆 '상하전환'으로 위아래를 바꿔요. 대형을 만들면 많이 쓰는 공개 모둠으로 묶여요(혼자 앉기는 한 줄, 짝꿍은 4~6명). 미리보기에서 책상이나 모둠을 끌어 옮기고 '간격 맞추기'로 줄과 간격을 똑같이 맞춰요. 모둠을 바꾸려면 책상을 고르고(Shift+누르기, 빈 곳을 끌어 네모로) '모둠으로 묶기'를 눌러요. 혼자 앉기에서는 짝꿍 대신 모둠 성별 조건(상관없이·성별 고르게)을 골라요. 모둠 상자 아래 이름(1모둠…)을 누르면 이름을 바꿀 수 있어요. 자리배치도 이름 옆 작은 별은 선생님 모드예요(고정, 분리, 기록). 분리에서 같이 앉으면 안 되는 학생을 비밀 그룹으로 묶고 1~4순위를 정해요(1순위를 가장 먼저 떨어뜨려요). 같은 그룹은 짝꿍·앞뒤·좌우·같은 모둠으로 앉지 않아요. 다 지킬 수 없으면 바로 앉히지 않고 먼저 물어봐요.</li>
       <li><b>로그인</b> 설정 → 로그인에서 구글로 로그인하면 보드가 서버에 저장되고, 다른 컴퓨터에서 같은 계정으로 로그인하면 같은 보드가 나와요.</li>
       <li><b>준비물</b> 시간표 카드 오른쪽 칸에 쓰면 저장돼요.</li>
+      <li><b>명단 사진</b> 설정 → 명단에서 명렬표 사진(PNG·JPEG)도 가져올 수 있어요. 글자 인식이라 틀린 이름이 있을 수 있으니 가져온 뒤 표에서 꼭 확인해 주세요. 처음 한 번은 글자 인식 자료를 받느라 조금 걸려요.</li>
       <li><b>창 옮기기</b> 맨 위 줄을 잡고 끌어요. 창 크기는 모서리를 끌어 조절해요. 창이 좁으면 카드가 아래로 쌓여요.</li>
       <li><b>앱 설치 (Edge)</b> 이 주소를 Edge로 열고 주소창 오른쪽 설치 아이콘을 눌러요. 안 보이면 … 메뉴 → 앱 → '이 사이트를 앱으로 설치'.</li>
       <li><b>앱 설치 (Chrome)</b> 주소창 오른쪽 설치 아이콘, 또는 ⋮ 메뉴 → 전송, 저장, 공유 → '페이지를 앱으로 설치'.</li>
@@ -895,7 +920,7 @@
     <button class="danger" onclick="resetRoster()">명단 초기화</button>
     <p style="margin-top:16px">가져온 연간시간표, 시정표, 매주 기본 시간표를 지우고 처음처럼 돌려요. 준비물·숙제는 남아요.</p>
     <button class="danger" onclick="resetTimetable()">시간표 초기화</button>
-    <p style="margin-top:16px">이 컴퓨터에 저장된 보드의 모든 것(메모·규칙·급훈·명단·시간표·자리배치·사진·화이트보드·카드 배치)을 지우고 처음 상태로 돌려요. 로그인해 두었다면 로그아웃되고, 서버에 저장된 보드는 남아요.</p>
+    <p style="margin-top:16px">공장 초기화예요. 로그인한 계정만 남기고 메모·규칙·급훈·명단·시간표·자리배치·사진·화이트보드·온도계·QR·카드 배치와 설정을 모두 지워 처음 설치한 상태로 돌려요. 로그인해 두었다면 서버에 저장된 보드도 빈 보드로 바뀌어요.</p>
     <button class="danger" onclick="resetEverything()">모든 데이터 초기화</button>
   </section>
 </div>
@@ -1292,11 +1317,12 @@ function resetTimetable() {
   location.reload();
 }
 async function resetEverything() {
-  if (!confirm("이 컴퓨터에 저장된 보드의 모든 데이터를 지울까요?\n메모·규칙·급훈·명단·시간표·자리배치·사진·화이트보드가 모두 지워지고 되돌릴 수 없어요.")) return;
+  if (!confirm("공장 초기화를 할까요?\n로그인한 계정만 남고 보드의 모든 내용과 설정이 지워져요. 로그인해 두었다면 서버 보드도 지워져요. 되돌릴 수 없어요.")) return;
   if (!confirm("정말 모두 지울까요?")) return;
-  try { if (fbUser) await fb.signOut(fb.auth); } catch (e) {}
-  try { await idb("readwrite", st => st.clear()); } catch (e) {}
-  try { localStorage.clear(); } catch (e) {}
+  try { await idb("readwrite", st => st.clear()); } catch (e) {} // 화이트보드
+  for (const k of Object.keys(localStorage)) if (!k.startsWith("sync-")) lsDel(k); // sync-*: 로그인 표시만 남김
+  if (lsGet("sync-uid")) lsSet("sync-dirty", "1"); // 서버가 아직 안 붙었으면 다음에 켤 때 빈 보드를 올림
+  if (fbUser) { syncShow("서버 보드도 지우는 중…"); await syncPush(true).catch(() => {}); }
   location.reload();
 }
 document.addEventListener("keydown", e => { if (e.key === "Escape" && !panel.hidden) togglePanel(false); });
@@ -2336,6 +2362,7 @@ document.getElementById("tt-file").addEventListener("change", async e => {
 async function readTables(f) {
   const buf = await f.arrayBuffer(), ext = f.name.split(".").pop().toLowerCase();
   if (ext === "pdf") return readPdfRows(buf);
+  if (/^(png|jpe?g)$/.test(ext)) return readImageRows(f);
   if (ext === "docx" || ext === "hwpx") return readZipTables(buf, ext);
   if (ext === "doc") throw new Error("doc"); // 옛 워드 형식은 못 읽음
   return readHwpTables(buf);
@@ -2371,6 +2398,24 @@ function readZipTables(buf, ext) {
       rows.push(kids(tr, TC).map(tc => [...tc.getElementsByTagName(P)].map(p => [...p.getElementsByTagName(T)].map(t => t.textContent).join("")).filter(Boolean).join(" ").trim()));
   }
   return rows;
+}
+// 사진(PNG·JPEG) 명렬표: Tesseract.js(무료 글자 인식, 필요할 때만 불러옴)로 줄마다 글자를 읽음
+// 한글 이름이 '김 하 늘'처럼 한 글자씩 띄어 읽히면 붙임. 인식이 완벽하지 않아서 가져온 뒤 표에서 확인해야 함
+async function readImageRows(f) {
+  if (!window.Tesseract) await new Promise((ok, no) => { const sc = document.createElement("script"); sc.src = "https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"; sc.onload = ok; sc.onerror = no; document.head.append(sc); });
+  const w = await Tesseract.createWorker("kor");
+  try {
+    const { data } = await w.recognize(f);
+    return data.text.split("\n").map(l => { // 한 글자씩 떨어진 한글을 붙임 (두 글자 넘게 붙은 뒤 '남·여'는 성별 칸으로 둠)
+      const out = []; let run = false;
+      for (const w of l.split(/\s+/).filter(Boolean)) {
+        const one = /^[가-힣]$/.test(w) && !(run && /^[남여]$/.test(w) && out.at(-1).length >= 2);
+        if (one && run) out[out.length - 1] += w; else out.push(w);
+        run = one;
+      }
+      return out;
+    });
+  } finally { w.terminate(); }
 }
 // PDF: pdf.js(무료, 필요할 때만 불러옴)로 글자와 위치를 꺼내 표 줄로 다시 맞춤. 글자가 그림인 스캔본은 못 읽음
 const PDFJS = "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/";
@@ -2664,27 +2709,74 @@ function ttClearWeeks() {
 }
 ttEditor();
 
-// ───── 학급 온도계: 0~100°. 100°가 되면 축하 소리. { t: 온도, reward: 보상 글 }
+// ───── 학급 온도계: 0~100°. 5도마다 보상을 정할 수 있음(비워 둬도 됨). { t: 온도, rewards: { 5: "…", 10: "…" } }
+// 카드에는 지금 온도에서 가장 가까운 다음 보상을 보여 줌. 온도는 숫자와 막대가 함께 천천히 올라감
 let thermo = {};
 try { thermo = JSON.parse(localStorage.getItem("thermo")) || {}; } catch (e) {}
-thermo.t ||= 0;
-const thReward = document.getElementById("th-reward");
-thReward.textContent = thermo.reward || "";
-thReward.addEventListener("input", () => { thermo.reward = thReward.textContent; thSave(); });
-thReward.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); thReward.blur(); } });
+thermo.t ||= 0; thermo.rewards ||= {};
+if (thermo.reward) { thermo.rewards[100] ||= thermo.reward; delete thermo.reward; } // 예전 '100°가 되면' 한 칸
+const thCard = document.getElementById("thermo-card"), thTube = document.getElementById("th-tube"), thFill = document.getElementById("th-fill"), thVal = document.getElementById("th-val");
+let thShown = thermo.t, thAnim = 0;
 function thSave() { try { localStorage.setItem("thermo", JSON.stringify(thermo)); } catch (e) {} }
-function thDraw() {
-  document.getElementById("th-fill").style.height = thermo.t + "%";
-  document.getElementById("th-val").textContent = thermo.t + "°";
-  document.getElementById("thermo-card").classList.toggle("full", thermo.t >= 100);
+const thDegs = () => Object.keys(thermo.rewards).map(Number).filter(d => thermo.rewards[d]?.trim()).sort((a, b) => a - b);
+function thTicks() { // 눈금과 🎁 (보상을 고치면 다시 그림)
+  thTube.querySelectorAll(".th-tick, .th-gift").forEach(x => x.remove());
+  for (let d = 0; d <= 100; d += 5) {
+    const tk = document.createElement("i"); tk.className = "th-tick" + (d % 10 ? "" : " major"); tk.style.bottom = d + "%";
+    if (!(d % 10)) { const lb = document.createElement("span"); lb.textContent = d; tk.append(lb); }
+    thTube.append(tk);
+  }
+  for (const d of thDegs()) { const g = document.createElement("span"); g.className = "th-gift"; g.dataset.d = d; g.style.bottom = d + "%"; g.textContent = "🎁"; g.title = `${d}°: ${thermo.rewards[d]}`; thTube.append(g); }
+}
+function thText() {
+  const t = thermo.t, ds = thDegs(), R = thermo.rewards, next = ds.find(d => d > t), el = document.getElementById("th-next"), b = document.createElement("b");
+  if (ds.includes(t)) { b.textContent = `${t}° 달성!`; el.replaceChildren(b, " " + R[t]); }
+  else if (next) { b.textContent = `${next}°`; el.replaceChildren(b, "가 되면 " + R[next]); }
+  else el.textContent = ds.length ? "보상을 모두 받았어요!" : "연필을 눌러 보상을 정해요";
+}
+function thShow(v) { // 그리는 값(애니메이션 중간값 포함)
+  thFill.style.height = v + "%"; thVal.textContent = Math.round(v) + "°";
+  thTube.querySelectorAll(".th-gift").forEach(g => g.classList.toggle("got", +g.dataset.d <= v + .01));
+}
+function thDraw() { // 지금 보이는 값에서 새 온도까지 천천히
+  cancelAnimationFrame(thAnim);
+  const from = thShown, to = thermo.t, ms = Math.min(1500, 250 + Math.abs(to - from) * 90), t0 = performance.now();
+  thText(); thCard.classList.toggle("full", to >= 100);
+  const step = now => {
+    const k = Math.min(1, (now - t0) / ms), e = 1 - (1 - k) ** 3; // 처음엔 빠르게, 끝에서 천천히
+    thShown = from + (to - from) * e; thShow(thShown);
+    if (k < 1) thAnim = requestAnimationFrame(step);
+  };
+  thAnim = requestAnimationFrame(step);
 }
 function thAdd(d) {
   const was = thermo.t;
   thermo.t = Math.max(0, Math.min(100, thermo.t + d)); thSave(); thDraw();
   if (thermo.t === 100 && was < 100) melody([523, 659, 784, 1047, 0, 784, 1047], .13, "triangle", .3);
+  else if (thDegs().some(x => x > was && x <= thermo.t)) { // 보상 온도를 넘으면 짧게 축하
+    melody([659, 880, 1175], .1, "triangle", .25);
+    thCard.classList.remove("hit"); void thCard.offsetWidth; thCard.classList.add("hit");
+  }
 }
 function thReset() { if (!thermo.t || !confirm("온도를 0°로 되돌릴까요?")) return; thermo.t = 0; thSave(); thDraw(); }
-thDraw();
+function thEdit() { // 5°~100° 보상 쓰기. 비워 둔 온도는 보상 없음
+  thCard.querySelector(".th-ed")?.remove();
+  const ed = document.createElement("div"), head = document.createElement("div"), list = document.createElement("div"), done = document.createElement("button"), tt = document.createElement("b");
+  ed.className = "th-ed"; head.className = "th-ed-head"; list.className = "th-ed-list";
+  tt.textContent = "보상 정하기 (비워 둬도 돼요)"; done.className = "main"; done.textContent = "완료";
+  done.onclick = () => { ed.remove(); thTicks(); thText(); thShow(thShown); };
+  for (let d = 5; d <= 100; d += 5) {
+    const lb = document.createElement("label"), sp = document.createElement("span"), inp = document.createElement("input");
+    sp.textContent = d + "°"; inp.value = thermo.rewards[d] || ""; inp.placeholder = d === 100 ? "예: 영화 보기" : "";
+    inp.oninput = () => { const v = inp.value.trim(); if (v) thermo.rewards[d] = inp.value; else delete thermo.rewards[d]; thSave(); };
+    inp.onkeydown = e => { if (e.key === "Enter") (list.querySelectorAll("input")[d / 5] || done).focus(); };
+    lb.append(sp, inp); list.append(lb);
+  }
+  head.append(tt, done); ed.append(head, list); thCard.append(ed);
+  ed.addEventListener("keydown", e => { if (e.key === "Escape") done.click(); });
+  (list.querySelectorAll("input")[Math.max(0, Math.ceil((thermo.t + 1) / 5) - 1)] || list.querySelector("input")).focus(); // 다음 보상 칸부터
+}
+thTicks(); thShow(thShown); thText(); thCard.classList.toggle("full", thermo.t >= 100);
 
 // ───── QR 만들기: 넣은 글을 바로 QR로 (인터넷 없이 이 컴퓨터에서 만듦)
 // 바이트 모드, 오류 정정 M, 1~25버전. 반환: 칸 배열(true = 검정), 너무 길면 null
@@ -2780,8 +2872,32 @@ function qrDraw() {
   M.forEach((r, y) => r.forEach((v, x) => v && g.fillRect((x + 4) * k, (y + 4) * k, k, k)));
   qrFit();
 }
-try { qrIn.value = localStorage.getItem("qr-text") || ""; } catch (e) {}
-qrIn.addEventListener("input", () => { try { localStorage.setItem("qr-text", qrIn.value); } catch (e) {} qrDraw(); });
+// 자주 쓰는 QR: [{ name, text }]. 누르면 불러오고 ✕로 지움
+let qrList = [];
+try { qrIn.value = localStorage.getItem("qr-text") || ""; qrList = JSON.parse(localStorage.getItem("qr-saved")) || []; } catch (e) {}
+function qrSavedDraw() {
+  document.getElementById("qr-saved").replaceChildren(...qrList.map((q, i) => {
+    const b = document.createElement("button"), nm = document.createElement("b"), x = document.createElement("i");
+    nm.textContent = q.name; x.textContent = "✕"; x.title = "지우기"; b.title = q.text; b.append(nm, x);
+    b.classList.toggle("on", q.text === qrIn.value.trim());
+    b.onclick = e => {
+      if (e.target === x) { if (confirm(`'${q.name}'을 지울까요?`)) { qrList.splice(i, 1); qrSavedSave(); } return; }
+      qrIn.value = q.text; qrIn.dispatchEvent(new Event("input"));
+    };
+    return b;
+  }));
+}
+function qrSavedSave() { try { localStorage.setItem("qr-saved", JSON.stringify(qrList)); } catch (e) {} qrSavedDraw(); }
+function qrKeep() {
+  const t = qrIn.value.trim();
+  if (!t) return qrIn.focus();
+  const old = qrList.find(q => q.text === t), name = prompt("저장할 이름 (예: 학급 홈페이지)", old?.name || t.replace(/^https?:\/\/(www\.)?/, "").slice(0, 20));
+  if (!name?.trim()) return;
+  if (old) old.name = name.trim(); else qrList.push({ name: name.trim(), text: t });
+  qrSavedSave();
+}
+qrIn.addEventListener("input", () => { try { localStorage.setItem("qr-text", qrIn.value); } catch (e) {} qrDraw(); qrSavedDraw(); });
+qrSavedDraw();
 new ResizeObserver(qrFit).observe(qrCv.parentElement);
 qrDraw();
 
