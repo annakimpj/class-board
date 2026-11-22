@@ -535,6 +535,9 @@
   #panel .roster-table .gx button.on[data-g="M"] { background: #1c7ed6; color: #fff; }
   #panel .roster-table .gx button.on[data-g="F"] { background: #e03131; color: #fff; }
   #panel input:not([type]):not(:where(.hp-wrap *)) { flex: 1; font: inherit; padding: 4px 10px; border: 1.5px solid var(--line); border-radius: 8px; background: #fff; }
+  .topic-find { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; margin: 8px 0 14px; }
+  #panel .topic-find button { text-align: left; border-radius: 10px; }
+  #panel .topic-find button:hover { border-color: var(--accent); }
   #panel .danger { background: var(--accent); border-color: var(--accent); color: #fff; }
   #panel h3 { font-weight: normal; font-size: 17px; color: var(--ink); margin: 22px 0 4px; padding-top: 18px; border-top: 1px solid #f1e9dd; }
   #panel h3:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
@@ -1237,7 +1240,7 @@
   <nav>
     <button data-tab="time" onclick="openTab('time')">시간표</button>
     <button data-tab="roster" onclick="openTab('roster')">명단</button>
-    <button data-tab="history" onclick="openTab('history')">주제 사용 기록</button>
+    <button data-tab="history" onclick="openTab('history')">주제 찾기·기록</button>
     <button data-tab="share" onclick="openTab('share')">링크 공유</button>
     <button data-tab="help" onclick="openTab('help')">사용 방법</button>
     <button data-tab="account" onclick="openTab('account')">로그인</button>
@@ -1675,6 +1678,24 @@ function renderHistory() {
   const rows = Object.entries(used).sort((a, b) => b[1].localeCompare(a[1]));
   const box = document.getElementById("tab-history");
   box.replaceChildren();
+  // 주제 찾기: 낱말로 찾아서 누르면 오늘의 주제로 띄움 (띄어쓰기는 무시)
+  const q = document.createElement("input"), found = document.createElement("div");
+  q.placeholder = "주제 찾기 (예: 피자, 친구, AI)"; q.setAttribute("aria-label", "주제 찾기"); found.className = "topic-find";
+  q.oninput = () => {
+    const w = q.value.replace(/\s/g, "");
+    found.replaceChildren();
+    if (!w) return;
+    const hits = TOPICS.filter(t => t.replace(/\s/g, "").includes(w));
+    if (!hits.length) { found.textContent = "찾는 주제가 없어요."; return; }
+    found.append(...hits.slice(0, 40).map(t => {
+      const b = document.createElement("button");
+      b.textContent = t + (used[t] ? ` · ${used[t].slice(5).replace("-", "/")} 사용` : "");
+      b.title = "오늘의 주제로 띄우기"; b.onclick = () => { setCurrent(t); location.reload(); };
+      return b;
+    }));
+  };
+  box.append(q, found);
+  setTimeout(() => q.focus());
   const sum = document.createElement("p");
   sum.className = "sum";
   sum.textContent = `사용한 주제 ${rows.length}개 · 남은 주제 ${TOPICS.length - rows.length}개`;
