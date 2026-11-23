@@ -628,6 +628,8 @@
   #thermo-card.full .th-info .big { animation: th-pop .6s ease-in-out 3; }
   @keyframes th-pop { 50% { transform: scale(1.25); } }
   /* 보상 정하기: 카드 안을 덮는 목록 */
+  .card-ed.float { inset: auto; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(620px, calc(100% - 24px)); max-height: calc(100% - 24px); border-radius: 16px; border: 1.5px solid var(--line); box-shadow: 0 14px 44px rgba(30, 40, 70, .28); }
+  .card-ed.float .card-ed-list { flex: 0 1 auto; }
   .card-ed { position: absolute; inset: 0; z-index: 4; display: flex; flex-direction: column; gap: 8px; padding: 12px 16px; background: #fff; border-radius: inherit;
            font: 14px "Pretendard Variable", "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; color: var(--ink); }
   .zoomy > :not(.label, .card-down, .card-grip, .card-ed, .se-ask, .rw-cheer) { zoom: var(--z, 1); }
@@ -830,13 +832,7 @@
   .rw-prizepop { width: 320px; padding: 8px 10px; position: fixed; }
   .rw-prizes { display: flex; flex-direction: column; }
   .rw-prizes .pz { display: flex; justify-content: space-between; gap: 10px; padding: 7px 4px; border-bottom: 1px solid #eef1f6; font-size: 16px; }
-  .rw-prizes .pz b { color: #3b82f6; white-space: nowrap; }
-  .rw-prizes .pz-ed { display: grid; grid-template-columns: 1fr 56px auto 26px; gap: 4px; align-items: center; padding: 3px 0; font-size: 13px; color: var(--muted); }
-  .rw-prizes .pz-ed input { min-width: 0; font: 14px "Pretendard Variable", "Malgun Gothic", sans-serif; border: 1.5px solid #cddcfb; border-radius: 6px; padding: 4px 6px; }
-  .rw-menu .rw-prizes button.un { width: 26px; height: 26px; padding: 0; justify-content: center; color: #8a8178; }
-  .rw-menu .rw-prizes .pz-add { justify-content: center; color: #3b82f6; margin-top: 4px; }
-  .rw-menu .rw-loghead .pz-tog { width: auto; padding: 3px 10px; font-size: 13px; border: 1.5px solid #cddcfb; }
-  .rw-menu .rw-loghead .pz-tog.main { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+  .rw-prizes .pz b { color: #3b82f6; white-space: nowrap; } .rw-prizes .pz b.neg { color: #e8590c; } .rw-prizes hr { border: 0; border-top: 2px solid #e3e8f0; margin: 6px 0; width: 100%; }
   .rw-logpop { width: 360px; padding: 8px 10px; position: fixed; }
   .rw-loghead { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; } .rw-loghead b { flex: 1; font-size: 15px; } .rw-loghead select { font: 13px inherit; border: 1.5px solid #cddcfb; border-radius: 6px; padding: 2px 4px; }
   .rw-logpop .rw-log .day { margin: 6px 0 2px; }
@@ -1271,7 +1267,7 @@
   </section>
   <section class="card tool-card" data-card="reward" id="rw-card">
     <p class="label">🏅 우리반 점수</p>
-    <div class="rw-bar"><span class="rw-count" id="rw-count"></span><span class="sp"></span><button class="rw-dress" onclick="rwDressPick(this)" title="학생 아바타 꾸미기 (학생 카드를 오른쪽 클릭해도 돼요)">👕 꾸미기</button><button class="rw-give" onclick="rwSendOpen(this)">🤝 주고받기</button><button class="rw-prize" onclick="rwPrizes(this)">🎁 보상</button><button class="rw-hist" onclick="rwLog(this)">📜 기록</button><button class="rw-set" onclick="rwSettings()">⚙︎ 설정</button></div>
+    <div class="rw-bar"><span class="rw-count" id="rw-count"></span><span class="sp"></span><button class="rw-dress" onclick="rwDressPick(this)" title="학생 아바타 꾸미기 (학생 카드를 오른쪽 클릭해도 돼요)">👕 꾸미기</button><button class="rw-give" onclick="rwSendOpen(this)">🤝 주고받기</button><button class="rw-prize" onclick="rwPrizes(this)">📋 점수표</button><button class="rw-hist" onclick="rwLog(this)">📜 기록</button><button class="rw-set" onclick="rwSettings()">⚙︎ 설정</button></div>
     <div class="rw-grid" id="rw-grid"></div>
     <div class="rw-foot"><span class="rw-sel"><button onclick="rwSel('all')">전체 선택</button><button onclick="rwSel('inv')">선택 반전</button><button onclick="rwSel('none')">선택 해제</button></span><span class="sp"></span><button class="rw-minus" onclick="rwGiveSel(this, -1)">− 노력해요</button><button class="main rw-plus" onclick="rwGiveSel(this, 1)">+ 칭찬해요</button></div>
   </section>
@@ -3950,12 +3946,22 @@ function rwSettings() {
       return [t, v, h("button", { class: "x", title: "빼기", onclick: () => { list.splice(i, 1); drawRows(); } }, "✕")];
     }));
   drawRows();
+  const prizes = (reward.prizes ||= RW_PRIZES.map(p => ({ ...p }))).map(p => ({ ...p })), pzRows = h("div", { class: "rw-rows" });
+  const drawPz = () => pzRows.replaceChildren(h("span", { class: "h" }, "내용"), h("span", { class: "h" }, "점수 (+/−)"), h("span"),
+    ...prizes.flatMap((p, i) => {
+      const t = h("input", { value: p.t, placeholder: "예: 자리 바꾸기 / 수학 익힘 숙제 안 하기" }), v = h("input", { type: "number", min: "-999", max: "999", value: String(p.pt) });
+      t.oninput = () => p.t = t.value.trim(); v.oninput = () => p.pt = Math.round(+v.value || 0);
+      return [t, v, h("button", { class: "x", title: "빼기", onclick: () => { prizes.splice(i, 1); drawPz(); } }, "✕")];
+    }));
+  drawPz();
   const price = Object.fromEntries(AV_ITEMS.filter(it => it.price).map(it => [it.id, avPrice(it)])), chosen = new Set();
   const bulk = h("input", { type: "number", min: "0", max: "999", value: "5", "aria-label": "가격" });
   const SAMPLE = { skin: 0, hair: 1 };
   const draw = () => {
-    const tabs = h("div", { class: "rw-tabs" }, [["reason", "칭찬·노력 목록"], ["shop", "가게 가격"], ["kids", "학생 입장"]].map(([k, t]) => h("button", { class: rwSetTab === k ? "on" : "", onclick: () => { rwSetTab = k; draw(); } }, t)));
+    const tabs = h("div", { class: "rw-tabs" }, [["reason", "칭찬·노력 목록"], ["prize", "점수표"], ["shop", "가게 가격"], ["kids", "학생 입장"]].map(([k, t]) => h("button", { class: rwSetTab === k ? "on" : "", onclick: () => { rwSetTab = k; draw(); } }, t)));
     if (rwSetTab === "kids") return body.replaceChildren(tabs, kidPanel(rwCard, draw));
+    if (rwSetTab === "prize") return body.replaceChildren(tabs, h("p", { class: "rw-h" }, "카드의 📋 점수표에 보여요. +는 위에, −는 아래에 보여요. (예: 자리 바꾸기 +10, 숙제 안 하기 −5)"), pzRows,
+      h("button", { class: "rw-add", onclick: () => { prizes.push({ t: "", pt: 10 }); drawPz(); pzRows.querySelectorAll("input")[pzRows.querySelectorAll("input").length - 2]?.focus(); } }, "+ 줄 추가"));
     if (rwSetTab === "reason") {
       body.replaceChildren(tabs, h("label", { class: "rw-h rw-unitrow" }, "점수 단위", unit), rows,
         h("button", { class: "rw-add", onclick: () => { list.push({ t: "", pt: 1 }); drawRows(); rows.querySelectorAll("input")[rows.querySelectorAll("input").length - 2]?.focus(); } }, "+ 이유 추가"));
@@ -3980,12 +3986,12 @@ function rwSettings() {
   };
   draw();
   const ok = h("button", { class: "main", onclick: () => {
-    reward.unit = unit.value.trim() || "포인트"; reward.reasons = list.filter(r => r.t && r.pt);
+    reward.unit = unit.value.trim() || "포인트"; reward.reasons = list.filter(r => r.t && r.pt); reward.prizes = prizes.filter(p => p.t && p.pt);
     reward.prices = Object.fromEntries(Object.entries(price).filter(([id, v]) => v !== avItem(id).price));
     rwStore(); rwDraw(); ed.remove();
   } }, "완료");
   const zero = h("button", { class: "danger", onclick: async () => { if (await seConfirm(ed, "모든 학생의 점수를 0으로 할까요?\n산 물건과 점수 기록은 그대로 남아요.", "0으로")) { Object.values(reward.st).forEach(s => s.pt = 0); reward.log = [{ at: Date.now(), who: [], d: 0, why: "모든 점수 0으로" }, ...reward.log].slice(0, 1000); rwStore(); rwDraw(); } } }, "모든 점수 0으로");
-  const ed = h("div", { class: "card-ed" }, h("div", { class: "card-ed-head" }, h("b", {}, "점수 설정"), h("button", { onclick: () => ed.remove() }, "취소"), ok), body, h("div", { class: "card-ed-foot" }, h("span"), zero));
+  const ed = h("div", { class: "card-ed float" }, h("div", { class: "card-ed-head" }, h("b", {}, "점수 설정"), h("button", { onclick: () => ed.remove() }, "취소"), ok), body, h("div", { class: "card-ed-foot" }, h("span"), zero));
   rwCard.append(ed);
 }
 function popAt(btn, m, alignRight) { // 버튼 옆에 작은 팝업 (바깥을 누르면 닫힘)
@@ -4073,27 +4079,18 @@ function rwLog(btn = rwCard.querySelector(".rw-hist")) { // 점수 기록 (작�
   m.style.left = Math.max(8, Math.min(r.right - m.offsetWidth, W.innerWidth - m.offsetWidth - 8)) + "px";
   m.style.top = (r.bottom + 6 + m.offsetHeight < W.innerHeight ? r.bottom + 6 : Math.max(8, r.top - m.offsetHeight - 6)) + "px";
 }
-// 보상 가격표: 무엇을 하는 데 몇 점인지. reward.prizes = [{ t, pt }]. 작은 팝업, ✎로 고치기
-function rwPrizes(btn, editing = false) {
+// 점수표: 무엇을 하면 몇 점인지 (+도 −도). reward.prizes = [{ t, pt }]. 카드에서는 보기만, 고치기는 ⚙ 설정 → 점수표
+const RW_PRIZES = [{ t: "자리 바꾸기", pt: 10 }, { t: "급식 먼저 먹기", pt: 15 }, { t: "선생님과 점심 먹기", pt: 20 }, { t: "수학 익힘 숙제 안 하기", pt: -5 }]; // 처음 예시
+function rwPrizes(btn) {
   const d = btn.ownerDocument, W = d.defaultView, unit = reward.unit.trim() || "점";
   d.querySelector(".rw-menu")?.remove();
-  reward.prizes ||= [{ t: "자리 바꾸기", pt: 10 }, { t: "급식 먼저 먹기", pt: 15 }, { t: "선생님과 점심 먹기", pt: 20 }]; // 처음 예시 (고치거나 지워도 돼요)
-  const list = h("div", { class: "rw-prizes" });
-  if (editing) {
-    const row = p => {
-      const t = h("input", { value: p.t, placeholder: "보상 (예: 자리 바꾸기)" }), n = h("input", { type: "number", min: "0", value: p.pt });
-      t.oninput = () => { p.t = t.value; rwStore(); }; n.oninput = () => { p.pt = Math.max(0, Math.round(+n.value || 0)); rwStore(); };
-      return h("div", { class: "pz-ed" }, t, n, h("span", {}, unit), h("button", { class: "un", title: "지우기", "aria-label": "지우기", onclick: () => { reward.prizes = reward.prizes.filter(x => x !== p); rwStore(); rwPrizes(btn, true); } }, "✕"));
-    };
-    list.append(...reward.prizes.map(row), h("button", { class: "pz-add", onclick: () => { reward.prizes.push({ t: "", pt: 10 }); rwStore(); rwPrizes(btn, true); d.querySelector(".rw-prizes .pz-ed:last-of-type input")?.focus(); } }, "+ 보상 더하기"));
-  } else {
-    const rows = reward.prizes.filter(p => p.t.trim()).sort((a, b) => a.pt - b.pt);
-    list.append(...(rows.length ? rows.map(p => h("div", { class: "pz" }, h("span", {}, p.t), h("b", {}, `${p.pt} ${unit}`))) : [h("p", { class: "rw-h" }, "아직 보상이 없어요. ✎를 눌러 넣어요.")]));
-  }
-  const done = () => { reward.prizes = reward.prizes.filter(p => p.t.trim()); rwStore(); rwPrizes(btn, false); };
-  const m = h("div", { class: "rw-menu rw-prizepop", popover: "auto" },
-    h("div", { class: "rw-loghead" }, h("b", {}, "🎁 보상"), editing ? h("button", { class: "pz-tog main", onclick: done }, "완료") : h("button", { class: "pz-tog", title: "보상 고치기", onclick: () => rwPrizes(btn, true) }, "✎ 고치기")), list);
-  d.body.append(m); m.addEventListener("toggle", e => { if (e.newState === "closed") m.remove(); }); m.showPopover(); // 빈 줄은 보기 화면에서 안 보임
+  const all = (reward.prizes ||= RW_PRIZES.map(p => ({ ...p }))).filter(p => p.t.trim() && p.pt);
+  const row = p => h("div", { class: "pz" }, h("span", {}, p.t), h("b", { class: p.pt < 0 ? "neg" : "" }, `${p.pt > 0 ? "+" : "−"}${Math.abs(p.pt)} ${unit}`));
+  const plus = all.filter(p => p.pt > 0).sort((a, b) => a.pt - b.pt), minus = all.filter(p => p.pt < 0).sort((a, b) => b.pt - a.pt);
+  const list = h("div", { class: "rw-prizes" }, ...(all.length ? [...plus.map(row), plus.length && minus.length ? h("hr") : null, ...minus.map(row)]
+    : [h("p", { class: "rw-h" }, "아직 없어요. ⚙ 설정 → 점수표에서 넣어요.")]));
+  const m = h("div", { class: "rw-menu rw-prizepop", popover: "auto" }, h("div", { class: "rw-loghead" }, h("b", {}, "📋 점수표")), list);
+  d.body.append(m); m.addEventListener("toggle", e => { if (e.newState === "closed") m.remove(); }); m.showPopover();
   const r = btn.getBoundingClientRect();
   m.style.left = Math.max(8, Math.min(r.right - m.offsetWidth, W.innerWidth - m.offsetWidth - 8)) + "px";
   m.style.top = (r.bottom + 6 + m.offsetHeight < W.innerHeight ? r.bottom + 6 : Math.max(8, r.top - m.offsetHeight - 6)) + "px";
@@ -6951,11 +6948,18 @@ async function kidPush() { // 교사 쪽에서 바뀐 것만 올림 (서버에 �
   for (const n in kidClaims) if (!open.has(n)) { delete kidClaims[n]; await fb.deleteDoc(kidDoc("claim", n)).catch(() => {}); }
   kidSay(`✅ 서버와 연결됐어요. 비밀번호를 정한 학생 ${live.size}명 · 아직 안 정한 학생 ${open.size}명`);
 }
-function kidListen() { // 학생이 정한 비밀번호, 꾸미거나 산 것을 받아 옴
+async function kidListen() { // 학생이 정한 비밀번호, 꾸미거나 산 것을 받아 옴
   kidUnsubs.forEach(u => u()); kidUnsubs = []; kidSeen = {}; kidClaims = {}; kidClsSent = ""; kidReady = 0; clearTimeout(kidRetry);
   if (!kidOn()) return;
   kidSay("서버와 연결하는 중…");
-  const fail = () => { kidSay("⚠︎ 서버에 연결하지 못했어요. Firestore 규칙을 게시했는지 확인해 주세요. 잠시 뒤 다시 해 볼게요."); kidUnsubs.forEach(u => u()); kidUnsubs = []; kidRetry = setTimeout(kidListen, 20000); };
+  const fail = () => { kidSay("⚠︎ 서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요. 잠시 뒤 다시 해 볼게요."); kidUnsubs.forEach(u => u()); kidUnsubs = []; kidRetry = setTimeout(kidListen, 20000); };
+  const code = reward.cls.code;
+  try { // 반 문서가 서버에 먼저 있어야 학생 목록을 읽을 수 있음 (예전에 만든 반 코드는 서버에 없었음)
+    const snap = await fb.getDoc(fb.doc(fb.db, "classes", code));
+    if (snap.exists() && snap.data().owner !== fbUser.uid) return kidSay("⚠︎ 이 반 코드는 다른 반이 쓰고 있어요. '바꾸기'로 다른 반 코드를 정해 주세요.");
+    if (!snap.exists()) await fb.setDoc(fb.doc(fb.db, "classes", code), { owner: fbUser.uid, unit: reward.unit, prices: reward.prices || {}, at: Date.now() });
+  } catch (e) { return fail(); }
+  if (code !== reward.cls?.code || !fbUser) return; // 그사이 바뀜
   let gotK = false, gotC = false;
   kidUnsubs.push(fb.onSnapshot(fb.collection(fb.db, "classes", reward.cls.code, "kids"), snap => {
     const who = new Map(people().filter(p => reward.cls.pins?.[p]).map(p => [kidKey(p), p]));
