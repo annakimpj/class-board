@@ -54,6 +54,10 @@
   .day .ev { flex: none; font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 1px 6px; border-radius: 5px; background: #e3ecf6; color: #2c4f75; }
   .day .ev:hover { background: #d3e2f3; } .day .ev.done { text-decoration: line-through; opacity: .5; } .day .more { font-size: 11px; color: var(--muted); }
   .side { display: grid; grid-template-rows: auto minmax(0, 1fr) minmax(0, 1fr); gap: 12px; min-height: 0; }
+  .ghost { position: fixed; z-index: 50; pointer-events: none; background: var(--accent); color: #fff; font-size: 13px; padding: 3px 10px; border-radius: 8px; box-shadow: 0 6px 18px rgba(0, 0, 0, .2); max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .day.drop { border-color: var(--accent); background: #dbe7f5; } .ev.moving { opacity: .4; } .day .ev { cursor: grab; touch-action: none; }
+  .minpop { position: fixed; z-index: 40; display: flex; align-items: center; gap: 6px; background: #fff; border: 1.5px solid var(--line); border-radius: 10px; padding: 6px 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, .18); font-size: 14px; }
+  .minpop input { width: 64px; }
   .grab { cursor: grab; color: #c9beb3; user-select: none; touch-action: none; padding: 0 2px; } .item.moving { background: var(--soft); border-radius: 6px; }
   .bell { display: inline-flex; align-items: center; gap: 1px; font-size: 11px; } .bell .i { width: 15px; height: 15px; } .bell.on { color: var(--warn); }
   .pop .addrow { margin-top: 2px; padding-top: 8px; border-top: 1px solid #f1ece5; }
@@ -128,7 +132,7 @@
   <section class="pane" id="p-cal" hidden>
     <div class="box">
       <div class="cal-head"><button id="cal-prev" aria-label="지난달">◀</button><b id="cal-title"></b><button id="cal-next" aria-label="다음 달">▶</button><button id="cal-today">오늘</button>
-        <span class="sp"></span><span class="hint">칸의 +나 오른쪽 버튼으로 바로 써요 · 일정을 누르면 줄이 그어져요 · ⠿를 끌면 순서가 바뀌어요</span></div>
+        <span class="sp"></span><span class="hint">칸의 +로 바로 써요 · 일정을 누르면 줄 긋기 · 끌어서 다른 날로 (목록은 ⠿를 끌어요)</span></div>
       <div class="cal" id="cal"></div>
     </div>
     <div class="side">
@@ -260,12 +264,26 @@ function parseTime(s) {
   const rest = (s.slice(0, m.index) + " " + s.slice(m.index + m[0].length)).replace(/\s+/g, " ").trim().replace(/^에\s+|\s+에$/g, "").replace(/^[,·\-~]\s*|\s*[,·\-~]$/g, "").trim();
   return { time: t, text: rest || s.trim() };
 }
-const bellBtn = (get, set) => { // 종: 누를 때마다 꺼짐 → 정시 → 10분 전 (켜지면 색이 바뀜)
+const alarmName = a => a === "0" ? "정시" : `${a}분 전`;
+const bellBtn = (get, set) => { // 종: 누를 때마다 꺼짐 → 정시 → 10분 전 → ( )분 전 → 꺼짐 (켜지면 색이 바뀜)
   const b = el("button", { type: "button", class: "x bell" });
-  const show = () => { const a = get(); b.classList.toggle("on", !!a); b.title = a ? `알람: ${a === "10" ? "10분 전" : "정시"} (누르면 바꿔요)` : "알람 꺼짐 (누르면 켜요)"; b.replaceChildren(ico(a ? "bell" : "belloff"), a === "10" ? "10" : ""); };
-  b.onclick = () => { const a = get(); set(!a ? "0" : a === "0" ? "10" : ""); show(); };
+  const show = () => { const a = get(); b.classList.toggle("on", !!a); b.title = a ? `알람: ${alarmName(a)} (누르면 바꿔요)` : "알람 꺼짐 (누르면 켜요)"; b.replaceChildren(ico(a ? "bell" : "belloff"), a && a !== "0" ? a : ""); };
+  b.onclick = () => {
+    const a = get();
+    if (!a) set("0"); else if (a === "0") set("10"); else if (a === "10") return minAsk(b, n => { set(n ? String(n) : ""); show(); }); else set("");
+    show();
+  };
   b.show = show; show(); return b;
 };
+function minAsk(btn, done) { // ( )분 전: 종 옆 작은 칸
+  document.querySelector(".minpop")?.remove();
+  const n = el("input", { type: "number", min: "1", max: "720", value: localStorage.getItem("journal-alarm-min") || "5" }), r = btn.getBoundingClientRect();
+  const ok = () => { const v = Math.round(+n.value); m.remove(); if (v > 0) { try { localStorage.setItem("journal-alarm-min", v); } catch (e) {} } done(v > 0 ? v : 0); };
+  const m = el("div", { class: "minpop", style: `left:${Math.max(8, Math.min(r.right - 190, innerWidth - 198))}px;top:${r.bottom + 4 > innerHeight - 60 ? r.top - 52 : r.bottom + 4}px` }, n, "분 전", el("button", { class: "main", onclick: ok }, "확인"));
+  n.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); ok(); } if (e.key === "Escape") { m.remove(); done(0); } };
+  document.body.append(m); n.select();
+  setTimeout(() => addEventListener("mousedown", function off(e) { if (!m.contains(e.target)) { removeEventListener("mousedown", off); if (m.isConnected) { m.remove(); done(0); } } }));
+}
 function evForm(date, e, anchor) { // 일정: 위에 그날 일정, 아래 [입력칸 + 🕒] [🔔] [추가]. Enter로 이어서 씀
   const x = el("input", { type: "text", class: "grow", value: e ? (e.time ? e.time + " " : "") + e.text : "", placeholder: e ? "" : "일정 쓰고 Enter", autocomplete: "off" });
   const tp = el("input", { type: "time", class: "tpick", tabindex: "-1", "aria-hidden": "true" });
@@ -289,7 +307,7 @@ function evForm(date, e, anchor) { // 일정: 위에 그날 일정, 아래 [입�
   }, { head: d, noFoot: true, opened: () => { // 처음 한 번 사용법
     if (localStorage.getItem("journal-tip-ev")) return;
     try { localStorage.setItem("journal-tip-ev", "1"); } catch (er) {}
-    ask("일정을 쓰고 Enter를 누르면 이어서 계속 써요.\n\n시간을 넣고 싶으면 앞에 14:00처럼 써요.\n(오후 2시, 2시 반도 알아봐요)\n입력칸의 🕒를 눌러 골라도 돼요.\n\n시간이 있는 일정은 🔔를 누르면 알람이 켜져요.\n(한 번 더: 10분 전 · 한 번 더: 꺼짐)", "알겠어요", null);
+    ask("일정을 쓰고 Enter를 누르면 이어서 계속 써요.\n\n시간을 넣고 싶으면 앞에 14:00처럼 써요.\n(오후 2시, 2시 반도 알아봐요)\n입력칸의 🕒를 눌러 골라도 돼요.\n\n시간이 있는 일정은 🔔를 누르면 알람이 켜져요.\n(한 번 더: 10분 전 · 한 번 더: 원하는 분 전 · 한 번 더: 꺼짐)\n\n일정은 끌어서 달력의 다른 날로 옮길 수 있어요.", "알겠어요", null);
   } });
 }
 let lastKids = []; // 학생 기록·상담에서 고른 학생으로 시작
@@ -344,17 +362,50 @@ function itemEv(e, refresh = calDraw) {
     el("button", { class: "x", title: "고치기", onclick: ev => evForm(e.date, e, ev.currentTarget) }, "✎"),
     el("button", { class: "x", title: "지우기", onclick: async () => { if (await ask(`'${e.text}' 일정을 지울까요?`, "지우기")) { J.events = J.events.filter(x => x !== e); store(); refresh(); } } }, "✕"));
 }
-function sortable(box, done) { // ⠿를 위아래로 끌어 그날 일정 순서 바꾸기
+const dayAt = (x, y) => document.elementsFromPoint(x, y).find(n => n.classList?.contains("day"))?.dataset.d; // 그 자리의 달력 날짜
+const dropMark = d => document.querySelectorAll(".day").forEach(c => c.classList.toggle("drop", !!d && c.dataset.d === d));
+function moveDay(e, d) { if (!d || d === e.date) return false; e.date = d; e.ord = evOf(d).length; store(); return true; } // 다른 날 맨 아래로
+let dragged = false; // 끈 뒤 따라오는 클릭(줄 긋기)은 무시
+function sortable(box, done) { // ⠿를 위아래로 끌면 순서, 목록 밖 달력 날짜에 놓으면 그날로 옮김
   box.querySelectorAll(".grab").forEach(g => g.onpointerdown = e => {
-    e.preventDefault(); const row = g.closest(".item"); row.classList.add("moving");
-    const mv = ev => { const rows = [...box.querySelectorAll(".item[data-id]")].filter(r => r !== row), over = rows.find(r => { const b = r.getBoundingClientRect(); return ev.clientY < b.top + b.height / 2; }); if (over) over.before(row); else rows.at(-1)?.after(row); };
+    e.preventDefault(); const row = g.closest(".item"), ev0 = J.events.find(v => v.id === row.dataset.id); row.classList.add("moving");
+    const gh = el("div", { class: "ghost", hidden: "" }, ev0?.text || ""); document.body.append(gh);
+    let to = null;
+    const mv = ev => {
+      const b = box.getBoundingClientRect(), inside = ev.clientX >= b.left && ev.clientX <= b.right && ev.clientY >= b.top - 10 && ev.clientY <= b.bottom + 10;
+      to = inside ? null : dayAt(ev.clientX, ev.clientY); dropMark(to);
+      gh.hidden = inside; gh.style.left = ev.clientX + 12 + "px"; gh.style.top = ev.clientY + 8 + "px";
+      if (!inside) return;
+      const rows = [...box.querySelectorAll(".item[data-id]")].filter(r => r !== row), over = rows.find(r => { const rr = r.getBoundingClientRect(); return ev.clientY < rr.top + rr.height / 2; }); if (over) over.before(row); else rows.at(-1)?.after(row);
+    };
     const up = () => {
-      removeEventListener("pointermove", mv); removeEventListener("pointerup", up); row.classList.remove("moving");
-      [...box.querySelectorAll(".item[data-id]")].forEach((r, i) => { const x = J.events.find(v => v.id === r.dataset.id); if (x) x.ord = i; });
-      store(); done();
+      removeEventListener("pointermove", mv); removeEventListener("pointerup", up); row.classList.remove("moving"); gh.remove(); dropMark(null);
+      if (!(to && ev0 && moveDay(ev0, to))) { [...box.querySelectorAll(".item[data-id]")].forEach((r, i) => { const x = J.events.find(v => v.id === r.dataset.id); if (x) x.ord = i; }); store(); }
+      done();
     };
     addEventListener("pointermove", mv); addEventListener("pointerup", up);
   });
+}
+function chipDrag(chip, e) { // 달력의 일정을 다른 날로 끌기 (조금만 움직이면 그냥 누르기 = 줄 긋기)
+  chip.onpointerdown = p => {
+    if (p.button) return;
+    p.stopPropagation();
+    const sx = p.clientX, sy = p.clientY, gh = el("div", { class: "ghost", hidden: "" }, e.text);
+    let on = false, to = null;
+    const mv = ev => {
+      if (!on && Math.hypot(ev.clientX - sx, ev.clientY - sy) < 6) return;
+      if (!on) { on = true; document.body.append(gh); chip.classList.add("moving"); }
+      gh.hidden = false; gh.style.left = ev.clientX + 12 + "px"; gh.style.top = ev.clientY + 8 + "px";
+      to = dayAt(ev.clientX, ev.clientY); dropMark(to);
+    };
+    const up = () => {
+      removeEventListener("pointermove", mv); removeEventListener("pointerup", up); gh.remove(); dropMark(null);
+      if (!on) return;
+      dragged = true; setTimeout(() => dragged = false, 50);
+      if (moveDay(e, to)) calDraw(); else chip.classList.remove("moving");
+    };
+    addEventListener("pointermove", mv); addEventListener("pointerup", up);
+  };
 }
 function calDraw() {
   const y = month.getFullYear(), m = month.getMonth(), start = new Date(y, m, 1 - new Date(y, m, 1).getDay()), t = today();
@@ -369,7 +420,7 @@ function calDraw() {
       wrote ? mk("note", "nt on", "일지 씀") : null);
     cells.push(el("div", { class: `day${d.getMonth() !== m ? " out" : ""}${s === t ? " today" : ""}${s === pick ? " sel" : ""}${wd === 0 ? " sun" : wd === 6 ? " sat" : ""}`, "data-d": s, onclick: () => choose(s) },
       el("div", { class: "top" }, el("span", { class: "n" }, String(d.getDate())), marks),
-      el("div", { class: "evs" }, ...evs.map(e => el("span", { class: "ev" + (e.done ? " done" : ""), title: `${e.time ? e.time + " " : ""}${e.text} (누르면 줄 긋기)`, onclick: ev => { ev.stopPropagation(); toggle(e); } }, (e.time ? e.time + " " : "") + e.text))), plus));
+      el("div", { class: "evs" }, ...evs.map(e => { const c = el("span", { class: "ev" + (e.done ? " done" : ""), title: `${e.time ? e.time + " " : ""}${e.text} (누르면 줄 긋기 · 끌면 다른 날로)`, onclick: ev => { ev.stopPropagation(); if (!dragged) toggle(e); } }, (e.time ? e.time + " " : "") + e.text); chipDrag(c, e); return c; })), plus));
   }
   $("cal").replaceChildren(...cells);
   sideDraw();
@@ -395,9 +446,9 @@ setInterval(() => {
   const n = new Date(), now = n.getHours() * 60 + n.getMinutes(), t = today();
   for (const e of J.events) {
     if (e.date !== t || !e.time || !e.alarm || e.done) continue;
-    const [h, mi] = e.time.split(":").map(Number), at = h * 60 + mi - (e.alarm === "10" ? 10 : 0), key = e.id + "@" + at;
+    const [h, mi] = e.time.split(":").map(Number), at = h * 60 + mi - (+e.alarm || 0), key = e.id + "@" + at;
     if (now !== at || rung.has(key)) continue;
-    rung.add(key); ask(`⏰ ${e.alarm === "10" ? "10분 뒤" : "지금"} ${e.time}\n${e.text}`, "확인", null);
+    rung.add(key); ask(`⏰ ${+e.alarm ? `${e.alarm}분 뒤` : "지금"} ${e.time}\n${e.text}`, "확인", null);
     try { const a = new AudioContext(); [880, 1175, 880, 1175].forEach((f, i) => { const o = a.createOscillator(), g = a.createGain(), s0 = a.currentTime + i * .18; o.frequency.value = f; o.type = "triangle"; o.connect(g); g.connect(a.destination); g.gain.setValueAtTime(.18, s0); g.gain.exponentialRampToValueAtTime(.001, s0 + .16); o.start(s0); o.stop(s0 + .16); }); } catch (er) {}
     window.focus();
   }

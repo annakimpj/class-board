@@ -6441,6 +6441,8 @@ async function screensInit(ask) {
   } catch (e) {}
 }
 screensInit(false);
+// 새로 올린 판을 빨리 받도록: 켤 때 보드 파일들이 바뀌었는지 서버에 물어 둠 (다음에 켜면 새 판). 바뀐 게 없으면 거의 안 받음
+setTimeout(() => ["index.html", "avatar.js", "journal.html"].forEach(f => fetch(f, { cache: "no-cache" }).catch(() => {})), 3000);
 const inRect = (x, y, r) => x >= r.left && x < r.left + r.width && y >= r.top && y < r.top + r.height;
 function teacherSpot(W, H) {
   let p = null; try { p = JSON.parse(localStorage.getItem("teacher-win")); } catch (e) {}
@@ -6472,7 +6474,7 @@ async function teachPlace(w) {
 let jrWin = null;
 async function journalOpen() {
   if (jrWin && !jrWin.closed) return jrWin.focus();
-  const ext = screen.isExtended, w = openOnMain("journal.html" + (ext ? "#cover" : ""), "journal", 1200, 820);
+  const ext = screen.isExtended, w = openOnMain(`journal.html?v=${Date.now()}` + (ext ? "#cover" : ""), "journal", 1200, 820); // ?v=: 늘 새로 받은 일지
   if (!w) return seConfirm(document.body, "창을 열지 못했어요.\n주소창 오른쪽에서 팝업을 허용한 뒤 다시 눌러 주세요.", "확인", null);
   jrWin = w;
   const spot = setInterval(() => w.closed ? clearInterval(spot) : saveSpot(w), 5000); // 선생님이 옮겨 둔 자리를 기억
