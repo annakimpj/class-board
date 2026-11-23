@@ -55,7 +55,8 @@
   .it svg { width: 84px; height: 110px; display: block; margin: 0 auto 4px; border-radius: 10px; background: #f8f9fa; }
   .it b { display: block; font-size: 20px; font-weight: 600; } .it small { display: block; font-size: 14px; color: var(--muted); margin-bottom: 6px; }
   .it button { font-size: 17px; padding: 5px 14px; border-radius: 999px; } .it button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .it button.buy { border-color: #f59f00; color: #a6730c; }
+  .it button.buy { border-color: #f59f00; color: #a6730c; } .it button.buy.on { background: #f59f00; color: #fff; }
+  .pt small.short, .note.short { color: #ffe3e3; } .note.short { color: var(--warn); font-weight: 600; }
   /* 팝업 */
   .modal { position: fixed; inset: 0; background: rgba(30, 20, 10, .35); display: grid; place-items: center; padding: 16px; z-index: 10; }
   .modal > div { background: #fff; border-radius: 22px; padding: 22px 24px; width: min(380px, 100%); text-align: center; }
@@ -91,7 +92,7 @@
       <div class="me" id="me-av"></div>
       <div class="sw" id="sw-skin"></div>
       <div class="sw" id="sw-hair"></div>
-      <div class="save"><button id="undo">되돌리기</button><button class="main" id="save">저장하기</button></div>
+      <div class="save"><button id="undo">원래대로</button><button class="main" id="save">저장하기</button></div>
       <p class="note" id="note"></p>
     </div>
     <div>
@@ -103,7 +104,7 @@
 <script src="avatar.js"></script>
 <script type="module">
 // 서버: classes/{반 코드} = { unit, prices } · classes/{반 코드}/kids/{번호}-{비밀번호} = { name, n, pt, av, wear, own, buys, kidAt }
-// 점수는 선생님 보드만 바꿈. 여기서 사면 buys에 남기고(바로 입음), 선생님 보드가 받아서 점수를 뺌
+// 점수는 선생님 보드만 바꿈. 가게 물건은 입어 보기만 하다가 저장할 때 삼(buys에 남김). 선생님 보드가 받아서 점수를 뺌
 const FB = "https://www.gstatic.com/firebasejs/10.14.1/";
 const CFG = { apiKey: "AIzaSyCEsOWNlfwrGdTKfbgL-C6JTPlc7Z3pUmo", authDomain: "class-board-aeed0.firebaseapp.com", projectId: "class-board-aeed0",
   storageBucket: "class-board-aeed0.firebasestorage.app", messagingSenderId: "826892766619", appId: "1:826892766619:web:67ca38017c7d580801a53e" };
@@ -128,43 +129,44 @@ const price = it => cls.prices?.[it.id] ?? it.price;
 const pending = () => (me.buys || []).reduce((a, b) => a + (avItem(b.id) ? price(avItem(b.id)) : 0), 0); // 샀지만 선생님 보드가 아직 안 뺀 점수
 const left = () => me.pt - pending();
 const owns = it => !price(it) || (me.own || []).includes(it.id);
+const cart = () => [...new Set(Object.values(d.wear))].map(avItem).filter(it => it && !owns(it)); // 입어 보는 중인 가게 물건 (저장할 때 삼)
+const cartCost = () => cart().reduce((a, it) => a + price(it), 0);
 const login = () => { try { return JSON.parse(localStorage.getItem("kid-login")); } catch (e) { return null; } };
 const kidRef = l => fs.doc(db, "classes", l.code, "kids", l.key);
 
 function draw() {
   $("me-name").replaceChildren(me.name || "", el("small", {}, me.n ? `${me.n}번` : ""));
-  $("me-pt").replaceChildren(String(left()), el("small", {}, unit()));
+  const cost = cartCost(), after = left() - cost;
+  $("me-pt").replaceChildren(String(left()), el("small", {}, unit()), ...(cost ? [el("small", { class: after < 0 ? "short" : "" }, ` → 저장하면 ${after}`)] : []));
   $("me-av").innerHTML = avSvg(d.av, d.wear);
   const sw = (box, list, key, label) => $(box).replaceChildren(el("span", {}, label), ...list.map((c, i) => el("button", { class: d.av[key] === i ? "on" : "", style: `background:${c[0]}`, "aria-label": label, onclick: () => { d.av = { ...d.av, [key]: i }; dirty = true; draw(); } })));
   sw("sw-skin", AV_SKIN, "skin", "피부"); sw("sw-hair", AV_HAIR, "hair", "머리색");
   $("save").disabled = $("undo").disabled = !dirty;
-  $("note").textContent = dirty ? "저장하기를 눌러야 바뀌어요." : "";
+  $("note").textContent = !dirty ? "" : !cost ? "저장하기를 눌러야 바뀌어요." : after < 0 ? `${-after} ${unit()} 모자라요. 입어 보는 것 중 몇 개를 벗어요.` : `입어 보는 물건은 저장하면 사요 (${cost} ${unit()}).`;
+  $("note").classList.toggle("short", !!cost && after < 0);
   $("tabs").replaceChildren(...AV_TABS.map(([k, t]) => el("button", { class: tab === k ? "on" : "", onclick: () => { tab = k; draw(); } }, t)));
   const items = AV_ITEMS.filter(it => tab === "acc" ? AV_ACC.includes(it.slot) : it.slot === tab);
   $("shop").replaceChildren(...items.map(it => {
     const has = owns(it), must = it.slot in AV_REQ, worn = (d.wear[it.slot] || AV_REQ[it.slot]) === it.id, bg = it.slot === "bg", cost = price(it);
     const pic = el("div"); pic.innerHTML = avSvg(d.av, { ...d.wear, [it.slot]: it.id, ...(bg ? {} : { bg: "bg-none" }), ...(tab === "hair" ? { head: "" } : {}) });
-    const act = has ? el("button", { class: worn ? "on" : "", onclick: () => { if (worn) { if (must) return; const w = { ...d.wear }; delete w[it.slot]; d.wear = w; } else d.wear = { ...d.wear, [it.slot]: it.id }; dirty = true; draw(); } },
+    const off = () => { const w = { ...d.wear }; if (must) w[it.slot] = owns(avItem(me.wear[it.slot]) || {}) ? me.wear[it.slot] : AV_REQ[it.slot]; else delete w[it.slot]; return w; }; // 가게 물건을 벗으면 원래 것으로
+    const act = has ? el("button", { class: worn ? "on" : "", onclick: () => { if (worn) { if (must) return; d.wear = off(); } else d.wear = { ...d.wear, [it.slot]: it.id }; dirty = true; draw(); } },
         worn ? (must ? (bg ? "골랐어요" : "입는 중") : "벗기") : bg ? "고르기" : "입기")
-      : el("button", { class: "buy", onclick: () => buy(it) }, `${cost} ${unit()}`);
-    return el("div", { class: "it" + (worn ? " worn" : "") }, pic.firstChild, el("b", {}, it.name), el("small", {}, !cost ? "무료" : has ? "가지고 있어요" : "가게"), act);
+      : el("button", { class: "buy" + (worn ? " on" : ""), onclick: () => { d.wear = worn ? off() : { ...d.wear, [it.slot]: it.id }; dirty = true; draw(); } }, worn ? "벗기" : `입어 보기 · ${cost}`);
+    return el("div", { class: "it" + (worn ? " worn" : "") }, pic.firstChild, el("b", {}, it.name), el("small", {}, !cost ? "무료" : has ? "가지고 있어요" : worn ? `입어 보는 중 · ${cost} ${unit()}` : `가게 · ${cost} ${unit()}`), act);
   }));
 }
-async function buy(it) {
-  const cost = price(it);
-  if (left() < cost) return ask(`${it.name}은(는) ${cost} ${unit()}예요.\n${cost - left()} ${unit()} 더 모아요!`, "알겠어요", null);
-  if (!await ask(`${it.name}을(를) ${cost} ${unit()}에 살까요?`, "사기")) return;
-  const wear = { ...d.wear, [it.slot]: it.id };
+async function save() { // 입어 본 가게 물건은 이때 삼. 점수가 모자라면 저장 안 함
+  const items = cart(), cost = cartCost(), after = left() - cost;
+  if (after < 0) return ask(`${-after} ${unit()} 모자라서 저장할 수 없어요.\n입어 보는 것 중 몇 개를 벗어요.`, "알겠어요", null);
+  if (items.length && !await ask(`${items.map(it => it.name).join(", ")}을(를) 사고 저장할까요?\n${cost} ${unit()}가 빠져요.`, "사고 저장")) return;
+  const at = Date.now(), up = { av: d.av, wear: d.wear, kidAt: at };
+  if (items.length) { up.buys = fs.arrayUnion(...items.map(it => ({ id: it.id, at }))); up.own = fs.arrayUnion(...items.map(it => it.id)); }
   try {
-    await fs.updateDoc(kidRef(login()), { buys: fs.arrayUnion({ id: it.id, at: Date.now() }), own: fs.arrayUnion(it.id), av: d.av, wear, kidAt: Date.now() });
-    d.wear = wear; dirty = false; draw();
-    [784, 988, 1319].forEach((f, i) => tone(f, i * .07, .12, "square", .12));
-    toast(`${it.name}을(를) 샀어요!`);
-  } catch (e) { toast("사지 못했어요. 인터넷 연결을 확인해 주세요."); }
-}
-async function save() {
-  try { await fs.updateDoc(kidRef(login()), { av: d.av, wear: d.wear, kidAt: Date.now() }); dirty = false; draw(); toast("저장했어요!"); [659, 988].forEach((f, i) => tone(f, i * .08, .15)); }
-  catch (e) { toast("저장하지 못했어요. 인터넷 연결을 확인해 주세요."); }
+    await fs.updateDoc(kidRef(login()), up); dirty = false; draw();
+    if (items.length) { [784, 988, 1319].forEach((f, i) => tone(f, i * .07, .12, "square", .12)); toast(`${items.map(it => it.name).join(", ")}을(를) 샀어요!`); }
+    else { toast("저장했어요!"); [659, 988].forEach((f, i) => tone(f, i * .08, .15)); }
+  } catch (e) { toast("저장하지 못했어요. 인터넷 연결을 확인해 주세요."); }
 }
 function logout(msg) {
   unsubs.forEach(u => u()); unsubs = []; me = d = null; dirty = false;
