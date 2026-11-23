@@ -56,7 +56,11 @@
   .side { display: grid; grid-template-rows: auto minmax(0, 1fr) minmax(0, 1fr); gap: 12px; min-height: 0; }
   .grab { cursor: grab; color: #c9beb3; user-select: none; touch-action: none; padding: 0 2px; } .item.moving { background: var(--soft); border-radius: 6px; }
   .bell { display: inline-flex; align-items: center; gap: 1px; font-size: 11px; } .bell .i { width: 15px; height: 15px; } .bell.on { color: var(--warn); }
-  .pop .tip { font-size: 12px; color: var(--muted); margin: -4px 0 0; }
+  .pop .addrow { margin-top: 2px; padding-top: 8px; border-top: 1px solid #f1ece5; }
+  .inbox { position: relative; flex: 1; min-width: 0; display: flex; } .inbox input[type=text] { flex: 1; min-width: 0; padding-right: 34px; }
+  .inbox .clock { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); border: 0; background: none; padding: 3px; color: var(--muted); }
+  .inbox .clock:hover { color: var(--accent); } .inbox .tpick { position: absolute; right: 0; bottom: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; border: 0; padding: 0; }
+  .pop .bell { padding: 4px; } .pop .addrow .bell .i { width: 18px; height: 18px; }
   .quick { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; } .quick button { justify-content: center; padding: 7px 6px; font-size: 14px; }
   .item { display: flex; align-items: flex-start; gap: 6px; padding: 5px 2px; border-bottom: 1px solid #f1ece5; font-size: 14px; }
   .item .t { font-variant-numeric: tabular-nums; color: var(--accent); font-size: 12.5px; min-width: 40px; padding-top: 1px; }
@@ -174,6 +178,7 @@ const el = (tag, attrs = {}, ...kids) => { const e = document.createElement(tag)
 const IC = { cal: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>', pen: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13 7l4 4"/>',
   chat: '<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>', note: '<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h7M9 16h7"/>',
   book: '<path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5zM5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3M9 7h6"/>', plus: '<path d="M12 5v14M5 12h14"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
   bell: '<path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"/>', belloff: '<path d="M6 16V11a6 6 0 0 1 9.5-4.9M18 11v5l1.5 2H8M10 20.5a2 2 0 0 0 4 0M4 4l16 16"/>' };
 const ico = n => { const s = document.createElementNS("http://www.w3.org/2000/svg", "svg"); s.setAttribute("viewBox", "0 0 24 24"); s.setAttribute("class", "i"); s.innerHTML = IC[n]; return s; };
 document.querySelectorAll("[data-i]").forEach(b => b.prepend(ico(b.dataset.i)));
@@ -222,7 +227,7 @@ function draw() { $("today").textContent = new Date().toLocaleDateString("ko-KR"
 function pop(anchor, title, icon, body, onSave, o = {}) {
   document.querySelectorAll(".pop-wrap").forEach(x => x.remove());
   const f = el("form", { class: "pop" }, el("h3", {}, ico(icon), title, o.head || null), ...body,
-    el("div", { class: "btns" }, o.foot || null, el("button", { type: "button", onclick: () => close() }, o.cancel || "닫기"), o.noSave ? null : el("button", { class: "main" }, o.save || "저장")));
+    o.noFoot ? null : el("div", { class: "btns" }, o.foot || null, el("button", { type: "button", onclick: () => close() }, o.cancel || "닫기"), o.noSave ? null : el("button", { class: "main" }, o.save || "저장")));
   const wrap = el("div", { class: "pop-wrap", onmousedown: e => { if (e.target === wrap) close(); } }, f);
   const close = () => { o.onClose?.(); wrap.remove(); draw(); };
   f.onsubmit = e => { e.preventDefault(); if (onSave() !== false) close(); };
@@ -234,6 +239,7 @@ function pop(anchor, title, icon, body, onSave, o = {}) {
   if (r && x + fw > innerWidth - 8) x = r.right - fw;
   f.style.left = Math.max(8, Math.min(x, innerWidth - fw - 8)) + "px"; f.style.top = Math.max(8, Math.min(y, innerHeight - fh - 8)) + "px";
   setTimeout(() => f.querySelector("input[type=text], textarea")?.focus());
+  o.opened?.();
   return close;
 }
 function kidPick(sel) { // 학생 여러 명 고르기
@@ -254,23 +260,37 @@ function parseTime(s) {
   const rest = (s.slice(0, m.index) + " " + s.slice(m.index + m[0].length)).replace(/\s+/g, " ").trim().replace(/^에\s+|\s+에$/g, "").replace(/^[,·\-~]\s*|\s*[,·\-~]$/g, "").trim();
   return { time: t, text: rest || s.trim() };
 }
-const ALARMS = [["", "알람 없음"], ["0", "정시 알람"], ["10", "10분 전 알람"]];
-function evForm(date, e, anchor) { // 일정: 쓰고 Enter → 저장하고 바로 다음 일정
-  const x = el("input", { type: "text", class: "grow", value: e ? (e.time ? e.time + " " : "") + e.text : "", placeholder: e ? "" : "예: 오후 2시 협의회 → Enter", autocomplete: "off" });
-  const al = el("select", { title: "시간을 쓴 일정만 울려요 (학생이 있을 때 울리지 않게 꺼 둘 수 있어요)" }, ...ALARMS.map(([v, t]) => el("option", { value: v }, t)));
-  al.value = e ? (e.alarm || "") : (localStorage.getItem("journal-alarm") || "");
+const bellBtn = (get, set) => { // 종: 누를 때마다 꺼짐 → 정시 → 10분 전 (켜지면 색이 바뀜)
+  const b = el("button", { type: "button", class: "x bell" });
+  const show = () => { const a = get(); b.classList.toggle("on", !!a); b.title = a ? `알람: ${a === "10" ? "10분 전" : "정시"} (누르면 바꿔요)` : "알람 꺼짐 (누르면 켜요)"; b.replaceChildren(ico(a ? "bell" : "belloff"), a === "10" ? "10" : ""); };
+  b.onclick = () => { const a = get(); set(!a ? "0" : a === "0" ? "10" : ""); show(); };
+  b.show = show; show(); return b;
+};
+function evForm(date, e, anchor) { // 일정: 위에 그날 일정, 아래 [입력칸 + 🕒] [🔔] [추가]. Enter로 이어서 씀
+  const x = el("input", { type: "text", class: "grow", value: e ? (e.time ? e.time + " " : "") + e.text : "", placeholder: e ? "" : "일정 쓰고 Enter", autocomplete: "off" });
+  const tp = el("input", { type: "time", class: "tpick", tabindex: "-1", "aria-hidden": "true" });
+  const clock = el("button", { type: "button", class: "clock", title: "시간 고르기", "aria-label": "시간 고르기", onclick: () => { try { tp.showPicker(); } catch (er) { tp.focus(); } } }, ico("clock"));
+  let alarm = e?.alarm || "";
+  const bell = bellBtn(() => alarm, v => alarm = v);
+  const upd = () => bell.hidden = !parseTime(x.value).time; // 시간이 있을 때만 종
+  tp.onchange = () => { if (!tp.value) return; const p = parseTime(x.value); x.value = `${tp.value} ${p.time ? p.text : x.value.trim()}`.trim(); upd(); x.focus(); };
+  x.oninput = upd; upd();
   const d = e ? dateIn(e.date) : null, list = el("div", { class: "plist" });
   const redraw = () => { drawList(); calDraw(); };
   const drawList = () => { list.replaceChildren(...evOf(date).map(v => itemEv(v, redraw))); sortable(list, redraw); };
   if (!e) drawList();
-  pop(anchor, e ? "일정 고치기" : `${dayName(date)} 일정`, "cal", [el("div", { class: "row" }, x, al), el("p", { class: "tip" }, "시간은 글에 쓰면 알아봐요 (오후 2시, 14:00, 2시 반) · 알람은 고른 일정만"), e ? null : list], () => {
+  pop(anchor, e ? "일정 고치기" : `${dayName(date)} 일정`, "cal", [e ? null : list,
+    el("div", { class: "row addrow" }, el("span", { class: "inbox" }, x, clock, tp), bell, el("button", { class: "main" }, e ? "저장" : "추가"))], () => {
     const v = x.value.trim(); if (!v) return false;
     const { time, text } = parseTime(v);
-    try { localStorage.setItem("journal-alarm", al.value); } catch (er) {}
-    if (e) { Object.assign(e, { date: d.value || e.date, time, text, alarm: time ? al.value : "" }); store(); return; }
-    J.events.push({ id: uid(), date, time, text, done: false, alarm: time ? al.value : "", ord: evOf(date).length }); store();
-    x.value = ""; redraw(); x.focus(); return false; // 닫지 않고 이어서
-  }, { head: d, save: e ? "저장" : "추가", cancel: e ? "취소" : "다 썼어요" });
+    if (e) { Object.assign(e, { date: d.value || e.date, time, text, alarm: time ? alarm : "" }); store(); return; }
+    J.events.push({ id: uid(), date, time, text, done: false, alarm: time ? alarm : "", ord: evOf(date).length }); store();
+    x.value = ""; alarm = ""; bell.show(); upd(); redraw(); x.focus(); return false; // 닫지 않고 이어서 (종은 다시 꺼짐)
+  }, { head: d, noFoot: true, opened: () => { // 처음 한 번 사용법
+    if (localStorage.getItem("journal-tip-ev")) return;
+    try { localStorage.setItem("journal-tip-ev", "1"); } catch (er) {}
+    ask("일정을 쓰고 Enter를 누르면 이어서 계속 써요.\n\n시간을 넣고 싶으면 앞에 14:00처럼 써요.\n(오후 2시, 2시 반도 알아봐요)\n입력칸의 🕒를 눌러 골라도 돼요.\n\n시간이 있는 일정은 🔔를 누르면 알람이 켜져요.\n(한 번 더: 10분 전 · 한 번 더: 꺼짐)", "알겠어요", null);
+  } });
 }
 let lastKids = []; // 학생 기록·상담에서 고른 학생으로 시작
 function recForm(date, r, anchor) {
@@ -318,8 +338,7 @@ function addMenu(btn, date) { // 칸의 +: 무엇을 쓸지
 const add = (k, date, anchor) => k === "note" ? noteForm(date, anchor) : ({ ev: evForm, rec: recForm, cs: csForm })[k](date, null, anchor);
 function choose(s) { pick = s; document.querySelectorAll(".day").forEach(d => d.classList.toggle("sel", d.dataset.d === s)); sideDraw(); } // 다시 그리지 않고 고르기만
 function itemEv(e, refresh = calDraw) {
-  const bell = e.time ? el("button", { class: "x bell" + (e.alarm ? " on" : ""), title: e.alarm ? `알람: ${e.alarm === "10" ? "10분 전" : "정시"} (누르면 바꿔요)` : "알람 꺼짐 (누르면 켜요)",
-    onclick: () => { e.alarm = !e.alarm ? "0" : e.alarm === "0" ? "10" : ""; store(); refresh(); } }, ico(e.alarm ? "bell" : "belloff"), e.alarm === "10" ? "10" : "") : null;
+  const bell = e.time ? bellBtn(() => e.alarm || "", v => { e.alarm = v; store(); }) : null; // 시간이 있는 일정만 (종은 그 자리에서 바뀜)
   return el("div", { class: "item" + (e.done ? " done" : ""), "data-id": e.id }, el("span", { class: "grab", title: "끌어서 순서 바꾸기" }, "⠿"), el("span", { class: "t" }, e.time || ""),
     el("span", { class: "x2", title: "누르면 줄이 그어져요 (한 번 더 누르면 지워져요)", onclick: () => { e.done = !e.done; store(); refresh(); } }, e.text), bell,
     el("button", { class: "x", title: "고치기", onclick: ev => evForm(e.date, e, ev.currentTarget) }, "✎"),
