@@ -58,7 +58,7 @@
   .day.drop { border-color: var(--accent); background: #dbe7f5; } .ev.moving { opacity: .4; } .day .ev { cursor: grab; touch-action: none; }
   .minpop { position: fixed; z-index: 40; display: flex; align-items: center; gap: 6px; background: #fff; border: 1.5px solid var(--line); border-radius: 10px; padding: 6px 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, .18); font-size: 14px; }
   .minpop input { width: 64px; }
-  .grab { cursor: grab; color: #c9beb3; user-select: none; touch-action: none; padding: 0 2px; } .item.moving { background: var(--soft); border-radius: 6px; }
+  .grab { cursor: grab; color: #c9beb3; user-select: none; touch-action: none; padding: 0 2px; } .item[data-id] { cursor: grab; user-select: none; } .item.moving { background: var(--soft); border-radius: 6px; }
   .bell { display: inline-flex; align-items: center; gap: 1px; font-size: 11px; } .bell .i { width: 15px; height: 15px; } .bell.on { color: var(--warn); }
   .pop .addrow { margin-top: 2px; padding-top: 8px; border-top: 1px solid #f1ece5; }
   .inbox { position: relative; flex: 1; min-width: 0; display: flex; } .inbox input[type=text] { flex: 1; min-width: 0; padding-right: 34px; }
@@ -116,6 +116,7 @@
   @media print {
     body { display: block; background: #fff; } header, .kids, .bar, .rec .acts, #p-cal, #p-note, .pop-wrap { display: none !important; }
     main, .pane, .box, .scroll { display: block !important; overflow: visible !important; height: auto !important; border: 0; padding: 0; }
+    .pane[hidden], .box:has(> .kids) { display: none !important; } /* 다른 탭과 학생 목록은 출력하지 않음 */
     .print-title { display: block !important; font-size: 17pt; margin: 0 0 6mm; }
     .rec { grid-template-columns: 24mm 34mm 1fr; break-inside: avoid; font-size: 10.5pt; }
   }
@@ -358,7 +359,7 @@ function choose(s) { pick = s; document.querySelectorAll(".day").forEach(d => d.
 function itemEv(e, refresh = calDraw) {
   const bell = e.time ? bellBtn(() => e.alarm || "", v => { e.alarm = v; store(); }) : null; // 시간이 있는 일정만 (종은 그 자리에서 바뀜)
   return el("div", { class: "item" + (e.done ? " done" : ""), "data-id": e.id }, el("span", { class: "grab", title: "끌어서 순서 바꾸기" }, "⠿"), el("span", { class: "t" }, e.time || ""),
-    el("span", { class: "x2", title: "누르면 줄이 그어져요 (한 번 더 누르면 지워져요)", onclick: () => { e.done = !e.done; store(); refresh(); } }, e.text), bell,
+    el("span", { class: "x2", title: "누르면 줄이 그어져요 (한 번 더 누르면 지워져요). 끌면 옮겨져요", onclick: () => { if (dragged) return; e.done = !e.done; store(); refresh(); } }, e.text), bell,
     el("button", { class: "x", title: "고치기", onclick: ev => evForm(e.date, e, ev.currentTarget) }, "✎"),
     el("button", { class: "x", title: "지우기", onclick: async () => { if (await ask(`'${e.text}' 일정을 지울까요?`, "지우기")) { J.events = J.events.filter(x => x !== e); store(); refresh(); } } }, "✕"));
 }
@@ -366,12 +367,16 @@ const dayAt = (x, y) => document.elementsFromPoint(x, y).find(n => n.classList?.
 const dropMark = d => document.querySelectorAll(".day").forEach(c => c.classList.toggle("drop", !!d && c.dataset.d === d));
 function moveDay(e, d) { if (!d || d === e.date) return false; e.date = d; e.ord = evOf(d).length; store(); return true; } // 다른 날 맨 아래로
 let dragged = false; // 끈 뒤 따라오는 클릭(줄 긋기)은 무시
-function sortable(box, done) { // ⠿를 위아래로 끌면 순서, 목록 밖 달력 날짜에 놓으면 그날로 옮김
-  box.querySelectorAll(".grab").forEach(g => g.onpointerdown = e => {
-    e.preventDefault(); const row = g.closest(".item"), ev0 = J.events.find(v => v.id === row.dataset.id); row.classList.add("moving");
-    const gh = el("div", { class: "ghost", hidden: "" }, ev0?.text || ""); document.body.append(gh);
-    let to = null;
+function sortable(box, done) { // 줄(⠿·시간·글자 어디든)을 위아래로 끌면 순서, 목록 밖 달력 날짜에 놓으면 그날로 옮김
+  box.querySelectorAll(".item[data-id]").forEach(row => row.onpointerdown = p => {
+    if (p.button || p.target.closest("button, input, select, .bell")) return;
+    const sx = p.clientX, sy = p.clientY, ev0 = J.events.find(v => v.id === row.dataset.id);
+    const gh = el("div", { class: "ghost", hidden: "" }, ev0?.text || "");
+    let on = false, to = null;
     const mv = ev => {
+      if (!on && Math.hypot(ev.clientX - sx, ev.clientY - sy) < 6) return; // 조금 움직인 건 그냥 누르기
+      if (!on) { on = true; row.classList.add("moving"); document.body.append(gh); getSelection().removeAllRanges(); }
+      ev.preventDefault();
       const b = box.getBoundingClientRect(), inside = ev.clientX >= b.left && ev.clientX <= b.right && ev.clientY >= b.top - 10 && ev.clientY <= b.bottom + 10;
       to = inside ? null : dayAt(ev.clientX, ev.clientY); dropMark(to);
       gh.hidden = inside; gh.style.left = ev.clientX + 12 + "px"; gh.style.top = ev.clientY + 8 + "px";
@@ -379,7 +384,9 @@ function sortable(box, done) { // ⠿를 위아래로 끌면 순서, 목록 밖 
       const rows = [...box.querySelectorAll(".item[data-id]")].filter(r => r !== row), over = rows.find(r => { const rr = r.getBoundingClientRect(); return ev.clientY < rr.top + rr.height / 2; }); if (over) over.before(row); else rows.at(-1)?.after(row);
     };
     const up = () => {
-      removeEventListener("pointermove", mv); removeEventListener("pointerup", up); row.classList.remove("moving"); gh.remove(); dropMark(null);
+      removeEventListener("pointermove", mv); removeEventListener("pointerup", up); gh.remove(); dropMark(null);
+      if (!on) return;
+      row.classList.remove("moving"); dragged = true; setTimeout(() => dragged = false, 50); // 끈 뒤 따라오는 클릭(줄 긋기)은 무시
       if (!(to && ev0 && moveDay(ev0, to))) { [...box.querySelectorAll(".item[data-id]")].forEach((r, i) => { const x = J.events.find(v => v.id === r.dataset.id); if (x) x.ord = i; }); store(); }
       done();
     };

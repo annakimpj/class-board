@@ -24,6 +24,7 @@
   p { margin: 0; word-break: keep-all; }
   .ic { width: 1.15em; height: 1.15em; vertical-align: -.2em; margin-right: .3em; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
   .ic:last-child { margin-right: 0; }
+  button { text-align: center; } /* 버튼 글자는 가운데 */
   [hidden] { display: none !important; } /* 아래 display 규칙이 hidden을 덮어쓰지 않게 */
 
   /* 맨 위 줄: 제목 표시줄 자리. 여기를 끌어서 창을 옮김 (오른쪽은 설정·창 버튼 자리) */
@@ -272,10 +273,10 @@
   .note-pop small { grid-column: span 5; font: 12px "Pretendard Variable", "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; color: var(--muted); }
   .note-pop .dot { width: 22px; height: 22px; padding: 0; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px var(--line); }
   .note-pop .dot.on { box-shadow: 0 0 0 2px var(--ink); }
-  .tt-big { flex: 1; display: grid; place-items: center; text-align: center; font-size: clamp(18px, min(7cqw, 14cqh), 42px); line-height: 1.2; min-height: 0; }
+  .tt-big { flex: 1; display: grid; place-items: center; align-content: center; gap: 4px; text-align: center; font-size: clamp(18px, min(7cqw, 14cqh), 42px); line-height: 1.2; min-height: 0; }
   .tt-big small { display: block; font-size: .5em; color: var(--muted); }
-  .tt-today { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
-  .tt-today span { font-size: 13px; min-width: 26px; text-align: center; padding: 1px 6px; border-radius: 6px; background: #fff; border: 1.5px solid var(--line); }
+  .tt-today { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px; }
+  .tt-today span { display: inline-flex; align-items: center; justify-content: center; line-height: 1.4; font-size: 13px; min-width: 26px; text-align: center; padding: 1px 6px; border-radius: 6px; background: #fff; border: 1.5px solid var(--line); }
   .tt-today span.past { color: #cdbba6; }
   .tt-today span.on { background: var(--accent); border-color: var(--accent); color: #fff; }
   /* 타이머 시작·다시: 시간 고르는 동그란 버튼과 달리 큼직한 네모 버튼 */
@@ -667,7 +668,7 @@
   .chalk .note-tools { right: 6px; bottom: 4px; }
   .nt-foot { display: flex; gap: 6px; align-items: center; padding-top: 8px; }
   .nt-foot { position: relative; }
-  .nt-foot .nt-hist { flex: 1; min-width: 0; text-align: left; }
+  .nt-foot .nt-hist { flex: 1; min-width: 0; text-align: center; }
   .nt-menu { position: absolute; left: 0; right: 0; bottom: calc(100% + 4px); z-index: 5; max-height: 240px; overflow-y: auto; padding: 4px; background: #fff; border: 1.5px solid var(--line); border-radius: 10px;
              box-shadow: 0 8px 24px rgba(60, 40, 20, .18); font: 13px "Pretendard Variable", "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; }
   .nt-row { display: flex; align-items: center; border-radius: 6px; } .nt-row:hover { background: var(--card); }
@@ -6875,7 +6876,7 @@ const FB_CONFIG = { apiKey: "AIzaSyCEsOWNlfwrGdTKfbgL-C6JTPlc7Z3pUmo", authDomai
 const PHOTO_KEY = /^photo(-\d+)?$|^photoshelf-[a-z0-9]+$/, WB_KEYS = [0, 1, 2, 3].map(wbKey);
 const SET = Storage.prototype.setItem, DEL = Storage.prototype.removeItem;
 const lsSet = (k, v) => SET.call(localStorage, k, v), lsDel = k => DEL.call(localStorage, k), lsGet = k => localStorage.getItem(k);
-let fb = null, fbUser = null, syncT = 0, syncBusy = false, syncAgain = false;
+let fb = null, fbUser = null, syncT = 0, syncBusy = false, syncAgain = false, syncUnsub = null, syncMine = 0, syncWant = null;
 const syncBlobs = new Set(), wbUp = new Set(); // 올려야 할 사진·화이트보드, 이미 올린 화이트보드 사진 id
 // localStorage에 쓰는 곳이 많아서 한곳에서 잡음. 값이 실제로 바뀔 때만 '바뀜'으로 표시
 Storage.prototype.setItem = function (k, v) { const old = this.getItem(k); SET.call(this, k, v); if (this === localStorage && old !== String(v)) syncMark(k); };
@@ -6894,10 +6895,12 @@ async function fbLoad() { // 필요할 때만 불러옴 (로그인 안 하면 �
   fb = { ...auth, ...fs, auth: auth.getAuth(a), db: fs.getFirestore(a) };
   fb.onAuthStateChanged(fb.auth, u => {
     fbUser = u; syncShow(); kidListen();
+    syncUnsub?.(); syncUnsub = null;
     if (!u) return lsDel("sync-uid");
-    if (lsGet("sync-uid") !== u.uid) { lsDel("sync-at"); lsSet("sync-dirty", "1"); } // 다른 계정이면 처음부터 맞춤
+    const first = lsGet("sync-uid") !== u.uid || !lsGet("sync-at"); // 이 컴퓨터에서 이 계정으로 처음 로그인
+    if (first) { lsDel("sync-at"); lsSet("sync-dirty", "1"); }
     lsSet("sync-uid", u.uid);
-    syncStart().catch(() => syncShow("서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요."));
+    syncStart(first).then(syncListen).catch(() => syncShow("서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요."));
   });
   return fb;
 }
@@ -6936,20 +6939,38 @@ async function syncLogin() {
     syncShow(e.code in LOGIN_ERR ? LOGIN_ERR[e.code] : `로그인하지 못했어요. 다시 눌러 주세요. (${e.code || e.message})`);
   }
 }
-async function syncLogout() { await fb.signOut(fb.auth); lsDel("sync-at"); syncShow(); }
-// 로그인했을 때: 서버가 비었으면 올리고, 서버가 더 새것이면 받아 옴. 둘 다 바뀌었으면 물어봄
-async function syncStart() {
+async function syncLogout() { syncUnsub?.(); syncUnsub = null; await fb.signOut(fb.auth); lsDel("sync-at"); syncShow(); }
+// 켤 때: 서버 보드가 우선. 서버가 바뀌었으면 늘 서버 것으로 바꿈 (이 컴퓨터에서 아직 안 올린 것보다 서버가 먼저)
+// 이 컴퓨터에서 처음 로그인할 때만: 서버가 비었으면 올리고, 둘 다 내용이 있으면 어느 쪽으로 맞출지 물어봄
+async function syncStart(first) {
   syncShow("서버와 맞추는 중…");
   const snap = await fb.getDoc(boardRef());
   if (!snap.exists()) return syncPush(true);
   const d = snap.data(), dirty = lsGet("sync-dirty");
   if (String(d.updatedAt) === lsGet("sync-at")) return dirty ? syncPush(false) : syncShow();
-  if (dirty) { // 둘 다 바뀜: 고르게 함. 취소하면 이번엔 그대로 두고 다음에 다시 물어봄
+  if (first && dirty) { // 처음 로그인: 고르게 함. 취소하면 이번엔 그대로 두고 다음에 다시 물어봄
     const how = await seChoose(document.body, "서버에 저장된 보드와 이 컴퓨터의 보드가 달라요. 어느 쪽으로 맞출까요?\n\n· 서버 보드로 바꾸기: 이 컴퓨터 내용은 지워져요\n· 이 컴퓨터 보드 올리기: 서버 내용이 바뀌어요", [["이 컴퓨터 보드 올리기", "push"], ["서버 보드로 바꾸기", "pull"]]);
     if (how === "push") return syncPush(true);
     if (!how) return syncShow();
   }
   await syncPull(d);
+}
+// 켜 있는 동안에도 서버를 지켜봄: 다른 컴퓨터에서 바꾸면 이 컴퓨터도 서버 보드로 바꿈 (내가 올린 것은 빼고)
+function syncListen() {
+  syncUnsub?.();
+  syncUnsub = fb.onSnapshot(boardRef(), snap => {
+    if (!snap.exists() || snap.metadata.hasPendingWrites) return;
+    const d = snap.data();
+    if (d.updatedAt === syncMine || String(d.updatedAt) === lsGet("sync-at")) return;
+    syncWant = d; syncPullSoon();
+  });
+}
+function syncPullSoon() { // 글을 쓰거나 고치는 중이면 끝날 때까지 기다렸다가 (다시 불러오면 쓰던 칸이 닫혀서)
+  if (!syncWant) return;
+  const a = document.activeElement;
+  if (syncBusy || a?.closest?.("input, textarea, select, [contenteditable='true']") || document.querySelector(".card-ed, .se-ask")) return setTimeout(syncPullSoon, 3000);
+  const d = syncWant; syncWant = null;
+  if (String(d.updatedAt) !== lsGet("sync-at")) syncPull(d).catch(() => syncShow("서버 보드를 받지 못했어요. 인터넷 연결을 확인해 주세요."));
 }
 // 사진이 1MB 문서 제한을 넘으면 줄여서 올림
 async function fitBlob(url) {
@@ -6983,7 +7004,7 @@ async function syncPush(all) {
     }
     const ls = {}, photos = [];
     for (const k of Object.keys(localStorage)) if (!k.startsWith("sync-")) PHOTO_KEY.test(k) ? photos.push(k) : ls[k] = lsGet(k);
-    const at = Date.now();
+    const at = Date.now(); syncMine = at; // 내가 올린 것: 서버 지켜보기에서 다시 받지 않게
     await fb.setDoc(boardRef(), { ls, photos, updatedAt: at });
     lsSet("sync-at", String(at)); lsDel("sync-dirty"); syncShow();
   } catch (e) {
