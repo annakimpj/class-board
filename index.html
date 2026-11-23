@@ -811,6 +811,13 @@
   .rw-pick { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
   .tool-card .rw-pick button { padding: 2px; border-radius: 10px; } .tool-card .rw-pick button.on { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
   .tool-card .rw-pick .sw { width: 22px; height: 22px; padding: 0; border-radius: 50%; }
+  .rw-logpop { width: 360px; padding: 8px 10px; position: fixed; }
+  .rw-loghead { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; } .rw-loghead b { flex: 1; font-size: 15px; } .rw-loghead select { font: 13px inherit; border: 1.5px solid #cddcfb; border-radius: 6px; padding: 2px 4px; }
+  .rw-logpop .rw-log .day { margin: 6px 0 2px; }
+  .rw-logpop .rw-log .row { grid-template-columns: 52px minmax(0, 1fr) auto auto; gap: 6px; padding: 3px 2px; align-items: center; }
+  .rw-logpop .rw-log .who small { color: var(--muted); font-size: 12px; }
+  .rw-menu .rw-log button.un { width: 26px; height: 26px; padding: 0; justify-content: center; color: #8a8178; border-radius: 6px; }
+  .rw-menu .rw-log button.un:hover { background: #fff0e6; color: #e8590c; }
   .rw-sendpop { width: 300px; padding: 10px; } .rw-sendpop .rw-send { white-space: nowrap; } .rw-sendpop .rw-h { margin: 8px 2px; } .rw-sendpop .rw-err { margin: 6px 2px 0; color: #e8590c; font-size: 14px; } .rw-sendpop .rw-err:empty { display: none; }
   .rw-menu.rw-sendpop button.go { justify-content: center; background: #3b82f6; color: #fff; font-weight: 600; }
   .rw-send { display: grid; grid-template-columns: auto 1fr; gap: 8px 10px; align-items: center; font-size: 14px; }
@@ -1232,7 +1239,7 @@
   </section>
   <section class="card tool-card" data-card="reward" id="rw-card">
     <p class="label">🏅 우리반 점수</p>
-    <div class="rw-bar"><span class="rw-count" id="rw-count"></span><span class="sp"></span><button class="rw-dress" onclick="rwDressPick(this)" title="학생 아바타 꾸미기 (학생 카드를 오른쪽 클릭해도 돼요)">👕 꾸미기</button><button class="rw-give" onclick="rwSendOpen(this)">🤝 주고받기</button><button class="rw-hist" onclick="rwLog()">📜 기록</button><button class="rw-set" onclick="rwSettings()">⚙︎ 설정</button></div>
+    <div class="rw-bar"><span class="rw-count" id="rw-count"></span><span class="sp"></span><button class="rw-dress" onclick="rwDressPick(this)" title="학생 아바타 꾸미기 (학생 카드를 오른쪽 클릭해도 돼요)">👕 꾸미기</button><button class="rw-give" onclick="rwSendOpen(this)">🤝 주고받기</button><button class="rw-hist" onclick="rwLog(this)">📜 기록</button><button class="rw-set" onclick="rwSettings()">⚙︎ 설정</button></div>
     <div class="rw-grid" id="rw-grid"></div>
     <div class="rw-foot"><span class="rw-sel"><button onclick="rwSel('all')">전체 선택</button><button onclick="rwSel('inv')">선택 반전</button><button onclick="rwSel('none')">선택 해제</button></span><span class="sp"></span><button class="rw-minus" onclick="rwGiveSel(this, -1)">− 노력해요</button><button class="main rw-plus" onclick="rwGiveSel(this, 1)">+ 칭찬해요</button></div>
   </section>
@@ -3963,10 +3970,17 @@ function rwAvatar(p) {
   rwCard.append(ed);
 }
 // 점수 기록: 누가, 언제, 몇 점, 왜 (학생별로 골라 보기)
-function rwLog() {
-  rwCard.querySelector(".card-ed")?.remove();
+function rwLog(btn = rwCard.querySelector(".rw-hist")) { // 점수 기록 (작은 팝업). 줄마다 ↶로 그 기록만 되돌리기
+  const d = btn.ownerDocument, W = d.defaultView;
+  d.querySelector(".rw-menu")?.remove();
   const unit = reward.unit.trim() || "점", who = h("select", { "aria-label": "학생" }, h("option", { value: "" }, "모든 학생"), ...people().map(p => h("option", { value: p }, seName(p))));
   const list = h("div", { class: "rw-log" });
+  const undo = async l => {
+    const what = `${l.from ? seName(l.from) + " → " : ""}${l.who.map(seName).join(", ")} ${l.d > 0 ? "+" : "−"}${Math.abs(l.d)}${unit}${l.why ? " (" + l.why + ")" : ""}`;
+    if (!await seConfirm(m, `이 기록을 되돌릴까요?\n${what}`, "되돌리기")) return;
+    l.who.forEach(p => rwSt(p).pt -= l.d); if (l.from) rwSt(l.from).pt += l.d; // 주고받기는 보낸 학생에게 다시 돌려줌
+    reward.log = reward.log.filter(x => x !== l); rwStore(); rwDraw(); draw();
+  };
   const draw = () => {
     const f = who.value, rows = reward.log.filter(l => !f || l.who.includes(f) || l.from === f).slice(0, 300);
     let day = "";
@@ -3975,23 +3989,19 @@ function rwLog() {
       if (dd !== day) out.push(h("div", { class: "day" }, day = dd));
       const names = l.from ? `${seName(l.from)} → ${l.who.map(seName).join(", ")}` : l.who.length > 4 ? `${l.who.slice(0, 4).map(seName).join(", ")} 외 ${l.who.length - 4}명` : l.who.map(seName).join(", ");
       const dv = f && l.from === f ? -l.d : l.d;
-      out.push(h("div", { class: "row" }, h("span", { class: "tm" }, t.toLocaleTimeString("ko-KR", { hour: "numeric", minute: "2-digit" })), h("span", { class: "who" }, names || "모두"),
-        h("span", { class: "why" }, l.why || ""), h("b", { class: dv < 0 ? "neg" : "" }, dv ? `${dv > 0 ? "+" : "−"}${Math.abs(dv)} ${unit}` : "")));
+      out.push(h("div", { class: "row" }, h("span", { class: "tm" }, t.toLocaleTimeString("ko-KR", { hour: "numeric", minute: "2-digit" })),
+        h("span", { class: "who" }, names || "모두", l.why ? h("small", {}, " " + l.why) : ""),
+        h("b", { class: dv < 0 ? "neg" : "" }, dv ? `${dv > 0 ? "+" : "−"}${Math.abs(dv)}` : ""),
+        h("button", { class: "un", title: "이 기록 되돌리기", "aria-label": "이 기록 되돌리기", onclick: () => undo(l) }, "↶")));
       return out;
     }) : [h("p", { class: "rw-h" }, "아직 기록이 없어요.")]));
   };
   who.onchange = draw; draw();
-  const undo = h("button", { title: "가장 최근에 주거나 뺀 점수를 되돌려요", onclick: async () => {
-    const first = reward.log[0];
-    if (!first) return;
-    const group = reward.log.filter(l => l.at === first.at); // 같은 때 함께 준 것(1인 1역 포인트 등)은 한 번에
-    const unit = reward.unit.trim() || "점", what = group.map(l => `${l.from ? seName(l.from) + " → " : ""}${l.who.map(seName).join(", ")} ${l.d > 0 ? "+" : "−"}${Math.abs(l.d)}${unit}`).join("\n");
-    if (!await seConfirm(rwCard, `이것을 되돌릴까요?\n${what}`, "되돌리기")) return;
-    for (const l of group) { l.who.forEach(p => rwSt(p).pt -= l.d); if (l.from) rwSt(l.from).pt += l.d; }
-    reward.log = reward.log.slice(group.length); rwStore(); rwDraw(); draw();
-  } }, "↶ 되돌리기");
-  const ed = h("div", { class: "card-ed" }, h("div", { class: "card-ed-head" }, h("b", {}, "점수 기록"), who, undo, h("button", { class: "main", onclick: () => ed.remove() }, "닫기")), h("div", { class: "card-ed-list" }, list));
-  rwCard.append(ed);
+  const m = h("div", { class: "rw-menu rw-logpop", popover: "auto" }, h("div", { class: "rw-loghead" }, h("b", {}, "📜 점수 기록"), who), list);
+  d.body.append(m); m.addEventListener("toggle", e => { if (e.newState === "closed") m.remove(); }); m.showPopover();
+  const r = btn.getBoundingClientRect();
+  m.style.left = Math.max(8, Math.min(r.right - m.offsetWidth, W.innerWidth - m.offsetWidth - 8)) + "px";
+  m.style.top = (r.bottom + 6 + m.offsetHeight < W.innerHeight ? r.bottom + 6 : Math.max(8, r.top - m.offsetHeight - 6)) + "px";
 }
 // 학생끼리 주고받기: 보내는 학생의 점수에서 받는 학생에게 옮김
 function rwSendOpen(btn) {
