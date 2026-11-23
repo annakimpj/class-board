@@ -50,9 +50,13 @@
   .day .mk { width: 14px; height: 14px; } .day .mk.cs { color: #7048e8; } .day .mk.nt { color: #d8cfc5; } .day .mk.nt.on { color: #e8a317; }
   .day .plus { position: absolute; right: 4px; bottom: 4px; width: 24px; height: 24px; padding: 0; justify-content: center; border-radius: 50%; opacity: 0; background: #fff; }
   .day:hover .plus, .day.sel .plus { opacity: 1; }
-  .day .ev { font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 1px 6px; border-radius: 5px; background: #e3ecf6; color: #2c4f75; }
+  .day .evs { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; scrollbar-width: thin; padding-bottom: 22px; }
+  .day .ev { flex: none; font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 1px 6px; border-radius: 5px; background: #e3ecf6; color: #2c4f75; }
   .day .ev:hover { background: #d3e2f3; } .day .ev.done { text-decoration: line-through; opacity: .5; } .day .more { font-size: 11px; color: var(--muted); }
-  .side { display: grid; grid-template-rows: auto minmax(0, 1fr) minmax(0, .7fr); gap: 12px; min-height: 0; }
+  .side { display: grid; grid-template-rows: auto minmax(0, 1fr) minmax(0, 1fr); gap: 12px; min-height: 0; }
+  .grab { cursor: grab; color: #c9beb3; user-select: none; touch-action: none; padding: 0 2px; } .item.moving { background: var(--soft); border-radius: 6px; }
+  .bell { display: inline-flex; align-items: center; gap: 1px; font-size: 11px; } .bell .i { width: 15px; height: 15px; } .bell.on { color: var(--warn); }
+  .pop .tip { font-size: 12px; color: var(--muted); margin: -4px 0 0; }
   .quick { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; } .quick button { justify-content: center; padding: 7px 6px; font-size: 14px; }
   .item { display: flex; align-items: flex-start; gap: 6px; padding: 5px 2px; border-bottom: 1px solid #f1ece5; font-size: 14px; }
   .item .t { font-variant-numeric: tabular-nums; color: var(--accent); font-size: 12.5px; min-width: 40px; padding-top: 1px; }
@@ -120,15 +124,15 @@
   <section class="pane" id="p-cal" hidden>
     <div class="box">
       <div class="cal-head"><button id="cal-prev" aria-label="지난달">◀</button><b id="cal-title"></b><button id="cal-next" aria-label="다음 달">▶</button><button id="cal-today">오늘</button>
-        <span class="sp"></span><span class="hint">날짜를 누르고 오른쪽이나 칸의 +로 바로 써요 · 일정을 누르면 줄이 그어져요</span></div>
+        <span class="sp"></span><span class="hint">칸의 +나 오른쪽 버튼으로 바로 써요 · 일정을 누르면 줄이 그어져요 · ⠿를 끌면 순서가 바뀌어요</span></div>
       <div class="cal" id="cal"></div>
     </div>
     <div class="side">
       <div class="box"><h2 id="day-title"></h2>
         <div class="quick"><button data-add="ev" data-i="cal">일정</button><button data-add="rec" data-i="pen">학생 기록</button><button data-add="cs" data-i="chat">상담</button><button data-add="note" data-i="note">일지</button></div>
       </div>
-      <div class="box"><div class="scroll" id="day-list"></div></div>
-      <div class="box"><h2>앞으로 7일</h2><div class="scroll" id="week-list"></div></div>
+      <div class="box"><h2 data-i="cal">일정</h2><div class="scroll" id="day-evs"></div></div>
+      <div class="box"><h2 data-i="pen">학생 기록 · 상담 · 일지</h2><div class="scroll" id="day-list"></div></div>
     </div>
   </section>
   <section class="pane" id="p-rec" hidden>
@@ -169,7 +173,8 @@ const el = (tag, attrs = {}, ...kids) => { const e = document.createElement(tag)
 // 선 아이콘 (보드 아이콘과 같은 모양)
 const IC = { cal: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>', pen: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13 7l4 4"/>',
   chat: '<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>', note: '<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h7M9 16h7"/>',
-  book: '<path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5zM5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3M9 7h6"/>', plus: '<path d="M12 5v14M5 12h14"/>' };
+  book: '<path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5zM5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3M9 7h6"/>', plus: '<path d="M12 5v14M5 12h14"/>',
+  bell: '<path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"/>', belloff: '<path d="M6 16V11a6 6 0 0 1 9.5-4.9M18 11v5l1.5 2H8M10 20.5a2 2 0 0 0 4 0M4 4l16 16"/>' };
 const ico = n => { const s = document.createElementNS("http://www.w3.org/2000/svg", "svg"); s.setAttribute("viewBox", "0 0 24 24"); s.setAttribute("class", "i"); s.innerHTML = IC[n]; return s; };
 document.querySelectorAll("[data-i]").forEach(b => b.prepend(ico(b.dataset.i)));
 const iso = d => d.toLocaleDateString("sv-SE");
@@ -240,16 +245,31 @@ function kidPick(sel) { // 학생 여러 명 고르기
 function chips(list, cur, color) { let v = cur; const box = el("div", { class: "chips" }); const draw = () => box.replaceChildren(...list.map(k => el("button", { type: "button", class: v === k ? "on" : "", style: v === k && color ? `background:${color(k)};border-color:${color(k)}` : "", onclick: () => { v = k; draw(); } }, k))); draw(); return { box, get: () => v }; }
 const sel = (list, cur) => { const x = el("select", {}, ...list.map(v => el("option", { value: v }, v))); x.value = cur; return x; };
 const dateIn = v => el("input", { type: "date", value: v, title: "날짜" });
+// 글에서 시간 알아내기: "오후 2시 회의", "2시 반 회의", "14:00 회의", "02:00 회의" → 14:00 · 회의 (오전·오후 없이 1~6시는 오후로)
+function parseTime(s) {
+  const hm = (ap, h, mi) => { if (h > 24 || mi > 59) return ""; if (ap === "오후" && h < 12) h += 12; else if (ap === "오전" && h === 12) h = 0; else if (!ap && h >= 1 && h <= 6) h += 12; return `${String(h % 24).padStart(2, "0")}:${String(mi).padStart(2, "0")}`; };
+  let m = s.match(/(오전|오후)?\s*(\d{1,2})\s*:\s*(\d{2})/), t = m && hm(m[1], +m[2], +m[3]);
+  if (!m) { m = s.match(/(오전|오후)?\s*(\d{1,2})\s*시(?!간)\s*(?:(반)|(\d{1,2})\s*분)?/); t = m && hm(m[1], +m[2], m[3] ? 30 : +(m[4] || 0)); }
+  if (!t) return { time: "", text: s.trim() };
+  const rest = (s.slice(0, m.index) + " " + s.slice(m.index + m[0].length)).replace(/\s+/g, " ").trim().replace(/^에\s+|\s+에$/g, "").replace(/^[,·\-~]\s*|\s*[,·\-~]$/g, "").trim();
+  return { time: t, text: rest || s.trim() };
+}
+const ALARMS = [["", "알람 없음"], ["0", "정시 알람"], ["10", "10분 전 알람"]];
 function evForm(date, e, anchor) { // 일정: 쓰고 Enter → 저장하고 바로 다음 일정
-  const t = el("input", { type: "time", value: e?.time || "", title: "시간 (비워도 돼요). 넣으면 그 시간에 알려 줘요" }), x = el("input", { type: "text", class: "grow", value: e?.text || "", placeholder: e ? "" : "쓰고 Enter → 이어서 다음 일정", autocomplete: "off" });
+  const x = el("input", { type: "text", class: "grow", value: e ? (e.time ? e.time + " " : "") + e.text : "", placeholder: e ? "" : "예: 오후 2시 협의회 → Enter", autocomplete: "off" });
+  const al = el("select", { title: "시간을 쓴 일정만 울려요 (학생이 있을 때 울리지 않게 꺼 둘 수 있어요)" }, ...ALARMS.map(([v, t]) => el("option", { value: v }, t)));
+  al.value = e ? (e.alarm || "") : (localStorage.getItem("journal-alarm") || "");
   const d = e ? dateIn(e.date) : null, list = el("div", { class: "plist" });
-  const drawList = () => list.replaceChildren(...evOf(date).map(v => el("div", { class: "item" + (v.done ? " done" : "") }, el("span", { class: "t" }, v.time || ""), el("span", { class: "x2" }, v.text))));
+  const redraw = () => { drawList(); calDraw(); };
+  const drawList = () => { list.replaceChildren(...evOf(date).map(v => itemEv(v, redraw))); sortable(list, redraw); };
   if (!e) drawList();
-  pop(anchor, e ? "일정 고치기" : `${dayName(date)} 일정`, "cal", [el("div", { class: "row" }, t, x), e ? null : list], () => {
-    const v = x.value.trim(); if (!v) return !!e && false;
-    if (e) { Object.assign(e, { date: d.value || e.date, time: t.value, text: v }); store(); return; }
-    J.events.push({ id: uid(), date, time: t.value, text: v, done: false }); store();
-    x.value = ""; t.value = ""; drawList(); calDraw(); x.focus(); return false; // 닫지 않고 이어서
+  pop(anchor, e ? "일정 고치기" : `${dayName(date)} 일정`, "cal", [el("div", { class: "row" }, x, al), el("p", { class: "tip" }, "시간은 글에 쓰면 알아봐요 (오후 2시, 14:00, 2시 반) · 알람은 고른 일정만"), e ? null : list], () => {
+    const v = x.value.trim(); if (!v) return false;
+    const { time, text } = parseTime(v);
+    try { localStorage.setItem("journal-alarm", al.value); } catch (er) {}
+    if (e) { Object.assign(e, { date: d.value || e.date, time, text, alarm: time ? al.value : "" }); store(); return; }
+    J.events.push({ id: uid(), date, time, text, done: false, alarm: time ? al.value : "", ord: evOf(date).length }); store();
+    x.value = ""; redraw(); x.focus(); return false; // 닫지 않고 이어서
   }, { head: d, save: e ? "저장" : "추가", cancel: e ? "취소" : "다 썼어요" });
 }
 let lastKids = []; // 학생 기록·상담에서 고른 학생으로 시작
@@ -285,7 +305,7 @@ function noteForm(date, anchor) { // 일지: 쓰는 대로 저장
 // ── 달력: 칸마다 일정(누르면 줄 긋기), 기록·상담·일지 표시. 칸의 +나 오른쪽 버튼으로 바로 쓰기
 let month = new Date(), pick = today();
 month.setDate(1);
-const evOf = d => J.events.filter(e => e.date === d).sort((a, b) => (a.time || "99").localeCompare(b.time || "99"));
+const evOf = d => J.events.filter(e => e.date === d).sort((a, b) => (a.ord ?? 1e9) - (b.ord ?? 1e9)); // 끌어서 정한 순서
 const recOf = d => J.recs.filter(r => r.date === d), csOf = d => J.counsels.filter(c => c.date === d);
 const toggle = e => { e.done = !e.done; store(); calDraw(); };
 function addMenu(btn, date) { // 칸의 +: 무엇을 쓸지
@@ -297,11 +317,25 @@ function addMenu(btn, date) { // 칸의 +: 무엇을 쓸지
 }
 const add = (k, date, anchor) => k === "note" ? noteForm(date, anchor) : ({ ev: evForm, rec: recForm, cs: csForm })[k](date, null, anchor);
 function choose(s) { pick = s; document.querySelectorAll(".day").forEach(d => d.classList.toggle("sel", d.dataset.d === s)); sideDraw(); } // 다시 그리지 않고 고르기만
-function itemEv(e, showDate) {
-  return el("div", { class: "item" + (e.done ? " done" : "") }, showDate ? el("span", { class: "d" }, short(e.date).slice(3)) : null, el("span", { class: "t" }, e.time || ""),
-    el("span", { class: "x2", title: "누르면 줄이 그어져요 (한 번 더 누르면 지워져요)", onclick: () => toggle(e) }, e.text),
+function itemEv(e, refresh = calDraw) {
+  const bell = e.time ? el("button", { class: "x bell" + (e.alarm ? " on" : ""), title: e.alarm ? `알람: ${e.alarm === "10" ? "10분 전" : "정시"} (누르면 바꿔요)` : "알람 꺼짐 (누르면 켜요)",
+    onclick: () => { e.alarm = !e.alarm ? "0" : e.alarm === "0" ? "10" : ""; store(); refresh(); } }, ico(e.alarm ? "bell" : "belloff"), e.alarm === "10" ? "10" : "") : null;
+  return el("div", { class: "item" + (e.done ? " done" : ""), "data-id": e.id }, el("span", { class: "grab", title: "끌어서 순서 바꾸기" }, "⠿"), el("span", { class: "t" }, e.time || ""),
+    el("span", { class: "x2", title: "누르면 줄이 그어져요 (한 번 더 누르면 지워져요)", onclick: () => { e.done = !e.done; store(); refresh(); } }, e.text), bell,
     el("button", { class: "x", title: "고치기", onclick: ev => evForm(e.date, e, ev.currentTarget) }, "✎"),
-    el("button", { class: "x", title: "지우기", onclick: async () => { if (await ask(`'${e.text}' 일정을 지울까요?`, "지우기")) { J.events = J.events.filter(x => x !== e); store(); calDraw(); } } }, "✕"));
+    el("button", { class: "x", title: "지우기", onclick: async () => { if (await ask(`'${e.text}' 일정을 지울까요?`, "지우기")) { J.events = J.events.filter(x => x !== e); store(); refresh(); } } }, "✕"));
+}
+function sortable(box, done) { // ⠿를 위아래로 끌어 그날 일정 순서 바꾸기
+  box.querySelectorAll(".grab").forEach(g => g.onpointerdown = e => {
+    e.preventDefault(); const row = g.closest(".item"); row.classList.add("moving");
+    const mv = ev => { const rows = [...box.querySelectorAll(".item[data-id]")].filter(r => r !== row), over = rows.find(r => { const b = r.getBoundingClientRect(); return ev.clientY < b.top + b.height / 2; }); if (over) over.before(row); else rows.at(-1)?.after(row); };
+    const up = () => {
+      removeEventListener("pointermove", mv); removeEventListener("pointerup", up); row.classList.remove("moving");
+      [...box.querySelectorAll(".item[data-id]")].forEach((r, i) => { const x = J.events.find(v => v.id === r.dataset.id); if (x) x.ord = i; });
+      store(); done();
+    };
+    addEventListener("pointermove", mv); addEventListener("pointerup", up);
+  });
 }
 function calDraw() {
   const y = month.getFullYear(), m = month.getMonth(), start = new Date(y, m, 1 - new Date(y, m, 1).getDay()), t = today();
@@ -313,11 +347,10 @@ function calDraw() {
     const mk = (n, cls, title) => { const x = ico(n); x.setAttribute("class", "i mk " + cls); x.append(Object.assign(document.createElementNS("http://www.w3.org/2000/svg", "title"), { textContent: title })); return x; };
     const marks = el("span", { class: "marks" }, ...recs.slice(0, 8).map(r => el("i", { class: "dot", style: `background:${kindColor(r.kind)}`, title: `${r.kind} · ${names(r.ps)}` })),
       recs.length > 8 ? el("small", {}, "+") : null, nc ? mk("chat", "cs", `상담 ${nc}`) : null,
-      wrote ? mk("note", "nt on", "일지 씀") : s <= t && wd > 0 && wd < 6 && d.getMonth() === m ? mk("note", "nt", "일지 안 씀") : null); // 지난 평일은 안 쓴 것도 흐리게
+      wrote ? mk("note", "nt on", "일지 씀") : null);
     cells.push(el("div", { class: `day${d.getMonth() !== m ? " out" : ""}${s === t ? " today" : ""}${s === pick ? " sel" : ""}${wd === 0 ? " sun" : wd === 6 ? " sat" : ""}`, "data-d": s, onclick: () => choose(s) },
       el("div", { class: "top" }, el("span", { class: "n" }, String(d.getDate())), marks),
-      ...evs.slice(0, 4).map(e => el("span", { class: "ev" + (e.done ? " done" : ""), title: `${e.time ? e.time + " " : ""}${e.text} (누르면 줄 긋기)`, onclick: ev => { ev.stopPropagation(); toggle(e); } }, (e.time ? e.time + " " : "") + e.text)),
-      evs.length > 4 ? el("span", { class: "more" }, `+${evs.length - 4}`) : null, plus));
+      el("div", { class: "evs" }, ...evs.map(e => el("span", { class: "ev" + (e.done ? " done" : ""), title: `${e.time ? e.time + " " : ""}${e.text} (누르면 줄 긋기)`, onclick: ev => { ev.stopPropagation(); toggle(e); } }, (e.time ? e.time + " " : "") + e.text))), plus));
   }
   $("cal").replaceChildren(...cells);
   sideDraw();
@@ -326,26 +359,27 @@ function sideDraw() {
   const t = today();
   $("day-title").textContent = dayName(pick) + (pick === t ? " · 오늘" : "");
   const evs = evOf(pick), recs = recOf(pick), cs = csOf(pick), nt = J.notes[pick]?.trim();
-  $("day-list").replaceChildren(
-    el("p", { class: "sub" }, "일정"), ...(evs.length ? evs.map(e => itemEv(e)) : [el("p", { class: "empty" }, "없어요")]),
+  $("day-evs").replaceChildren(...(evs.length ? evs.map(e => itemEv(e)) : [el("p", { class: "empty" }, "일정이 없어요.")]));
+  sortable($("day-evs"), calDraw);
+  $("day-list").replaceChildren(...[...(recs.length || cs.length || nt ? [] : [el("p", { class: "empty" }, "기록이 없어요.")]),
     recs.length ? el("p", { class: "sub" }, "학생 기록") : null, ...recs.map(r => el("div", { class: "item" }, el("span", { class: "k", style: `background:${kindColor(r.kind)}` }, r.kind), el("span", { class: "x2", title: "고치기", onclick: ev => recForm(r.date, r, ev.currentTarget) }, `${names(r.ps)} · ${r.text}`))),
     cs.length ? el("p", { class: "sub" }, "상담") : null, ...cs.map(c => el("div", { class: "item" }, el("span", { class: "k", style: "background:#7048e8" }, c.way), el("span", { class: "x2", title: "고치기", onclick: ev => csForm(c.date, c, ev.currentTarget) }, `${names(c.ps) || c.target} · ${c.topic || c.text}`))),
-    nt ? el("p", { class: "sub" }, "일지") : null, nt ? el("div", { class: "item" }, el("span", { class: "x2", onclick: ev => noteForm(pick, ev.currentTarget) }, nt.split("\n")[0])) : null);
-  const end = new Date(); end.setDate(end.getDate() + 6); const e7 = iso(end);
-  const week = J.events.filter(e => e.date >= t && e.date <= e7).sort((a, b) => (a.date + (a.time || "99")).localeCompare(b.date + (b.time || "99")));
-  $("week-list").replaceChildren(...(week.length ? week.map(e => itemEv(e, true)) : [el("p", { class: "empty" }, "일정이 없어요.")]));
+    nt ? el("p", { class: "sub" }, "일지") : null, nt ? el("div", { class: "item" }, el("span", { class: "x2", onclick: ev => noteForm(pick, ev.currentTarget) }, nt.split("\n")[0])) : null].filter(Boolean));
 }
 $("cal-prev").onclick = () => { month.setMonth(month.getMonth() - 1); calDraw(); };
 $("cal-next").onclick = () => { month.setMonth(month.getMonth() + 1); calDraw(); };
 $("cal-today").onclick = () => { month = new Date(); month.setDate(1); pick = today(); calDraw(); };
 document.querySelectorAll("[data-add]").forEach(b => b.onclick = () => add(b.dataset.add, pick, b));
-// 시간을 넣은 일정: 그 시간이 되면 이 창에서만 알려 줌 (학생 화면에는 안 나옴)
+// 알람: 알람을 켠 일정만 (정시 / 10분 전). 이 창에서만 울림 (학생 화면에는 안 나옴)
 const rung = new Set();
 setInterval(() => {
-  const n = new Date(), hm = n.toTimeString().slice(0, 5), t = today();
-  for (const e of J.events) if (e.date === t && e.time === hm && !e.done && !rung.has(e.id)) {
-    rung.add(e.id); ask(`⏰ ${e.time}\n${e.text}`, "확인", null);
-    try { const a = new AudioContext(); [880, 1175, 880, 1175].forEach((f, i) => { const o = a.createOscillator(), g = a.createGain(), at = a.currentTime + i * .18; o.frequency.value = f; o.type = "triangle"; o.connect(g); g.connect(a.destination); g.gain.setValueAtTime(.18, at); g.gain.exponentialRampToValueAtTime(.001, at + .16); o.start(at); o.stop(at + .16); }); } catch (er) {}
+  const n = new Date(), now = n.getHours() * 60 + n.getMinutes(), t = today();
+  for (const e of J.events) {
+    if (e.date !== t || !e.time || !e.alarm || e.done) continue;
+    const [h, mi] = e.time.split(":").map(Number), at = h * 60 + mi - (e.alarm === "10" ? 10 : 0), key = e.id + "@" + at;
+    if (now !== at || rung.has(key)) continue;
+    rung.add(key); ask(`⏰ ${e.alarm === "10" ? "10분 뒤" : "지금"} ${e.time}\n${e.text}`, "확인", null);
+    try { const a = new AudioContext(); [880, 1175, 880, 1175].forEach((f, i) => { const o = a.createOscillator(), g = a.createGain(), s0 = a.currentTime + i * .18; o.frequency.value = f; o.type = "triangle"; o.connect(g); g.connect(a.destination); g.gain.setValueAtTime(.18, s0); g.gain.exponentialRampToValueAtTime(.001, s0 + .16); o.start(s0); o.stop(s0 + .16); }); } catch (er) {}
     window.focus();
   }
 }, 5000);
@@ -436,6 +470,14 @@ const coverSync = () => { $("cover").hidden = location.hash !== "#cover"; };
 $("cover-date").textContent = new Date().toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "long" });
 $("cover").ondblclick = () => { history.replaceState(null, "", location.pathname); coverSync(); };
 addEventListener("hashchange", coverSync); coverSync();
+const onBoard = () => { try { const b = opener; if (!b || b.closed) return false; const x = screenX + outerWidth / 2, y = screenY + 20; return x >= b.screenX && x < b.screenX + b.outerWidth && y >= b.screenY && y < b.screenY + b.outerHeight; } catch (e) { return false; } }; // 보드(학생 화면) 위에 있나
+const spotSave = () => { if (!$("cover").hidden || onBoard()) return; try { localStorage.setItem("teacher-win", JSON.stringify({ x: screenX, y: screenY, w: outerWidth, h: outerHeight })); } catch (e) {} };
+setInterval(spotSave, 4000); addEventListener("pagehide", spotSave);
+try { // 선생님이 옮겨 둔 자리와 다르면 그 자리로 (보드가 연 창이라 스스로 옮길 수 있음). 보드 화면을 벗어났으면 덮개를 걷음
+  const p = JSON.parse(localStorage.getItem("teacher-win"));
+  if (p && opener && (Math.abs(screenX - p.x) > 30 || Math.abs(screenY - p.y) > 30)) { resizeTo(p.w, p.h); moveTo(p.x, p.y); }
+  setTimeout(() => { if (location.hash === "#cover" && opener && !onBoard()) { history.replaceState(null, "", location.pathname); coverSync(); } }, 300);
+} catch (e) {}
 load(); showTab(tab);
 setInterval(() => { if (tab === "cal" && !document.querySelector(".pop-wrap, .addmenu")) calDraw(); }, 60000); // 날이 바뀌면 오늘 표시
 </script>
