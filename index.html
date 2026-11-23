@@ -781,7 +781,7 @@
   .rw-tile .nm { display: block; font-size: 22px; line-height: 1.2; color: var(--ink); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 62%; }
   .rw-pt { position: absolute; left: 8px; bottom: 34px; display: flex; align-items: center; gap: 3px; padding: 1px 9px 1px 6px; border-radius: 7px; background: var(--accent); color: #fff; font-size: 16px; font-weight: 700; }
   .rw-tile.sel .rw-pt { bottom: 34px; }
-  .rw-av { position: absolute; right: 6px; bottom: 5px; width: 55px; height: 72px; border-radius: 8px; overflow: hidden; } .rw-av svg { width: 100%; height: 100%; display: block; }
+  .rw-av { position: absolute; right: 6px; bottom: 5px; width: 55px; height: 72px; border-radius: 8px; overflow: hidden; } .rw-av svg { width: 100%; height: 100%; display: block; } .rw-av img { width: 100%; height: 100%; object-fit: contain; object-position: bottom; display: block; }
   .rw-av:hover { transform: scale(1.06); }
   .rw-av { cursor: pointer; } .rw-menu h5 { margin: 8px 8px 2px; font-size: 13px; font-weight: 600; color: #3b82f6; } .rw-menu h5.neg { color: #e8590c; }
   .rw-menu .own .m { background: #fff; color: #e8590c; border: 1.5px solid #ffc078; }
@@ -3871,7 +3871,7 @@ function rwDraw() {
     const s = rwSt(p), t = h("div", { class: "rw-tile" + (rwPick.has(p) ? " sel" : ""), "data-p": p, title: `${seName(p)} · ${s.pt} ${unit}` },
       h("div", { class: "n" }, seNum(p) || ""), h("span", { class: "nm" }, seName(p)),
       h("span", { class: "rw-pt" }, String(s.pt)));
-    const av = h("div", { class: "rw-av", title: "누르면 칭찬해요·노력해요" }); av.innerHTML = avSvg(s.av, rwWear(p, s.wear));
+    const av = h("div", { class: "rw-av", title: "누르면 칭찬해요·노력해요" }); av.append(h("img", { src: rwWear(p, {}).hair === "h-short" ? "av-boy.png" : "av-girl.png", alt: "", draggable: "false" })); // shortcut: 남녀 그림 한 장씩, 꾸미기(avSvg)는 카드에 안 보임. 아바타 그림이 정해지면 다시 연결
     av.onclick = e => { e.stopPropagation(); rwMenu(av, 0, [p]); }; // 아바타: 이 학생에게 점수. 빈 곳: 고르기
     t.append(av); t.oncontextmenu = e => { e.preventDefault(); rwAvatar(p); };
     t.onclick = () => { rwPick.has(p) ? rwPick.delete(p) : rwPick.add(p); t.classList.toggle("sel", rwPick.has(p)); rwCount(); };
