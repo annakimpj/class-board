@@ -239,6 +239,9 @@
   .tool-card .pick-opt button { border-radius: 6px; padding: 3px 8px; font-size: 13px; color: var(--muted); }
   .pick-opt .groups { display: flex; align-items: center; gap: 4px; color: var(--muted); }
   .pick-opt .groups input { width: 40px; font: inherit; padding: 2px 4px; border: 1.5px solid var(--line); border-radius: 6px; text-align: center; }
+  .tool-card .tt-edit { align-self: center; font-size: 12px; padding: 2px 10px; margin-top: 2px; }
+  .tt-card-ed .tt-grid { grid-template-columns: 44px repeat(5, minmax(0, 1fr)); }
+  .tt-card-ed select { font: 14px "GangwonEdu", "Malgun Gothic", "Noto Emoji", sans-serif; border: 1.5px solid var(--line); border-radius: 8px; padding: 3px 6px; }
   .tt-split { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .tt-left, .tt-right { display: flex; flex-direction: column; gap: 6px; min-height: 0; min-width: 0; }
   .tt-right { border-left: 2px dashed var(--line); padding-left: 12px; }
@@ -1236,6 +1239,7 @@
         <div class="tt-big" id="tt-main" aria-live="polite"></div>
         <p class="sub" id="tt-time"></p>
         <div class="tt-today" id="tt-today"></div>
+        <button class="tt-edit" onclick="ttCardEdit()" title="교시별 과목을 여기서 바로 고쳐요">✎ 시간표 고치기</button>
       </div>
       <div class="tt-right">
         <div class="tt-box">
@@ -3376,16 +3380,23 @@ async function readHwpTables(buf) {
     let data = stream(sec);
     if (compressed) data = await inflate(data);
     const v = new DataView(data.buffer, data.byteOffset, data.length);
-    let rows = null, cell = null;
+    let cell = null;
+    const open = []; // 열려 있는 표들 { rows, lvl }. 표 안의 표(예: 칸 안 점수표)가 끝나면 바깥 표로 돌아가야 함
     for (let i = 0; i + 4 <= data.length;) {
       const h = v.getUint32(i, true); i += 4;
-      const tag = h & 0x3FF; let size = h >>> 20;
+      const tag = h & 0x3FF, lvl = (h >>> 10) & 0x3FF; let size = h >>> 20;
       if (size === 0xFFF) { size = v.getUint32(i, true); i += 4; }
       const body = data.subarray(i, i + size); i += size;
-      if (tag === 77) { rows = []; tables.push(rows); cell = null; }                        // 표 시작
-      else if (tag === 72 && rows && body.length >= 12) {                                    // 칸 시작
-        const row = body[10] | body[11] << 8;
+      if (tag === 77) {                                                                      // 표 시작 (칸 기록과 같은 깊이)
+        while (open.length && open.at(-1).lvl >= lvl) open.pop();
+        const rows = []; tables.push(rows); open.push({ rows, lvl }); cell = null;
+      } else if (tag === 72 && body.length >= 12) {                                          // 칸 시작
+        while (open.length && open.at(-1).lvl > lvl) open.pop();                            // 안쪽 표가 끝났으면 바깥 표로
+        const t = open.at(-1);
+        if (!t || t.lvl !== lvl) { cell = null; continue; }                                  // 표 칸이 아닌 글상자 등
+        const rows = t.rows, row = body[10] | body[11] << 8;
         (rows[row] = rows[row] || []).push(cell = [""]);
+        cell.col = body[8] | body[9] << 8;                                                   // 칸의 가로 위치 (원고지 모양 표를 읽을 때 씀)
       } else if (tag === 67) {                                                               // 문단 글자
         let t = "";
         for (let j = 0; j + 1 < body.length;) {
@@ -3398,7 +3409,8 @@ async function readHwpTables(buf) {
       }
     }
   }
-  return Object.assign(tables.flatMap(rows => rows.filter(Boolean).map(r => r.map(c => c[0]))), { paras });
+  return Object.assign(tables.flatMap(rows => rows.filter(Boolean).map(r => r.map(c => c[0]))), { paras,
+    grids: tables.map(rows => rows.filter(Boolean).map(r => r.map(c => ({ t: c[0], c: c.col })))) }); // grids: 표마다 줄마다 { 글자, 가로 위치 }
 }
 
 // 카드: 지금 몇 교시 / 다음 시간 / 오늘 시간표
@@ -3408,7 +3420,7 @@ function ttRender() {
   const time = document.getElementById("tt-time"), today = document.getElementById("tt-today");
   const has = tt.weeks.length || tt.base.some(d => d.some(Boolean));
   today.replaceChildren();
-  if (!has) { when.textContent = ""; main.innerHTML = "<small>설정 → 시간표에서<br>시간표를 넣어 주세요</small>"; time.textContent = ""; return; }
+  if (!has) { when.textContent = ""; main.innerHTML = "<small>'✎ 시간표 고치기'로 넣거나<br>설정 → 시간표에서 가져와요</small>"; time.textContent = ""; return; }
   const plan = dayPlan(now) || [];
   const slots = tt.bells.slice(0, NP).map((b, i) => ({ i, subj: plan[i] || "", s: toMin(b.s), e: toMin(b.e), b })).filter(x => x.subj && !x.b.off);
   const cur = slots.find(x => x.s <= mins && mins < x.e);
@@ -3462,17 +3474,32 @@ function ttEditor() {
     }
     return l;
   }));
-  const sel = document.getElementById("tt-week"), keep = sel.value;
+  ttWeeks(document.getElementById("tt-week"));
+  ttGrid();
+}
+function ttWeeks(sel) { // 주 고르기 목록: 매주 기본 + 가져온 주들. 처음엔 이번 주
+  const keep = sel.value;
   sel.replaceChildren(new Option("매주 기본 시간표", "base"),
     ...tt.weeks.map((w, i) => new Option(`${w.start.slice(5).replace("-", "/")} ~ ${w.end.slice(5).replace("-", "/")}`, i)));
   const thisWeek = tt.weeks.findIndex(w => monday(w.start) === monday(iso(new Date())));
   sel.value = [...sel.options].some(o => o.value === keep) ? keep : (thisWeek >= 0 ? thisWeek : "base");
-  ttGrid();
 }
-function ttGrid() {
-  const v = document.getElementById("tt-week").value;
+function ttCardEdit() { // 카드에서 바로: 주를 고르고 월~금 × 교시 칸을 고침 (설정 → 시간표와 같은 표)
+  const c = document.querySelector('.card[data-card="timetable"]');
+  c.querySelector(".card-ed")?.remove();
+  const sel = h("select", { "aria-label": "고칠 주" }), grid = h("div", { class: "tt-grid" });
+  ttWeeks(sel);
+  sel.onchange = () => ttGrid(sel, grid);
+  const ed = h("div", { class: "card-ed tt-card-ed" },
+    h("div", { class: "card-ed-head" }, h("b", {}, "✎ 시간표 고치기"), sel, h("button", { class: "main", onclick: () => { ed.remove(); ttRender(); } }, "완료")),
+    h("div", { class: "card-ed-list" }, grid,
+      h("p", { class: "sub" }, "칸을 고치면 바로 저장돼요. '매주 기본 시간표'는 연간시간표에 없는 주에 쓰여요. 교시 시간은 설정 → 시간표에서 바꿔요.")));
+  c.append(ed); ttGrid(sel, grid);
+  grid.querySelector("input")?.focus();
+}
+function ttGrid(sel = document.getElementById("tt-week"), grid = document.getElementById("tt-grid")) {
+  const v = sel.value;
   const days = v === "base" ? tt.base : tt.weeks[v].days;
-  const grid = document.getElementById("tt-grid");
   const cells = [document.createElement("b"), ...DAYS.map(d => { const b = document.createElement("b"); b.textContent = d; return b; })];
   for (let i = 0; i < NP; i++) {
     if (tt.bells[i].off) continue; // 미사용 교시는 고치기 표에서도 뺌
@@ -3486,7 +3513,7 @@ function ttGrid() {
   }
   grid.replaceChildren(...cells);
 }
-document.getElementById("tt-week").addEventListener("change", ttGrid);
+document.getElementById("tt-week").addEventListener("change", () => ttGrid());
 async function ttClearWeeks() {
   if (!await seConfirm(document.getElementById("panel"), "가져온 연간시간표를 모두 지울까요? 시정표와 매주 기본 시간표는 남아요.", "지우기")) return;
   tt.weeks = []; ttSave(); ttEditor();
@@ -4285,6 +4312,40 @@ function parseDictation(lines) {
   return sets.filter(s => s.grades.length);
 }
 
+// 원고지 모양 급수표(한 칸에 한 글자, 두 급이 나란히): "[1급] 제목" 칸의 가로 위치부터 다음 급 머리 전까지가 그 급의 자리.
+// 아래 줄마다 그 자리 첫 칸은 번호, 나머지 칸은 글자(빈칸은 띄어쓰기). "…2학기" 칸이 나오면 그 학기로 묶음
+function parseDictationGrid(grids) {
+  const sets = [];
+  let set = null;
+  const HEAD = /^\[?\s*(\d+)\s*(?:급|회)\s*\]?\s*([\s\S]*)$/;
+  for (const rows of grids) {
+    let blocks = null;
+    for (const r of rows) {
+      const sem = r.filter(x => !HEAD.test(x.t.trim())).map(x => x.t.replace(/\s+/g, "")).join(" ").match(/([12])학기/); // 급 머리가 아닌 칸에서
+      if (sem && (!set || set.name !== sem[1] + "학기")) { set = { name: sem[1] + "학기", grades: [] }; sets.push(set); }
+      const heads = r.filter(x => HEAD.test(x.t.trim()));
+      if (heads.length) {
+        if (!set) { set = { name: "", grades: [] }; sets.push(set); }
+        blocks = heads.sort((a, b) => a.c - b.c).map(x => {
+          const g = { title: x.t.trim().match(HEAD)[2].replace(/\s+/g, " ").trim(), items: [] };
+          set.grades.push(g);
+          return { c: x.c, g };
+        });
+        continue;
+      }
+      if (!blocks) continue;
+      blocks.forEach((b, i) => {
+        const end = i + 1 < blocks.length ? blocks[i + 1].c : Infinity;
+        const cells = r.filter(x => x.c >= b.c && x.c < end).sort((a, z) => a.c - z.c);
+        if (!cells.length || !/^\d+$/.test(cells[0].t.trim())) return;
+        const txt = cells.slice(1).map(x => x.t.trim() || " ").join("").replace(/([,!?])(?=[가-힣])/g, "$1 ").replace(/\s+/g, " ").trim(); // 쉼표 뒤 칸을 안 비운 경우 띄움
+        if (txt) b.g.items.push(txt);
+      });
+    }
+  }
+  sets.forEach(x => x.grades = x.grades.filter(g => g.items.length));
+  return sets.filter(x => x.grades.length);
+}
 // ───── 받아쓰기: 급수표(.hwp · .pdf · 붙여넣기)를 넣으면 학기·급별로 정리. 번호를 누르면 읽어 주기, 📋 정답, 🖨︎ 시험지
 // dict = { sets: [{ name: "1학기", grades: [{ title, items: [문장] }] }], s(학기), g(급), voice, rate, gap }
 // 문장에 '윗잇몸{위딘몸}'처럼 쓰면 화면엔 윗잇몸, 읽기는 위딘몸. '/'는 읽을 때 잠깐 쉼
@@ -4423,8 +4484,10 @@ function dcFiles() { // 급수표 넣기: 파일(.hwp·.pdf) 또는 글 붙여�
     msg.textContent = "읽는 중…";
     try {
       const buf = await f.arrayBuffer();
-      const lines = /\.pdf$/i.test(f.name) ? (await readPdfRows(buf)).map(r => r.join(" ")) : /\.txt$/i.test(f.name) ? new TextDecoder().decode(buf).split(/\r?\n/) : (await readHwpTables(buf)).paras;
-      msg.textContent = f.name; show(parseDictation(lines), true);
+      const lines = /\.pdf$/i.test(f.name) ? (await readPdfRows(buf)).map(r => r.join(" ")) : /\.txt$/i.test(f.name) ? new TextDecoder().decode(buf).split(/\r?\n/) : await readHwpTables(buf);
+      let sets = parseDictation(lines.paras || lines);
+      if (!sets.length && lines.grids) sets = parseDictationGrid(lines.grids); // 한 칸에 한 글자인 원고지 모양 급수표
+      msg.textContent = f.name; show(sets, true);
     } catch (e) { msg.textContent = "이 파일은 읽지 못했어요. 파일을 열어 글을 복사해 붙여넣어 주세요."; show([], false); }
   };
   area.oninput = () => { msg.textContent = ""; show(parseDictation(area.value.split(/\r?\n/)), !!area.value.trim()); };
