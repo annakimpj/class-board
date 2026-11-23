@@ -7,6 +7,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#fbf3e4">
 <link rel="icon" href="icon-192.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Emoji:wght@500&display=swap"><!-- 아이콘을 흑백으로: 컬러 이모지 대신 한 가지 색 이모지 글꼴 -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap"><!-- 급훈 명조 -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@2.39.3/dist/galmuri.css"><!-- 순서 뽑기 핀볼 픽셀 글꼴 -->
 <style>
@@ -16,7 +17,7 @@
   /* 색은 두 가지만: 진갈색 글씨 + 주황 포인트 */
   :root { --bg: #fbf3e4; --card: #fffaf1; --ink: #2b1d14; --accent: #e2643f; --line: #ead8bf; --muted: #a8927c; }
   html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); overflow: hidden;
-               font-family: "Wanted Sans", "Malgun Gothic", sans-serif; }
+               font-family: "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; }
   body { display: grid; grid-template-rows: auto 1fr auto; grid-template-columns: minmax(0, 1fr); }
   header { overflow: hidden; }
   p { margin: 0; word-break: keep-all; }
@@ -30,7 +31,7 @@
   /* 아래쪽 바: 필요할 때 띄우는 도구 (사진·타이머·뽑기·화이트보드) */
   .dock { display: flex; justify-content: safe center; align-items: center; gap: 8px; padding: 6px 12px 10px; overflow-x: auto; }
   .dock button { display: flex; flex-direction: column; align-items: center; gap: 1px; min-width: 64px; padding: 5px 10px 4px; cursor: pointer;
-                 font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--accent); background: var(--card);
+                 font: 14px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; color: var(--accent); background: var(--card);
                  border: 1.5px solid var(--line); border-bottom: 4px solid var(--accent); border-radius: 14px; flex: none; }
   .dock button i { font-style: normal; font-size: 22px; line-height: 1.1; }
   .dock button:hover { transform: translateY(-2px); }
@@ -68,7 +69,7 @@
   .pop-body { display: block !important; }
   .pop-board { position: fixed !important; inset: env(titlebar-area-height, 0px) 0 0 0; margin: 0 !important; }
   .pop-title { position: fixed; top: 0; left: 0; right: 0; height: env(titlebar-area-height, 0px); overflow: hidden; display: flex; align-items: center; padding-left: 14px;
-               font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--muted); app-region: drag; -webkit-app-region: drag; user-select: none; }
+               font: 14px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; color: var(--muted); app-region: drag; -webkit-app-region: drag; user-select: none; }
   .pop-board > .card { inset: 10px !important; width: auto !important; height: auto !important; min-width: 0 !important; min-height: 0 !important; }
   .pop-board .label { cursor: default; }
   .pop-board .card-grip { display: none; }
@@ -91,13 +92,13 @@
   [data-card="whiteboard"] { --accent: #4a5568; --card: #f7f8fa; --line: #d9dee6; }
 
   /* 화이트보드 */
-  .wb-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; }
+  .wb-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; font: 13px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; }
   .wb-tools button { font: inherit; border: 1.5px solid var(--line); background: #fff; color: var(--ink); border-radius: 8px; padding: 0 8px; cursor: pointer;
                      height: 26px; display: inline-flex; align-items: center; gap: 4px; line-height: 1; } /* 이모지·글자 버튼 높이를 맞춤 */
   .wb-tools svg { width: 14px; height: 14px; flex: none; }
   /* 화이트보드 1~4: 제목 줄 오른쪽 (⛶ ✕ 왼쪽) */
   .wb-card > .wb-pages { position: absolute; top: 7px; right: 120px; display: flex; gap: 3px; z-index: 1; }
-  .wb-pages button { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; width: 24px; height: 24px; padding: 0; border: 0; border-radius: 6px; cursor: pointer;
+  .wb-pages button { font: 13px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; width: 24px; height: 24px; padding: 0; border: 0; border-radius: 6px; cursor: pointer;
                      background: rgba(255, 255, 255, .18); color: #fff; }
   .wb-pages button.on { background: #fff; color: var(--accent); }
   .wb-tools button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
@@ -107,7 +108,7 @@
   .wb-pop:popover-open { display: flex; flex-direction: column; gap: 8px; }
   .wb-pop.text .wb-widths, .wb-pop:not(.text) .wb-sizes { display: none; } /* 펜: 색·굵기, Tt: 글씨 크기·색 */
   .wb-sizes { display: flex; gap: 4px; }
-  .wb-sizes button { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid #d9dee6; background: #fff; border-radius: 6px; padding: 2px 10px; cursor: pointer; }
+  .wb-sizes button { font: 13px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; border: 1.5px solid #d9dee6; background: #fff; border-radius: 6px; padding: 2px 10px; cursor: pointer; }
   .wb-tools .wb-tt svg { width: 16px; height: 16px; }
   .wb-colors, .wb-widths { display: flex; gap: 6px; align-items: center; }
   .wb-colors button { width: 24px; height: 24px; padding: 0; border: 2px solid #fff; border-radius: 50%; cursor: pointer; box-shadow: 0 0 0 1px #d9dee6; }
@@ -124,7 +125,7 @@
   .wb-obj { position: absolute; box-sizing: border-box; touch-action: none; }
   .wb[data-tool="select"] .wb-obj { cursor: move; }
   .wb-obj img { width: 100%; height: 100%; object-fit: fill; display: block; pointer-events: none; user-select: none; }
-  .wb-obj.text { font-family: "Wanted Sans", "Malgun Gothic", sans-serif; line-height: 1.3; padding: 2px 4px;
+  .wb-obj.text { font-family: "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; line-height: 1.3; padding: 2px 4px;
                  white-space: pre-wrap; word-break: keep-all; overflow-wrap: anywhere; outline: none; color: var(--ink); }
   .wb-obj.sel { outline: 2px dashed #3a78d4; outline-offset: 1px; }
   /* ✕·크기 점은 모서리에 반쯤 걸치게: 짧은 글상자에서도 둘이 안 겹치고, 보드 가장자리에서도 반은 보임 */
@@ -139,7 +140,7 @@
   .wb-marquee { position: absolute; z-index: 3; border: 1.5px solid #3a78d4; background: rgba(58, 120, 212, .1); pointer-events: none; } /* 끌어서 여러 개 고르기 */
   .wb-selacts { position: absolute; left: -2px; bottom: 100%; margin-bottom: 4px; display: flex; gap: 4px; }
   .wb-selbox.low .wb-selacts { bottom: auto; top: 100%; margin: 4px 0 0; }
-  .wb-selacts button { pointer-events: auto; font: 12px "Wanted Sans", "Malgun Gothic", sans-serif; border: 0; border-radius: 6px; background: #3a78d4; color: #fff; padding: 3px 8px; cursor: pointer; }
+  .wb-selacts button { pointer-events: auto; font: 12px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; border: 0; border-radius: 6px; background: #3a78d4; color: #fff; padding: 3px 8px; cursor: pointer; }
   .wb-selacts button[hidden], .wb-selbox .grip[hidden] { display: none; }
   .wb-selacts .wb-tt { display: grid; place-items: center; padding: 2px 6px; }
   .wb-selacts .wb-tt svg { width: 15px; height: 15px; }
@@ -154,8 +155,8 @@
   #rule { outline: none; border-radius: 4px; padding: 0 2px; cursor: text; }
   #rule[contenteditable="true"] { background: #fff; box-shadow: 0 0 0 2px var(--line); }
   .hint { font-size: 13px; color: var(--muted); cursor: default; }
-  .tools { flex: none; display: flex; align-items: center; gap: 8px; font-family: "Wanted Sans", "Malgun Gothic", sans-serif; }
-  .tools .tp-hist { white-space: nowrap; flex: none; width: auto; height: auto; font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); background: #fff; color: var(--muted); border-radius: 999px; padding: 4px 10px; cursor: pointer; }
+  .tools { flex: none; display: flex; align-items: center; gap: 8px; font-family: "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; }
+  .tools .tp-hist { white-space: nowrap; flex: none; width: auto; height: auto; font: 13px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; border: 1.5px solid var(--line); background: #fff; color: var(--muted); border-radius: 999px; padding: 4px 10px; cursor: pointer; }
   .tools button { width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid var(--line); background: #fff; color: var(--accent);
                   font-size: 22px; line-height: 1; cursor: pointer; padding: 0; }
   .tools button:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
@@ -172,12 +173,12 @@
 
   /* 메모·우리반 규칙: 바로 써서 저장 */
   .card textarea { flex: 1; min-height: 0; resize: none; border: 0; outline: none; background: none; padding: 0; color: var(--ink);
-                   font: 26px/1.5 "Wanted Sans", "Malgun Gothic", sans-serif; }
+                   font: 26px/1.5 "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; }
   .card textarea::placeholder { color: #cdbba6; }
   .card textarea:focus, .card .note:focus { background: #fff; border-radius: 8px; box-shadow: 0 0 0 6px #fff; }
   /* 메모·규칙·준비물: 몇 글자만 색을 바꿀 수 있게 textarea 대신 contenteditable */
   .card .note { flex: 1; min-height: 0; overflow-y: auto; outline: none; color: var(--ink); white-space: pre-wrap; word-break: keep-all;
-                font: 26px/1.5 "Wanted Sans", "Malgun Gothic", sans-serif; }
+                font: 26px/1.5 "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; }
   /* 급훈: 교실 칠판 위에 거는 액자. 나무 테두리 + 한지 + 또렷한 명조, 카드 크기에 맞춰 글씨 크기 조절 */
   .motto-frame { flex: 1; min-height: 0; display: grid; padding: 10px; border-radius: 6px; background: linear-gradient(135deg, #8a5a2b, #5e3b1a 50%, #8a5a2b);
                  box-shadow: inset 0 0 0 2px #c9975c, 0 4px 10px rgba(60, 40, 20, .25); container-type: size; }
@@ -186,7 +187,7 @@
            font: 800 clamp(22px, min(12cqw, 50cqh), 120px)/1.2 "Nanum Myeongjo", "Wanted Sans", serif; color: #1d1410; letter-spacing: .06em; }
   .note-pop .weights { grid-column: span 5; display: flex; gap: 4px; }
   .note-pop .weights button.on { background: var(--ink); border-color: var(--ink); color: #fff; }
-  .motto:empty::before { content: "여기를 눌러 급훈을 쓰세요"; font: 16px "Wanted Sans", "Malgun Gothic", sans-serif; color: #b9a98f; }
+  .motto:empty::before { content: "여기를 눌러 급훈을 쓰세요"; font: 16px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; color: #b9a98f; }
   /* 우리반 규칙: 한 줄씩 번호 붙은 목록. Enter를 치면 다음 번호 */
   .rule-list { margin: 0; padding: 0; list-style: none; counter-reset: rule; }
   .rule-list li { counter-increment: rule; padding: .25em 0; border-bottom: 2px dashed var(--line); line-height: 1.4; }
@@ -196,14 +197,14 @@
   /* 사진 */
   .photo-box { flex: 1; min-height: 0; position: relative; border-radius: 10px; overflow: hidden; display: grid; place-items: center; }
   .photo-box img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; } /* 칸 크기와 상관없이 사진 전체가 보이게 */
-  .photo-box .empty, .photo-tools button { font: 15px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px dashed var(--line); background: #fff;
+  .photo-box .empty, .photo-tools button { font: 15px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; border: 1.5px dashed var(--line); background: #fff;
                     color: var(--muted); border-radius: 999px; padding: 6px 16px; cursor: pointer; }
   .photo-tools { position: absolute; right: 6px; bottom: 6px; display: flex; gap: 6px; opacity: 0; transition: opacity .15s; }
   .photo-box:hover .photo-tools, .photo-tools:focus-within { opacity: 1; }
   .photo-tools button { border-style: solid; padding: 3px 12px; font-size: 13px; }
   .ph-empty { display: flex; flex-direction: column; align-items: center; gap: 8px; } .ph-empty[hidden] { display: none; }
-  .ph-hint { font: 12px "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--muted); }
-  .ph-empty .ph-shelf { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; border: 0; background: none; color: var(--muted); cursor: pointer; }
+  .ph-hint { font: 12px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; color: var(--muted); }
+  .ph-empty .ph-shelf { font: 13px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; border: 0; background: none; color: var(--muted); cursor: pointer; }
 
   /* 타이머·사람 뽑기 */
   .tool-card { container-type: size; align-items: stretch; } /* 카드 너비·높이 둘 다에 맞춰 글자 크기 조절 */
@@ -212,11 +213,11 @@
   .tool-card .bar { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
   .tool-card .bar i { display: block; height: 100%; width: 100%; background: var(--accent); transition: width .3s linear; }
   .tool-card .chips, .tool-card .acts { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
-  .tool-card button { font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); background: #fff; color: var(--ink);
+  .tool-card button { font: 14px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; border: 1.5px solid var(--line); background: #fff; color: var(--ink);
                       border-radius: 999px; padding: 4px 10px; cursor: pointer; }
   .tool-card button:hover { border-color: var(--accent); }
   .tool-card button.main { background: var(--accent); border-color: var(--accent); color: #fff; padding: 6px 18px; font-size: 15px; }
-  .tool-card .sub { text-align: center; font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--muted); min-height: 1.2em; }
+  .tool-card .sub { text-align: center; font: 13px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; color: var(--muted); min-height: 1.2em; }
   .tool-card textarea { font-size: 18px; border: 1.5px solid var(--line); border-radius: 8px; background: #fff; padding: 6px 8px; }
   .modes { display: flex; gap: 3px; justify-content: center; }
   .tool-card .modes button { font-size: 12px; padding: 2px 8px; color: var(--muted); }
@@ -225,7 +226,7 @@
   .pick-edit > [data-edit] { flex: 1; min-height: 0; }
   .pick-edit .check-acts { flex-basis: 100%; display: flex; gap: 4px; }
   .tool-card .check-acts button { font-size: 12px; padding: 2px 8px; border-radius: 6px; }
-  .pick-edit .checks { overflow-y: auto; font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; display: flex; flex-wrap: wrap; align-content: flex-start; gap: 4px; }
+  .pick-edit .checks { overflow-y: auto; font: 14px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; display: flex; flex-wrap: wrap; align-content: flex-start; gap: 4px; }
   .pick-edit .checks label { border: 1.5px solid var(--line); border-radius: 999px; padding: 1px 8px; background: #fff; cursor: pointer; }
   .pick-edit .checks label:has(:checked) { background: var(--accent); border-color: var(--accent); color: #fff; }
   .pick-edit .checks input { position: absolute; opacity: 0; width: 0; height: 0; }
@@ -234,7 +235,7 @@
   /* 뽑기 아래 줄: 가운데 뽑기·처음부터, 오른쪽 끝에 방법마다 정할 것(작은 네모 버튼) */
   .pick-bottom { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 6px; }
   .pick-bottom .acts { grid-column: 2; }
-  .pick-opt { grid-column: 3; justify-self: end; display: flex; font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; }
+  .pick-opt { grid-column: 3; justify-self: end; display: flex; font: 13px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; }
   .tool-card .pick-opt button { border-radius: 6px; padding: 3px 8px; font-size: 13px; color: var(--muted); }
   .pick-opt .groups { display: flex; align-items: center; gap: 4px; color: var(--muted); }
   .pick-opt .groups input { width: 40px; font: inherit; padding: 2px 4px; border: 1.5px solid var(--line); border-radius: 6px; text-align: center; }
@@ -250,7 +251,7 @@
   .tt-box + .tt-box { border-top: 2px dashed var(--line); padding-top: 6px; }
   .tt-box .note-tools { right: 4px; bottom: 0; }
   .card:hover .note-tools, .card:focus-within .note-tools { opacity: 1; }
-  .note-tools button, .note-pop button { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); background: #fff; color: var(--ink);
+  .note-tools button, .note-pop button { font: 13px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; border: 1.5px solid var(--line); background: #fff; color: var(--ink);
                        border-radius: 6px; padding: 0 6px; height: 22px; cursor: pointer; }
   .note-tools .tt { width: 28px; height: 24px; padding: 0; display: grid; place-items: center; }
   .note-tools .tt svg { width: 18px; height: 18px; }
@@ -259,7 +260,7 @@
               box-shadow: 0 8px 24px rgba(60, 40, 20, .18); }
   .note-pop:popover-open { display: grid; grid-template-columns: repeat(5, auto); gap: 6px; align-items: center; }
   .note-pop .size { grid-column: span 5; display: flex; gap: 4px; }
-  .note-pop small { grid-column: span 5; font: 12px "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--muted); }
+  .note-pop small { grid-column: span 5; font: 12px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; color: var(--muted); }
   .note-pop .dot { width: 22px; height: 22px; padding: 0; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px var(--line); }
   .note-pop .dot.on { box-shadow: 0 0 0 2px var(--ink); }
   .tt-big { flex: 1; display: grid; place-items: center; text-align: center; font-size: clamp(18px, min(7cqw, 14cqh), 42px); line-height: 1.2; min-height: 0; }
@@ -278,7 +279,7 @@
   .time-in { width: 5.2ch; font: inherit; text-align: center; border: 0; border-bottom: 3px solid var(--accent); background: none; color: var(--ink); outline: none; padding: 0; }
   .tm-tabs { display: flex; justify-content: center; gap: 4px; }
   .tm-pane { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 10px; } .tm-pane[hidden] { display: none; }
-  .sw-laps { margin: 0; padding: 0 0 0 2.2em; max-height: 30%; overflow-y: auto; font: 15px "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--muted); columns: 2; }
+  .sw-laps { margin: 0; padding: 0 0 0 2.2em; max-height: 30%; overflow-y: auto; font: 15px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; color: var(--muted); columns: 2; }
   .sw-laps:empty { display: none; } .sw-laps li::marker { color: var(--accent); }
   #timer-card.done { animation: blink .5s 6 alternate; }
   #timer-card.done .big { color: var(--accent); }
@@ -326,7 +327,7 @@
 
   /* ───── 자리배치 ───── 학급 보드와 같은 색·글꼴·버튼 모양을 그대로 씀 */
   .seat-bar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-  .seat-bar select { font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink); padding: 3px 8px; max-width: 45%; }
+  .seat-bar select { font: 14px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; border: 1.5px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink); padding: 3px 8px; max-width: 45%; }
   .seat-tools { margin-left: auto; display: grid; grid-template-columns: auto auto auto 1fr; gap: 4px; align-items: stretch; }
   .tool-card .seat-tools button { border-radius: 8px; padding: 4px 9px; border-color: var(--accent); justify-content: center; } /* 아이콘 버튼도 늘 같은 테두리 */
   .tool-card .seat-bar .seat-star { color: var(--muted); }
@@ -368,9 +369,9 @@
   /* 선생님 모드 화면 */
   #seat-ed:not([hidden]) { --accent: #2f7d8c; --line: #c3e1e6; position: fixed; inset: 0; margin: auto; z-index: 7; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 10px; background: var(--bg); color: var(--ink);
        width: min(1100px, calc(100vw - 32px)); height: min(760px, calc(100vh - 32px)); box-sizing: border-box; border-radius: 16px; box-shadow: 0 0 0 100vmax rgba(40, 30, 20, .35), 0 12px 40px rgba(40, 30, 20, .25);
-       font: 15px/1.5 "Wanted Sans", "Malgun Gothic", sans-serif; padding: 14px 16px; app-region: no-drag; -webkit-app-region: no-drag; }
+       font: 15px/1.5 "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; padding: 14px 16px; app-region: no-drag; -webkit-app-region: no-drag; }
   .teach-cover { position: fixed; inset: 0; z-index: 50; display: grid; place-content: center; gap: 6px; text-align: center; background: var(--bg); color: var(--muted); user-select: none;
-                 font: 16px/1.5 "Wanted Sans", "Malgun Gothic", sans-serif; }
+                 font: 16px/1.5 "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; }
   .teach-cover b { font-weight: normal; font-size: 28px; color: var(--ink); }
   #seat-ed:not([hidden]) { top: env(titlebar-area-height, 0px); height: min(760px, calc(100vh - 32px - env(titlebar-area-height, 0px))); } /* 설치한 앱의 맨 위 창 버튼 줄에 안 가리게 */
   #seat-ed button, #seat-ed select { font: inherit; font-size: 14px; border: 1px solid #e6dccf; background: #fff; color: var(--ink); border-radius: 8px; padding: 4px 10px; cursor: pointer; }
@@ -405,12 +406,12 @@
   .tour { position: fixed; inset: 0; z-index: 60; cursor: pointer; } .tour.dim { background: rgba(30, 20, 10, .45); }
   .tour-hole { position: fixed; border: 3px solid #ffd43b; border-radius: 10px; box-shadow: 0 0 0 9999px rgba(30, 20, 10, .45); pointer-events: none; transition: all .25s; }
   .tour-tip { position: fixed; box-sizing: border-box; background: #fff; color: var(--ink); border-radius: 14px; padding: 14px 16px 12px; box-shadow: 0 12px 40px rgba(0, 0, 0, .3);
-              font: 15px/1.5 "Wanted Sans", "Malgun Gothic", sans-serif; transition: top .25s, left .25s; }
+              font: 15px/1.5 "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; transition: top .25s, left .25s; }
   .tour-tip small { color: var(--muted); font-size: 12px; }
   .tour-tip { cursor: default; } .tour-any { display: block; margin-top: 8px; text-align: right; }
   .tour-tip p { margin: 4px 0 12px; font-size: 16px; word-break: keep-all; }
   .tour-tip .row { display: flex; gap: 6px; align-items: center; } .tour-tip .sp { flex: 1; }
-  .tour-tip button { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid #e6dccf; background: #fff; color: var(--ink); border-radius: 999px; padding: 4px 14px; cursor: pointer; }
+  .tour-tip button { font: 13px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; border: 1.5px solid #e6dccf; background: #fff; color: var(--ink); border-radius: 999px; padding: 4px 14px; cursor: pointer; }
   .tour-tip button.main { background: #e2643f; border-color: #e2643f; color: #fff; }
   .tour-tip button.go { display: block; margin: -4px 0 12px; background: #2f7d8c; border-color: #2f7d8c; color: #fff; padding: 6px 18px; font-size: 14px; }
   .tour-tip button.lite { border: 0; color: var(--muted); padding: 4px 6px; }
@@ -419,17 +420,17 @@
   #seat-ed.hp-measure { left: -10000px !important; right: auto !important; visibility: hidden; }
   .board > .card.hp-measure { position: fixed !important; left: -10000px !important; top: 0 !important; width: 460px !important; height: 380px !important; visibility: hidden; } /* 사용 방법 그림용으로 잠깐 */
   .hp-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 14px; }
-  .hp-tabs button { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid #e6dccf; background: #fff; color: var(--ink); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
+  .hp-tabs button { font: 13px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; border: 1.5px solid #e6dccf; background: #fff; color: var(--ink); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
   .hp-tabs button.on { background: var(--ink); border-color: var(--ink); color: #fff; }
   .hp-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; } .hp-head h3 { margin: 0; font-weight: normal; font-size: 20px; flex: 1; }
-  #panel .hp-head button { font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; border: 0; border-radius: 999px; padding: 7px 18px; background: #2f7d8c; color: #fff; cursor: pointer; } /* 설정 창 단추보다 눈에 띄게 */
+  #panel .hp-head button { font: 14px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; border: 0; border-radius: 999px; padding: 7px 18px; background: #2f7d8c; color: #fff; cursor: pointer; } /* 설정 창 단추보다 눈에 띄게 */
   .hp-sub { display: flex; gap: 4px; margin-top: 10px; }
   #panel .hp-sub button { font-size: 13px; border-radius: 999px; padding: 3px 12px; } #panel .hp-sub button.on { background: #2f7d8c; border-color: #2f7d8c; color: #fff; }
   .hp-steps { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; margin-top: 12px; }
   .hp-step { background: #fff; border-radius: 14px; padding: 10px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 1px 2px rgba(60, 40, 20, .05), 0 6px 18px rgba(60, 40, 20, .06); }
   .hp-step p { margin: 0; display: flex; gap: 8px; align-items: flex-start; font-size: 14px; line-height: 1.5; word-break: keep-all; }
   .hp-n { flex: none; width: 24px; height: 24px; border-radius: 50%; background: #ffd43b; display: grid; place-items: center; font-size: 13px; font-weight: 700; }
-  .hp-shot { height: 120px; border-radius: 10px; background: var(--bg) radial-gradient(#e2d9ca 1px, transparent 1.2px) 0 0 / 14px 14px; display: flex; align-items: center; justify-content: center; overflow: hidden; } /* flex: 넘치는 그림도 가운데 기준으로 줄어듦 */
+  .hp-shot { height: 120px; border-radius: 10px; background: linear-gradient(90deg, #ebe5da 1px, transparent 1px) 0 0 / 14px 14px, linear-gradient(#ebe5da 1px, transparent 1px) 0 0 / 14px 14px var(--bg); display: flex; align-items: center; justify-content: center; overflow: hidden; } /* flex: 넘치는 그림도 가운데 기준으로 줄어듦 */
   .hp-wrap { display: flex; gap: 4px; align-items: center; flex: none; box-sizing: border-box; padding: 6px; border-radius: 10px; box-shadow: 0 0 0 3px #ffd43b; background: var(--card, #fff); transform-origin: center; pointer-events: none; }
   .hp-wrap * { white-space: nowrap; }
   .hp-shot > .hp-wrap { box-shadow: 0 0 0 3px #ffd43b !important; }
@@ -437,13 +438,13 @@
   .hp-shot > .hp-wrap.hp-bar { background: var(--accent); border: 0; padding: 6px; overflow: visible; min-width: 0; min-height: 0; } /* 제목 줄 버튼은 흰색이라 카드 색 위에 */
   .hp-wrap { justify-content: center; }
   .hp-wrap .hp-target { position: relative !important; inset: auto !important; transform: none !important; margin: 0 !important; opacity: 1 !important; flex: none; }
-  .hp-ed button { font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1px solid #e6dccf; background: #fff; color: var(--ink); border-radius: 8px; padding: 4px 10px; }
+  .hp-ed button { font: 14px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; border: 1px solid #e6dccf; background: #fff; color: var(--ink); border-radius: 8px; padding: 4px 10px; }
   .hp-ed button.main { background: #2f7d8c; border-color: #2f7d8c; color: #fff; }
   .hp-auto { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 18px; font-size: 13px; color: var(--muted); align-items: center; }
   .hp-auto button { font: inherit; border: 1.5px solid #e6dccf; background: #fff; border-radius: 999px; padding: 3px 12px; cursor: pointer; }
   /* 카드·창 안에 뜨는 확인 창 */
   .se-ask { position: absolute; inset: 0; z-index: 30; display: grid; place-items: center; background: rgba(250, 247, 242, .72); border-radius: inherit; app-region: no-drag; -webkit-app-region: no-drag; }
-  .se-ask > div { max-width: min(400px, 90%); background: #fff; border-radius: 14px; padding: 18px 20px 14px; box-shadow: 0 10px 34px rgba(60, 40, 20, .22); font: 15px/1.55 "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--ink); }
+  .se-ask > div { max-width: min(400px, 90%); background: #fff; border-radius: 14px; padding: 18px 20px 14px; box-shadow: 0 10px 34px rgba(60, 40, 20, .22); font: 15px/1.55 "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; color: var(--ink); }
   .se-ask p { margin: 0 0 14px; white-space: pre-line; max-height: 50vh; overflow-y: auto; }
   .se-ask .row { display: flex; justify-content: flex-end; gap: 6px; }
   .se-ask button { font: inherit; font-size: 14px; border: 1.5px solid var(--line, #c3e1e6); background: #fff; color: var(--ink); border-radius: 999px; padding: 5px 16px; cursor: pointer; }
@@ -470,7 +471,7 @@
   .sf-grp { display: flex; flex-direction: column; gap: 6px; } .se-form .sf-grp button:disabled { opacity: .4; cursor: default; }
   /* 자리 대형 만들기 창: 왼쪽은 고르기, 오른쪽은 미리보기 (직접 그리기는 미리보기 칸을 눌러 고름) */
   .se-form { margin: auto; padding: 18px 22px; border: 0; border-radius: 16px; background: #fff; color: var(--ink); box-shadow: 0 12px 40px rgba(60, 40, 20, .2);
-             font: 15px/1.5 "Wanted Sans", "Malgun Gothic", sans-serif; width: min(820px, 94vw); max-height: 92vh; overflow-y: auto; box-sizing: border-box;
+             font: 15px/1.5 "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; width: min(820px, 94vw); max-height: 92vh; overflow-y: auto; box-sizing: border-box;
              app-region: no-drag; -webkit-app-region: no-drag; --accent: #2f7d8c; --line: #c3e1e6; }
   .se-form:popover-open { display: flex; flex-direction: column; gap: 14px; }
   .se-form button, .se-form input:not([type]) { font: inherit; font-size: 14px; border: 1.5px solid var(--line); background: #fff; color: var(--ink); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
@@ -485,7 +486,7 @@
   .sf-chk { display: flex; align-items: center; gap: 6px; font-size: 14px; margin-left: 74px; }
   #sf-pair.off { opacity: .35; pointer-events: none; } /* 혼자 앉는 분단은 짝꿍이 없음 */
   .se-form .sum { margin: 0; color: var(--muted); font-size: 13px; }
-  .sf-prev { position: relative; min-height: 260px; border-radius: 12px; background: var(--bg) radial-gradient(#e2d9ca 1px, transparent 1.2px) 0 0 / 14px 14px; overflow: hidden; }
+  .sf-prev { position: relative; min-height: 260px; border-radius: 12px; background: linear-gradient(90deg, #ebe5da 1px, transparent 1px) 0 0 / 14px 14px, linear-gradient(#ebe5da 1px, transparent 1px) 0 0 / 14px 14px var(--bg); overflow: hidden; }
   .sf-prev .pb { position: absolute; background: #3c6e4f; border-radius: 3px; }
   .sf-prev .pd { position: absolute; box-sizing: border-box; background: #fff; border: 1.5px solid var(--line); border-radius: 3px; }
   .sf-prev .pg { position: absolute; background: rgba(47, 125, 140, .08); border-radius: 8px; }
@@ -498,7 +499,7 @@
      왼쪽에 조용한 메뉴, 오른쪽에 흰 종이 한 장. 강조색은 고른 메뉴 표시에만 */
   #panel:not([hidden]) { position: fixed; inset: 0; z-index: 6; box-sizing: border-box; display: grid; grid-template-columns: 168px minmax(0, 1fr);
          grid-template-rows: auto minmax(0, 1fr); gap: 0 20px; padding: calc(env(titlebar-area-height, 0px) + 16px) 24px 20px; background: var(--bg); color: var(--ink);
-         font: 16px/1.6 "Wanted Sans", "Malgun Gothic", sans-serif; app-region: no-drag; -webkit-app-region: no-drag; }
+         font: 16px/1.6 "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; app-region: no-drag; -webkit-app-region: no-drag; }
   #panel .panel-title { grid-column: 1 / -1; margin: 0 0 14px 12px; font-size: 20px; }
   #panel nav { display: flex; flex-direction: column; gap: 2px; }
   #panel button:not(:where(.hp-wrap *)) { font: inherit; font-size: 15px; border: 1px solid #e6dccf; background: #fff; color: var(--ink); border-radius: 8px; padding: 5px 12px; cursor: pointer; }
@@ -527,7 +528,7 @@
   .roster-table td { padding: 2px 4px; position: relative; }
   .fill-handle { position: absolute; right: 0; bottom: 0; width: 9px; height: 9px; background: var(--accent); border: 2px solid #fff; cursor: crosshair; touch-action: none; }
   .roster-table tr.filling .n { background: #fff4ea; border-color: var(--accent); }
-  .roster-table input { font: 17px "Wanted Sans", "Malgun Gothic", sans-serif; padding: 4px 8px; border: 1.5px solid var(--line); border-radius: 8px; background: #fff; box-sizing: border-box; }
+  .roster-table input { font: 17px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; padding: 4px 8px; border: 1.5px solid var(--line); border-radius: 8px; background: #fff; box-sizing: border-box; }
   .roster-table .n { width: 64px; text-align: center; }
   .roster-table .nm { width: min(240px, 50vw); }
   #panel .roster-table button { border: 0; background: none; color: var(--muted); padding: 2px 8px; }
@@ -548,13 +549,14 @@
   .tt-bells > div { display: flex; align-items: center; gap: 4px; white-space: nowrap; }
   .tt-bells .off { margin-left: 6px; color: var(--muted); font-size: 14px; }
   .tt-bells input:disabled { opacity: .45; }
-  .tt-bells input, .tt-grid input { font: 15px "Wanted Sans", "Malgun Gothic", sans-serif; padding: 2px 4px; border: 1.5px solid var(--line); border-radius: 6px; background: #fff; }
+  .tt-bells input, .tt-grid input { font: 15px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; padding: 2px 4px; border: 1.5px solid var(--line); border-radius: 6px; background: #fff; }
   .tt-grid { display: grid; grid-template-columns: 52px repeat(5, minmax(0, 72px)); gap: 4px; margin-top: 8px; }
   .tt-grid b { font-weight: normal; text-align: center; color: var(--muted); }
   .tt-grid input { width: 100%; box-sizing: border-box; text-align: center; }
   /* ───── 디자인: 흰 카드 + 색 제목줄 + 그림자, 점무늬 바탕, 떠 있는 아래쪽 바 ───── */
   :root { --bg: #f4f0e8; }
-  html, body { background: var(--bg) radial-gradient(#e2d9ca 1px, transparent 1.2px) center / 18px 18px; } /* 가운데 맞춤: 양옆·위아래 여백이 같게 */
+  /* 옅은 격자: 18px 칸, 화면 가운데 기준. 카드를 끌면 가장자리가 이 선에 맞춰짐 (아래 snapX·snapY와 같은 간격·기준) */
+  html, body { background: linear-gradient(90deg, #ebe5da 1px, transparent 1px), linear-gradient(#ebe5da 1px, transparent 1px) var(--bg); background-size: 18px 18px; background-position: center; }
   [data-card="topic"]     { --accent: #f2643d; --card: #fff5f0; --line: #f6d6c8; }
   [data-card="timetable"] { --accent: #0f9db5; --card: #ecf8fb; --line: #c4e7ee; }
   [data-card^="memo"]     { --accent: #e09a00; --card: #fff8e1; --line: #f3e1a8; }
@@ -573,7 +575,7 @@
   .card { background: #fff; border: 0; border-radius: 18px; padding: 0 16px 14px; overflow: hidden;
           box-shadow: 0 1px 2px rgba(60, 40, 20, .06), 0 10px 28px rgba(60, 40, 20, .09); }
   .topic-card { border-left: 0; padding-left: 16px; }
-  .card > .label { margin: 0 -16px 6px; padding: 9px 44px 9px 16px; background: var(--accent); color: #fff; font-size: 18px; }
+  .card > .label { margin: 0 -16px 6px; padding: 9px 44px 9px 16px; background: color-mix(in srgb, var(--accent) 58%, #7a736b); color: #fff; /* 카드 색에 회색을 섞어 차분하게 */ font-size: 18px; }
   .card-grip { background: linear-gradient(135deg, transparent 50%, #c9c2b8 50% 58%, transparent 58% 68%, #c9c2b8 68% 76%, transparent 76%); }
   footer { border-top-color: var(--line); }
   .wb { border-color: var(--line); background: #fff; }
@@ -587,9 +589,9 @@
           padding: 6px 8px; gap: 4px; background: #fff; border-radius: 20px; width: max-content; max-width: calc(100% - 24px);
           box-shadow: 0 1px 2px rgba(60, 40, 20, .06), 0 10px 28px rgba(60, 40, 20, .12); }
   .dock button { border: 0; background: none; color: var(--ink); min-width: 70px; padding: 4px 8px; border-radius: 14px; font-size: 14px; }
-  .dock button i { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 12px; background: var(--card); font-size: 21px; }
+  .dock button i { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 10px; background: #f3f0ea; color: var(--ink); font-size: 20px; }
   .dock button:hover { transform: none; background: var(--card); }
-  .dock button:hover i { background: var(--accent); }
+  .dock button:hover i { background: var(--accent); color: #fff; }
 
   /* 학급 온도계 */
   [data-card="thermo"] { --accent: #e03131; --card: #fff0f0; --line: #f5c6c6; }
@@ -602,12 +604,12 @@
   /* 눈금: 왼쪽에 10도마다 숫자, 5도마다 짧은 금. 보상을 정한 온도는 오른쪽에 🎁 */
   .th-tick { position: absolute; right: calc(100% + 3px); width: 6px; height: 0; border-top: 1.5px solid #c9a0a0; }
   .th-tick.major { width: 10px; }
-  .th-tick span { position: absolute; right: 13px; top: -.65em; font: 11px/1.2 "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--muted); }
+  .th-tick span { position: absolute; right: 13px; top: -.65em; font: 11px/1.2 "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; color: var(--muted); }
   .th-gift { position: absolute; right: calc(100% + 40px); transform: translateY(50%); font-size: 12px; line-height: 1; filter: grayscale(1); opacity: .55; transition: filter .3s, opacity .3s; }
   .th-gift.got { filter: none; opacity: 1; }
   .th-info { display: flex; flex-direction: column; justify-content: center; gap: 6px; min-width: 0; }
   .tool-card .th-info .big { flex: none; color: var(--accent); font-size: clamp(28px, min(18cqw, 20cqh), 72px); }
-  .th-goal { display: flex; align-items: center; justify-content: center; gap: 4px; font: 15px/1.4 "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--ink); text-align: center; }
+  .th-goal { display: flex; align-items: center; justify-content: center; gap: 4px; font: 15px/1.4 "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; color: var(--ink); text-align: center; }
   .th-goal span b { color: var(--accent); }
   .tool-card .th-pen { width: 32px; padding: 0; display: inline-grid; place-items: center; color: var(--accent); }
   .th-pen svg { width: 16px; height: 16px; }
@@ -616,7 +618,7 @@
   @keyframes th-pop { 50% { transform: scale(1.25); } }
   /* 보상 정하기: 카드 안을 덮는 목록 */
   .card-ed { position: absolute; inset: 0; z-index: 4; display: flex; flex-direction: column; gap: 8px; padding: 12px 16px; background: #fff; border-radius: inherit;
-           font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--ink); }
+           font: 14px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; color: var(--ink); }
   .zoomy > :not(.label, .card-down, .card-grip, .card-ed, .se-ask, .rw-cheer) { zoom: var(--z, 1); }
   .card-ed-head { display: flex; align-items: center; gap: 8px; } .card-ed-head > :first-child { margin-right: auto; } /* 제목은 왼쪽, 버튼은 모두 오른쪽 */
   .card-ed-list { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
@@ -635,15 +637,15 @@
   .tool-card .qr-item .x { border: 0; background: none; color: var(--muted); padding: 4px 8px; }
   .card-ed .none { color: var(--muted); font-size: 13px; }
   .se-ask .se-ask-in { display: block; width: 100%; box-sizing: border-box; font: inherit; border: 1.5px solid var(--line, #c3e1e6); border-radius: 8px; padding: 6px 10px; margin: 0 0 12px; }
-  .qr-in { font: 15px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); border-radius: 8px; padding: 6px 10px; background: #fff; color: var(--ink); min-width: 0; }
+  .qr-in { font: 15px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; border: 1.5px solid var(--line); border-radius: 8px; padding: 6px 10px; background: #fff; color: var(--ink); min-width: 0; }
   .qr-box { flex: 1; min-height: 0; position: relative; display: grid; place-items: center; }
   .qr-cv { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); image-rendering: pixelated; }
   /* 알림장: 칠판에 분필로 쓴 것처럼 */
   [data-card="notice"] { --accent: #2b6a4a; --card: #e6f2ec; --line: #bcdccb; }
   .chalk { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 4px; position: relative; padding: 12px 18px; border-radius: 8px;
            background: #2f5d46 radial-gradient(circle at 30% 20%, rgba(255, 255, 255, .07), transparent 60%); border: 8px solid #8a5a2b; box-shadow: inset 0 0 18px rgba(0, 0, 0, .35); }
-  .chalk-date { font: 24px/1.3 "Wanted Sans", "Malgun Gothic", sans-serif; color: #ffe8a3; }
-  .card .chalk .note { color: #fdfdf6; font: 34px/1.45 "Wanted Sans", "Malgun Gothic", sans-serif; } /* 뒤에 앉은 학생도 보이게 */
+  .chalk-date { font: 24px/1.3 "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; color: #ffe8a3; }
+  .card .chalk .note { color: #fdfdf6; font: 34px/1.45 "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; } /* 뒤에 앉은 학생도 보이게 */
   .card .chalk .note:focus { background: rgba(255, 255, 255, .06); box-shadow: none; border-radius: 6px; }
   .chalk-list li { border-bottom-color: rgba(255, 255, 255, .22); }
   .chalk-list li::before { display: none; } /* 한 내용을 두 줄로 쓸 수도 있어서 번호는 첫 줄의 '1.'만. 나머지는 직접 씀 */
@@ -653,51 +655,51 @@
   .nt-foot { position: relative; }
   .nt-foot .nt-hist { flex: 1; min-width: 0; text-align: left; }
   .nt-menu { position: absolute; left: 0; right: 0; bottom: calc(100% + 4px); z-index: 5; max-height: 240px; overflow-y: auto; padding: 4px; background: #fff; border: 1.5px solid var(--line); border-radius: 10px;
-             box-shadow: 0 8px 24px rgba(60, 40, 20, .18); font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; }
+             box-shadow: 0 8px 24px rgba(60, 40, 20, .18); font: 13px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; }
   .nt-row { display: flex; align-items: center; border-radius: 6px; } .nt-row:hover { background: var(--card); }
   .nt-foot .nt-menu button { border: 0; background: none; border-radius: 6px; }
   .nt-foot .nt-menu .pick { flex: 1; text-align: left; padding: 6px 8px; }
   .nt-foot .nt-menu .x { color: var(--muted); padding: 4px 8px; } .nt-foot .nt-menu .x:hover { color: #e2643f; }
-  .nt-foot button, .nt-foot select { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); background: #fff; color: var(--ink); border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  .nt-foot button, .nt-foot select { font: 13px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; border: 1.5px solid var(--line); background: #fff; color: var(--ink); border-radius: 8px; padding: 4px 10px; cursor: pointer; }
   .nt-foot button:disabled { opacity: .35; cursor: default; }
   .nt-foot .main { background: var(--accent); border-color: var(--accent); color: #fff; }
   /* 시계 */
   [data-card="clock"] { --accent: #1c7ed6; --card: #e7f5ff; --line: #c5dff5; }
-  .ck-box { flex: 1; min-height: 0; display: grid; place-items: center; text-align: center; font-family: "Wanted Sans", "Malgun Gothic", sans-serif; }
+  .ck-box { flex: 1; min-height: 0; display: grid; place-items: center; text-align: center; font-family: "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; }
   .ck-digital b { display: block; font-weight: 600; font-size: clamp(28px, min(24cqw, 30cqh), 120px); line-height: 1.05; font-variant-numeric: tabular-nums; color: var(--ink); }
   .ck-digital span, .ck-date { font-size: clamp(13px, 6cqw, 22px); color: var(--muted); }
   .ck-analog { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
   .ck-analog svg { width: min(100%, 56cqh); height: auto; flex: none; }
   .ck-modes { position: absolute; top: 46px; right: 8px; z-index: 2; display: flex; gap: 2px; align-items: center; }
   .tool-card .ck-modes button { font-size: 11px; padding: 2px 7px; border-radius: 6px; line-height: 1.4; } .tool-card .ck-modes .ck-al { margin-left: 4px; }
-  .ck-next { margin: 0; text-align: center; font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .ck-next:empty { display: none; }
+  .ck-next { margin: 0; text-align: center; font: 13px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .ck-next:empty { display: none; }
   /* 알람: 설정 메뉴 + 울릴 때 크게 */
-  .al-menu { inset: auto; margin: 0; width: 330px; max-height: 70vh; overflow-y: auto; padding: 10px; border: 0; border-radius: 14px; background: #fff; color: #333; box-shadow: 0 10px 34px rgba(30, 40, 70, .25); font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; }
+  .al-menu { inset: auto; margin: 0; width: 330px; max-height: 70vh; overflow-y: auto; padding: 10px; border: 0; border-radius: 14px; background: #fff; color: #333; box-shadow: 0 10px 34px rgba(30, 40, 70, .25); font: 14px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; }
   .al-menu h4 { margin: 0 0 8px; font-weight: normal; font-size: 13px; color: #868e96; }
   .al-row { border: 1.5px solid #e9ecef; border-radius: 10px; padding: 8px; margin-bottom: 6px; } .al-row.off { opacity: .5; }
   .al-row .l1 { display: flex; gap: 6px; align-items: center; }
-  .al-row input[type=time] { font: 18px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid #dee2e6; border-radius: 6px; padding: 1px 4px; }
+  .al-row input[type=time] { font: 18px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; border: 1.5px solid #dee2e6; border-radius: 6px; padding: 1px 4px; }
   .al-row input.lb { flex: 1; min-width: 0; font: inherit; border: 1.5px solid #dee2e6; border-radius: 6px; padding: 3px 6px; }
   .al-row .days { display: flex; gap: 3px; margin-top: 6px; align-items: center; } .al-row .days small { color: #868e96; margin-left: 4px; }
   .al-menu button { font: inherit; border: 1.5px solid #dee2e6; background: #fff; border-radius: 8px; padding: 3px 8px; cursor: pointer; color: inherit; }
   .al-menu .days button { width: 28px; height: 28px; padding: 0; border-radius: 50%; } .al-menu .days button.on { background: #e8590c; border-color: #e8590c; color: #fff; }
   .al-menu .x { border: 0; color: #adb5bd; } .al-menu .add { width: 100%; margin-top: 2px; }
-  .al-pop { position: fixed; inset: 0; z-index: 2147483000; display: grid; place-items: center; background: rgba(20, 24, 40, .45); font-family: "Wanted Sans", "Malgun Gothic", sans-serif; animation: rw-in .2s; }
+  .al-pop { position: fixed; inset: 0; z-index: 2147483000; display: grid; place-items: center; background: rgba(20, 24, 40, .45); font-family: "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; animation: rw-in .2s; }
   .al-box { background: #fff; border-radius: 28px; padding: 28px 56px 24px; text-align: center; box-shadow: 0 20px 60px rgba(0, 0, 0, .3); max-width: 90vw; }
   .al-box .big { font-size: 80px; line-height: 1.2; animation: al-ring .5s ease-in-out infinite; } @keyframes al-ring { 25% { transform: rotate(-14deg); } 75% { transform: rotate(14deg); } }
   .al-box b { display: block; font-size: 44px; color: #e8590c; } .al-box p { margin: 6px 0 18px; font-size: 40px; color: #222; overflow-wrap: anywhere; }
-  .al-box button { font: 20px "Wanted Sans", "Malgun Gothic", sans-serif; padding: 8px 34px; border-radius: 999px; border: 0; background: #e8590c; color: #fff; cursor: pointer; }
+  .al-box button { font: 20px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; padding: 8px 34px; border-radius: 999px; border: 0; background: #e8590c; color: #fff; cursor: pointer; }
   /* 체크표: 세로 명단 × 여러 열 */
   [data-card="check"] { --accent: #0ca678; --card: #e6fcf5; --line: #b2f2bb; }
   .ch-top, .ch-foot { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; } .ch-top .sp, .ch-foot .sp { flex: 1; }
   .tool-card .ch-pick { font-size: 18px; padding: 3px 12px; border-radius: 10px; max-width: 70%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .tool-card .ch-top .ch-new, .tool-card .ch-foot button { font-size: 13px; padding: 4px 10px; border-radius: 8px; } .tool-card .ch-foot .ch-minus { border-color: #ffc078; color: #d9480f; }
-  .ch-wrap { flex: 1; min-height: 0; overflow: auto; font-family: "Wanted Sans", "Malgun Gothic", sans-serif; }
+  .ch-wrap { flex: 1; min-height: 0; overflow: auto; font-family: "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; }
   .ch-empty { margin: 24px 0; text-align: center; color: var(--muted); font-size: 14px; }
   .ch-tb { border-collapse: separate; border-spacing: 0; font-size: 20px; color: var(--ink); user-select: none; }
   .ch-tb th, .ch-tb td { border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); padding: 4px 8px; text-align: center; background: #fff; }
   .ch-tb thead th { position: sticky; top: 0; z-index: 2; background: var(--card); font-size: 13px; font-weight: normal; color: var(--muted); white-space: nowrap; }
-  .ch-tb thead th input { width: 64px; font: 15px "Wanted Sans", "Malgun Gothic", sans-serif; text-align: center; border: 1.5px solid var(--line); border-radius: 6px; padding: 2px 3px; background: #fff; color: var(--ink); }
+  .ch-tb thead th input { width: 64px; font: 15px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; text-align: center; border: 1.5px solid var(--line); border-radius: 6px; padding: 2px 3px; background: #fff; color: var(--ink); }
   .ch-tb thead th .x { border: 0; background: none; color: #adb5bd; padding: 0 0 0 2px; font-size: 12px; cursor: pointer; }
   .tool-card .ch-tb thead .add button { width: 26px; height: 26px; padding: 0; border-radius: 50%; font-size: 16px; }
   .ch-tb .n { position: sticky; left: 0; z-index: 1; width: 36px; color: var(--muted); font-size: 14px; } .ch-tb .nm { position: sticky; left: 36px; z-index: 1; text-align: left; white-space: nowrap; min-width: 80px; } .ch-tb tbody .nm { font-size: 22px; }
@@ -706,13 +708,13 @@
   .ch-tb tfoot td { position: sticky; bottom: 0; background: #fff8f0; color: #e8590c; font-size: 15px; border-top: 1.5px solid var(--line); } .ch-tb tfoot .nm { font-size: 13px; }
   /* 토너먼트: 라운드마다 한 줄, 이긴 사람을 누르면 다음 라운드로 */
   [data-card="bracket"] { --accent: #f08c00; --card: #fff4e6; --line: #ffd8a8; }
-  .br-view { position: relative; flex: 1; min-height: 0; overflow: auto; display: flex; gap: 40px; justify-content: safe center; padding: 2px 2px 6px; font-family: "Wanted Sans", "Malgun Gothic", sans-serif; user-select: none; }
+  .br-view { position: relative; flex: 1; min-height: 0; overflow: auto; display: flex; gap: 40px; justify-content: safe center; padding: 2px 2px 6px; font-family: "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; user-select: none; }
   .br-view:empty::before { content: "'👥 참가자 고르기'에서 학생을 고르면 대진표를 짜 줘요."; margin: auto; color: var(--muted); font-size: 14px; }
   .br-col { flex: none; display: flex; flex-direction: column; min-width: 150px; max-width: 240px; } .br-col h5 { margin: 0 0 6px; text-align: center; font-size: 18px; font-weight: 600; color: var(--accent); }
   .br-final { display: flex; flex-direction: column; gap: 10px; align-items: stretch; } .br-col.mid { min-width: 170px; }
   .br-ms { flex: 1; display: flex; flex-direction: column; justify-content: space-around; gap: 8px; }
   .br-m { position: relative; z-index: 1; background: #fff; border: 2px solid var(--line); border-radius: 10px; overflow: hidden; }
-  .br-p { display: block; width: 100%; border: 0; background: none; text-align: center; padding: 5px 12px; font: 22px "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--ink); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .br-p { display: block; width: 100%; border: 0; background: none; text-align: center; padding: 5px 12px; font: 22px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; color: var(--ink); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .tool-card .br-m .br-p { border: 0; border-radius: 0; margin: 0; background: #fff; font-size: 22px; line-height: 1.3; text-align: center; } .tool-card .br-m .br-p + .br-p { border-top: 1.5px solid var(--line); }
   .tool-card .br-m .br-p:hover:not(:disabled) { background: var(--card); } .tool-card .br-m .br-p.win { background: var(--accent); }
   .br-p.win { background: var(--accent); color: #fff; font-weight: 700; }
@@ -723,14 +725,14 @@
   .br-champ { flex: none; text-align: center; padding: 14px; border-radius: 16px; background: var(--card); border: 2px dashed var(--line); }
   .br-champ .cup { font-size: 46px; line-height: 1.2; } .br-champ b { display: block; font-size: 24px; color: var(--ink); } .br-champ small { color: var(--muted); font-size: 13px; }
   .br-champ.done { border-style: solid; border-color: var(--accent); animation: rw-pop .7s ease-out; } .br-champ.done .cup { animation: al-ring .6s ease-in-out 3; }
-  .br-foot { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; } .br-foot .sp { flex: 1; } .br-info { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--muted); }
+  .br-foot { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; } .br-foot .sp { flex: 1; } .br-info { font: 13px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; color: var(--muted); }
   .tool-card .br-foot button { font-size: 13px; padding: 4px 10px; border-radius: 8px; }
   .br-pick { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 5px; }
   .tool-card .br-pick button { font-size: 16px; padding: 5px 6px; border-radius: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .tool-card .br-pick button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
   .br-pick-bar { display: flex; gap: 4px; align-items: center; margin-bottom: 8px; font-size: 13px; color: var(--muted); } .tool-card .br-pick-bar button { font-size: 13px; padding: 2px 10px; border-radius: 8px; }
   /* 우리반 점수: 학생 카드(번호·이름·점수·픽셀 아바타), 고르기, 칭찬해요·노력해요 */
   [data-card="reward"] { --accent: #3b82f6; --card: #eef4ff; --line: #cddcfb; }
-  .kid-code { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin: 4px 0 8px; font-size: 14px; } .kid-code b { font: 700 40px "Wanted Sans", "Malgun Gothic", sans-serif; letter-spacing: .12em; color: var(--accent); }
+  .kid-code { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin: 4px 0 8px; font-size: 14px; } .kid-code b { font: 700 40px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; letter-spacing: .12em; color: var(--accent); }
   .kid-url { display: flex; gap: 6px; align-items: center; font-size: 14px; margin-bottom: 8px; } .kid-url code { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; background: #fff; border: 1.5px solid var(--line); border-radius: 6px; padding: 4px 8px; }
   .kid-tb { width: 100%; border-collapse: collapse; font-size: 18px; } .kid-tb th { font-size: 13px; font-weight: normal; color: var(--muted); text-align: left; }
   .kid-tb td, .kid-tb th { border-bottom: 1px solid var(--line); padding: 4px 6px; } .kid-tb .none { color: var(--muted); font-size: 14px; } .kid-status { margin: 0 0 8px; } .kid-code button { font-size: 13px; padding: 2px 10px; border-radius: 8px; }
@@ -738,15 +740,15 @@
   .tool-card .kid-tb button, .tool-card .kid-acts button, .tool-card .kid-url button { font-size: 13px; padding: 2px 10px; border-radius: 8px; } .kid-acts { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
   .rw-bar, .rw-foot { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; } .rw-bar .sp, .rw-foot .sp { flex: 1; }
   .tool-card .rw-bar button { font-size: 13px; padding: 3px 10px; border-radius: 8px; }
-  .rw-count { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--muted); }
+  .rw-count { font: 13px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; color: var(--muted); }
   .tool-card .rw-foot button { font-size: 14px; padding: 5px 12px; border-radius: 999px; }
   .tool-card .rw-foot .rw-minus { border-color: #ffc078; color: #d9480f; }
   .rw-sel { display: flex; gap: 3px; } .tool-card .rw-foot .rw-sel button { font-size: 13px; padding: 4px 9px; border-radius: 8px; }
-  .rw-log { font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; } .rw-log .day { margin: 10px 0 4px; font-size: 13px; color: var(--muted); }
+  .rw-log { font: 14px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; } .rw-log .day { margin: 10px 0 4px; font-size: 13px; color: var(--muted); }
   .rw-log .row { display: grid; grid-template-columns: 64px minmax(0, 1fr) minmax(0, 1.2fr) auto; gap: 8px; align-items: baseline; padding: 5px 4px; border-bottom: 1px solid var(--line); }
   .rw-log .tm { color: var(--muted); font-size: 12px; } .rw-log .who { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .rw-log .why { color: var(--muted); }
   .rw-log b { color: #3b82f6; white-space: nowrap; } .rw-log b.neg { color: #e8590c; }
-  .card-ed-head select { font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); border-radius: 8px; padding: 3px 6px; }
+  .card-ed-head select { font: 14px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; border: 1.5px solid var(--line); border-radius: 8px; padding: 3px 6px; }
   .rw-prices { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 4px 8px; font-size: 15px; }
   .rw-prices label i { flex: none; width: 36px; height: 47px; background: #f8f9fa; border-radius: 6px; overflow: hidden; } .rw-prices label i svg { display: block; width: 100%; height: 100%; }
   .rw-tabs.sm { margin: 0 0 8px; } .tool-card .rw-tabs.sm button { font-size: 13px; padding: 2px 10px; }
@@ -756,12 +758,12 @@
   .card-ed-list .rw-prices label > span { flex: 1; width: auto; text-align: left; color: var(--ink); } .rw-prices label input[type=number] { flex: none; width: 52px; }
   .rw-prices input[type=checkbox] { flex: none; width: 16px; height: 16px; margin: 0; }
   .rw-prices .g { grid-column: 1 / -1; margin-top: 6px; font-size: 13px; color: var(--muted); }
-  .rw-prices input[type=number], .rw-bulk input { font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); border-radius: 6px; padding: 2px 6px; }
+  .rw-prices input[type=number], .rw-bulk input { font: 14px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; border: 1.5px solid var(--line); border-radius: 6px; padding: 2px 6px; }
   .rw-bulk { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 14px; margin-bottom: 6px; } .rw-bulk input { width: 60px; flex: none; }
   .tool-card .rw-bulk button, .tool-card .rw-add { font-size: 13px; padding: 3px 10px; border-radius: 8px; } .tool-card .rw-add { margin-top: 6px; }
   .rw-grid { flex: 1; min-height: 0; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); grid-auto-rows: max-content; gap: 8px; padding: 2px; user-select: none; }
-  .rw-grid:empty::before { content: "설정 → 명단에 학생을 넣으면 학생 카드가 생겨요."; grid-column: 1 / -1; margin: auto; padding: 20px 0; color: var(--muted); font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; }
-  .rw-tile { position: relative; height: 120px; background: #fff; border-radius: 14px; border: 2px solid transparent; box-shadow: 0 1px 3px rgba(40, 60, 100, .1); padding: 8px 10px; cursor: pointer; font-family: "Wanted Sans", "Malgun Gothic", sans-serif; overflow: hidden; }
+  .rw-grid:empty::before { content: "설정 → 명단에 학생을 넣으면 학생 카드가 생겨요."; grid-column: 1 / -1; margin: auto; padding: 20px 0; color: var(--muted); font: 14px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; }
+  .rw-tile { position: relative; height: 120px; background: #fff; border-radius: 14px; border: 2px solid transparent; box-shadow: 0 1px 3px rgba(40, 60, 100, .1); padding: 8px 10px; cursor: pointer; font-family: "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; overflow: hidden; }
   .rw-tile.sel { border-color: var(--accent); background: #f3f7ff; }
   .rw-tile.sel::after { content: "✓"; position: absolute; left: 8px; bottom: 8px; width: 20px; height: 20px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 13px; display: grid; place-items: center; }
   .rw-tile .n { font-size: 15px; color: var(--muted); line-height: 1; }
@@ -773,18 +775,18 @@
   .rw-av { cursor: pointer; } .rw-menu h5 { margin: 8px 8px 2px; font-size: 13px; font-weight: 600; color: #3b82f6; } .rw-menu h5.neg { color: #e8590c; }
   .rw-menu .own .m { background: #fff; color: #e8590c; border: 1.5px solid #ffc078; }
   .rw-tile.bump { animation: rw-bump .5s ease-out; } @keyframes rw-bump { 30% { transform: scale(1.06); } }
-  .rw-cheer { position: absolute; inset: 0; z-index: 25; display: grid; place-content: center; gap: 6px; text-align: center; background: rgba(255, 255, 255, .82); border-radius: inherit; font-family: "Wanted Sans", "Malgun Gothic", sans-serif; animation: rw-in .25s ease-out; cursor: pointer; }
+  .rw-cheer { position: absolute; inset: 0; z-index: 25; display: grid; place-content: center; gap: 6px; text-align: center; background: rgba(255, 255, 255, .82); border-radius: inherit; font-family: "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; animation: rw-in .25s ease-out; cursor: pointer; }
   .rw-cheer b { font-size: clamp(34px, 9cqw, 64px); color: var(--accent); } .rw-cheer.try b { color: #e8590c; }
   .rw-cheer .big { font-size: clamp(40px, min(12cqw, 16cqh), 84px); line-height: 1.3; padding: 4px 10px; overflow: visible; animation: rw-pop .6s ease-out; } .rw-cheer span { font-size: 20px; color: var(--ink); } .rw-cheer small { font-size: 16px; color: var(--muted); }
   @keyframes rw-in { from { opacity: 0; } } @keyframes rw-pop { 0% { transform: scale(.3) rotate(-20deg); } 60% { transform: scale(1.2) rotate(6deg); } }
-  .rw-menu { inset: auto; margin: 0; width: 260px; max-height: 60vh; overflow-y: auto; padding: 6px; border: 0; border-radius: 14px; background: #fff; color: var(--ink); box-shadow: 0 10px 34px rgba(30, 40, 70, .25); font: 15px "Wanted Sans", "Malgun Gothic", sans-serif; }
+  .rw-menu { inset: auto; margin: 0; width: 260px; max-height: 60vh; overflow-y: auto; padding: 6px; border: 0; border-radius: 14px; background: #fff; color: var(--ink); box-shadow: 0 10px 34px rgba(30, 40, 70, .25); font: 15px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; }
   .rw-menu h4 { margin: 4px 6px 6px; font-weight: normal; font-size: 13px; color: var(--muted); }
   .rw-menu button { display: flex; width: 100%; align-items: center; gap: 8px; border: 0; background: none; padding: 8px; border-radius: 8px; font: inherit; color: inherit; cursor: pointer; text-align: left; }
   .rw-menu button:hover { background: #eef4ff; } .rw-menu button span { flex: 1; } .rw-menu button b { font-weight: 700; color: #3b82f6; } .rw-menu button b.neg { color: #e8590c; }
   .rw-menu .own { display: flex; gap: 6px; padding: 6px 8px; align-items: center; white-space: nowrap; } .rw-menu .own input { width: 52px; font: inherit; border: 1.5px solid #cddcfb; border-radius: 6px; padding: 3px 6px; }
   .rw-menu .own button { width: auto; background: #3b82f6; color: #fff; padding: 4px 12px; }
   .rw-rows { display: grid; grid-template-columns: minmax(0, 1fr) 70px auto; gap: 4px 6px; align-items: center; font-size: 13px; }
-  .rw-rows input, .rw-unit { font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); border-radius: 6px; padding: 3px 6px; min-width: 0; }
+  .rw-rows input, .rw-unit { font: 14px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; border: 1.5px solid var(--line); border-radius: 6px; padding: 3px 6px; min-width: 0; }
   .rw-rows .h { color: var(--muted); } .rw-h { margin: 12px 0 6px; font-size: 13px; color: var(--muted); }
   .rw-shop { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 6px; }
   .rw-item { background: #fff; border: 1.5px solid var(--line); border-radius: 10px; padding: 6px; text-align: center; font-size: 13px; }
@@ -804,16 +806,16 @@
   .rw-sendpop { width: 300px; padding: 10px; } .rw-sendpop .rw-send { white-space: nowrap; } .rw-sendpop .rw-h { margin: 8px 2px; } .rw-sendpop .rw-err { margin: 6px 2px 0; color: #e8590c; font-size: 14px; } .rw-sendpop .rw-err:empty { display: none; }
   .rw-menu.rw-sendpop button.go { justify-content: center; background: #3b82f6; color: #fff; font-weight: 600; }
   .rw-send { display: grid; grid-template-columns: auto 1fr; gap: 8px 10px; align-items: center; font-size: 14px; }
-  .rw-send select, .rw-send input { font: 15px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); border-radius: 8px; padding: 4px 8px; }
+  .rw-send select, .rw-send input { font: 15px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; border: 1.5px solid var(--line); border-radius: 8px; padding: 4px 8px; }
   /* 1인 1역 */
   [data-card="roles"] { --accent: #2b8a3e; --card: #ebfbee; --line: #c3e6cb; }
   .rl-period { margin: -4px 0 0; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; flex-wrap: wrap; }
   .rl-period:hover { color: var(--accent); }
-  .rl-period input { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); border-radius: 6px; padding: 1px 4px; }
+  .rl-period input { font: 13px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; border: 1.5px solid var(--line); border-radius: 6px; padding: 1px 4px; }
   .tool-card .rl-period button { font-size: 12px; padding: 1px 8px; }
   .rl-grid { flex: 1; min-height: 96px; overflow-y: auto; user-select: none; display: grid; grid-auto-rows: max-content; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); align-content: start; gap: 6px; padding: 3px; } /* padding: 이름을 끌어 놓을 때 칸 테두리 빛이 잘리지 않게 */
-  .rl-grid:empty::before { content: "'✎ 역할 정하기'에서 역할을 넣어요."; grid-column: 1 / -1; margin: auto; padding: 20px 0; color: var(--muted); font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; }
-  .rl-tile { position: relative; background: #fff; border-radius: 10px; padding: 6px 10px 8px; border: 1.5px solid var(--line); font: 15px/1.35 "Wanted Sans", "Malgun Gothic", sans-serif; min-height: 60px; cursor: pointer; word-break: keep-all; overflow-wrap: anywhere; } /* 줄은 낱말 단위로 (체육/부장 X) */
+  .rl-grid:empty::before { content: "'✎ 역할 정하기'에서 역할을 넣어요."; grid-column: 1 / -1; margin: auto; padding: 20px 0; color: var(--muted); font: 14px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; }
+  .rl-tile { position: relative; background: #fff; border-radius: 10px; padding: 6px 10px 8px; border: 1.5px solid var(--line); font: 15px/1.35 "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; min-height: 60px; cursor: pointer; word-break: keep-all; overflow-wrap: anywhere; } /* 줄은 낱말 단위로 (체육/부장 X) */
   .rl-tile.drop { border-color: var(--accent); background: var(--card); box-shadow: 0 0 0 2px var(--accent); }
   .rl-tile > b { display: block; font-weight: 600; font-size: 18px; color: var(--accent); }
   .rl-tile:has(.rl-pt) > b { padding-right: 44px; }
@@ -828,16 +830,16 @@
   .rl-pool.drop { border-color: var(--accent); background: var(--card); }
   .rl-pool:empty { display: none; }
   .rl-pool .rl-name { background: #fff; border: 1.5px solid var(--line); font-size: 18px; }
-  .rl-info { inset: auto; margin: 0; max-width: 300px; padding: 12px 14px; border: 0; border-radius: 12px; background: #fff; color: var(--ink); box-shadow: 0 10px 30px rgba(60, 40, 20, .22); font: 16px/1.5 "Wanted Sans", "Malgun Gothic", sans-serif; }
+  .rl-info { inset: auto; margin: 0; max-width: 300px; padding: 12px 14px; border: 0; border-radius: 12px; background: #fff; color: var(--ink); box-shadow: 0 10px 30px rgba(60, 40, 20, .22); font: 16px/1.5 "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; }
   .rl-info b { display: block; color: #2b8a3e; font-size: 18px; margin-bottom: 4px; } .rl-info p { margin: 0; white-space: pre-line; } .rl-info small { display: block; margin-top: 6px; color: #a6730c; }
   .rl-foot { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; padding-right: 8px; } .rl-foot .sp { flex: 1; }
-  .rl-sum { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--muted); }
+  .rl-sum { font: 13px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; color: var(--muted); }
   .tool-card .rl-foot button { font-size: 13px; padding: 3px 10px; border-radius: 8px; } .tool-card .rl-foot .main { padding: 3px 12px; }
   .rl-set { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; margin-bottom: 10px; font-size: 13px; color: var(--muted); }
-  .rl-set input { font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); border-radius: 6px; padding: 3px 6px; }
+  .rl-set input { font: 14px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; border: 1.5px solid var(--line); border-radius: 6px; padding: 3px 6px; }
   .rl-set .unit { width: 9em; }
   .rl-rows { display: grid; grid-template-columns: 26px minmax(0, 1.1fr) 52px 60px minmax(0, 2fr) auto; gap: 4px 6px; align-items: center; font-size: 13px; }
-  .rl-rows input { font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); border-radius: 6px; padding: 3px 6px; min-width: 0; }
+  .rl-rows input { font: 14px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; border: 1.5px solid var(--line); border-radius: 6px; padding: 3px 6px; min-width: 0; }
   .rl-rows input:disabled { opacity: .4; }
   .rl-rows .h { color: var(--muted); }
   .rl-rows .grab { cursor: grab; color: var(--muted); text-align: center; user-select: none; touch-action: none; font-size: 20px; line-height: 1; padding: 4px 0; border-radius: 6px; }
@@ -848,7 +850,7 @@
   /* 성적 알리미 */
   [data-card="scores"] { --accent: #5f3dc4; --card: #f1edff; --line: #d6ccf7; }
   .sc-top { display: flex; gap: 6px; align-items: center; }
-  .sc-top select { font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink); padding: 3px 6px; min-width: 0; }
+  .sc-top select { font: 14px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; border: 1.5px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink); padding: 3px 6px; min-width: 0; }
   .sc-top select { flex: 1; }
   .sc-grid { flex: 1; min-height: 0; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); align-content: start; gap: 6px; }
   .tool-card .sc-grid button { display: flex; flex-direction: column; align-items: center; padding: 6px 4px; border-radius: 10px; background: #fff; font-size: 15px; }
@@ -856,7 +858,7 @@
   .tool-card .sc-grid button.seen { opacity: .45; }
   .tool-card .sc-grid button.none { border-style: dashed; color: var(--muted); }
   .sc-show { position: absolute; inset: 0; z-index: 4; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; background: #fff; border-radius: inherit;
-             font-family: "Wanted Sans", "Malgun Gothic", sans-serif; cursor: pointer; container-type: size; }
+             font-family: "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; cursor: pointer; container-type: size; }
   .sc-show .who { font-size: clamp(18px, 8cqw, 40px); color: var(--muted); }
   .sc-show .pts { font-size: clamp(48px, min(30cqw, 40cqh), 180px); line-height: 1; color: var(--accent); font-variant-numeric: tabular-nums; animation: sc-in .45s ease-out; }
   .sc-show .pts small { font-size: .3em; color: var(--muted); }
@@ -889,14 +891,14 @@
   /* 즐겨찾기 */
   [data-card="links"] { --accent: #0b7285; --card: #e3f6f8; --line: #b9e3e9; }
   .lk-menu { inset: auto; margin: 0; padding: 8px; border: 0; border-radius: 14px; background: #fff; color: var(--ink); width: 280px; box-sizing: border-box; overflow: visible;
-             box-shadow: 0 10px 34px rgba(60, 40, 20, .22); font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; --accent: #0b7285; --line: #b9e3e9; }
+             box-shadow: 0 10px 34px rgba(60, 40, 20, .22); font: 14px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; --accent: #0b7285; --line: #b9e3e9; }
   .lk-menu:has(.se-ask) { min-height: 300px; } /* 주소 넣는 창이 들어갈 만큼 */
   .lk-head { display: flex; align-items: center; gap: 4px; padding: 2px 4px 8px; border-bottom: 1px solid #eee5d8; margin-bottom: 4px; }
   .lk-head b { flex: 1; font-weight: normal; }
-  .lk-menu button { font: 13px "Wanted Sans", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); background: #fff; color: var(--ink); border-radius: 8px; padding: 2px 8px; cursor: pointer; }
+  .lk-menu button { font: 13px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; border: 1.5px solid var(--line); background: #fff; color: var(--ink); border-radius: 8px; padding: 2px 8px; cursor: pointer; }
   .lk-menu #lk-edit.on { background: var(--accent); border-color: var(--accent); color: #fff; }
   .lk-list { max-height: 60vh; overflow-y: auto; }
-  .tp-find { width: 100%; box-sizing: border-box; margin: 2px 0 6px; padding: 6px 10px; font: 15px "GangwonEdu", "Malgun Gothic", sans-serif;
+  .tp-find { width: 100%; box-sizing: border-box; margin: 2px 0 6px; padding: 6px 10px; font: 15px "GangwonEdu", "Malgun Gothic", "Noto Emoji", sans-serif;
              border: 1.5px solid #eee5d8; border-radius: 10px; outline: none; }
   .tp-find:focus { border-color: var(--accent, #f2643d); }
   .shelf-menu:has(.tp-find) { width: 340px; }
@@ -945,7 +947,7 @@
   .dock #drawer-btn { position: sticky; right: 0; margin-left: 9px; background: #fff; overflow: visible; box-shadow: -12px 0 0 #fff, 12px 0 0 #fff; } /* 바가 넘쳐 밀려도 늘 맨 오른쪽 */
   .dock #drawer-btn::before { content: ""; position: absolute; left: -7px; top: 10px; bottom: 10px; width: 1.5px; background: #e6dccf; } /* 다른 기능: 세로 선으로 구분 */
   .drawer { inset: auto; left: 50%; bottom: 84px; transform: translateX(-50%); margin: 0; padding: 12px; border: 0; border-radius: 18px; background: #fff; color: var(--ink);
-            width: min(440px, calc(100vw - 24px)); box-sizing: border-box; box-shadow: 0 10px 34px rgba(60, 40, 20, .22); font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; }
+            width: min(440px, calc(100vw - 24px)); box-sizing: border-box; box-shadow: 0 10px 34px rgba(60, 40, 20, .22); font: 14px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; }
   .drawer-items { display: flex; flex-wrap: wrap; gap: 4px; }
   .drawer-items:empty::before { content: "서랍이 비어 있어요. 아래에서 넣을 버튼을 고르세요."; color: var(--muted); font-size: 13px; padding: 4px; }
   .drawer-items button { border: 0; background: none; display: flex; flex-direction: column; align-items: center; gap: 1px; min-width: 70px; padding: 4px 8px; border-radius: 14px;
@@ -968,10 +970,10 @@
   .dust-main .face, .noise-meter .face { font-size: clamp(36px, min(18cqw, 16cqh), 64px); line-height: 1; }
   .dust-main b { font-weight: normal; font-size: clamp(24px, 10cqw, 34px); color: var(--grade, var(--ink)); }
   .dust-chips { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; font-size: 18px; }
-  .dust-wx { margin: 0; text-align: center; font: 15px "Wanted Sans", "Malgun Gothic", sans-serif; color: var(--ink); } .dust-wx:empty { display: none; }
+  .dust-wx { margin: 0; text-align: center; font: 15px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; color: var(--ink); } .dust-wx:empty { display: none; }
   .dust-wx small { color: var(--muted); font-size: 13px; }
   .dust-chips span { border-radius: 999px; padding: 2px 10px; color: #fff; background: var(--grade); }
-  .dust-set { display: flex; flex-direction: column; gap: 6px; font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; }
+  .dust-set { display: flex; flex-direction: column; gap: 6px; font: 14px "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; }
   .dust-set input { flex: 1; min-width: 0; font: inherit; padding: 3px 8px; border: 1.5px solid var(--line); border-radius: 8px; }
   .dust-set .row { display: flex; gap: 4px; }
   .dust-results { display: flex; flex-direction: column; gap: 3px; max-height: 120px; overflow-y: auto; }
@@ -999,13 +1001,13 @@
   .tool-card .dc-list button { padding: 8px 4px; font-size: 16px; border-radius: 10px; background: #fff; }
   .tool-card .dc-list button.on { outline: 3px solid var(--accent); }
   .tool-card .dc-list button.said { color: var(--muted); }
-  .dc-foot select, .dc-foot input[type=range] { font: 13px "GangwonEdu", "Malgun Gothic", sans-serif; max-width: 110px; accent-color: var(--accent); }
+  .dc-foot select, .dc-foot input[type=range] { font: 13px "GangwonEdu", "Malgun Gothic", "Noto Emoji", sans-serif; max-width: 110px; accent-color: var(--accent); }
   .dc-show { position: absolute; inset: 0; z-index: 4; background: #fff; border-radius: inherit; padding: 14px 18px; overflow-y: auto; cursor: pointer; container-type: inline-size; }
   .dc-show h3 { margin: 0 0 8px; font-weight: normal; color: var(--accent); font-size: clamp(16px, 4cqw, 26px); }
   .dc-show ol { margin: 0; padding-left: 1.6em; font-size: clamp(18px, 4.6cqw, 34px); line-height: 1.6; }
   .dc-show .tip { font-size: 13px; color: var(--muted); margin-top: 8px; }
   .dc-show .tip button { font-size: 13px; }
-  .dc-files textarea { width: 100%; min-height: 120px; box-sizing: border-box; font: 14px "GangwonEdu", "Malgun Gothic", sans-serif; border: 1.5px solid var(--line); border-radius: 8px; padding: 6px 8px; }
+  .dc-files textarea { width: 100%; min-height: 120px; box-sizing: border-box; font: 14px "GangwonEdu", "Malgun Gothic", "Noto Emoji", sans-serif; border: 1.5px solid var(--line); border-radius: 8px; padding: 6px 8px; }
   .dc-files .sc-prev { font-size: 13px; color: var(--muted); }
   .dc-files .sc-meta { display: flex; align-items: center; gap: 6px; font-size: 14px; } .dc-files .sc-meta input { flex: 1; min-width: 0; }
   .dc-files .card-ed-list > * + * { margin-top: 8px; }
@@ -1058,16 +1060,16 @@
     <div class="motto-frame"><div class="motto" id="motto" contenteditable="plaintext-only" spellcheck="false" role="textbox" aria-label="급훈"></div></div>
   </section>
   <section class="card" data-card="photo">
-    <p class="label">🖼️ 사진</p>
+    <p class="label">🖼︎ 사진</p>
     <div class="photo-box">
-      <div class="ph-empty"><button class="empty">+ 사진 넣기</button><small class="ph-hint">카드를 누르고 Ctrl+V로 붙여 넣어도 돼요</small><button class="ph-shelf">🗂️ 보관함</button></div>
+      <div class="ph-empty"><button class="empty">+ 사진 넣기</button><small class="ph-hint">카드를 누르고 Ctrl+V로 붙여 넣어도 돼요</small><button class="ph-shelf">🗂︎ 보관함</button></div>
       <img alt="우리반 사진" hidden>
-      <div class="photo-tools" hidden><button class="ph-keep" title="보관함에 넣기 (4장까지)">☆ 저장</button><button class="ph-shelf">🗂️ 보관함</button><button class="ph-change">바꾸기</button><button class="ph-del">지우기</button></div>
+      <div class="photo-tools" hidden><button class="ph-keep" title="보관함에 넣기 (4장까지)">☆ 저장</button><button class="ph-shelf">🗂︎ 보관함</button><button class="ph-change">바꾸기</button><button class="ph-del">지우기</button></div>
     </div>
     <input type="file" accept="image/*" hidden>
   </section>
   <section class="card tool-card" data-card="timer" id="timer-card">
-    <p class="label">⏱️ 타이머</p>
+    <p class="label">⏱︎ 타이머</p>
     <div class="tm-tabs modes" role="tablist"><button data-tm="timer" class="on">타이머</button><button data-tm="sw">스톱워치</button></div>
     <div class="tm-pane" data-pane="timer">
     <div class="big" id="timer-time" role="timer" aria-live="off" title="눌러서 시간 바꾸기 (예: 3:30)">05:00</div>
@@ -1087,7 +1089,7 @@
     </div>
   </section>
   <section class="card tool-card" data-card="clock" id="ck-card">
-    <p class="label">🕰️ 시계</p>
+    <p class="label">🕰︎ 시계</p>
     <div class="ck-box" id="ck-box"></div>
     <p class="ck-next" id="ck-next"></p>
     <div class="ck-modes modes"><button data-ck="digital">디지털</button><button data-ck="analog">아날로그</button><button class="ck-al" onclick="alEdit(this)" title="정한 시간에 소리와 함께 알려요">⏰ 알람</button></div>
@@ -1116,7 +1118,7 @@
   </section>
   <section class="card tool-card" data-card="dust">
     <p class="label">😷 미세먼지·날씨</p>
-    <div class="dust-main" id="dust-main"><span class="face" id="dust-face">🌫️</span><b id="dust-grade">지역을 정해 주세요</b></div>
+    <div class="dust-main" id="dust-main"><span class="face" id="dust-face">🌫︎</span><b id="dust-grade">지역을 정해 주세요</b></div>
     <div class="dust-chips" id="dust-chips"></div>
     <p class="dust-wx" id="dust-wx"></p>
     <p class="sub" id="dust-place"></p>
@@ -1141,7 +1143,7 @@
     </div>
   </section>
   <section class="card tool-card" data-card="thermo" id="thermo-card">
-    <p class="label">🌡️ 학급 온도계</p>
+    <p class="label">🌡︎ 학급 온도계</p>
     <div class="th-main">
       <div class="th-tube" id="th-tube" aria-hidden="true"><i id="th-fill"></i><b class="th-bulb"></b></div>
       <div class="th-info"><div class="big" id="th-val" aria-live="polite">0°</div>
@@ -1153,7 +1155,7 @@
     <p class="label">🔳 QR 만들기</p>
     <div class="qr-row"><input class="qr-in" placeholder="주소나 글을 넣으세요" aria-label="QR로 만들 주소나 글" spellcheck="false" autocomplete="off"><button class="qr-keep" title="자주 쓰는 QR로 저장">☆ 저장</button></div>
     <div class="qr-box"><canvas class="qr-cv" hidden></canvas><p class="sub qr-msg"></p></div>
-    <div class="qr-foot"><button class="qr-shelf-btn">🗂️ 보관함</button></div>
+    <div class="qr-foot"><button class="qr-shelf-btn">🗂︎ 보관함</button></div>
   </section>
   <section class="card" data-card="notice">
     <p class="label">📋 알림장</p>
@@ -1161,13 +1163,13 @@
     <div class="nt-foot"><button id="nt-hist" class="nt-hist" onclick="ntList()" aria-haspopup="true">지난 알림장 보기 ▾</button><button onclick="ntCopy()" id="nt-copy">📋 복사</button><button class="main" onclick="ntSave()" id="nt-save">💾 저장</button></div>
   </section>
   <section class="card tool-card" data-card="dict" id="dc-card">
-    <p class="label">🗣️ 받아쓰기</p>
+    <p class="label">🗣︎ 받아쓰기</p>
     <div class="dc-top"><span class="dc-sems" id="dc-sems"></span><span class="sp"></span><button onclick="dcEdit()" title="급과 문장을 직접 쓰고 고치기">✎ 직접 쓰기</button><button onclick="dcFiles()" title="급수표 넣기 (.hwp · .pdf · 붙여넣기)">📄 급수표</button></div>
     <div class="dc-grades" id="dc-grades"></div>
     <p class="sub dc-title" id="dc-title"></p>
     <div class="dc-list" id="dc-list"></div>
     <div class="dc-foot">
-      <button class="main" id="dc-all" onclick="dcPlayAll()">▶ 전체 읽기</button><button onclick="dcAnswers()">📋 정답</button><button onclick="dcPrint(false)">🖨️ 시험지</button>
+      <button class="main" id="dc-all" onclick="dcPlayAll()">▶ 전체 읽기</button><button onclick="dcAnswers()">📋 정답</button><button onclick="dcPrint(false)">🖨︎ 시험지</button>
       <span class="sp"></span>
       <label title="전체 읽기에서 다음 문제까지 쓰는 시간">간격 <select id="dc-gap"><option value="5">5초</option><option value="10">10초</option><option value="15">15초</option><option value="20">20초</option></select></label>
       <label title="읽는 빠르기">빠르기 <input type="range" id="dc-rate" min="0.5" max="1.1" step="0.05"></label>
@@ -1182,7 +1184,7 @@
   </section>
   <section class="card tool-card" data-card="reward" id="rw-card">
     <p class="label">🏅 우리반 점수</p>
-    <div class="rw-bar"><span class="rw-count" id="rw-count"></span><span class="sp"></span><button class="rw-dress" onclick="rwDressPick(this)" title="학생 아바타 꾸미기 (학생 카드를 오른쪽 클릭해도 돼요)">👕 꾸미기</button><button class="rw-give" onclick="rwSendOpen(this)">🤝 주고받기</button><button class="rw-hist" onclick="rwLog()">📜 기록</button><button class="rw-set" onclick="rwSettings()">⚙️ 설정</button></div>
+    <div class="rw-bar"><span class="rw-count" id="rw-count"></span><span class="sp"></span><button class="rw-dress" onclick="rwDressPick(this)" title="학생 아바타 꾸미기 (학생 카드를 오른쪽 클릭해도 돼요)">👕 꾸미기</button><button class="rw-give" onclick="rwSendOpen(this)">🤝 주고받기</button><button class="rw-hist" onclick="rwLog()">📜 기록</button><button class="rw-set" onclick="rwSettings()">⚙︎ 설정</button></div>
     <div class="rw-grid" id="rw-grid"></div>
     <div class="rw-foot"><span class="rw-sel"><button onclick="rwSel('all')">전체 선택</button><button onclick="rwSel('inv')">선택 반전</button><button onclick="rwSel('none')">선택 해제</button></span><span class="sp"></span><button class="rw-minus" onclick="rwGiveSel(this, -1)">− 노력해요</button><button class="main rw-plus" onclick="rwGiveSel(this, 1)">+ 칭찬해요</button></div>
   </section>
@@ -1191,7 +1193,7 @@
     <p class="rl-period sub" id="rl-period" title="눌러서 기간 바꾸기" onclick="rlPeriodEdit()"></p>
     <div class="rl-grid" id="rl-grid"></div>
     <div class="rl-pool" id="rl-pool" title="이름을 끌어 역할 칸에 놓아요"></div>
-    <div class="rl-foot"><span class="rl-sum" id="rl-sum"></span><span class="sp"></span><button class="rl-give" id="rl-give" onclick="rlGive(this)" title="역할마다 정한 포인트를 맡은 사람에게 → 우리반 점수" hidden>🏅 포인트 주기</button><button class="rl-hist" onclick="rlHist(this)">📜 기록</button><button class="rl-print" onclick="rlPrint()" title="A4 세로 표로 출력">🖨️ 출력</button><button class="rl-reset" onclick="rlReset()" title="초기화">↺ 초기화</button><button class="rl-edit" onclick="rlEdit()">✎ 역할 정하기</button><button class="rl-save" onclick="rlSave(this)">💾 저장</button><button class="main rl-rand" onclick="rlRandom()">🎲 랜덤 배치</button></div>
+    <div class="rl-foot"><span class="rl-sum" id="rl-sum"></span><span class="sp"></span><button class="rl-give" id="rl-give" onclick="rlGive(this)" title="역할마다 정한 포인트를 맡은 사람에게 → 우리반 점수" hidden>🏅 포인트 주기</button><button class="rl-hist" onclick="rlHist(this)">📜 기록</button><button class="rl-print" onclick="rlPrint()" title="A4 세로 표로 출력">🖨︎ 출력</button><button class="rl-reset" onclick="rlReset()" title="초기화">↺ 초기화</button><button class="rl-edit" onclick="rlEdit()">✎ 역할 정하기</button><button class="rl-save" onclick="rlSave(this)">💾 저장</button><button class="main rl-rand" onclick="rlRandom()">🎲 랜덤 배치</button></div>
   </section>
   <section class="card tool-card" data-card="check" id="ch-card">
     <p class="label">✅ 체크표</p>
@@ -1205,14 +1207,14 @@
     <div class="br-foot"><span class="br-info" id="br-info"></span><span class="sp"></span><button class="br-shuf" onclick="brMake()" title="같은 참가자로 대진만 다시">🔀 다시 섞기</button><button class="main br-set" onclick="brSetup()">👥 참가자 고르기</button></div>
   </section>
   <section class="card wb-card" data-card="whiteboard">
-    <p class="label">🖍️ 화이트보드</p>
+    <p class="label">🖍︎ 화이트보드</p>
     <span class="wb-pages" aria-label="화이트보드 고르기"></span>
     <div class="wb-tools" role="toolbar" aria-label="화이트보드 도구">
       <button data-tool="select" title="고르기·옮기기 (끌어 옮기고, 모서리로 크기 조절. Shift+클릭으로 여러 개 고르기)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3l14 8-6 1.5L10 19z" fill="currentColor"/></svg>옮기기</button>
-      <button data-tool="pen" title="펜 (누르면 색·굵기 고르기)">✏️ 펜 <i class="pen-dot"></i></button>
+      <button data-tool="pen" title="펜 (누르면 색·굵기 고르기)">✏︎ 펜 <i class="pen-dot"></i></button>
       <button data-tool="text" title="글상자: 누른 뒤 보드를 클릭">T 글상자</button>
       <button onclick="wbUndo()" title="되돌리기 (Ctrl+Z)">↶</button>
-      <button onclick="wbClear()" title="모두 지우기">🗑️</button>
+      <button onclick="wbClear()" title="모두 지우기">🗑︎</button>
       <span class="wb-hint">사진은 Ctrl+V 또는 끌어다 놓기</span>
     </div>
     <div class="wb" id="wb" tabindex="0" aria-label="화이트보드. 사진은 Ctrl+V로 붙여넣기">
@@ -1248,7 +1250,7 @@
     </div>
   </section>
 </div>
-<nav class="dock" aria-label="필요할 때 띄우는 도구"><span id="launch" style="display:contents"></span><button id="drawer-btn" popovertarget="drawer" title="서랍 (자주 안 쓰는 버튼을 넣어 두는 곳)"><i>🗄️</i>서랍</button></nav>
+<nav class="dock" aria-label="필요할 때 띄우는 도구"><span id="launch" style="display:contents"></span><button id="drawer-btn" popovertarget="drawer" title="서랍 (자주 안 쓰는 버튼을 넣어 두는 곳)"><i>🗄︎</i>서랍</button></nav>
 <div id="lk-menu" class="lk-menu" popover><div class="lk-head"><b>🌐 즐겨찾기</b><button onclick="lkAddLink()">+ 링크</button><button onclick="lkAddFolder()">+ 폴더</button><button onclick="lkToggleEdit()" id="lk-edit" title="고치기·지우기" aria-label="고치기·지우기">✎</button></div>
   <div class="lk-list" id="lk-list"></div><div class="lk-sub" id="lk-sub" hidden></div></div>
 <div id="drawer" class="drawer" popover><div class="drawer-items" id="drawer-items"></div><p class="drawer-h">아래쪽 바에서 서랍에 넣을 버튼</p><div class="drawer-pick" id="drawer-pick"></div></div>
@@ -1367,7 +1369,7 @@
   </section>
   <section id="tab-contact" hidden>
     <p>고장 난 곳, 있었으면 하는 기능, 궁금한 점을 메일로 보내 주세요.</p>
-    <div class="row"><a class="mail-btn" href="mailto:annakim.pj@gmail.com?subject=%EC%9A%B0%EB%A6%AC%EB%B0%98%20%EB%B3%B4%EB%93%9C%20%EB%AC%B8%EC%9D%98">✉️ 메일 보내기</a>
+    <div class="row"><a class="mail-btn" href="mailto:annakim.pj@gmail.com?subject=%EC%9A%B0%EB%A6%AC%EB%B0%98%20%EB%B3%B4%EB%93%9C%20%EB%AC%B8%EC%9D%98">✉︎ 메일 보내기</a>
       <input id="dev-mail" readonly value="annakim.pj@gmail.com" onclick="this.select()" aria-label="개발자 메일 주소"><button onclick="navigator.clipboard.writeText('annakim.pj@gmail.com').then(() => this.textContent = '복사했어요')">주소 복사</button></div>
     <p class="sum">메일 프로그램이 안 열리면 주소를 복사해서 보내 주세요.</p>
   </section>
@@ -1859,14 +1861,14 @@ document.getElementById("today").textContent =
 // 카드 배치: { 카드: { mode: "board"(보드에 두기) | "popup"(아래쪽 바에 넣어 두기) | "off", rect: {x, y, w, h}(보드 크기에 대한 비율) } }
 // 처음엔 칸 맞춤으로 자리를 잡아 그 위치를 기억하고, 그다음부터는 제목을 끌어 옮기고 오른쪽 아래 모서리로 크기를 바꿈
 // [이름, 표시, 처음 위치(board 보드 | popup 아래쪽 바), 처음 크기(칸), 최소 크기 px [가로, 세로]]
-const CARDS = [["topic", "✏️ 오늘의 주제", "board", "2", [340, 200]], ["timetable", "🕘 시간표", "board", "2", [320, 190]],
+const CARDS = [["topic", "✏︎ 오늘의 주제", "board", "2", [340, 200]], ["timetable", "🕘 시간표", "board", "2", [320, 190]],
   ["memo", "📝 메모", "board", "1", [210, 180]], ["rules", "📌 우리반 규칙", "board", "1", [260, 230]], ["motto", "🏫 급훈", "popup", "2", [320, 170]], ["seat", "🪑 자리배치", "popup", "4", [480, 380]],
-  ["photo", "🖼️ 사진", "popup", "1", [200, 170]], ["timer", "⏱️ 타이머", "popup", "1", [240, 260]], ["clock", "🕰️ 시계", "popup", "1", [200, 200]], ["picker", "🎲 뽑기", "popup", "1", [300, 260]],
-  ["whiteboard", "🖍️ 화이트보드", "popup", "4", [420, 320]], ["dust", "😷 미세먼지·날씨", "board", "1", [190, 190]], ["noise", "🔉 소음 측정", "popup", "1", [240, 270]],
-  ["thermo", "🌡️ 학급 온도계", "popup", "1", [240, 260]], ["qr", "🔳 QR 만들기", "popup", "1", [240, 280]],
+  ["photo", "🖼︎ 사진", "popup", "1", [200, 170]], ["timer", "⏱︎ 타이머", "popup", "1", [240, 260]], ["clock", "🕰︎ 시계", "popup", "1", [200, 200]], ["picker", "🎲 뽑기", "popup", "1", [300, 260]],
+  ["whiteboard", "🖍︎ 화이트보드", "popup", "4", [420, 320]], ["dust", "😷 미세먼지·날씨", "board", "1", [190, 190]], ["noise", "🔉 소음 측정", "popup", "1", [240, 270]],
+  ["thermo", "🌡︎ 학급 온도계", "popup", "1", [240, 260]], ["qr", "🔳 QR 만들기", "popup", "1", [240, 280]],
   ["notice", "📋 알림장", "popup", "2", [340, 320]],
   ["scores", "📊 성적 알리미", "popup", "2", [320, 280]], ["roles", "🧹 1인 1역", "popup", "2", [360, 360]], ["reward", "🏅 우리반 점수", "popup", "4", [470, 440]],
-  ["check", "✅ 체크표", "popup", "2", [340, 300]], ["bracket", "🏆 토너먼트", "popup", "4", [420, 320]], ["dict", "🗣️ 받아쓰기", "popup", "4", [420, 340]]];
+  ["check", "✅ 체크표", "popup", "2", [340, 300]], ["bracket", "🏆 토너먼트", "popup", "4", [420, 320]], ["dict", "🗣︎ 받아쓰기", "popup", "4", [420, 340]]];
 const FITS = ["rules", "notice"]; // 글이 넘치면 카드가 아래로 커지는 카드
 const minOf = k => { const m = CARDS.find(c => c[0] === k)[4]; return FITS.includes(k) ? [m[0], Math.max(m[1], noteNeed(k))] : m; };
 function noteNeed(k) { // 글이 스크롤 없이 다 보이는 카드 높이(px)
@@ -2067,8 +2069,8 @@ board.addEventListener("pointerdown", e => {
   const move = ev => {
     const dx = (ev.clientX - sx) / B.width, dy = (ev.clientY - sy) / B.height;
     const [mw, mh] = minOf(k); // 이보다 작게는 못 줄임
-    // 배경 점(18px 간격)에 카드 가장자리를 맞춤: 줄 맞추기 쉽게 조금씩 끊어서 움직임
-    const gx = innerWidth / 2 + 9, gy = innerHeight / 2 + 9; // 점은 화면 가운데부터 18px마다 → 카드 가장자리는 점 사이에
+    // 배경 격자(18px 칸)에 카드 가장자리를 맞춤: 줄 맞추기 쉽게 칸 단위로 끊어서 움직임
+    const gx = innerWidth / 2 + 9, gy = innerHeight / 2 + 9; // 격자선은 화면 가운데에서 9px 떨어진 곳부터 18px마다
     const snapX = v => (Math.round((B.left + v * B.width - gx) / 18) * 18 + gx - B.left) / B.width, snapY = v => (Math.round((B.top + v * B.height - gy) / 18) * 18 + gy - B.top) / B.height;
     if (grip) { r.w = Math.min(1 - r.x, Math.max(mw / B.width, snapX(r.x + r0.w + dx) - r.x)); r.h = Math.min(1 - r.y, Math.max(mh / B.height, snapY(r.y + r0.h + dy) - r.y)); }
     else { r.x = Math.min(Math.max(0, snapX(r0.x + dx)), 1 - r.w); r.y = Math.min(Math.max(0, snapY(r0.y + dy)), 1 - r.h); } // 화면 밖으로 못 나감
@@ -2349,14 +2351,14 @@ function initPhoto(c) {
   c.querySelector(".ph-keep").onclick = () => { // 지금 사진을 보관함에
     const v = localStorage.getItem(k);
     if (!v || v.startsWith("shelf:")) return seConfirm(c, "이미 보관함에 있는 사진이에요.", "확인", null);
-    if (phShelf.length >= PH_MAX) return seConfirm(c, `보관함이 꽉 찼어요 (${PH_MAX}장). '🗂️ 보관함'에서 하나를 지운 뒤 저장해 주세요.`, "확인", null);
+    if (phShelf.length >= PH_MAX) return seConfirm(c, `보관함이 꽉 찼어요 (${PH_MAX}장). '🗂︎ 보관함'에서 하나를 지운 뒤 저장해 주세요.`, "확인", null);
     const id = Date.now().toString(36);
     try { localStorage.setItem("photoshelf-" + id, v); localStorage.setItem(k, "shelf:" + id); }
     catch (e) { localStorage.removeItem("photoshelf-" + id); return seConfirm(c, "저장할 자리가 모자라요. 다른 사진 카드나 보관함 사진을 지워 주세요.", "확인", null); }
     phShelf.push({ id, at: Date.now() }); phSaveShelf();
     const b = c.querySelector(".ph-keep"); b.textContent = "저장했어요"; setTimeout(() => b.textContent = "☆ 저장", 1500);
   };
-  c.querySelectorAll(".ph-shelf").forEach(btn => btn.onclick = () => shelfMenu(btn, `🗂️ 사진 보관함 (${phShelf.length}/${PH_MAX})`,
+  c.querySelectorAll(".ph-shelf").forEach(btn => btn.onclick = () => shelfMenu(btn, `🗂︎ 사진 보관함 (${phShelf.length}/${PH_MAX})`,
     phShelf.map((x, i) => ({ icon: h("img", { class: "ph-thumb", src: localStorage.getItem("photoshelf-" + x.id) || "", alt: "" }), name: `사진 ${i + 1} · ${new Date(x.at).toLocaleDateString("ko-KR", { month: "long", day: "numeric" })}` })),
     i => set("shelf:" + phShelf[i].id),
     async (i, m) => {
@@ -3965,7 +3967,7 @@ function rlPrint() { // A4 세로, 표: 역할 · 하는 일 · 맡은 사람 (�
   if (!w) return seConfirm(rlCard, "출력 창을 열지 못했어요. 주소창 오른쪽에서 팝업을 허용해 주세요.", "확인", null);
   w.document.write(`<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>1인 1역${roles.from || roles.to ? " " + rlPeriod(roles.from, roles.to) : ""}</title><style>
     @page { size: A4 portrait; margin: 14mm; }
-    body { font-family: "Wanted Sans", "Malgun Gothic", sans-serif; margin: 0; color: #222; }
+    body { font-family: "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; margin: 0; color: #222; }
     h1 { text-align: center; font-size: 30pt; margin: 0 0 4mm; } .period { text-align: center; font-size: 16pt; color: #555; margin-bottom: 6mm; }
     table { width: 100%; border-collapse: collapse; font-size: 17pt; } th, td { border: 1.5px solid #444; padding: 3mm 3mm; vertical-align: middle; }
     thead th { background: #eef6ef; font-size: 15pt; } tbody th { width: 22%; text-align: center; font-weight: 700; } td.task { font-size: 14pt; } td.who { width: 30%; text-align: center; font-weight: 700; } td.pt { width: 12%; text-align: center; }
@@ -4283,7 +4285,7 @@ function parseDictation(lines) {
   return sets.filter(s => s.grades.length);
 }
 
-// ───── 받아쓰기: 급수표(.hwp · .pdf · 붙여넣기)를 넣으면 학기·급별로 정리. 번호를 누르면 읽어 주기, 📋 정답, 🖨️ 시험지
+// ───── 받아쓰기: 급수표(.hwp · .pdf · 붙여넣기)를 넣으면 학기·급별로 정리. 번호를 누르면 읽어 주기, 📋 정답, 🖨︎ 시험지
 // dict = { sets: [{ name: "1학기", grades: [{ title, items: [문장] }] }], s(학기), g(급), voice, rate, gap }
 // 문장에 '윗잇몸{위딘몸}'처럼 쓰면 화면엔 윗잇몸, 읽기는 위딘몸. '/'는 읽을 때 잠깐 쉼
 let dict = { sets: [], s: 0, g: 0, voice: "", rate: 0.9, gap: 10 };
@@ -4353,7 +4355,7 @@ function dcAnswers() { // 정답: 카드를 덮는 큰 글씨. 누르면 닫힘
   const box = h("div", { class: "dc-show", onclick: () => box.remove() },
     h("h3", {}, `${dcSet().name ? dcSet().name + " " : ""}${dict.g + 1}급 정답`),
     h("ol", {}, gr.items.map(t => h("li", {}, dcText(t)))),
-    h("div", { class: "tip" }, "눌러서 닫기 · ", h("button", { onclick: e => { e.stopPropagation(); dcPrint(true); } }, "🖨️ 정답지 출력")));
+    h("div", { class: "tip" }, "눌러서 닫기 · ", h("button", { onclick: e => { e.stopPropagation(); dcPrint(true); } }, "🖨︎ 정답지 출력")));
   dcCard.append(box);
 }
 function dcPrint(answers) { // A4 세로. 시험지: 번호마다 쓰는 칸(원고지 칸) / 정답지: 문장
@@ -4367,7 +4369,7 @@ function dcPrint(answers) { // A4 세로. 시험지: 번호마다 쓰는 칸(원
   if (!w) return seConfirm(dcCard, "출력 창을 열지 못했어요. 주소창 오른쪽에서 팝업을 허용해 주세요.", "확인", null);
   w.document.write(`<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>${head}</title><style>
     @page { size: A4 portrait; margin: 14mm; }
-    body { font-family: "Malgun Gothic", sans-serif; margin: 0; color: #222; }
+    body { font-family: "Malgun Gothic", "Noto Emoji", sans-serif; margin: 0; color: #222; }
     h1 { text-align: center; font-size: 22pt; margin: 0 0 2mm; } .sub { text-align: center; color: #666; font-size: 11pt; margin-bottom: 5mm; }
     .who { display: flex; justify-content: flex-end; gap: 10mm; font-size: 13pt; margin-bottom: 5mm; } .who span { border-bottom: 1px solid #444; min-width: 30mm; display: inline-block; }
     .row { display: flex; align-items: center; gap: 3mm; margin-bottom: 4mm; break-inside: avoid; } .row b { width: 8mm; text-align: right; font-size: 14pt; }
@@ -4722,7 +4724,7 @@ function lkCtx(e, x) {
   lkMenu.querySelector(".lk-ctx")?.remove();
   const close = () => m.remove(), m = h("div", { class: "lk-ctx" },
     h("button", { onclick: () => { close(); lkRename(x); } }, "✎ 이름 바꾸기"),
-    h("button", { class: "del", onclick: () => { close(); lkDelete(x); } }, "🗑️ 삭제"));
+    h("button", { class: "del", onclick: () => { close(); lkDelete(x); } }, "🗑︎ 삭제"));
   m.style.left = Math.min(e.clientX, innerWidth - 150) + "px"; m.style.top = Math.min(e.clientY, innerHeight - 80) + "px";
   lkMenu.append(m);
 }
@@ -4840,7 +4842,7 @@ let qrList = [];
 try { qrList = JSON.parse(localStorage.getItem("qr-saved")) || []; } catch (e) {}
 function qrSavedSave() {
   try { localStorage.setItem("qr-saved", JSON.stringify(qrList)); } catch (e) {}
-  document.querySelectorAll(".qr-shelf-btn").forEach(b => b.textContent = `🗂️ 보관함${qrList.length ? " " + qrList.length : ""}`);
+  document.querySelectorAll(".qr-shelf-btn").forEach(b => b.textContent = `🗂︎ 보관함${qrList.length ? " " + qrList.length : ""}`);
 }
 function initQr(c) {
   const k = c.dataset.card, key = k === "qr" ? "qr-text" : "qr-text-" + k;
@@ -4866,7 +4868,7 @@ function initQr(c) {
     qrSavedSave();
   };
   const shelf = c.querySelector(".qr-shelf-btn");
-  shelf.onclick = () => shelfMenu(shelf, "🗂️ QR 보관함", qrList.map(q => ({ icon: h("span", { class: "lk-ic", style: "background:#495057" }, "▦"), name: q.name, title: q.text })),
+  shelf.onclick = () => shelfMenu(shelf, "🗂︎ QR 보관함", qrList.map(q => ({ icon: h("span", { class: "lk-ic", style: "background:#495057" }, "▦"), name: q.name, title: q.text })),
     i => set(qrList[i].text),
     async (i, m) => { if (await seConfirm(m, `'${qrList[i].name}'을 보관함에서 지울까요?`, "지우기")) { qrList.splice(i, 1); qrSavedSave(); shelf.onclick(); } },
     "아직 저장한 QR이 없어요. 주소를 넣고 '☆ 저장'을 눌러요.");
@@ -5296,7 +5298,7 @@ async function dustLoad() {
   } catch (e) { main.textContent = "불러오지 못했어요"; main.style.removeProperty("--grade"); chips.replaceChildren(); }
 }
 // 날씨: 같은 지역의 지금 기온·날씨, 오늘 최저·최고 (Open-Meteo, 키 없음)
-const wxIcon = c => c === 0 ? "☀️" : c <= 2 ? "🌤️" : c === 3 ? "☁️" : c <= 48 ? "🌫️" : c <= 57 ? "🌦️" : c <= 67 ? "🌧️" : c <= 77 ? "🌨️" : c <= 82 ? "🌧️" : c <= 86 ? "🌨️" : "⛈️";
+const wxIcon = c => c === 0 ? "☀︎" : c <= 2 ? "🌤︎" : c === 3 ? "☁︎" : c <= 48 ? "🌫︎" : c <= 57 ? "🌦︎" : c <= 67 ? "🌧︎" : c <= 77 ? "🌨︎" : c <= 82 ? "🌧︎" : c <= 86 ? "🌨︎" : "⛈︎";
 async function wxLoad() {
   const el = document.getElementById("dust-wx");
   try {
@@ -6250,7 +6252,7 @@ const TOURS = {
     { at: () => tourCard()?.querySelector(".card-pin"), text: "📌 고정: 누르면 카드를 옮기거나 크기를 바꾸거나 내릴 수 없어요. 한 번 더 누르면 풀려요." },
     { at: [() => tourCard()?.querySelector(".card-pop"), () => tourCard()?.querySelector(".card-full"), () => tourCard()?.querySelector(".card-down:not(.card-pop):not(.card-full):not(.card-pin)")], text: "왼쪽부터 ① 따로 창으로 떼기(다른 모니터로 옮길 수 있어요) ② 전체 화면 ③ 닫기(아래쪽 바로)" },
     { at: ".gear", text: "설정: 명단·시간표·로그인. '사용 방법'에서 이 안내를 다시 볼 수 있어요." }] },
-  topic: { name: "✏️ 오늘의 주제", steps: [
+  topic: { name: "✏︎ 오늘의 주제", steps: [
     { at: ".used", text: "쓴 주제는 '사용 체크'하면 다시 나오지 않아요." },
     { at: ".tp-hist", text: "📜 기록: 사용한 주제를 보고 다시 띄우거나 지워요." },
     { at: ".rule-line", text: "아래 글은 두 번 눌러 고칠 수 있어요." }] },
@@ -6267,10 +6269,10 @@ const TOURS = {
     { at: "#seat-save", text: "오늘 날짜로 저장하면 위 목록에서 다시 볼 수 있어요." },
     { at: 'button[data-ic="print"]', text: "출력: 학생 시점 · 교사 시점 · 둘 다 (A4 가로)" },
     { at: ".seat-star", text: "☆는 특별 모드예요." }] },
-  photo: { name: "🖼️ 사진", steps: [
-    { at: ".photo-box", text: "사진은 카드를 누른 뒤 Ctrl+V로 붙여 넣어도 돼요. 사진 위에 마우스를 올리면 버튼이 나와요. '☆ 저장'으로 보관함에 4장까지 넣어 두고 '🗂️ 보관함'에서 바로 바꿔 띄워요." },
+  photo: { name: "🖼︎ 사진", steps: [
+    { at: ".photo-box", text: "사진은 카드를 누른 뒤 Ctrl+V로 붙여 넣어도 돼요. 사진 위에 마우스를 올리면 버튼이 나와요. '☆ 저장'으로 보관함에 4장까지 넣어 두고 '🗂︎ 보관함'에서 바로 바꿔 띄워요." },
     { text: "아래쪽 바 사진 버튼의 +로 사진 카드를 더 띄워요." }] },
-  clock: { name: "🕰️ 시계", steps: [{ at: ".ck-modes", text: "디지털 · 아날로그 시계를 골라요." }, { at: ".ck-al", text: "⏰ 알람: 정한 시간에 소리와 큰 글로 알려요. 요일을 고르면 그 요일마다 울려요." }] },
+  clock: { name: "🕰︎ 시계", steps: [{ at: ".ck-modes", text: "디지털 · 아날로그 시계를 골라요." }, { at: ".ck-al", text: "⏰ 알람: 정한 시간에 소리와 큰 글로 알려요. 요일을 고르면 그 요일마다 울려요." }] },
   check: { name: "✅ 체크표", steps: [
     { at: ".ch-new", text: "체크표(숙제, 가정통신문…)를 만들어요. '표 ▾'에서 바꾸거나 지워요." },
     { at: "#ch-wrap", text: "칸을 누르면 ✓. 위 칸에는 날짜 등을 직접 쓰고, +로 열을 더해요. 맨 아래에 안 한 사람 수가 나와요." },
@@ -6278,7 +6280,7 @@ const TOURS = {
   bracket: { name: "🏆 토너먼트", steps: [
     { at: ".br-set", text: "참가할 학생을 고르면 대진표를 짜 줘요. 사람이 모자라면 부전승이 생겨요." },
     { at: "#br-view", text: "이긴 사람 이름을 누르면 다음 라운드로 올라가요. 한 번 더 누르면 취소돼요." }] },
-  timer: { name: "⏱️ 타이머", steps: [
+  timer: { name: "⏱︎ 타이머", steps: [
     { at: ".tm-tabs", text: "타이머 · 스톱워치를 골라요. 스톱워치는 '⏱ 기록'으로 구간 시간을 남겨요." },
     { at: "#timer-time", text: "시간을 눌러 3:30처럼 직접 써도 돼요. + 버튼은 돌아가는 중에도 더해져요." },
     { at: "#timer-sfx", text: "효과음 켜기·끄기 (마지막 3초와 끝나는 소리는 늘 나요)" }] },
@@ -6286,7 +6288,7 @@ const TOURS = {
     { at: ".modes", text: "뽑는 방법: 전체 · 선택 · 모둠 · 순서(핀볼) · 직접입력" },
     { at: ".pick-bottom .acts button:not(.main)", text: "처음부터: 뽑힌 기록을 비워요." },
     { at: ".pick-opt", text: "방법마다 고르기·쓰기·모둠 수. 순서 뽑기는 '📜 기록'에서 지난 결과를 봐요." }] },
-  whiteboard: { name: "🖍️ 화이트보드", steps: [
+  whiteboard: { name: "🖍︎ 화이트보드", steps: [
     { at: "#wb", text: "사진은 복사해서 Ctrl+V(또는 끌어다 놓기)로 넣어요." },
     { at: ".wb-pages", text: "화이트보드를 4장까지 따로 써요." },
     { text: "옮기기 도구로 사진·글·선을 끌어 옮기고, 파란 점으로 크기를 바꿔요. 지우기는 Delete." }] },
@@ -6295,7 +6297,7 @@ const TOURS = {
   noise: { name: "🔉 소음 측정", steps: [
     { at: ".noise-th", text: "기준을 1초 넘게 넘으면 경고음이 나요." },
     { at: ".noise-count", text: "오늘 경고 횟수가 쌓여요. 🔔로 직접 경고도 줘요." }] },
-  thermo: { name: "🌡️ 학급 온도계", steps: [
+  thermo: { name: "🌡︎ 학급 온도계", steps: [
     { at: ".th-pen", text: "연필: 5°마다 보상을 정해요 (비워 둬도 돼요)." },
     { at: ".th-goal", text: "다음 보상이 여기 보여요." }] },
   qr: { name: "🔳 QR 만들기", steps: [
@@ -6335,7 +6337,7 @@ const TOURS = {
     { at: "#st-reset", text: "초기화: 미리 섞은 자리를 비워요. 고정·분리는 그대로예요." },
     { text: "모니터가 두 대면 선생님 모드는 선생님 모니터에만 떠요. 처음에 브라우저가 '창 관리'를 물으면 허용해 주세요." }] },
   install: { name: "📲 앱으로 설치", steps: INSTALL_STEPS },
-  etc: { name: "⚙️ 로그인·저장", steps: [
+  etc: { name: "⚙︎ 로그인·저장", steps: [
     { text: "로그인: 설정 → 로그인. 다른 컴퓨터에서도 같은 보드가 나와요." },
     { text: "명단 사진: 설정 → 명단에서 명렬표 사진도 가져와요. 틀린 글자는 꼭 확인!" },
     { text: "저장: 이 컴퓨터에 저장돼요(로그인하면 서버에도)." }] },
@@ -6627,7 +6629,7 @@ let kidSeen = {}, kidClaims = {}, kidT = 0, kidUnsubs = [], kidClsSent = "", kid
 const kidBusy = new Set();
 const kidOn = () => !!(reward.cls?.code && fbUser);
 function kidSay(t) { kidStatus = t; const el = rwCard.querySelector(".kid-status"); if (el) el.textContent = t; }
-function kidSoon() { if (kidOn()) { clearTimeout(kidT); kidT = setTimeout(() => kidPush().catch(e => kidSay("⚠️ 서버에 올리지 못했어요. 인터넷 연결이나 Firestore 규칙을 확인해 주세요.")), 1500); } }
+function kidSoon() { if (kidOn()) { clearTimeout(kidT); kidT = setTimeout(() => kidPush().catch(e => kidSay("⚠︎ 서버에 올리지 못했어요. 인터넷 연결이나 Firestore 규칙을 확인해 주세요.")), 1500); } }
 async function kidPush() { // 교사 쪽에서 바뀐 것만 올림 (서버에 있는 것과 같으면 안 씀)
   if (!kidOn() || kidReady < 2) return; // kids·claim 두 목록을 한 번씩 받은 뒤에만 (학생이 바꾼 걸 덮지 않게)
   const pins = reward.cls.pins ||= {};
@@ -6654,7 +6656,7 @@ function kidListen() { // 학생이 정한 비밀번호, 꾸미거나 산 것을
   kidUnsubs.forEach(u => u()); kidUnsubs = []; kidSeen = {}; kidClaims = {}; kidClsSent = ""; kidReady = 0; clearTimeout(kidRetry);
   if (!kidOn()) return;
   kidSay("서버와 연결하는 중…");
-  const fail = () => { kidSay("⚠️ 서버에 연결하지 못했어요. Firestore 규칙을 게시했는지 확인해 주세요. 잠시 뒤 다시 해 볼게요."); kidUnsubs.forEach(u => u()); kidUnsubs = []; kidRetry = setTimeout(kidListen, 20000); };
+  const fail = () => { kidSay("⚠︎ 서버에 연결하지 못했어요. Firestore 규칙을 게시했는지 확인해 주세요. 잠시 뒤 다시 해 볼게요."); kidUnsubs.forEach(u => u()); kidUnsubs = []; kidRetry = setTimeout(kidListen, 20000); };
   let gotK = false, gotC = false;
   kidUnsubs.push(fb.onSnapshot(fb.collection(fb.db, "classes", reward.cls.code, "kids"), snap => {
     const who = new Map(people().filter(p => reward.cls.pins?.[p]).map(p => [kidKey(p), p]));
@@ -6730,7 +6732,7 @@ function kidPanel(host, redraw) { // 점수 설정 → 학생 입장
   const pins = reward.cls.pins ||= {}, url = kidUrl(), copy = h("button", { onclick: () => { navigator.clipboard?.writeText(url); copy.textContent = "복사했어요"; setTimeout(() => copy.textContent = "주소 복사", 1500); } }, "주소 복사");
   return h("div", {}, h("div", { class: "kid-code" }, "반 코드", h("b", {}, reward.cls.code), h("button", { onclick: () => kidSetCode(host, redraw) }, "바꾸기")),
     h("div", { class: "kid-url" }, "학생 주소", h("code", {}, url), copy), h("p", { class: "kid-status rw-h" }, kidStatus),
-    h("div", { class: "kid-acts" }, h("button", { onclick: kidPrint }, "🖨️ 입장 안내 출력"), h("button", { class: "danger", onclick: async () => {
+    h("div", { class: "kid-acts" }, h("button", { onclick: kidPrint }, "🖨︎ 입장 안내 출력"), h("button", { class: "danger", onclick: async () => {
       if (!await seConfirm(host, "학생 입장을 끌까요?\n학생 화면에서 더 들어갈 수 없어요. (점수·아바타·비밀번호는 그대로)", "끄기")) return;
       await kidClear(reward.cls.code); reward.cls.code = ""; rwStore(); redraw();
     } }, "학생 입장 끄기")),
@@ -6746,7 +6748,7 @@ function kidPrint() { // A4 한 장: 학생 주소 + 반 코드 + 들어오는 �
   const w = window.open("", "_blank");
   if (!w) return seConfirm(rwCard, "출력 창을 열지 못했어요. 주소창 오른쪽에서 팝업을 허용해 주세요.", "확인", null);
   w.document.write(`<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>내 아바타 들어가기</title><style>
-    @page { size: A4 portrait; margin: 16mm; } body { margin: 0; font-family: "Wanted Sans", "Malgun Gothic", sans-serif; color: #222; text-align: center; }
+    @page { size: A4 portrait; margin: 16mm; } body { margin: 0; font-family: "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; color: #222; text-align: center; }
     h1 { font-size: 30pt; margin: 10mm 0 6mm; } .u { font-size: 15pt; word-break: break-all; border: 2px solid #333; border-radius: 4mm; padding: 4mm; margin: 0 0 8mm; }
     .c { font-size: 16pt; color: #555; } .c b { display: block; font-size: 60pt; letter-spacing: .15em; color: #222; margin: 2mm 0 10mm; }
     ol { text-align: left; font-size: 17pt; line-height: 1.8; margin: 0 auto; max-width: 150mm; }
