@@ -242,7 +242,10 @@
   .tool-card .pick-opt button { border-radius: 6px; padding: 3px 8px; font-size: 13px; color: var(--muted); }
   .pick-opt .groups { display: flex; align-items: center; gap: 4px; color: var(--muted); }
   .pick-opt .groups input { width: 40px; font: inherit; padding: 2px 4px; border: 1.5px solid var(--line); border-radius: 6px; text-align: center; }
-  .tool-card .tt-edit { align-self: center; font-size: 12px; padding: 2px 10px; margin-top: 2px; }
+  .tt-left { position: relative; }
+  .tool-card .tt-edit { position: absolute; top: 0; left: 0; z-index: 1; width: 28px; height: 28px; padding: 0; display: grid; place-items: center; border-color: transparent; background: none; color: var(--muted); opacity: .7; }
+  .tool-card .tt-edit:hover { opacity: 1; color: var(--accent); border-color: var(--line); }
+  .tool-card .tt-edit .ic { margin: 0; }
   .tt-card-ed .tt-grid { grid-template-columns: 44px repeat(5, minmax(0, 1fr)); }
   .tt-card-ed select { font: 14px "GangwonEdu", "Malgun Gothic", "Noto Emoji", sans-serif; border: 1.5px solid var(--line); border-radius: 8px; padding: 3px 6px; }
   .tt-split { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -272,7 +275,7 @@
   .tt-big { flex: 1; display: grid; place-items: center; text-align: center; font-size: clamp(18px, min(7cqw, 14cqh), 42px); line-height: 1.2; min-height: 0; }
   .tt-big small { display: block; font-size: .5em; color: var(--muted); }
   .tt-today { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
-  .tt-today span { font-size: 15px; min-width: 26px; text-align: center; padding: 2px 6px; border-radius: 8px; background: #fff; border: 1.5px solid var(--line); }
+  .tt-today span { font-size: 13px; min-width: 26px; text-align: center; padding: 1px 6px; border-radius: 6px; background: #fff; border: 1.5px solid var(--line); }
   .tt-today span.past { color: #cdbba6; }
   .tt-today span.on { background: var(--accent); border-color: var(--accent); color: #fff; }
   /* 타이머 시작·다시: 시간 고르는 동그란 버튼과 달리 큼직한 네모 버튼 */
@@ -811,6 +814,19 @@
   .rw-pick { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
   .tool-card .rw-pick button { padding: 2px; border-radius: 10px; } .tool-card .rw-pick button.on { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
   .tool-card .rw-pick .sw { width: 22px; height: 22px; padding: 0; border-radius: 50%; }
+  .memo-arc { width: 340px; padding: 8px 10px; position: fixed; display: flex; flex-direction: column; gap: 6px; }
+  .memo-arc:not(:popover-open) { display: none; }
+  .memo-arc .ma-keep { display: flex; gap: 6px; }
+  .rw-menu.memo-arc .ma-keep button { width: auto; flex: 1; justify-content: center; border: 1.5px solid #e3ddd3; padding: 5px 8px; font-size: 14px; }
+  .memo-arc input[type=search] { font: 14px "Pretendard Variable", "Malgun Gothic", sans-serif; border: 1.5px solid #e3ddd3; border-radius: 7px; padding: 5px 8px; }
+  .memo-arc .ma-list { display: flex; flex-direction: column; overflow-y: auto; max-height: 46vh; }
+  .memo-arc .ma-item { border-bottom: 1px solid #f1ece4; }
+  .rw-menu.memo-arc .ma-head { padding: 6px 4px; justify-content: space-between; }
+  .memo-arc .ma-head b { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; } .memo-arc .ma-head small { color: var(--muted); font-size: 12px; flex: none; }
+  .memo-arc .ma-view { padding: 2px 4px 8px; }
+  .memo-arc .ma-body { white-space: pre-wrap; font-size: 14px; background: #faf8f4; border-radius: 7px; padding: 6px 8px; max-height: 30vh; overflow-y: auto; }
+  .memo-arc .ma-acts { display: flex; justify-content: flex-end; gap: 6px; margin-top: 6px; }
+  .rw-menu.memo-arc .ma-acts button { width: auto; border: 1.5px solid #e3ddd3; padding: 3px 10px; font-size: 13px; } .rw-menu.memo-arc .ma-acts .danger { color: #e03131; }
   .rw-logpop { width: 360px; padding: 8px 10px; position: fixed; }
   .rw-loghead { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; } .rw-loghead b { flex: 1; font-size: 15px; } .rw-loghead select { font: 13px inherit; border: 1.5px solid #cddcfb; border-radius: 6px; padding: 2px 4px; }
   .rw-logpop .rw-log .day { margin: 6px 0 2px; }
@@ -1010,13 +1026,19 @@
   /* 미세먼지 */
   [data-card="dust"]  { --accent: #6b7f99; --card: #eef2f7; --line: #d3dbe6; }
   [data-card="noise"] { --accent: #f97316; --card: #fff2e8; --line: #fbd6bb; }
-  .dust-main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 0; }
+  .dust-main { flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 0; }
   .dust-main .face, .noise-meter .face { font-size: clamp(36px, min(18cqw, 16cqh), 64px); line-height: 1; }
-  .dust-main b { font-weight: normal; font-size: clamp(24px, 10cqw, 34px); color: var(--grade, var(--ink)); }
-  .dust-chips { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; font-size: 18px; }
+  .dust-main b { font-weight: 700; font-size: clamp(20px, 9cqw, 32px); color: var(--grade, var(--ink)); }
+  .dust-main .face { font-size: clamp(28px, min(14cqw, 14cqh), 48px); }
+  .dust-foot { display: flex; align-items: center; justify-content: center; gap: 2px; margin-top: 4px; font-size: 12px; color: var(--muted); }
+  .dust-foot span { margin-right: 4px; }
+  .tool-card .dust-foot button { width: 24px; height: 24px; padding: 0; display: grid; place-items: center; border-color: transparent; background: none; color: var(--muted); }
+  .tool-card .dust-foot button:hover, .tool-card .dust-foot button.on { color: var(--accent); border-color: var(--line); }
+  .dust-foot .ic { margin: 0; }
+  .dust-chips { display: flex; justify-content: center; gap: 4px; flex-wrap: wrap; font-size: 13px; margin-bottom: 4px; }
   .dust-wx { margin: 0; text-align: center; font: 15px "Pretendard Variable", "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; color: var(--ink); } .dust-wx:empty { display: none; }
   .dust-wx small { color: var(--muted); font-size: 13px; }
-  .dust-chips span { border-radius: 7px; padding: 2px 10px; color: #fff; background: var(--grade); }
+  .dust-chips span { border-radius: 6px; padding: 1px 8px; color: #fff; background: var(--grade); }
   .dust-set { display: flex; flex-direction: column; gap: 6px; font: 14px "Pretendard Variable", "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; }
   .dust-set input { flex: 1; min-width: 0; font: inherit; padding: 3px 8px; border: 1.5px solid var(--line); border-radius: 8px; }
   .dust-set .row { display: flex; gap: 4px; }
@@ -1171,13 +1193,13 @@
     <div class="dust-main" id="dust-main"><span class="face" id="dust-face">🌫︎</span><b id="dust-grade">지역을 정해 주세요</b></div>
     <div class="dust-chips" id="dust-chips"></div>
     <p class="dust-wx" id="dust-wx"></p>
-    <p class="sub" id="dust-place"></p>
+
     <div class="dust-set" id="dust-set" hidden>
       <button onclick="dustHere()">📍 지금 이 컴퓨터 위치로 (추천)</button>
       <div class="row"><input id="dust-q" placeholder="시·군 이름 (예: 수원시)" aria-label="시·군 이름"><button onclick="dustSearch()">찾기</button></div>
       <div class="dust-results" id="dust-results"></div>
     </div>
-    <div class="acts"><button id="dust-set-btn" onclick="dustToggleSet()">지역 설정</button><button onclick="dustLoad()">새로고침</button></div>
+    <div class="dust-foot"><span id="dust-place"></span><button id="dust-set-btn" onclick="dustToggleSet()" title="지역 설정" aria-label="지역 설정">📍</button><button onclick="dustLoad()" title="새로고침" aria-label="새로고침">↻</button></div>
   </section>
   <section class="card tool-card" data-card="noise" id="noise-card">
     <p class="label">🔉 소음 측정</p>
@@ -1287,15 +1309,14 @@
     <p class="label">🕘 시간표</p>
     <div class="tt-split">
       <div class="tt-left">
-        <p class="sub" id="tt-when"></p>
+        <button class="tt-edit" onclick="ttCardEdit()" title="시간표 고치기" aria-label="시간표 고치기">✎</button>
         <div class="tt-big" id="tt-main" aria-live="polite"></div>
         <p class="sub" id="tt-time"></p>
         <div class="tt-today" id="tt-today"></div>
-        <button class="tt-edit" onclick="ttCardEdit()" title="교시별 과목을 여기서 바로 고쳐요">✎ 시간표 고치기</button>
       </div>
       <div class="tt-right">
         <div class="tt-box">
-          <p class="sub"><svg class="bag-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8.5V7a4 2.6 0 0 1 8 0v1.5" fill="none" stroke="#2b2420" stroke-width="2" stroke-linecap="round"/><g stroke="#2b2420" stroke-width="1.2"><rect x="2" y="8" width="20" height="13" rx="3.5" fill="#f59f00"/><rect x="2" y="8" width="20" height="4.5" rx="2.2" fill="#e67700"/><rect x="6" y="14.5" width="12" height="4.5" rx="1.5" fill="#ffd43b"/></g></svg>준비물</p>
+          <p class="sub">🎒 준비물</p>
           <div class="note" data-key="supplies" contenteditable="true" spellcheck="false" role="textbox" aria-multiline="true" aria-label="준비물"></div>
         </div>
         <div class="tt-box">
@@ -2264,8 +2285,8 @@ function showCard(k) { // 아래쪽 바에서 누르면 보드에 바로 맨 앞
 }
 applyLayout();
 // 이모지 → 같은 굵기 선 아이콘 (Tabler Icons, MIT). 화면에 새로 그려지는 글도 바로 바꿈
-const ICON_SVG = {"clock-digital": "<rect x=\"2.5\" y=\"6\" width=\"19\" height=\"12\" rx=\"2\" /> <path d=\"M7 9.5v5\" /> <path d=\"M12 10.5v.01\" /> <path d=\"M12 13.5v.01\" /> <path d=\"M15 9.5h3v5h-3z\" />", "brand-youtube": "<path d=\"M2 8a4 4 0 0 1 4 -4h12a4 4 0 0 1 4 4v8a4 4 0 0 1 -4 4h-12a4 4 0 0 1 -4 -4v-8z\" /> <path d=\"M10 9l5 3l-5 3z\" />", "history": "<path d=\"M12 8l0 4l2 2\" /> <path d=\"M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5\" />", "folders": "<path d=\"M9 4h3l2 2h5a2 2 0 0 1 2 2v7a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2\" /> <path d=\"M17 17v2a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2h2\" />", "file-text": "<path d=\"M14 3v4a1 1 0 0 0 1 1h4\" /> <path d=\"M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z\" /> <path d=\"M9 9l1 0\" /> <path d=\"M9 13l6 0\" /> <path d=\"M9 17l6 0\" />", "dice-5": "<path d=\"M3 3m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z\" /> <circle cx=\"8.5\" cy=\"8.5\" r=\".5\" fill=\"currentColor\" /> <circle cx=\"15.5\" cy=\"8.5\" r=\".5\" fill=\"currentColor\" /> <circle cx=\"15.5\" cy=\"15.5\" r=\".5\" fill=\"currentColor\" /> <circle cx=\"8.5\" cy=\"15.5\" r=\".5\" fill=\"currentColor\" /> <circle cx=\"12\" cy=\"12\" r=\".5\" fill=\"currentColor\" />", "clipboard-list": "<path d=\"M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2\" /> <path d=\"M9 3m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z\" /> <path d=\"M9 12l.01 0\" /> <path d=\"M13 12l2 0\" /> <path d=\"M9 16l.01 0\" /> <path d=\"M13 16l2 0\" />", "medal": "<path d=\"M12 4v3m-4 -3v6m8 -6v6\" /> <path d=\"M12 18.5l-3 1.5l.5 -3.5l-2 -2l3 -.5l1.5 -3l1.5 3l3 .5l-2 2l.5 3.5z\" />", "device-floppy": "<path d=\"M6 4h10l4 4v10a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2\" /> <path d=\"M12 14m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\" /> <path d=\"M14 4l0 4l-6 0l0 -4\" />", "pin": "<path d=\"M15 4.5l-4 4l-4 1.5l-1.5 1.5l7 7l1.5 -1.5l1.5 -4l4 -4\" /> <path d=\"M9 15l-4.5 4.5\" /> <path d=\"M14.5 4l5.5 5.5\" />", "alarm": "<path d=\"M12 13m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0\" /> <path d=\"M12 10l0 3l2 0\" /> <path d=\"M7 4l-2.75 2\" /> <path d=\"M17 4l2.75 2\" />", "printer": "<path d=\"M17 17h2a2 2 0 0 0 2 -2v-4a2 2 0 0 0 -2 -2h-14a2 2 0 0 0 -2 2v4a2 2 0 0 0 2 2h2\" /> <path d=\"M17 9v-4a2 2 0 0 0 -2 -2h-6a2 2 0 0 0 -2 2v4\" /> <path d=\"M7 13m0 2a2 2 0 0 1 2 -2h6a2 2 0 0 1 2 2v4a2 2 0 0 1 -2 2h-6a2 2 0 0 1 -2 -2z\" />", "square-check": "<path d=\"M3 3m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z\" /> <path d=\"M9 12l2 2l4 -4\" />", "cloud": "<path d=\"M6.657 18c-2.572 0 -4.657 -2.007 -4.657 -4.483c0 -2.475 2.085 -4.482 4.657 -4.482c.393 -1.762 1.794 -3.2 3.675 -3.773c1.88 -.572 3.956 -.193 5.444 1c1.488 1.19 2.162 3.007 1.77 4.769h.99c1.913 0 3.464 1.56 3.464 3.486c0 1.927 -1.551 3.487 -3.465 3.487h-11.878\" />", "trophy": "<path d=\"M8 21l8 0\" /> <path d=\"M12 17l0 4\" /> <path d=\"M7 4l10 0\" /> <path d=\"M17 4v8a5 5 0 0 1 -10 0v-8\" /> <path d=\"M5 9m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\" /> <path d=\"M19 9m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\" />", "world": "<path d=\"M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0\" /> <path d=\"M3.6 9h16.8\" /> <path d=\"M3.6 15h16.8\" /> <path d=\"M11.5 3a17 17 0 0 0 0 18\" /> <path d=\"M12.5 3a17 17 0 0 1 0 18\" />", "lock": "<path d=\"M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6z\" /> <path d=\"M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0\" /> <path d=\"M8 11v-4a4 4 0 1 1 8 0v4\" />", "gift": "<path d=\"M3 8m0 1a1 1 0 0 1 1 -1h16a1 1 0 0 1 1 1v2a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1 -1z\" /> <path d=\"M12 8l0 13\" /> <path d=\"M19 12v7a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-7\" /> <path d=\"M7.5 8a2.5 2.5 0 0 1 0 -5a4.8 8 0 0 1 4.5 5a4.8 8 0 0 1 4.5 -5a2.5 2.5 0 0 1 0 5\" />", "search": "<path d=\"M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0\" /> <path d=\"M21 21l-6 -6\" />", "note": "<path d=\"M13 20l7 -7\" /> <path d=\"M13 20v-6a1 1 0 0 1 1 -1h6v-7a2 2 0 0 0 -2 -2h-12a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7\" />", "armchair": "<path d=\"M5 11a2 2 0 0 1 2 2v2h10v-2a2 2 0 1 1 4 0v4a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-4a2 2 0 0 1 2 -2z\" /> <path d=\"M5 11v-5a3 3 0 0 1 3 -3h8a3 3 0 0 1 3 3v5\" /> <path d=\"M6 19v2\" /> <path d=\"M18 19v2\" />", "photo": "<path d=\"M15 8h.01\" /> <path d=\"M3 6a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v12a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3v-12z\" /> <path d=\"M3 16l5 -5c.928 -.893 2.072 -.893 3 0l5 5\" /> <path d=\"M14 14l1 -1c.928 -.893 2.072 -.893 3 0l3 3\" />", "hourglass": "<path d=\"M6.5 7h11\" /> <path d=\"M6.5 17h11\" /> <path d=\"M6 20v-2a6 6 0 1 1 12 0v2a1 1 0 0 1 -1 1h-10a1 1 0 0 1 -1 -1z\" /> <path d=\"M6 4v2a6 6 0 1 0 12 0v-2a1 1 0 0 0 -1 -1h-10a1 1 0 0 0 -1 1z\" />", "clock-hour-4": "<path d=\"M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0\" /> <path d=\"M12 12l3 2\" /> <path d=\"M12 7v5\" />", "map-pin": "<path d=\"M9 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0\" /> <path d=\"M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0z\" />", "volume": "<path d=\"M15 8a5 5 0 0 1 0 8\" /> <path d=\"M17.7 5a9 9 0 0 1 0 14\" /> <path d=\"M6 15h-2a1 1 0 0 1 -1 -1v-4a1 1 0 0 1 1 -1h2l3.5 -4.5a.8 .8 0 0 1 1.5 .5v14a.8 .8 0 0 1 -1.5 .5l-3.5 -4.5\" />", "temperature": "<path d=\"M10 13.5a4 4 0 1 0 4 0v-8.5a2 2 0 0 0 -4 0v8.5\" /> <path d=\"M10 9l4 0\" />", "qrcode": "<path d=\"M4 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z\" /> <path d=\"M7 17l0 .01\" /> <path d=\"M14 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z\" /> <path d=\"M7 7l0 .01\" /> <path d=\"M4 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z\" /> <path d=\"M17 7l0 .01\" /> <path d=\"M14 14l3 0\" /> <path d=\"M20 14l0 .01\" /> <path d=\"M14 14l0 3\" /> <path d=\"M14 20l3 0\" /> <path d=\"M17 17l3 0\" /> <path d=\"M20 17l0 3\" />", "chart-bar": "<path d=\"M3 13a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z\" /> <path d=\"M15 9a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z\" /> <path d=\"M9 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z\" /> <path d=\"M4 20h14\" />", "heart-handshake": "<path d=\"M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572\" /> <path d=\"M12 6l-3.293 3.293a1 1 0 0 0 0 1.414l.543 .543c.69 .69 1.81 .69 2.5 0l1 -1a3.182 3.182 0 0 1 4.5 0l2.25 2.25\" /> <path d=\"M12.5 15.5l2 2\" /> <path d=\"M15 13l2 2\" />", "users": "<path d=\"M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0\" /> <path d=\"M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2\" /> <path d=\"M16 3.13a4 4 0 0 1 0 7.75\" /> <path d=\"M21 21v-2a4 4 0 0 0 -3 -3.85\" />", "chalkboard": "<path d=\"M8 19h-3a2 2 0 0 1 -2 -2v-10a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v11a1 1 0 0 1 -1 1\" /> <path d=\"M11 16m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v1a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z\" />", "pencil": "<path d=\"M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4\" /> <path d=\"M13.5 6.5l4 4\" />", "clock": "<path d=\"M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0\" /> <path d=\"M12 7v5l3 3\" />", "folder": "<path d=\"M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2\" />", "users-group": "<path d=\"M10 13a2 2 0 1 0 4 0a2 2 0 0 0 -4 0\" /> <path d=\"M8 21v-1a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v1\" /> <path d=\"M15 5a2 2 0 1 0 4 0a2 2 0 0 0 -4 0\" /> <path d=\"M17 10h2a2 2 0 0 1 2 2v1\" /> <path d=\"M5 5a2 2 0 1 0 4 0a2 2 0 0 0 -4 0\" /> <path d=\"M3 13v-1a2 2 0 0 1 2 -2h2\" />", "school": "<path d=\"M22 9l-10 -4l-10 4l10 4l10 -4v6\" /> <path d=\"M6 10.6v5.4a6 3 0 0 0 12 0v-5.4\" />", "mist": "<path d=\"M5 5h3m4 0h9\" /> <path d=\"M3 10h11m4 0h1\" /> <path d=\"M5 15h5m4 0h7\" /> <path d=\"M3 20h9m4 0h3\" />", "bell": "<path d=\"M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6\" /> <path d=\"M9 17v1a3 3 0 0 0 6 0v-1\" />", "ear": "<path d=\"M6 10a7 7 0 1 1 13 3.6a10 10 0 0 1 -2 2a8 8 0 0 0 -2 3a4.5 4.5 0 0 1 -6.8 1.4\" /> <path d=\"M10 10a3 3 0 1 1 5 2.2\" />", "shirt": "<path d=\"M15 4l6 2v5h-3v8a1 1 0 0 1 -1 1h-10a1 1 0 0 1 -1 -1v-8h-3v-5l6 -2a3 3 0 0 0 6 0\" />", "settings": "<path d=\"M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z\" /> <path d=\"M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0\" />", "arrow-back-up": "<path d=\"M9 14l-4 -4l4 -4\" /> <path d=\"M5 10h11a4 4 0 1 1 0 8h-1\" />", "trash": "<path d=\"M4 7l16 0\" /> <path d=\"M10 11l0 6\" /> <path d=\"M14 11l0 6\" /> <path d=\"M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12\" /> <path d=\"M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3\" />", "books": "<path d=\"M5 4m0 1a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z\" /> <path d=\"M9 4m0 1a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z\" /> <path d=\"M5 8h4\" /> <path d=\"M9 16h4\" /> <path d=\"M13.803 4.56l2.184 -.53c.562 -.135 1.133 .19 1.282 .732l3.695 13.418a1.02 1.02 0 0 1 -.634 1.219l-.133 .041l-2.184 .53c-.562 .135 -1.133 -.19 -1.282 -.732l-3.695 -13.418a1.02 1.02 0 0 1 .634 -1.219l.133 -.041z\" /> <path d=\"M14 9l4 -1\" /> <path d=\"M16 16l3.923 -.98\" />", "cloud-rain": "<path d=\"M7 18a4.6 4.4 0 0 1 0 -9a5 4.5 0 0 1 11 2h1a3.5 3.5 0 0 1 0 7\" /> <path d=\"M11 13v2m0 3v2m4 -5v2m0 3v2\" />", "cloud-snow": "<path d=\"M7 18a4.6 4.4 0 0 1 0 -9a5 4.5 0 0 1 11 2h1a3.5 3.5 0 0 1 0 7\" /> <path d=\"M11 15v.01m0 3v.01m0 3v.01m4 -4v.01m0 3v.01\" />", "sun": "<path d=\"M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0\" /> <path d=\"M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7\" />", "sun-low": "<path d=\"M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0\" /> <path d=\"M4 12h.01\" /> <path d=\"M12 4v.01\" /> <path d=\"M20 12h.01\" /> <path d=\"M12 20v.01\" /> <path d=\"M6.31 6.31l-.01 -.01\" /> <path d=\"M17.71 6.31l-.01 -.01\" /> <path d=\"M17.7 17.7l.01 .01\" /> <path d=\"M6.3 17.7l.01 .01\" />", "cloud-storm": "<path d=\"M7 18a4.6 4.4 0 0 1 0 -9a5 4.5 0 0 1 11 2h1a3.5 3.5 0 0 1 0 7h-1\" /> <path d=\"M13 14l-2 4l3 0l-2 4\" />", "alert-triangle": "<path d=\"M12 9v4\" /> <path d=\"M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0z\" /> <path d=\"M12 16h.01\" />", "arrows-shuffle": "<path d=\"M18 4l3 3l-3 3\" /> <path d=\"M18 20l3 -3l-3 -3\" /> <path d=\"M3 7h3a5 5 0 0 1 5 5a5 5 0 0 0 5 5h5\" /> <path d=\"M21 7h-5a4.978 4.978 0 0 0 -3 1m-4 8a4.984 4.984 0 0 1 -3 1h-3\" />", "archive": "<path d=\"M3 4m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z\" /> <path d=\"M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10\" /> <path d=\"M10 12l4 0\" />", "mail": "<path d=\"M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z\" /> <path d=\"M3 7l9 6l9 -6\" />", "calendar": "<path d=\"M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z\" /> <path d=\"M16 3v4\" /> <path d=\"M8 3v4\" /> <path d=\"M4 11h16\" /> <path d=\"M11 15h1\" /> <path d=\"M12 15v3\" />", "compass": "<path d=\"M8 16l2 -6l6 -2l-2 6l-6 2\" /> <path d=\"M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0\" /> <path d=\"M12 3l0 2\" /> <path d=\"M12 19l0 2\" /> <path d=\"M3 12l2 0\" /> <path d=\"M19 12l2 0\" />", "device-mobile": "<path d=\"M6 5a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2v-14z\" /> <path d=\"M11 4h2\" /> <path d=\"M12 17v.01\" />", "x": "<path d=\"M18 6l-12 12\" /> <path d=\"M6 6l12 12\" />", "check": "<path d=\"M5 12l5 5l10 -10\" />", "refresh": "<path d=\"M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4\" /> <path d=\"M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4\" />", "rotate": "<path d=\"M19.95 11a8 8 0 1 0 -.5 4m.5 5v-5h-5\" />", "maximize": "<path d=\"M4 8v-2a2 2 0 0 1 2 -2h2\" /> <path d=\"M4 16v2a2 2 0 0 0 2 2h2\" /> <path d=\"M16 4h2a2 2 0 0 1 2 2v2\" /> <path d=\"M16 20h2a2 2 0 0 0 2 -2v-2\" />", "star": "<path d=\"M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z\" />", "volume-off": "<path d=\"M15 8a5 5 0 0 1 1.912 4.934m-1.377 2.602a5 5 0 0 1 -.535 .464\" /> <path d=\"M17.7 5a9 9 0 0 1 2.362 11.086m-1.676 2.299a9 9 0 0 1 -.686 .615\" /> <path d=\"M9.069 5.054l.431 -.554a.8 .8 0 0 1 1.5 .5v2m0 4v8a.8 .8 0 0 1 -1.5 .5l-3.5 -4.5h-2a1 1 0 0 1 -1 -1v-4a1 1 0 0 1 1 -1h2l1.294 -1.664\" /> <path d=\"M3 3l18 18\" />"};
-const ICON_OF = {"📺": "brand-youtube", "📜": "history", "🗂": "folders", "📄": "file-text", "🎲": "dice-5", "📋": "clipboard-list", "🏅": "medal", "💾": "device-floppy", "📌": "pin", "⏰": "alarm", "🖨": "printer", "✅": "square-check", "😷": "cloud", "🏆": "trophy", "🌐": "world", "🔒": "lock", "🎁": "gift", "🔍": "search", "📝": "note", "🪑": "armchair", "🖼": "photo", "⏱": "hourglass", "🕰": "clock-digital", "📍": "map-pin", "🔉": "volume", "🌡": "temperature", "🔳": "qrcode", "📊": "chart-bar", "🤝": "heart-handshake", "🧹": "users", "🖍": "chalkboard", "✏": "pencil", "🕘": "clock", "📁": "folder", "👥": "users-group", "🏫": "school", "🌫": "mist", "🔔": "bell", "🗣": "ear", "👕": "shirt", "⚙": "settings", "↶": "arrow-back-up", "🗑": "trash", "📚": "books", "🔊": "volume", "🌧": "cloud-rain", "🌨": "cloud-snow", "☀": "sun", "🌤": "sun-low", "☁": "cloud", "🌦": "cloud-rain", "⛈": "cloud-storm", "⚠": "alert-triangle", "🔀": "arrows-shuffle", "🗄": "archive", "✉": "mail", "📅": "calendar", "🧭": "compass", "📲": "device-mobile", "✕": "x", "✎": "pencil", "✓": "check", "↻": "refresh", "↺": "rotate", "⛶": "maximize", "☆": "star", "★": "star", "🔇": "volume-off"};
+const ICON_SVG = {"backpack": "<path d=\"M5 18v-6a6 6 0 0 1 6 -6h2a6 6 0 0 1 6 6v6a3 3 0 0 1 -3 3h-8a3 3 0 0 1 -3 -3z\" /> <path d=\"M10 6v-1a2 2 0 1 1 4 0v1\" /> <path d=\"M9 21v-4a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v4\" /> <path d=\"M11 10h2\" />", "clock-digital": "<rect x=\"2.5\" y=\"6\" width=\"19\" height=\"12\" rx=\"2\" /> <path d=\"M7 9.5v5\" /> <path d=\"M12 10.5v.01\" /> <path d=\"M12 13.5v.01\" /> <path d=\"M15 9.5h3v5h-3z\" />", "brand-youtube": "<path d=\"M2 8a4 4 0 0 1 4 -4h12a4 4 0 0 1 4 4v8a4 4 0 0 1 -4 4h-12a4 4 0 0 1 -4 -4v-8z\" /> <path d=\"M10 9l5 3l-5 3z\" />", "history": "<path d=\"M12 8l0 4l2 2\" /> <path d=\"M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5\" />", "folders": "<path d=\"M9 4h3l2 2h5a2 2 0 0 1 2 2v7a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2\" /> <path d=\"M17 17v2a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2h2\" />", "file-text": "<path d=\"M14 3v4a1 1 0 0 0 1 1h4\" /> <path d=\"M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z\" /> <path d=\"M9 9l1 0\" /> <path d=\"M9 13l6 0\" /> <path d=\"M9 17l6 0\" />", "dice-5": "<path d=\"M3 3m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z\" /> <circle cx=\"8.5\" cy=\"8.5\" r=\".5\" fill=\"currentColor\" /> <circle cx=\"15.5\" cy=\"8.5\" r=\".5\" fill=\"currentColor\" /> <circle cx=\"15.5\" cy=\"15.5\" r=\".5\" fill=\"currentColor\" /> <circle cx=\"8.5\" cy=\"15.5\" r=\".5\" fill=\"currentColor\" /> <circle cx=\"12\" cy=\"12\" r=\".5\" fill=\"currentColor\" />", "clipboard-list": "<path d=\"M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2\" /> <path d=\"M9 3m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z\" /> <path d=\"M9 12l.01 0\" /> <path d=\"M13 12l2 0\" /> <path d=\"M9 16l.01 0\" /> <path d=\"M13 16l2 0\" />", "medal": "<path d=\"M12 4v3m-4 -3v6m8 -6v6\" /> <path d=\"M12 18.5l-3 1.5l.5 -3.5l-2 -2l3 -.5l1.5 -3l1.5 3l3 .5l-2 2l.5 3.5z\" />", "device-floppy": "<path d=\"M6 4h10l4 4v10a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2\" /> <path d=\"M12 14m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\" /> <path d=\"M14 4l0 4l-6 0l0 -4\" />", "pin": "<path d=\"M15 4.5l-4 4l-4 1.5l-1.5 1.5l7 7l1.5 -1.5l1.5 -4l4 -4\" /> <path d=\"M9 15l-4.5 4.5\" /> <path d=\"M14.5 4l5.5 5.5\" />", "alarm": "<path d=\"M12 13m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0\" /> <path d=\"M12 10l0 3l2 0\" /> <path d=\"M7 4l-2.75 2\" /> <path d=\"M17 4l2.75 2\" />", "printer": "<path d=\"M17 17h2a2 2 0 0 0 2 -2v-4a2 2 0 0 0 -2 -2h-14a2 2 0 0 0 -2 2v4a2 2 0 0 0 2 2h2\" /> <path d=\"M17 9v-4a2 2 0 0 0 -2 -2h-6a2 2 0 0 0 -2 2v4\" /> <path d=\"M7 13m0 2a2 2 0 0 1 2 -2h6a2 2 0 0 1 2 2v4a2 2 0 0 1 -2 2h-6a2 2 0 0 1 -2 -2z\" />", "square-check": "<path d=\"M3 3m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z\" /> <path d=\"M9 12l2 2l4 -4\" />", "cloud": "<path d=\"M6.657 18c-2.572 0 -4.657 -2.007 -4.657 -4.483c0 -2.475 2.085 -4.482 4.657 -4.482c.393 -1.762 1.794 -3.2 3.675 -3.773c1.88 -.572 3.956 -.193 5.444 1c1.488 1.19 2.162 3.007 1.77 4.769h.99c1.913 0 3.464 1.56 3.464 3.486c0 1.927 -1.551 3.487 -3.465 3.487h-11.878\" />", "trophy": "<path d=\"M8 21l8 0\" /> <path d=\"M12 17l0 4\" /> <path d=\"M7 4l10 0\" /> <path d=\"M17 4v8a5 5 0 0 1 -10 0v-8\" /> <path d=\"M5 9m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\" /> <path d=\"M19 9m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\" />", "world": "<path d=\"M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0\" /> <path d=\"M3.6 9h16.8\" /> <path d=\"M3.6 15h16.8\" /> <path d=\"M11.5 3a17 17 0 0 0 0 18\" /> <path d=\"M12.5 3a17 17 0 0 1 0 18\" />", "lock": "<path d=\"M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6z\" /> <path d=\"M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0\" /> <path d=\"M8 11v-4a4 4 0 1 1 8 0v4\" />", "gift": "<path d=\"M3 8m0 1a1 1 0 0 1 1 -1h16a1 1 0 0 1 1 1v2a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1 -1z\" /> <path d=\"M12 8l0 13\" /> <path d=\"M19 12v7a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-7\" /> <path d=\"M7.5 8a2.5 2.5 0 0 1 0 -5a4.8 8 0 0 1 4.5 5a4.8 8 0 0 1 4.5 -5a2.5 2.5 0 0 1 0 5\" />", "search": "<path d=\"M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0\" /> <path d=\"M21 21l-6 -6\" />", "note": "<path d=\"M13 20l7 -7\" /> <path d=\"M13 20v-6a1 1 0 0 1 1 -1h6v-7a2 2 0 0 0 -2 -2h-12a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7\" />", "armchair": "<path d=\"M5 11a2 2 0 0 1 2 2v2h10v-2a2 2 0 1 1 4 0v4a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-4a2 2 0 0 1 2 -2z\" /> <path d=\"M5 11v-5a3 3 0 0 1 3 -3h8a3 3 0 0 1 3 3v5\" /> <path d=\"M6 19v2\" /> <path d=\"M18 19v2\" />", "photo": "<path d=\"M15 8h.01\" /> <path d=\"M3 6a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v12a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3v-12z\" /> <path d=\"M3 16l5 -5c.928 -.893 2.072 -.893 3 0l5 5\" /> <path d=\"M14 14l1 -1c.928 -.893 2.072 -.893 3 0l3 3\" />", "hourglass": "<path d=\"M6.5 7h11\" /> <path d=\"M6.5 17h11\" /> <path d=\"M6 20v-2a6 6 0 1 1 12 0v2a1 1 0 0 1 -1 1h-10a1 1 0 0 1 -1 -1z\" /> <path d=\"M6 4v2a6 6 0 1 0 12 0v-2a1 1 0 0 0 -1 -1h-10a1 1 0 0 0 -1 1z\" />", "clock-hour-4": "<path d=\"M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0\" /> <path d=\"M12 12l3 2\" /> <path d=\"M12 7v5\" />", "map-pin": "<path d=\"M9 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0\" /> <path d=\"M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0z\" />", "volume": "<path d=\"M15 8a5 5 0 0 1 0 8\" /> <path d=\"M17.7 5a9 9 0 0 1 0 14\" /> <path d=\"M6 15h-2a1 1 0 0 1 -1 -1v-4a1 1 0 0 1 1 -1h2l3.5 -4.5a.8 .8 0 0 1 1.5 .5v14a.8 .8 0 0 1 -1.5 .5l-3.5 -4.5\" />", "temperature": "<path d=\"M10 13.5a4 4 0 1 0 4 0v-8.5a2 2 0 0 0 -4 0v8.5\" /> <path d=\"M10 9l4 0\" />", "qrcode": "<path d=\"M4 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z\" /> <path d=\"M7 17l0 .01\" /> <path d=\"M14 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z\" /> <path d=\"M7 7l0 .01\" /> <path d=\"M4 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z\" /> <path d=\"M17 7l0 .01\" /> <path d=\"M14 14l3 0\" /> <path d=\"M20 14l0 .01\" /> <path d=\"M14 14l0 3\" /> <path d=\"M14 20l3 0\" /> <path d=\"M17 17l3 0\" /> <path d=\"M20 17l0 3\" />", "chart-bar": "<path d=\"M3 13a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z\" /> <path d=\"M15 9a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z\" /> <path d=\"M9 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z\" /> <path d=\"M4 20h14\" />", "heart-handshake": "<path d=\"M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572\" /> <path d=\"M12 6l-3.293 3.293a1 1 0 0 0 0 1.414l.543 .543c.69 .69 1.81 .69 2.5 0l1 -1a3.182 3.182 0 0 1 4.5 0l2.25 2.25\" /> <path d=\"M12.5 15.5l2 2\" /> <path d=\"M15 13l2 2\" />", "users": "<path d=\"M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0\" /> <path d=\"M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2\" /> <path d=\"M16 3.13a4 4 0 0 1 0 7.75\" /> <path d=\"M21 21v-2a4 4 0 0 0 -3 -3.85\" />", "chalkboard": "<path d=\"M8 19h-3a2 2 0 0 1 -2 -2v-10a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v11a1 1 0 0 1 -1 1\" /> <path d=\"M11 16m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v1a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z\" />", "pencil": "<path d=\"M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4\" /> <path d=\"M13.5 6.5l4 4\" />", "clock": "<path d=\"M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0\" /> <path d=\"M12 7v5l3 3\" />", "folder": "<path d=\"M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2\" />", "users-group": "<path d=\"M10 13a2 2 0 1 0 4 0a2 2 0 0 0 -4 0\" /> <path d=\"M8 21v-1a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v1\" /> <path d=\"M15 5a2 2 0 1 0 4 0a2 2 0 0 0 -4 0\" /> <path d=\"M17 10h2a2 2 0 0 1 2 2v1\" /> <path d=\"M5 5a2 2 0 1 0 4 0a2 2 0 0 0 -4 0\" /> <path d=\"M3 13v-1a2 2 0 0 1 2 -2h2\" />", "school": "<path d=\"M22 9l-10 -4l-10 4l10 4l10 -4v6\" /> <path d=\"M6 10.6v5.4a6 3 0 0 0 12 0v-5.4\" />", "mist": "<path d=\"M5 5h3m4 0h9\" /> <path d=\"M3 10h11m4 0h1\" /> <path d=\"M5 15h5m4 0h7\" /> <path d=\"M3 20h9m4 0h3\" />", "bell": "<path d=\"M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6\" /> <path d=\"M9 17v1a3 3 0 0 0 6 0v-1\" />", "ear": "<path d=\"M6 10a7 7 0 1 1 13 3.6a10 10 0 0 1 -2 2a8 8 0 0 0 -2 3a4.5 4.5 0 0 1 -6.8 1.4\" /> <path d=\"M10 10a3 3 0 1 1 5 2.2\" />", "shirt": "<path d=\"M15 4l6 2v5h-3v8a1 1 0 0 1 -1 1h-10a1 1 0 0 1 -1 -1v-8h-3v-5l6 -2a3 3 0 0 0 6 0\" />", "settings": "<path d=\"M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z\" /> <path d=\"M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0\" />", "arrow-back-up": "<path d=\"M9 14l-4 -4l4 -4\" /> <path d=\"M5 10h11a4 4 0 1 1 0 8h-1\" />", "trash": "<path d=\"M4 7l16 0\" /> <path d=\"M10 11l0 6\" /> <path d=\"M14 11l0 6\" /> <path d=\"M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12\" /> <path d=\"M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3\" />", "books": "<path d=\"M5 4m0 1a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z\" /> <path d=\"M9 4m0 1a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z\" /> <path d=\"M5 8h4\" /> <path d=\"M9 16h4\" /> <path d=\"M13.803 4.56l2.184 -.53c.562 -.135 1.133 .19 1.282 .732l3.695 13.418a1.02 1.02 0 0 1 -.634 1.219l-.133 .041l-2.184 .53c-.562 .135 -1.133 -.19 -1.282 -.732l-3.695 -13.418a1.02 1.02 0 0 1 .634 -1.219l.133 -.041z\" /> <path d=\"M14 9l4 -1\" /> <path d=\"M16 16l3.923 -.98\" />", "cloud-rain": "<path d=\"M7 18a4.6 4.4 0 0 1 0 -9a5 4.5 0 0 1 11 2h1a3.5 3.5 0 0 1 0 7\" /> <path d=\"M11 13v2m0 3v2m4 -5v2m0 3v2\" />", "cloud-snow": "<path d=\"M7 18a4.6 4.4 0 0 1 0 -9a5 4.5 0 0 1 11 2h1a3.5 3.5 0 0 1 0 7\" /> <path d=\"M11 15v.01m0 3v.01m0 3v.01m4 -4v.01m0 3v.01\" />", "sun": "<path d=\"M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0\" /> <path d=\"M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7\" />", "sun-low": "<path d=\"M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0\" /> <path d=\"M4 12h.01\" /> <path d=\"M12 4v.01\" /> <path d=\"M20 12h.01\" /> <path d=\"M12 20v.01\" /> <path d=\"M6.31 6.31l-.01 -.01\" /> <path d=\"M17.71 6.31l-.01 -.01\" /> <path d=\"M17.7 17.7l.01 .01\" /> <path d=\"M6.3 17.7l.01 .01\" />", "cloud-storm": "<path d=\"M7 18a4.6 4.4 0 0 1 0 -9a5 4.5 0 0 1 11 2h1a3.5 3.5 0 0 1 0 7h-1\" /> <path d=\"M13 14l-2 4l3 0l-2 4\" />", "alert-triangle": "<path d=\"M12 9v4\" /> <path d=\"M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0z\" /> <path d=\"M12 16h.01\" />", "arrows-shuffle": "<path d=\"M18 4l3 3l-3 3\" /> <path d=\"M18 20l3 -3l-3 -3\" /> <path d=\"M3 7h3a5 5 0 0 1 5 5a5 5 0 0 0 5 5h5\" /> <path d=\"M21 7h-5a4.978 4.978 0 0 0 -3 1m-4 8a4.984 4.984 0 0 1 -3 1h-3\" />", "archive": "<path d=\"M3 4m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z\" /> <path d=\"M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10\" /> <path d=\"M10 12l4 0\" />", "mail": "<path d=\"M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z\" /> <path d=\"M3 7l9 6l9 -6\" />", "calendar": "<path d=\"M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z\" /> <path d=\"M16 3v4\" /> <path d=\"M8 3v4\" /> <path d=\"M4 11h16\" /> <path d=\"M11 15h1\" /> <path d=\"M12 15v3\" />", "compass": "<path d=\"M8 16l2 -6l6 -2l-2 6l-6 2\" /> <path d=\"M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0\" /> <path d=\"M12 3l0 2\" /> <path d=\"M12 19l0 2\" /> <path d=\"M3 12l2 0\" /> <path d=\"M19 12l2 0\" />", "device-mobile": "<path d=\"M6 5a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2v-14z\" /> <path d=\"M11 4h2\" /> <path d=\"M12 17v.01\" />", "x": "<path d=\"M18 6l-12 12\" /> <path d=\"M6 6l12 12\" />", "check": "<path d=\"M5 12l5 5l10 -10\" />", "refresh": "<path d=\"M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4\" /> <path d=\"M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4\" />", "rotate": "<path d=\"M19.95 11a8 8 0 1 0 -.5 4m.5 5v-5h-5\" />", "maximize": "<path d=\"M4 8v-2a2 2 0 0 1 2 -2h2\" /> <path d=\"M4 16v2a2 2 0 0 0 2 2h2\" /> <path d=\"M16 4h2a2 2 0 0 1 2 2v2\" /> <path d=\"M16 20h2a2 2 0 0 0 2 -2v-2\" />", "star": "<path d=\"M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z\" />", "volume-off": "<path d=\"M15 8a5 5 0 0 1 1.912 4.934m-1.377 2.602a5 5 0 0 1 -.535 .464\" /> <path d=\"M17.7 5a9 9 0 0 1 2.362 11.086m-1.676 2.299a9 9 0 0 1 -.686 .615\" /> <path d=\"M9.069 5.054l.431 -.554a.8 .8 0 0 1 1.5 .5v2m0 4v8a.8 .8 0 0 1 -1.5 .5l-3.5 -4.5h-2a1 1 0 0 1 -1 -1v-4a1 1 0 0 1 1 -1h2l1.294 -1.664\" /> <path d=\"M3 3l18 18\" />"};
+const ICON_OF = {"🎒": "backpack", "📺": "brand-youtube", "📜": "history", "🗂": "folders", "📄": "file-text", "🎲": "dice-5", "📋": "clipboard-list", "🏅": "medal", "💾": "device-floppy", "📌": "pin", "⏰": "alarm", "🖨": "printer", "✅": "square-check", "😷": "cloud", "🏆": "trophy", "🌐": "world", "🔒": "lock", "🎁": "gift", "🔍": "search", "📝": "note", "🪑": "armchair", "🖼": "photo", "⏱": "hourglass", "🕰": "clock-digital", "📍": "map-pin", "🔉": "volume", "🌡": "temperature", "🔳": "qrcode", "📊": "chart-bar", "🤝": "heart-handshake", "🧹": "users", "🖍": "chalkboard", "✏": "pencil", "🕘": "clock", "📁": "folder", "👥": "users-group", "🏫": "school", "🌫": "mist", "🔔": "bell", "🗣": "ear", "👕": "shirt", "⚙": "settings", "↶": "arrow-back-up", "🗑": "trash", "📚": "books", "🔊": "volume", "🌧": "cloud-rain", "🌨": "cloud-snow", "☀": "sun", "🌤": "sun-low", "☁": "cloud", "🌦": "cloud-rain", "⛈": "cloud-storm", "⚠": "alert-triangle", "🔀": "arrows-shuffle", "🗄": "archive", "✉": "mail", "📅": "calendar", "🧭": "compass", "📲": "device-mobile", "✕": "x", "✎": "pencil", "✓": "check", "↻": "refresh", "↺": "rotate", "⛶": "maximize", "☆": "star", "★": "star", "🔇": "volume-off"};
 const ICON_RE = /^(\s*)([\u2190-\u2BFF\u{1F000}-\u{1FAFF}])[\uFE0E\uFE0F]?\s?/u;
 const ICON_SKIP = "[contenteditable], textarea, input, select, option, .note, .face, .rw-cheer, #topic, script, style, svg"; // 쓰는 곳·표정·주제 글은 그대로
 function iconEl(name) {
@@ -2395,8 +2416,51 @@ function initNoteTools(ta) {
   pop.dataset.for = ta.dataset.key; // 카드를 없앨 때 같이 치우려고
   open.addEventListener("pointerdown", () => { const d = open.ownerDocument; (d.fullscreenElement || d.body).append(pop); }); // 전체 화면이면 그 카드 안에 띄워야 보임. 다른 창으로 뗀 카드면 그 창에
   bar.append(open); ta.before(bar); document.body.append(pop); apply();
+  if (ta.dataset.key.startsWith("memo")) { // 메모만: 보관함
+    const arc = btn("📁", "메모 보관함", () => memoArchive(arc, ta)); arc.className = "tt"; arc.setAttribute("aria-label", "메모 보관함");
+    bar.append(arc);
+  }
 }
 document.querySelectorAll(".note[data-key]").forEach(initNoteTools);
+// 메모 보관함: 다시 봐야 하는 메모를 띄우지 않고 모아 둠. memo-archive = [{ id, at, title(첫 줄), html }] (로그인하면 다른 컴퓨터에도)
+function memoArchive(btn, ta) {
+  const d = btn.ownerDocument, W = d.defaultView;
+  d.querySelector(".memo-arc")?.remove();
+  let arc = [];
+  try { arc = JSON.parse(localStorage.getItem("memo-archive")) || []; } catch (e) {}
+  const store = () => { try { localStorage.setItem("memo-archive", JSON.stringify(arc)); } catch (e) {} };
+  const q = h("input", { type: "search", placeholder: "보관한 메모 찾기", "aria-label": "보관한 메모 찾기" }), list = h("div", { class: "ma-list" });
+  const plain = html => { const x = d.createElement("div"); x.innerHTML = html.replace(/<(div|p|li|br)[^>]*>/gi, "\n$&"); return x.textContent.trim(); };
+  const keep = async clear => {
+    const text = ta.innerText.trim();
+    if (!text) return seConfirm(m, "메모가 비어 있어요.", "확인", null);
+    arc.unshift({ id: String(Date.now()), at: Date.now(), title: text.split("\n")[0].slice(0, 40), html: ta.innerHTML }); store();
+    if (clear) { ta.innerHTML = ""; ta.dispatchEvent(new Event("input")); }
+    q.value = ""; draw();
+  };
+  const draw = () => {
+    const f = q.value.trim();
+    const rows = arc.filter(a => !f || plain(a.html).includes(f) || a.title.includes(f));
+    list.replaceChildren(...(rows.length ? rows.map(a => {
+      const view = h("div", { class: "ma-view", hidden: "" });
+      const row = h("div", { class: "ma-item" },
+        h("button", { class: "ma-head", onclick: () => { view.hidden = !view.hidden; if (!view.hidden && !view.firstChild) { const body = h("div", { class: "ma-body" }); body.innerHTML = a.html; view.prepend(body, h("div", { class: "ma-acts" },
+          h("button", { onclick: () => { addCard("memo"); const n = [...d.querySelectorAll('.card[data-card^="memo-"] .note')].at(-1); n.innerHTML = a.html; n.dispatchEvent(new Event("input")); m.hidePopover(); } }, "새 메모로 꺼내기"),
+          h("button", { class: "danger", onclick: async () => { if (!await seConfirm(m, `'${a.title}' 메모를 지울까요?`, "지우기")) return; arc = arc.filter(x => x !== a); store(); draw(); } }, "지우기"))); } } },
+          h("b", {}, a.title), h("small", {}, new Date(a.at).toLocaleDateString("ko-KR", { year: "2-digit", month: "numeric", day: "numeric" }))), view);
+      return row;
+    }) : [h("p", { class: "rw-h" }, arc.length ? "찾는 메모가 없어요." : "아직 보관한 메모가 없어요.")]));
+  };
+  q.oninput = draw;
+  const m = h("div", { class: "rw-menu memo-arc", popover: "auto" },
+    h("div", { class: "rw-loghead" }, h("b", {}, "📁 메모 보관함")),
+    h("div", { class: "ma-keep" }, h("button", { onclick: () => keep(false) }, "지금 메모 보관"), h("button", { onclick: () => keep(true) }, "보관하고 비우기")),
+    q, list);
+  d.body.append(m); m.addEventListener("toggle", e => { if (e.newState === "closed") m.remove(); }); m.showPopover(); draw();
+  const r = btn.getBoundingClientRect();
+  m.style.left = Math.max(8, Math.min(r.right - m.offsetWidth, W.innerWidth - m.offsetWidth - 8)) + "px";
+  m.style.top = (r.top - m.offsetHeight - 6 > 8 ? r.top - m.offsetHeight - 6 : Math.min(r.bottom + 6, W.innerHeight - m.offsetHeight - 8)) + "px";
+}
 
 // 사진: 긴 변 1600px JPEG로 줄여서 이 컴퓨터에 저장. 카드 이름(photo, photo-2 …)이 저장 이름
 // shortcut: localStorage(약 5MB)에 카드마다 한 장 + 보관함 4장, 여러 장이 모자라지면 IndexedDB로 옮기기
@@ -3495,11 +3559,11 @@ async function readHwpTables(buf) {
 // 카드: 지금 몇 교시 / 다음 시간 / 오늘 시간표
 function ttRender() {
   const now = new Date(), mins = now.getHours() * 60 + now.getMinutes();
-  const main = document.getElementById("tt-main"), when = document.getElementById("tt-when");
+  const main = document.getElementById("tt-main");
   const time = document.getElementById("tt-time"), today = document.getElementById("tt-today");
   const has = tt.weeks.length || tt.base.some(d => d.some(Boolean));
   today.replaceChildren();
-  if (!has) { when.textContent = ""; main.innerHTML = "<small>'✎ 시간표 고치기'로 넣거나<br>설정 → 시간표에서 가져와요</small>"; time.textContent = ""; return; }
+  if (!has) { main.innerHTML = "<small>✎ 연필 버튼으로 넣거나<br>설정 → 시간표에서 가져와요</small>"; time.textContent = ""; return; }
   const plan = dayPlan(now) || [];
   const slots = tt.bells.slice(0, NP).map((b, i) => ({ i, subj: plan[i] || "", s: toMin(b.s), e: toMin(b.e), b })).filter(x => x.subj && !x.b.off);
   const cur = slots.find(x => x.s <= mins && mins < x.e);
@@ -3512,23 +3576,11 @@ function ttRender() {
   }
   const big = (label, x) => { main.textContent = ""; const sm = document.createElement("small"); sm.textContent = label; main.append(sm, `${x.i + 1}교시 ${fullName(x.subj)}`); };
   if (cur) {
-    when.textContent = "지금"; big("지금 수업", cur);
-    time.textContent = `${cur.b.s}~${cur.b.e} · ${cur.e - mins}분 남음` + (next ? ` · 다음 ${fullName(next.subj)}` : "");
+    big("지금", cur);
+    time.textContent = `${cur.b.s}~${cur.b.e} · ${cur.e - mins}분 남음`;
   } else if (next) {
-    when.textContent = slots[0] === next ? "오늘 첫 시간" : "쉬는 시간";
-    big("다음 시간", next); time.textContent = `${next.b.s} 시작 · ${next.s - mins}분 뒤`;
-  } else {
-    when.textContent = plan.length ? "오늘 수업 끝" : "오늘은 수업이 없어요";
-    for (let k = 1; k <= 14; k++) { // 다음 수업 있는 날 찾기
-      const d = new Date(now); d.setDate(d.getDate() + k);
-      const p = dayPlan(d), i = p ? p.findIndex((x, j) => x && j < NP && !tt.bells[j]?.off) : -1;
-      if (i < 0) continue;
-      big(`${d.getMonth() + 1}/${d.getDate()}(${DAYS[d.getDay() - 1]}) 첫 시간`, { i, subj: p[i] });
-      time.textContent = `${tt.bells[i].s} 시작`;
-      return;
-    }
-    main.textContent = "";
-  }
+    big(slots[0] === next ? "첫 시간" : "다음 시간", next); time.textContent = `${next.b.s} 시작 · ${next.s - mins}분 뒤`;
+  } else { main.innerHTML = `<small>${plan.length ? "오늘 수업 끝" : "오늘은 수업이 없어요"}</small>`; time.textContent = ""; }
 }
 setInterval(ttRender, 20000);
 ttRender();
@@ -4487,8 +4539,8 @@ const dcCard = document.getElementById("dc-card");
 let dcRun = 0, dcVoices = [], dcSaid = new Set();
 const dcSave = () => { try { localStorage.setItem("dict", JSON.stringify(dict)); } catch (e) {} dcDraw(); };
 const dcSet = () => dict.sets[dict.s] || dict.sets[0], dcGrade = () => dcSet()?.grades[dict.g];
-const dcText = t => t.replace(/\{[^}]*\}/g, "").replace(/\s*\/\s*/g, " ").trim();                     // 화면·시험지용
-const dcSpeak = t => t.replace(/(\S+?)\{([^}]*)\}/g, "$2").split("/").map(x => x.trim()).filter(Boolean).join(", "); // 읽기용
+const dcText = t => t.replace(/\{[^}]*\}/g, "").replace(/\s*[/／]\s*/g, " ").trim();                     // 화면·시험지용
+const dcSpeak = t => t.replace(/(\S+?)\{([^}]*)\}/g, "$2").split(/[/／]/).map(x => x.trim()).filter(Boolean).join(", "); // 읽기용
 function dcDraw() {
   const set = dcSet(), gr = dcGrade();
   document.getElementById("dc-sems").replaceChildren(...(dict.sets.length > 1 ? dict.sets.map((x, i) => h("button", { class: i === dict.s ? "on" : "", onclick: () => { dcStop(); dict.s = i; dict.g = 0; dcSaid.clear(); dcSave(); } }, x.name || `묶음 ${i + 1}`)) : []));
@@ -5483,7 +5535,7 @@ let dustPlace = null;
 try { dustPlace = JSON.parse(localStorage.getItem("dust-place")); } catch (e) {}
 async function dustLoad() {
   const main = document.getElementById("dust-grade"), chips = document.getElementById("dust-chips");
-  document.getElementById("dust-place").textContent = dustPlace ? "📍 " + dustPlace.name : "";
+  document.getElementById("dust-place").textContent = dustPlace ? dustPlace.name : "";
   if (!dustPlace) return;
   wxLoad();
   try {
@@ -5498,7 +5550,7 @@ async function dustLoad() {
       sp.textContent = `${t} ${DUST_GRADES[g][0]}`; sp.style.setProperty("--grade", DUST_GRADES[g][1]); // 수치는 빼고 등급만
       return sp;
     }));
-    document.getElementById("dust-place").textContent = `📍 ${dustPlace.name} · ${c.time.slice(11, 16)} 기준`;
+    document.getElementById("dust-place").textContent = `${dustPlace.name} · ${c.time.slice(11, 16)}`;
   } catch (e) { main.textContent = "불러오지 못했어요"; main.style.removeProperty("--grade"); chips.replaceChildren(); }
 }
 // 날씨: 같은 지역의 지금 기온·날씨, 오늘 최저·최고 (Open-Meteo, 키 없음)
@@ -5519,7 +5571,7 @@ function dustSet(place) {
 function dustToggleSet(open = document.getElementById("dust-set").hidden) {
   document.getElementById("dust-set").hidden = !open;
   document.getElementById("dust-main").hidden = open; document.getElementById("dust-chips").hidden = open;
-  document.getElementById("dust-set-btn").textContent = open ? "닫기" : "지역 설정";
+  document.getElementById("dust-set-btn").classList.toggle("on", open); document.getElementById("dust-wx").hidden = open;
   if (open) document.getElementById("dust-q").focus();
 }
 async function dustSearch() {
@@ -6497,7 +6549,7 @@ const TOURS = {
     { at: ".wb-pages", text: "화이트보드를 4장까지 따로 써요." },
     { text: "옮기기 도구로 사진·글·선을 끌어 옮기고, 파란 점으로 크기를 바꿔요. 지우기는 Delete." }] },
   dust: { name: "😷 미세먼지·날씨", steps: [
-    { at: "#dust-set-btn", text: "처음 한 번 '지역 설정'에서 지역을 정하면 미세먼지와 날씨가 나와요." }] },
+    { at: "#dust-set-btn", text: "처음 한 번 📍를 눌러 지역을 정하면 미세먼지와 날씨가 나와요." }] },
   noise: { name: "🔉 소음 측정", steps: [
     { at: ".noise-th", text: "기준을 1초 넘게 넘으면 경고음이 나요." },
     { at: ".noise-count", text: "오늘 경고 횟수가 쌓여요. 🔔로 직접 경고도 줘요." }] },
