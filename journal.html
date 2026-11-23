@@ -21,7 +21,9 @@
   svg.i { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
   [hidden] { display: none !important; }
   body { display: grid; grid-template-rows: auto 1fr; }
-  header { display: flex; align-items: center; gap: 4px; padding: 10px 16px; background: #fff; border-bottom: 1.5px solid var(--line); flex-wrap: wrap; }
+  header { display: flex; align-items: center; gap: 4px; padding: 10px 16px; padding-right: calc(100vw - env(titlebar-area-x, 0px) - env(titlebar-area-width, 100vw) + 16px); background: #fff; border-bottom: 1.5px solid var(--line); flex-wrap: wrap;
+           app-region: drag; -webkit-app-region: drag; } /* 머리줄을 잡고 창을 옮겨요 */
+  header button, header input { app-region: no-drag; -webkit-app-region: no-drag; }
   header h1 { margin: 0 14px 0 0; font-size: 18px; display: flex; align-items: center; gap: 6px; }
   header .tab { border: 0; background: none; padding: 7px 14px; border-radius: 999px; font-size: 15px; color: var(--muted); }
   header .tab.on { background: var(--soft); color: var(--accent); font-weight: 600; }
@@ -43,9 +45,9 @@
   .day .top { display: flex; align-items: center; gap: 4px; } .day .n { font-size: 14px; }
   .day.sun .n { color: #e03131; } .day.sat .n { color: #1c7ed6; }
   .day.today .n { display: inline-grid; place-items: center; min-width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: #fff; }
-  .day .tags { margin-left: auto; display: flex; gap: 3px; }
-  .day .tag { font-size: 11px; padding: 0 6px; border-radius: 999px; background: #eee7dd; color: #6d6259; white-space: nowrap; }
-  .day .tag.rec { background: #e6f4ea; color: #2b7a3e; } .day .tag.cs { background: #efe8fb; color: #6741c4; } .day .tag.nt { background: #fff1d6; color: #9a6a10; }
+  .day .marks { display: flex; align-items: center; gap: 3px; flex-wrap: wrap; margin-left: 2px; }
+  .day .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .day .mk { width: 14px; height: 14px; } .day .mk.cs { color: #7048e8; } .day .mk.nt { color: #d8cfc5; } .day .mk.nt.on { color: #e8a317; }
   .day .plus { position: absolute; right: 4px; bottom: 4px; width: 24px; height: 24px; padding: 0; justify-content: center; border-radius: 50%; opacity: 0; background: #fff; }
   .day:hover .plus, .day.sel .plus { opacity: 1; }
   .day .ev { font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 1px 6px; border-radius: 5px; background: #e3ecf6; color: #2c4f75; }
@@ -58,20 +60,22 @@
   .item .d { font-size: 12px; color: var(--muted); min-width: 52px; padding-top: 1px; }
   .item .k { font-size: 11px; padding: 0 7px; border-radius: 999px; color: #fff; white-space: nowrap; margin-top: 2px; }
   .sub { font-size: 12.5px; color: var(--muted); margin: 8px 0 2px; font-weight: 600; }
-  /* 팝업 (일정·학생 기록·상담·일지 쓰기) */
-  .modal { position: fixed; inset: 0; background: rgba(30, 30, 40, .35); display: grid; place-items: center; z-index: 20; padding: 16px; }
-  .modal > form, .modal > div { background: #fff; border-radius: 18px; padding: 18px 20px; width: min(560px, 100%); max-height: 92vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(0, 0, 0, .25); display: grid; gap: 10px; }
-  .modal h3 { margin: 0; font-size: 17px; display: flex; align-items: center; gap: 8px; }
-  .modal .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; } .modal label.l { font-size: 13px; color: var(--muted); min-width: 52px; }
-  .modal textarea { min-height: 84px; resize: vertical; width: 100%; } .modal .grow { flex: 1; min-width: 0; }
-  .modal .btns { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+  /* 작은 팝업: 누른 곳 바로 옆에 (일정·학생 기록·상담·일지) */
+  .pop-wrap { position: fixed; inset: 0; z-index: 20; }
+  .pop { position: fixed; width: 380px; max-width: calc(100vw - 16px); max-height: calc(100vh - 16px); overflow-y: auto; background: #fff; border-radius: 14px; padding: 12px 14px; display: grid; gap: 8px; box-shadow: 0 12px 36px rgba(40, 30, 20, .22); border: 1.5px solid var(--line); }
+  .pop h3 { margin: 0; font-size: 15px; display: flex; align-items: center; gap: 6px; } .pop h3 input[type=date] { margin-left: auto; font-size: 13px; padding: 2px 6px; }
+  .pop .row { display: flex; gap: 6px; align-items: center; } .pop .grow { flex: 1; min-width: 0; }
+  .pop textarea { width: 100%; resize: vertical; } .pop select { padding: 4px 6px; }
+  .pop .btns { display: flex; justify-content: flex-end; gap: 6px; align-items: center; } .pop .btns .saved { margin-right: auto; }
+  .pop .plist { max-height: 140px; overflow-y: auto; } .pop .plist .item { font-size: 13px; padding: 3px 2px; }
+  .pop .kidpick { max-height: 120px; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); } .pop .kidpick button { font-size: 13px; padding: 3px 6px; }
+  .pop .chips button { font-size: 13px; padding: 2px 9px; }
   .chips { display: flex; flex-wrap: wrap; gap: 4px; } .chips button { border-radius: 999px; padding: 3px 11px; font-size: 14px; }
   .chips button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
   .kidpick { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 4px; max-height: 150px; overflow-y: auto; padding: 2px; }
   .kidpick button { justify-content: flex-start; padding: 4px 8px; font-size: 14px; border-radius: 8px; white-space: nowrap; overflow: hidden; }
   .kidpick button i { font-style: normal; color: var(--muted); font-size: 11px; } .kidpick button.on { background: var(--soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
   .kidpick button.on i { color: var(--accent); }
-  .modal .notebox textarea { min-height: 300px; font-size: 16px; line-height: 1.7; } .saved { font-size: 12.5px; color: var(--muted); margin-left: auto; font-weight: normal; }
   /* 학생 기록 · 상담 일지 목록 */
   #p-rec, #p-cs { grid-template-columns: 220px minmax(0, 1fr); }
   .kids .kid { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; border: 0; border-radius: 8px; padding: 5px 8px; background: none; }
@@ -98,7 +102,7 @@
   .cover b { font-size: 34px; color: #2b1d14; } .cover span { color: #a8927c; font-size: 18px; }
   .print-title { display: none; }
   @media print {
-    body { display: block; background: #fff; } header, .kids, .bar, .rec .acts, #p-cal, #p-note, .modal { display: none !important; }
+    body { display: block; background: #fff; } header, .kids, .bar, .rec .acts, #p-cal, #p-note, .pop-wrap { display: none !important; }
     main, .pane, .box, .scroll { display: block !important; overflow: visible !important; height: auto !important; border: 0; padding: 0; }
     .print-title { display: block !important; font-size: 17pt; margin: 0 0 6mm; }
     .rec { grid-template-columns: 24mm 34mm 1fr; break-inside: avoid; font-size: 10.5pt; }
@@ -209,14 +213,23 @@ function showTab(t) {
 document.querySelectorAll(".tab").forEach(b => b.onclick = () => showTab(b.dataset.tab));
 function draw() { $("today").textContent = new Date().toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric", weekday: "long" }); ({ cal: calDraw, rec: recDraw, cs: csDraw, note: noteDraw })[tab](); }
 
-// ── 팝업 양식
-function modal(title, icon, body, onSave, saveText = "저장") {
-  const f = el("form", {}, el("h3", {}, ico(icon), title), ...body, el("div", { class: "btns" }, el("button", { type: "button", onclick: () => m.remove() }, "취소"), el("button", { class: "main" }, saveText)));
-  const m = el("div", { class: "modal", onmousedown: e => { if (e.target === m) m.remove(); } }, f);
-  f.onsubmit = e => { e.preventDefault(); if (onSave() !== false) { m.remove(); draw(); } };
-  f.addEventListener("keydown", e => { if (e.key === "Escape") m.remove(); if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) f.requestSubmit(); });
-  document.body.append(m); setTimeout(() => f.querySelector("textarea, input[type=text]")?.focus());
-  return m;
+// ── 작은 팝업 (누른 곳 바로 옆). 바깥을 누르거나 Esc면 닫힘
+function pop(anchor, title, icon, body, onSave, o = {}) {
+  document.querySelectorAll(".pop-wrap").forEach(x => x.remove());
+  const f = el("form", { class: "pop" }, el("h3", {}, ico(icon), title, o.head || null), ...body,
+    el("div", { class: "btns" }, o.foot || null, el("button", { type: "button", onclick: () => close() }, o.cancel || "닫기"), o.noSave ? null : el("button", { class: "main" }, o.save || "저장")));
+  const wrap = el("div", { class: "pop-wrap", onmousedown: e => { if (e.target === wrap) close(); } }, f);
+  const close = () => { o.onClose?.(); wrap.remove(); draw(); };
+  f.onsubmit = e => { e.preventDefault(); if (onSave() !== false) close(); };
+  f.addEventListener("keydown", e => { if (e.key === "Escape") close(); if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); f.requestSubmit(); } });
+  document.body.append(wrap);
+  const r = anchor?.isConnected ? anchor.getBoundingClientRect() : null, fw = f.offsetWidth, fh = f.offsetHeight;
+  let x = r ? r.left : (innerWidth - fw) / 2, y = r ? r.bottom + 6 : (innerHeight - fh) / 2;
+  if (r && y + fh > innerHeight - 8) y = r.top - fh - 6; // 아래에 자리가 없으면 위로
+  if (r && x + fw > innerWidth - 8) x = r.right - fw;
+  f.style.left = Math.max(8, Math.min(x, innerWidth - fw - 8)) + "px"; f.style.top = Math.max(8, Math.min(y, innerHeight - fh - 8)) + "px";
+  setTimeout(() => f.querySelector("input[type=text], textarea")?.focus());
+  return close;
 }
 function kidPick(sel) { // 학생 여러 명 고르기
   const set = new Set(sel);
@@ -225,43 +238,48 @@ function kidPick(sel) { // 학생 여러 명 고르기
   return { box, get: () => people().filter(p => set.has(p)) };
 }
 function chips(list, cur, color) { let v = cur; const box = el("div", { class: "chips" }); const draw = () => box.replaceChildren(...list.map(k => el("button", { type: "button", class: v === k ? "on" : "", style: v === k && color ? `background:${color(k)};border-color:${color(k)}` : "", onclick: () => { v = k; draw(); } }, k))); draw(); return { box, get: () => v }; }
-const row = (label, ...kids) => el("div", { class: "row" }, label ? el("label", { class: "l" }, label) : null, ...kids);
-function evForm(date, e) {
-  const d = el("input", { type: "date", value: e?.date || date }), t = el("input", { type: "time", value: e?.time || "", title: "시간을 넣으면 그때 이 창에서 알려 줘요" }), x = el("input", { type: "text", class: "grow", value: e?.text || "", placeholder: "예: 학년 협의회, 출장, 학부모 상담" });
-  modal(e ? "일정 고치기" : "일정", "cal", [row("날짜", d, t), row("내용", x)], () => {
-    if (!x.value.trim()) return false;
-    if (e) Object.assign(e, { date: d.value || e.date, time: t.value, text: x.value.trim() }); else J.events.push({ id: uid(), date: d.value || date, time: t.value, text: x.value.trim(), done: false });
-    store();
-  });
+const sel = (list, cur) => { const x = el("select", {}, ...list.map(v => el("option", { value: v }, v))); x.value = cur; return x; };
+const dateIn = v => el("input", { type: "date", value: v, title: "날짜" });
+function evForm(date, e, anchor) { // 일정: 쓰고 Enter → 저장하고 바로 다음 일정
+  const t = el("input", { type: "time", value: e?.time || "", title: "시간 (비워도 돼요). 넣으면 그 시간에 알려 줘요" }), x = el("input", { type: "text", class: "grow", value: e?.text || "", placeholder: e ? "" : "쓰고 Enter → 이어서 다음 일정", autocomplete: "off" });
+  const d = e ? dateIn(e.date) : null, list = el("div", { class: "plist" });
+  const drawList = () => list.replaceChildren(...evOf(date).map(v => el("div", { class: "item" + (v.done ? " done" : "") }, el("span", { class: "t" }, v.time || ""), el("span", { class: "x2" }, v.text))));
+  if (!e) drawList();
+  pop(anchor, e ? "일정 고치기" : `${dayName(date)} 일정`, "cal", [el("div", { class: "row" }, t, x), e ? null : list], () => {
+    const v = x.value.trim(); if (!v) return !!e && false;
+    if (e) { Object.assign(e, { date: d.value || e.date, time: t.value, text: v }); store(); return; }
+    J.events.push({ id: uid(), date, time: t.value, text: v, done: false }); store();
+    x.value = ""; t.value = ""; drawList(); calDraw(); x.focus(); return false; // 닫지 않고 이어서
+  }, { head: d, save: e ? "저장" : "추가", cancel: e ? "취소" : "다 썼어요" });
 }
-let lastKids = []; // 방금 고른 학생 (학생 기록에서 고른 학생으로 시작)
-function recForm(date, r) {
-  const d = el("input", { type: "date", value: r?.date || date }), kp = kidPick(r?.ps || lastKids), k = chips(KINDS.map(x => x[0]), r?.kind || "칭찬", kindColor);
-  const x = el("textarea", { placeholder: "있었던 일, 지도한 내용 (Ctrl+Enter로 저장)" }); x.value = r?.text || "";
-  modal(r ? "학생 기록 고치기" : "학생 기록", "pen", [row("날짜", d), row("학생", el("span", { class: "empty" }, "여러 명 골라도 돼요")), kp.box, row("종류", k.box), x], () => {
-    const ps = kp.get(); if (!ps.length) { ask("학생을 골라 주세요.", "확인", null); return false; } if (!x.value.trim()) return false;
-    if (r) Object.assign(r, { date: d.value || r.date, ps, kind: k.get(), text: x.value.trim() }); else J.recs.push({ id: uid(), date: d.value || date, ps, kind: k.get(), text: x.value.trim(), at: Date.now() });
-    store();
-  });
+let lastKids = []; // 학생 기록·상담에서 고른 학생으로 시작
+function recForm(date, r, anchor) {
+  const kp = kidPick(r?.ps || lastKids), k = chips(KINDS.map(x => x[0]), r?.kind || "칭찬", kindColor), d = r ? dateIn(r.date) : null;
+  const x = el("textarea", { rows: 3, placeholder: "있었던 일 (Ctrl+Enter로 저장)" }); x.value = r?.text || "";
+  pop(anchor, r ? "학생 기록 고치기" : `${dayName(date)} 학생 기록`, "pen", [kp.box, k.box, x], () => {
+    const ps = kp.get(); if (!ps.length) { ask("학생을 골라 주세요. (여러 명도 돼요)", "확인", null); return false; } if (!x.value.trim()) return false;
+    if (r) Object.assign(r, { date: d.value || r.date, ps, kind: k.get(), text: x.value.trim() }); else J.recs.push({ id: uid(), date, ps, kind: k.get(), text: x.value.trim(), at: Date.now() });
+    lastKids = ps; store();
+  }, { head: d, cancel: "취소" });
 }
-function csForm(date, c) {
-  const d = el("input", { type: "date", value: c?.date || date }), t = el("input", { type: "time", value: c?.time || "" }), kp = kidPick(c?.ps || lastKids);
-  const tg = chips(TARGETS, c?.target || "학생"), wy = chips(WAYS, c?.way || "대면"), topic = el("input", { type: "text", class: "grow", value: c?.topic || "", placeholder: "예: 교우관계, 학습 습관, 진로" });
-  const x = el("textarea", { placeholder: "상담 내용" }), nx = el("textarea", { placeholder: "후속 조치 (예: 1주 뒤 다시 확인, 학부모께 문자)", style: "min-height:54px" }); x.value = c?.text || ""; nx.value = c?.next || "";
-  modal(c ? "상담 고치기" : "상담 일지", "chat", [row("날짜", d, t), row("학생", el("span", { class: "empty" }, "여러 명 골라도 돼요")), kp.box, row("대상", tg.box), row("방법", wy.box), row("주제", topic), x, nx], () => {
-    const ps = kp.get(); if (!ps.length && tg.get() !== "기타") { ask("상담한 학생을 골라 주세요.", "확인", null); return false; } if (!x.value.trim() && !topic.value.trim()) return false;
-    const v = { date: d.value || date, time: t.value, ps, target: tg.get(), way: wy.get(), topic: topic.value.trim(), text: x.value.trim(), next: nx.value.trim() };
+function csForm(date, c, anchor) {
+  const kp = kidPick(c?.ps || lastKids), tg = sel(TARGETS, c?.target || "학생"), wy = sel(WAYS, c?.way || "대면"), d = c ? dateIn(c.date) : null;
+  const t = el("input", { type: "time", value: c?.time || "", title: "시간" }), topic = el("input", { type: "text", class: "grow", value: c?.topic || "", placeholder: "주제 (예: 교우관계)" });
+  const x = el("textarea", { rows: 3, placeholder: "상담 내용" }), nx = el("input", { type: "text", value: c?.next || "", placeholder: "후속 조치 (있으면)" }); x.value = c?.text || "";
+  pop(anchor, c ? "상담 고치기" : `${dayName(date)} 상담`, "chat", [kp.box, el("div", { class: "row" }, tg, wy, t), topic, x, nx], () => {
+    const ps = kp.get(); if (!ps.length && tg.value !== "기타") { ask("상담한 학생을 골라 주세요.", "확인", null); return false; } if (!x.value.trim() && !topic.value.trim()) return false;
+    const v = { date: d?.value || c?.date || date, time: t.value, ps, target: tg.value, way: wy.value, topic: topic.value.trim(), text: x.value.trim(), next: nx.value.trim() };
     if (c) Object.assign(c, v); else J.counsels.push({ id: uid(), ...v, at: Date.now() });
-    store();
-  });
+    lastKids = ps; store();
+  }, { head: d, cancel: "취소" });
 }
-function noteForm(date) { // 일지: 쓰는 대로 저장
-  const x = el("textarea", { placeholder: "오늘 수업, 생활지도, 전달할 것… 쓰는 대로 저장돼요." }), sv = el("span", { class: "saved" });
+function noteForm(date, anchor) { // 일지: 쓰는 대로 저장
+  const x = el("textarea", { rows: 9, placeholder: "오늘 수업, 생활지도, 전달할 것… 쓰는 대로 저장돼요." }), sv = el("span", { class: "saved" });
   x.value = J.notes[date] || "";
   let t = 0;
-  x.oninput = () => { sv.textContent = "저장하는 중…"; clearTimeout(t); t = setTimeout(() => { if (x.value.trim()) J.notes[date] = x.value; else delete J.notes[date]; store(); sv.textContent = "저장했어요"; }, 500); };
-  const m = modal(`${dayName(date)} 일지`, "note", [el("div", { class: "notebox" }, x)], () => { clearTimeout(t); if (x.value.trim()) J.notes[date] = x.value; else delete J.notes[date]; store(); }, "닫기");
-  m.querySelector("h3").append(sv);
+  const keep = () => { clearTimeout(t); if (x.value.trim()) J.notes[date] = x.value; else delete J.notes[date]; store(); };
+  x.oninput = () => { sv.textContent = "저장하는 중…"; clearTimeout(t); t = setTimeout(() => { keep(); sv.textContent = "저장했어요"; }, 500); };
+  pop(anchor, `${dayName(date)} 일지`, "note", [x], () => {}, { noSave: true, foot: sv, onClose: keep });
 }
 
 // ── 달력: 칸마다 일정(누르면 줄 긋기), 기록·상담·일지 표시. 칸의 +나 오른쪽 버튼으로 바로 쓰기
@@ -272,16 +290,17 @@ const recOf = d => J.recs.filter(r => r.date === d), csOf = d => J.counsels.filt
 const toggle = e => { e.done = !e.done; store(); calDraw(); };
 function addMenu(btn, date) { // 칸의 +: 무엇을 쓸지
   document.querySelector(".addmenu")?.remove();
-  const r = btn.getBoundingClientRect(), m = el("div", { class: "addmenu box", style: `position:fixed;z-index:15;left:${Math.min(r.left, innerWidth - 170)}px;top:${Math.min(r.bottom + 4, innerHeight - 200)}px;padding:6px;gap:2px;box-shadow:0 10px 30px rgba(0,0,0,.18)` },
-    ...[["ev", "cal", "일정"], ["rec", "pen", "학생 기록"], ["cs", "chat", "상담"], ["note", "note", "일지"]].map(([k, i, t]) => el("button", { style: "border:0;justify-content:flex-start", onclick: () => { m.remove(); add(k, date); } }, ico(i), t)));
+  const r = btn.getBoundingClientRect(), m = el("div", { class: "addmenu box", style: `position:fixed;z-index:15;left:${Math.min(r.left, innerWidth - 150)}px;top:${Math.min(r.bottom + 4, innerHeight - 190)}px;padding:6px;gap:2px;box-shadow:0 10px 30px rgba(0,0,0,.18)` },
+    ...[["ev", "cal", "일정"], ["rec", "pen", "학생 기록"], ["cs", "chat", "상담"], ["note", "note", "일지"]].map(([k, i, t]) => el("button", { style: "border:0;justify-content:flex-start", onclick: () => { m.remove(); add(k, date, btn); } }, ico(i), t)));
   document.body.append(m);
   setTimeout(() => addEventListener("mousedown", function off(e) { if (!m.contains(e.target)) { m.remove(); removeEventListener("mousedown", off); } }));
 }
-const add = (k, date) => ({ ev: evForm, rec: recForm, cs: csForm, note: noteForm })[k](date);
+const add = (k, date, anchor) => k === "note" ? noteForm(date, anchor) : ({ ev: evForm, rec: recForm, cs: csForm })[k](date, null, anchor);
+function choose(s) { pick = s; document.querySelectorAll(".day").forEach(d => d.classList.toggle("sel", d.dataset.d === s)); sideDraw(); } // 다시 그리지 않고 고르기만
 function itemEv(e, showDate) {
   return el("div", { class: "item" + (e.done ? " done" : "") }, showDate ? el("span", { class: "d" }, short(e.date).slice(3)) : null, el("span", { class: "t" }, e.time || ""),
     el("span", { class: "x2", title: "누르면 줄이 그어져요 (한 번 더 누르면 지워져요)", onclick: () => toggle(e) }, e.text),
-    el("button", { class: "x", title: "고치기", onclick: () => evForm(e.date, e) }, "✎"),
+    el("button", { class: "x", title: "고치기", onclick: ev => evForm(e.date, e, ev.currentTarget) }, "✎"),
     el("button", { class: "x", title: "지우기", onclick: async () => { if (await ask(`'${e.text}' 일정을 지울까요?`, "지우기")) { J.events = J.events.filter(x => x !== e); store(); calDraw(); } } }, "✕"));
 }
 function calDraw() {
@@ -289,21 +308,29 @@ function calDraw() {
   $("cal-title").textContent = `${y}년 ${m + 1}월`;
   const cells = ["일", "월", "화", "수", "목", "금", "토"].map((d, i) => el("div", { class: "dw" + (i === 0 ? " sun" : i === 6 ? " sat" : "") }, d));
   for (let i = 0; i < 42; i++) {
-    const d = new Date(start); d.setDate(start.getDate() + i); const s = iso(d), evs = evOf(s), nr = recOf(s).length, nc = csOf(s).length, wd = d.getDay();
-    const plus = el("button", { class: "plus", title: "이 날에 쓰기", "aria-label": "이 날에 쓰기", onclick: ev => { ev.stopPropagation(); pick = s; calDraw(); addMenu(ev.currentTarget, s); } }, ico("plus"));
-    cells.push(el("div", { class: `day${d.getMonth() !== m ? " out" : ""}${s === t ? " today" : ""}${s === pick ? " sel" : ""}${wd === 0 ? " sun" : wd === 6 ? " sat" : ""}`, onclick: () => { pick = s; calDraw(); } },
-      el("div", { class: "top" }, el("span", { class: "n" }, String(d.getDate())), el("span", { class: "tags" }, nr ? el("span", { class: "tag rec", title: "학생 기록" }, `기록 ${nr}`) : null, nc ? el("span", { class: "tag cs", title: "상담" }, `상담 ${nc}`) : null, J.notes[s]?.trim() ? el("span", { class: "tag nt", title: "일지" }, "일지") : null)),
+    const d = new Date(start); d.setDate(start.getDate() + i); const s = iso(d), evs = evOf(s), recs = recOf(s), nc = csOf(s).length, wd = d.getDay(), wrote = !!J.notes[s]?.trim();
+    const plus = el("button", { class: "plus", title: "이 날에 쓰기", "aria-label": "이 날에 쓰기", onclick: ev => { ev.stopPropagation(); choose(s); addMenu(ev.currentTarget, s); } }, ico("plus"));
+    const mk = (n, cls, title) => { const x = ico(n); x.setAttribute("class", "i mk " + cls); x.append(Object.assign(document.createElementNS("http://www.w3.org/2000/svg", "title"), { textContent: title })); return x; };
+    const marks = el("span", { class: "marks" }, ...recs.slice(0, 8).map(r => el("i", { class: "dot", style: `background:${kindColor(r.kind)}`, title: `${r.kind} · ${names(r.ps)}` })),
+      recs.length > 8 ? el("small", {}, "+") : null, nc ? mk("chat", "cs", `상담 ${nc}`) : null,
+      wrote ? mk("note", "nt on", "일지 씀") : s <= t && wd > 0 && wd < 6 && d.getMonth() === m ? mk("note", "nt", "일지 안 씀") : null); // 지난 평일은 안 쓴 것도 흐리게
+    cells.push(el("div", { class: `day${d.getMonth() !== m ? " out" : ""}${s === t ? " today" : ""}${s === pick ? " sel" : ""}${wd === 0 ? " sun" : wd === 6 ? " sat" : ""}`, "data-d": s, onclick: () => choose(s) },
+      el("div", { class: "top" }, el("span", { class: "n" }, String(d.getDate())), marks),
       ...evs.slice(0, 4).map(e => el("span", { class: "ev" + (e.done ? " done" : ""), title: `${e.time ? e.time + " " : ""}${e.text} (누르면 줄 긋기)`, onclick: ev => { ev.stopPropagation(); toggle(e); } }, (e.time ? e.time + " " : "") + e.text)),
       evs.length > 4 ? el("span", { class: "more" }, `+${evs.length - 4}`) : null, plus));
   }
   $("cal").replaceChildren(...cells);
+  sideDraw();
+}
+function sideDraw() {
+  const t = today();
   $("day-title").textContent = dayName(pick) + (pick === t ? " · 오늘" : "");
   const evs = evOf(pick), recs = recOf(pick), cs = csOf(pick), nt = J.notes[pick]?.trim();
   $("day-list").replaceChildren(
     el("p", { class: "sub" }, "일정"), ...(evs.length ? evs.map(e => itemEv(e)) : [el("p", { class: "empty" }, "없어요")]),
-    recs.length ? el("p", { class: "sub" }, "학생 기록") : null, ...recs.map(r => el("div", { class: "item" }, el("span", { class: "k", style: `background:${kindColor(r.kind)}` }, r.kind), el("span", { class: "x2", title: "고치기", onclick: () => recForm(r.date, r) }, `${names(r.ps)} · ${r.text}`))),
-    cs.length ? el("p", { class: "sub" }, "상담") : null, ...cs.map(c => el("div", { class: "item" }, el("span", { class: "k", style: "background:#7048e8" }, c.way), el("span", { class: "x2", title: "고치기", onclick: () => csForm(c.date, c) }, `${names(c.ps) || c.target} · ${c.topic || c.text}`))),
-    nt ? el("p", { class: "sub" }, "일지") : null, nt ? el("div", { class: "item" }, el("span", { class: "x2", onclick: () => noteForm(pick) }, nt.split("\n")[0])) : null);
+    recs.length ? el("p", { class: "sub" }, "학생 기록") : null, ...recs.map(r => el("div", { class: "item" }, el("span", { class: "k", style: `background:${kindColor(r.kind)}` }, r.kind), el("span", { class: "x2", title: "고치기", onclick: ev => recForm(r.date, r, ev.currentTarget) }, `${names(r.ps)} · ${r.text}`))),
+    cs.length ? el("p", { class: "sub" }, "상담") : null, ...cs.map(c => el("div", { class: "item" }, el("span", { class: "k", style: "background:#7048e8" }, c.way), el("span", { class: "x2", title: "고치기", onclick: ev => csForm(c.date, c, ev.currentTarget) }, `${names(c.ps) || c.target} · ${c.topic || c.text}`))),
+    nt ? el("p", { class: "sub" }, "일지") : null, nt ? el("div", { class: "item" }, el("span", { class: "x2", onclick: ev => noteForm(pick, ev.currentTarget) }, nt.split("\n")[0])) : null);
   const end = new Date(); end.setDate(end.getDate() + 6); const e7 = iso(end);
   const week = J.events.filter(e => e.date >= t && e.date <= e7).sort((a, b) => (a.date + (a.time || "99")).localeCompare(b.date + (b.time || "99")));
   $("week-list").replaceChildren(...(week.length ? week.map(e => itemEv(e, true)) : [el("p", { class: "empty" }, "일정이 없어요.")]));
@@ -311,7 +338,7 @@ function calDraw() {
 $("cal-prev").onclick = () => { month.setMonth(month.getMonth() - 1); calDraw(); };
 $("cal-next").onclick = () => { month.setMonth(month.getMonth() + 1); calDraw(); };
 $("cal-today").onclick = () => { month = new Date(); month.setDate(1); pick = today(); calDraw(); };
-document.querySelectorAll("[data-add]").forEach(b => b.onclick = () => add(b.dataset.add, pick));
+document.querySelectorAll("[data-add]").forEach(b => b.onclick = () => add(b.dataset.add, pick, b));
 // 시간을 넣은 일정: 그 시간이 되면 이 창에서만 알려 줌 (학생 화면에는 안 나옴)
 const rung = new Set();
 setInterval(() => {
@@ -351,10 +378,10 @@ function recDraw() {
   const rows = recRows();
   $("rec-list").replaceChildren(...(rows.length ? rows.map(r => el("div", { class: "rec" + (r.score ? " score" : "") }, el("span", { class: "d" }, short(r.date)), el("span", { class: "who" }, names(r.ps)),
     el("span", { class: "txt" }, el("span", { class: "k", style: r.score ? "" : `background:${kindColor(r.kind)}` }, r.kind), r.text),
-    r.score ? el("span") : el("span", { class: "acts" }, el("button", { class: "x", title: "고치기", onclick: () => recForm(r.date, r) }, "✎"), el("button", { class: "x", title: "지우기", onclick: async () => { if (await ask("이 기록을 지울까요?", "지우기")) { J.recs = J.recs.filter(x => x !== r); store(); recDraw(); } } }, "✕"))))
+    r.score ? el("span") : el("span", { class: "acts" }, el("button", { class: "x", title: "고치기", onclick: ev => recForm(r.date, r, ev.currentTarget) }, "✎"), el("button", { class: "x", title: "지우기", onclick: async () => { if (await ask("이 기록을 지울까요?", "지우기")) { J.recs = J.recs.filter(x => x !== r); store(); recDraw(); } } }, "✕"))))
     : [el("p", { class: "empty" }, "아직 기록이 없어요. '+ 기록'이나 달력에서 써요.")]));
 }
-$("rec-add").onclick = () => recForm(today());
+$("rec-add").onclick = e => recForm(today(), null, e.currentTarget);
 $("rec-filter").onchange = () => { kindFilter = $("rec-filter").value; recDraw(); };
 $("rec-q").oninput = recDraw; $("rec-score").onchange = recDraw;
 $("rec-copy").onclick = () => copyRows($("rec-copy"), recRows().map(r => `${r.date} ${names(r.ps)} [${r.kind}] ${r.text}`));
@@ -376,10 +403,10 @@ function csDraw() {
   $("cs-list").replaceChildren(...(rows.length ? rows.map(c => el("div", { class: "rec" }, el("span", { class: "d" }, short(c.date), c.time ? el("span", { class: "meta" }, c.time) : null),
     el("span", { class: "who" }, names(c.ps) || "-", el("span", { class: "meta" }, `${c.target} · ${c.way}`)),
     el("span", { class: "txt" }, c.topic ? el("b", {}, c.topic + (c.text ? "\n" : "")) : null, c.text, c.next ? el("span", { class: "next" }, "→ " + c.next) : null),
-    el("span", { class: "acts" }, el("button", { class: "x", title: "고치기", onclick: () => csForm(c.date, c) }, "✎"), el("button", { class: "x", title: "지우기", onclick: async () => { if (await ask("이 상담 기록을 지울까요?", "지우기")) { J.counsels = J.counsels.filter(x => x !== c); store(); csDraw(); } } }, "✕"))))
+    el("span", { class: "acts" }, el("button", { class: "x", title: "고치기", onclick: ev => csForm(c.date, c, ev.currentTarget) }, "✎"), el("button", { class: "x", title: "지우기", onclick: async () => { if (await ask("이 상담 기록을 지울까요?", "지우기")) { J.counsels = J.counsels.filter(x => x !== c); store(); csDraw(); } } }, "✕"))))
     : [el("p", { class: "empty" }, "아직 상담 기록이 없어요. '+ 상담 기록'이나 달력에서 써요.")]));
 }
-$("cs-add").onclick = () => csForm(today());
+$("cs-add").onclick = e => csForm(today(), null, e.currentTarget);
 $("cs-filter").onchange = () => { csFilter = $("cs-filter").value; csDraw(); };
 $("cs-q").oninput = csDraw;
 $("cs-copy").onclick = () => copyRows($("cs-copy"), csRows().map(c => `${c.date}${c.time ? " " + c.time : ""} ${names(c.ps) || "-"} (${c.target}·${c.way}) ${c.topic ? "[" + c.topic + "] " : ""}${c.text}${c.next ? " → " + c.next : ""}`));
@@ -403,14 +430,14 @@ $("note").oninput = () => {
 };
 
 // 다른 창(보드)에서 바뀌면 다시 그림: 명단·점수·로그인해서 받은 일지
-addEventListener("storage", e => { if (["journal", "roster", "reward", null].includes(e.key)) { load(); if (!document.querySelector(".modal")) draw(); } });
+addEventListener("storage", e => { if (["journal", "roster", "reward", null].includes(e.key)) { load(); if (!document.querySelector(".pop-wrap")) draw(); } });
 // 학생이 보는 모니터에 떴으면(#cover) 평범한 보드 화면처럼 덮어 둠. 메인 모니터로 옮긴 뒤 두 번 누르면 열림
 const coverSync = () => { $("cover").hidden = location.hash !== "#cover"; };
 $("cover-date").textContent = new Date().toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "long" });
 $("cover").ondblclick = () => { history.replaceState(null, "", location.pathname); coverSync(); };
 addEventListener("hashchange", coverSync); coverSync();
 load(); showTab(tab);
-setInterval(() => { if (tab === "cal" && !document.querySelector(".modal, .addmenu")) calDraw(); }, 60000); // 날이 바뀌면 오늘 표시
+setInterval(() => { if (tab === "cal" && !document.querySelector(".pop-wrap, .addmenu")) calDraw(); }, 60000); // 날이 바뀌면 오늘 표시
 </script>
 </body>
 </html>

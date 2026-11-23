@@ -6419,6 +6419,7 @@ async function seTeachOpen() {
     teachWin = w; wins.add(w);
     const d = winSetup(w, "자리배치"); // 창 이름에도 '선생님'이 안 보이게
     w.addEventListener("pagehide", () => { if (teachWin === w) seTeachClose(); }); // 창을 닫으면 선생님 모드도 닫힘
+    const spot = setInterval(() => w.closed ? clearInterval(spot) : saveSpot(w), 5000); // 선생님이 옮겨 둔 자리를 기억
     if (!await teachPlace(w)) { // 메인 모니터로 못 옮겼으면 평범한 보드 화면처럼 덮어 둠. 선생님 모니터로 끌어 옮긴 뒤 두 번 누르면 열림
       const cover = h("div", { class: "teach-cover", title: "두 번 누르면 열려요", ondblclick: () => { cover.remove(); setTimeout(() => tourAuto("teach"), 300); } }, h("b", {}, "우리반 보드"),
         h("span", {}, new Date().toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "long" })));
@@ -6429,48 +6430,57 @@ async function seTeachOpen() {
   seHost($s("seat-ed")); $s("seat-ed").hidden = false; seMsg(""); seDraw($s("st-map"), "teach"); seTeachSide();
   setTimeout(() => tourAuto("teach"), 500); // 처음 열 때 자세한 안내 (덮개가 있으면 걷은 뒤)
 }
-// 창을 메인 모니터 가운데로. 모니터 정보는 브라우저가 처음 한 번 '창 관리' 허락을 물어봄
-// 교사 일지(journal.html): 메인 모니터에 따로 창으로 (학생이 보는 보드에는 안 나옴). 모니터가 둘인데 못 옮겼으면 평범한 덮개로 가려 둠
+// 선생님 창(선생님 모드·교사 일지)을 띄울 자리: ① 선생님이 전에 옮겨 둔 자리(기억) ② 보드가 없는 다른 모니터(주 모니터 먼저)
+// 모니터 정보는 브라우저가 처음 한 번 '창 관리' 허락을 물어봄. 창을 열고 나서 옮기면 막히는 일이 많아 처음부터 그 자리에 엶
+let scrDet = null;
+async function screensInit(ask) {
+  try {
+    if (!("getScreenDetails" in window)) return;
+    if (!ask) { let st = null; for (const name of ["window-management", "window-placement"]) { st = await navigator.permissions.query({ name }).catch(() => null); if (st) break; } if (st?.state !== "granted") return; } // 허락 전에는 묻지 않음
+    scrDet = await getScreenDetails();
+  } catch (e) {}
+}
+screensInit(false);
+const inRect = (x, y, r) => x >= r.left && x < r.left + r.width && y >= r.top && y < r.top + r.height;
+function teacherSpot(W, H) {
+  let p = null; try { p = JSON.parse(localStorage.getItem("teacher-win")); } catch (e) {}
+  const cur = scrDet?.currentScreen;
+  if (p && !(cur && inRect(p.x + p.w / 2, p.y + 20, cur)) && (!scrDet || scrDet.screens.some(sc => inRect(p.x + p.w / 2, p.y + 20, sc)))) return p; // 보드 화면이 아닌 곳에 기억해 둔 자리
+  const sc = scrDet?.screens.filter(x => x !== cur).sort((a, b) => b.isPrimary - a.isPrimary)[0];
+  if (!sc) return null;
+  const w = Math.min(W, sc.availWidth), h = Math.min(H, sc.availHeight);
+  return { x: sc.availLeft + (sc.availWidth - w) / 2, y: sc.availTop + (sc.availHeight - h) / 2, w, h };
+}
+function openOnMain(url, name, W, H) {
+  const p = teacherSpot(W, H);
+  return open(url, name, `popup,width=${Math.round(p?.w || W)},height=${Math.round(p?.h || H)}` + (p ? `,left=${Math.round(p.x)},top=${Math.round(p.y)}` : ""));
+}
+const awayFromBoard = w => { // 선생님 창이 보드와 다른 화면에 있나
+  const x = w.screenX + w.outerWidth / 2, y = w.screenY + 20;
+  return scrDet ? !inRect(x, y, scrDet.currentScreen) : !inRect(x, y, { left: screenX, top: screenY, width: outerWidth, height: outerHeight });
+};
+function saveSpot(w) { try { if (!w.closed && awayFromBoard(w)) localStorage.setItem("teacher-win", JSON.stringify({ x: w.screenX, y: w.screenY, w: w.outerWidth, h: w.outerHeight })); } catch (e) {} } // 선생님이 옮겨 둔 자리 기억
+async function teachPlace(w) {
+  if (awayFromBoard(w)) return true; // 처음부터 다른 모니터에 열림
+  if (!scrDet) await screensInit(true);
+  const p = teacherSpot(1140, 800);
+  if (!p) return false;
+  try { w.resizeTo(Math.round(p.w), Math.round(p.h)); w.moveTo(Math.round(p.x), Math.round(p.y)); } catch (e) {}
+  return awayFromBoard(w);
+}
+// 교사 일지(journal.html): 메인 모니터에 따로 창으로 (학생이 보는 보드에는 안 나옴). 보드 화면에 떴으면 평범한 덮개로 가려 둠
 let jrWin = null;
 async function journalOpen() {
   if (jrWin && !jrWin.closed) return jrWin.focus();
   const ext = screen.isExtended, w = openOnMain("journal.html" + (ext ? "#cover" : ""), "journal", 1200, 820);
   if (!w) return seConfirm(document.body, "창을 열지 못했어요.\n주소창 오른쪽에서 팝업을 허용한 뒤 다시 눌러 주세요.", "확인", null);
   jrWin = w;
+  const spot = setInterval(() => w.closed ? clearInterval(spot) : saveSpot(w), 5000); // 선생님이 옮겨 둔 자리를 기억
   if (!ext || !await teachPlace(w)) return;
-  for (let i = 0; i < 50; i++) { // 메인 모니터로 옮겼으면 덮개를 걷음 (창이 다 열릴 때까지 기다림)
+  for (let i = 0; i < 50; i++) { // 다른 모니터에 떴으면 덮개를 걷음 (창이 다 열릴 때까지 기다림)
     try { if (w.document.readyState === "complete" && w.location.pathname.endsWith("journal.html")) { w.history.replaceState(null, "", w.location.pathname); w.dispatchEvent(new w.HashChangeEvent("hashchange")); return; } } catch (e) {}
     await new Promise(r => setTimeout(r, 100));
   }
-}
-// 메인 모니터: 처음 한 번 '창 관리' 허락을 받으면 위치를 기억해 두고, 다음부터는 창을 처음부터 메인 모니터에 엶
-let mainScr = null;
-async function screensInit(ask) {
-  try {
-    if (!("getScreenDetails" in window)) return;
-    if (!ask && (await navigator.permissions.query({ name: "window-management" }).catch(() => null))?.state !== "granted") return; // 허락 전에는 묻지 않음
-    const sd = await getScreenDetails(), upd = () => mainScr = sd.screens.find(x => x.isPrimary) || null;
-    upd(); sd.addEventListener("screenschange", upd);
-  } catch (e) {}
-}
-screensInit(false);
-function openOnMain(url, name, W, H) { // 메인 모니터 가운데에 바로 (모르면 그냥 열고, 아래 teachPlace로 옮겨 봄)
-  const s = mainScr, w = s ? Math.min(W, s.availWidth) : W, hh = s ? Math.min(H, s.availHeight) : H;
-  return open(url, name, `popup,width=${w},height=${hh}` + (s ? `,left=${Math.round(s.availLeft + (s.availWidth - w) / 2)},top=${Math.round(s.availTop + (s.availHeight - hh) / 2)}` : ""));
-}
-const onMain = w => { const s = mainScr; if (!s) return false; const x = w.screenX + w.outerWidth / 2, y = w.screenY + w.outerHeight / 2; return x >= s.left && x < s.left + s.width && y >= s.top && y < s.top + s.height; };
-// 창을 메인 모니터 가운데로. 모니터 정보는 브라우저가 처음 한 번 '창 관리' 허락을 물어봄
-async function teachPlace(w) {
-  if (onMain(w)) return true; // 처음부터 메인 모니터에 열림
-  if (!mainScr) await screensInit(true);
-  try {
-    const s = mainScr;
-    if (!s) return false;
-    const W = Math.min(1140, s.availWidth), H = Math.min(800, s.availHeight);
-    w.resizeTo(W, H); w.moveTo(s.availLeft + (s.availWidth - W) / 2, s.availTop + (s.availHeight - H) / 2);
-    const x = w.screenX + w.outerWidth / 2, y = w.screenY + w.outerHeight / 2; // 정말 옮겨졌는지 확인
-    return x >= s.left && x < s.left + s.width && y >= s.top && y < s.top + s.height;
-  } catch (e) { return false; }
 }
 async function seTeachReset() {
   if (seBusy || !seatSec.draft) return;
@@ -6480,7 +6490,7 @@ async function seTeachReset() {
 function seTeachClose() {
   const w = teachWin, ed = w?.document.getElementById("seat-ed") || $s("seat-ed");
   ed.hidden = true;
-  if (w) { teachWin = null; document.body.append(document.adoptNode(ed)); wins.delete(w); if (!w.closed) w.close(); }
+  if (w) { saveSpot(w); teachWin = null; document.body.append(document.adoptNode(ed)); wins.delete(w); if (!w.closed) w.close(); }
   seRedraw();
 }
 document.querySelectorAll("#st-tabs [data-t]").forEach(b => b.onclick = () => { stTab = b.dataset.t; seTeachSide(); });
