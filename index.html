@@ -808,15 +808,17 @@
   /* 1인 1역 */
   [data-card="roles"] { --accent: #2b8a3e; --card: #ebfbee; --line: #c3e6cb; }
   .rl-period { margin: -4px 0 0; } .rl-period:empty { display: none; }
-  .rl-grid { flex: 1; min-height: 96px; overflow-y: auto; user-select: none; display: grid; grid-auto-rows: max-content; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); align-content: start; gap: 6px; }
+  .rl-grid { flex: 1; min-height: 96px; overflow-y: auto; user-select: none; display: grid; grid-auto-rows: max-content; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); align-content: start; gap: 6px; padding: 3px; } /* padding: 이름을 끌어 놓을 때 칸 테두리 빛이 잘리지 않게 */
   .rl-grid:empty::before { content: "'✎ 역할 정하기'에서 역할을 넣어요."; grid-column: 1 / -1; margin: auto; padding: 20px 0; color: var(--muted); font: 14px "Wanted Sans", "Malgun Gothic", sans-serif; }
-  .rl-tile { position: relative; background: #fff; border-radius: 10px; padding: 6px 10px 8px; border: 1.5px solid var(--line); font: 15px/1.35 "Wanted Sans", "Malgun Gothic", sans-serif; min-height: 60px; cursor: pointer; }
+  .rl-tile { position: relative; background: #fff; border-radius: 10px; padding: 6px 10px 8px; border: 1.5px solid var(--line); font: 15px/1.35 "Wanted Sans", "Malgun Gothic", sans-serif; min-height: 60px; cursor: pointer; word-break: keep-all; overflow-wrap: anywhere; } /* 줄은 낱말 단위로 (체육/부장 X) */
   .rl-tile.drop { border-color: var(--accent); background: var(--card); box-shadow: 0 0 0 2px var(--accent); }
-  .rl-tile > b { display: block; font-weight: 600; font-size: 18px; color: var(--accent); padding-right: 70px; }
+  .rl-tile > b { display: block; font-weight: 600; font-size: 18px; color: var(--accent); }
+  .rl-tile:has(.rl-pt) > b { padding-right: 44px; }
+  .rl-n { font-size: 14px; font-weight: normal; color: var(--muted); white-space: nowrap; } /* 몇 명이 하는지 */ /* 포인트 표시가 있을 때만 그만큼 비움 */
   .tool-card .rl-foot .rl-give { border-color: #f59f00; color: #a6730c; }
   .rl-pt { position: absolute; top: 6px; right: 6px; padding: 0 8px; border-radius: 999px; background: #fff3bf; color: #a6730c; font-size: 15px; white-space: nowrap; }
   .rl-who { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 3px; }
-  .rl-name { display: inline-block; padding: 1px 10px; border-radius: 999px; background: var(--card); color: var(--ink); font-size: 22px; cursor: grab; touch-action: none; user-select: none; } /* 숙제 글씨만큼 */
+  .rl-name { display: inline-block; padding: 1px 10px; border-radius: 999px; background: var(--card); color: var(--ink); font-size: 22px; cursor: grab; touch-action: none; user-select: none; max-width: 100%; box-sizing: border-box; } /* 숙제 글씨만큼. 칸보다 넓으면 줄바꿈 */
   .rl-who .none { color: var(--muted); font-size: 14px; }
   .rl-tile.pop { animation: seat-pop .45s ease-out; }
   .rl-pool { flex: none; max-height: 22%; user-select: none; overflow-y: auto; display: flex; flex-wrap: wrap; gap: 4px; padding: 6px; border-radius: 10px; border: 1.5px dashed var(--line); }
@@ -3916,7 +3918,7 @@ function rlName(p, from) { // 끌 수 있는 이름 카드. 역할 칸에 놓으
 function rlDraw(anim) {
   const unit = roles.unit.trim(), ppl = people(), taken = new Set(roles.list.flatMap(r => r.who));
   $s("rl-period").textContent = rlPeriod(roles.from, roles.to);
-  const tiles = roles.list.map((r, i) => h("div", { class: "rl-tile", "data-i": String(i), title: r.task ? "누르면 하는 일이 보여요" : "", onclick: e => { if (!e.target.closest(".rl-name")) rlInfo(e.currentTarget, r); } }, h("b", {}, r.job || "역할"),
+  const tiles = roles.list.map((r, i) => h("div", { class: "rl-tile", "data-i": String(i), title: r.task ? "누르면 하는 일이 보여요" : "", onclick: e => { if (!e.target.closest(".rl-name")) rlInfo(e.currentTarget, r); } }, h("b", {}, r.job || "역할", h("small", { class: "rl-n" }, ` (${r.n || 1}명)`)),
     unit && r.pt ? h("span", { class: "rl-pt", title: `+${r.pt} ${unit}` }, `+${r.pt}`) : null,
     h("div", { class: "rl-who" }, r.who.length ? r.who.map(p => rlName(p)) : h("span", { class: "none" }, "이름을 끌어 놓아요"))));
   $s("rl-grid").replaceChildren(...tiles);
