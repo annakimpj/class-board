@@ -6414,7 +6414,7 @@ let teachWin = null;
 async function seTeachOpen() {
   seClean();
   if (!pops.seat && screen.isExtended && !(teachWin && !teachWin.closed)) {
-    const w = open("", "seat-teach", "popup,width=1140,height=800"); // 누른 즉시 열어야 막히지 않음. 내용은 메인 모니터로 옮긴 뒤에 넣음
+    const w = openOnMain("", "seat-teach", 1140, 800); // 누른 즉시 열어야 막히지 않음. 메인 모니터를 알면 처음부터 거기에
     if (!w) return seConfirm(card("seat"), "선생님 모드 창을 열지 못했어요.\n주소창 오른쪽에서 팝업을 허용한 뒤 다시 눌러 주세요.", "확인", null);
     teachWin = w; wins.add(w);
     const d = winSetup(w, "자리배치"); // 창 이름에도 '선생님'이 안 보이게
@@ -6434,7 +6434,7 @@ async function seTeachOpen() {
 let jrWin = null;
 async function journalOpen() {
   if (jrWin && !jrWin.closed) return jrWin.focus();
-  const ext = screen.isExtended, w = open("journal.html" + (ext ? "#cover" : ""), "journal", "popup,width=1140,height=800");
+  const ext = screen.isExtended, w = openOnMain("journal.html" + (ext ? "#cover" : ""), "journal", 1200, 820);
   if (!w) return seConfirm(document.body, "창을 열지 못했어요.\n주소창 오른쪽에서 팝업을 허용한 뒤 다시 눌러 주세요.", "확인", null);
   jrWin = w;
   if (!ext || !await teachPlace(w)) return;
@@ -6443,9 +6443,28 @@ async function journalOpen() {
     await new Promise(r => setTimeout(r, 100));
   }
 }
-async function teachPlace(w) {
+// 메인 모니터: 처음 한 번 '창 관리' 허락을 받으면 위치를 기억해 두고, 다음부터는 창을 처음부터 메인 모니터에 엶
+let mainScr = null;
+async function screensInit(ask) {
   try {
-    const sd = await getScreenDetails(), s = sd.screens.find(x => x.isPrimary);
+    if (!("getScreenDetails" in window)) return;
+    if (!ask && (await navigator.permissions.query({ name: "window-management" }).catch(() => null))?.state !== "granted") return; // 허락 전에는 묻지 않음
+    const sd = await getScreenDetails(), upd = () => mainScr = sd.screens.find(x => x.isPrimary) || null;
+    upd(); sd.addEventListener("screenschange", upd);
+  } catch (e) {}
+}
+screensInit(false);
+function openOnMain(url, name, W, H) { // 메인 모니터 가운데에 바로 (모르면 그냥 열고, 아래 teachPlace로 옮겨 봄)
+  const s = mainScr, w = s ? Math.min(W, s.availWidth) : W, hh = s ? Math.min(H, s.availHeight) : H;
+  return open(url, name, `popup,width=${w},height=${hh}` + (s ? `,left=${Math.round(s.availLeft + (s.availWidth - w) / 2)},top=${Math.round(s.availTop + (s.availHeight - hh) / 2)}` : ""));
+}
+const onMain = w => { const s = mainScr; if (!s) return false; const x = w.screenX + w.outerWidth / 2, y = w.screenY + w.outerHeight / 2; return x >= s.left && x < s.left + s.width && y >= s.top && y < s.top + s.height; };
+// 창을 메인 모니터 가운데로. 모니터 정보는 브라우저가 처음 한 번 '창 관리' 허락을 물어봄
+async function teachPlace(w) {
+  if (onMain(w)) return true; // 처음부터 메인 모니터에 열림
+  if (!mainScr) await screensInit(true);
+  try {
+    const s = mainScr;
     if (!s) return false;
     const W = Math.min(1140, s.availWidth), H = Math.min(800, s.availHeight);
     w.resizeTo(W, H); w.moveTo(s.availLeft + (s.availWidth - W) / 2, s.availTop + (s.availHeight - H) / 2);
