@@ -3110,7 +3110,7 @@ rosterTable(); pickInfo();
 // 저장 형태: { bells: [{s:"09:00", e:"09:40", off(6·7교시 미사용)} ×7], base: 월~금 [과목 ×7], weeks: [{start, end, days: 월~금 [과목…]}] }
 const DAYS = ["월", "화", "수", "목", "금"];
 const SUBJECT = { 국: "국어", 수: "수학", 사: "사회", 과: "과학", 영: "영어", 음: "음악", 미: "미술", 체: "체육", 도: "도덕",
-  자: "창체", 동: "동아리", 봉: "봉사", 진: "진로", 실: "실과", 바: "바른 생활", 슬: "슬기로운 생활", 즐: "즐거운 생활", 안: "안전한 생활" };
+  자: "자율", 동: "동아리", 봉: "봉사", 진: "진로", 실: "실과", 바: "바른 생활", 슬: "슬기로운 생활", 즐: "즐거운 생활", 안: "안전한 생활" };
 const fullName = s => SUBJECT[s] || s;
 const NP = 6; // 교시 수 (7교시는 안 씀. 예전에 저장한 7교시 자료는 남겨 두지만 보이지 않음)
 const DEFAULT_BELLS = [["09:00", "09:40"], ["09:50", "10:30"], ["10:50", "11:30"], ["11:40", "12:20"],
@@ -3492,7 +3492,7 @@ function ttRender() {
   const next = slots.find(x => x.s > mins);
   for (const x of slots) {
     const sp = document.createElement("span");
-    sp.textContent = x.subj; sp.title = `${x.i + 1}교시 ${fullName(x.subj)} ${x.b.s}~${x.b.e}`;
+    sp.textContent = fullName(x.subj); sp.title = `${x.i + 1}교시 ${fullName(x.subj)} ${x.b.s}~${x.b.e}`;
     if (x === cur || (!cur && x === next)) sp.className = "on"; else if (x.e <= mins) sp.className = "past";
     today.append(sp);
   }
@@ -3577,6 +3577,14 @@ function ttGrid(sel = document.getElementById("tt-week"), grid = document.getEle
     });
   }
   grid.replaceChildren(...cells);
+  grid.onkeydown = e => { // 방향키·Enter로 칸 이동 (좌우는 글자 끝에서만 넘어감)
+    const ins = [...grid.querySelectorAll("input")], i = ins.indexOf(e.target), t = e.target;
+    if (i < 0) return;
+    const step = { ArrowUp: -5, ArrowDown: 5, Enter: 5, ArrowLeft: t.selectionStart === 0 && t.selectionEnd === 0 ? -1 : 0, ArrowRight: t.selectionStart === t.value.length ? 1 : 0 }[e.key];
+    const to = ins[i + step];
+    if (!step || !to || e.isComposing) return;
+    e.preventDefault(); to.focus(); to.select();
+  };
 }
 document.getElementById("tt-week").addEventListener("change", () => ttGrid());
 async function ttClearWeeks() {
@@ -6929,6 +6937,7 @@ syncShow();
 if (lsGet("sync-uid")) fbLoad().catch(() => syncShow("서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요.")); // 전에 로그인했으면 이어서
 // ───── 유튜브: 검색(YouTube Data API 키 필요) → 카드 안에서 재생. 주소를 붙여넣으면 키 없이 바로 재생
 // 플레이어는 이 브라우저에 로그인된 유튜브 계정으로 재생됨 (보드 로그인 계정과 따로)
+const YT_SHARED_KEY = "AIzaSyD85dA8O0GsXXyxqdIGbPmP-450lnNOfXc"; // 모두가 함께 쓰는 키 (annakimpj.github.io에서만 되게 제한). 각자 ⚙︎에 넣은 키가 있으면 그걸 먼저 씀
 const ytCard = document.getElementById("yt-card"), ytList = document.getElementById("yt-list");
 const ytId = t => (t.match(/(?:youtu\.be\/|[?&]v=|\/(?:embed|shorts|live)\/)([\w-]{11})/) || [])[1];
 const ytEsc = t => new DOMParser().parseFromString(t, "text/html").documentElement.textContent; // API 제목의 &quot; 등 풀기
@@ -6950,7 +6959,7 @@ document.getElementById("yt-form").onsubmit = async e => {
   const q = document.getElementById("yt-q").value.trim(), id = ytId(q);
   if (!q) return;
   if (id) return ytPlay(id);
-  const key = lsGet("ytKey");
+  const key = lsGet("ytKey") || YT_SHARED_KEY;
   if (!key) return ytKeyEdit();
   ytMsg("찾는 중…");
   try {
@@ -6958,7 +6967,7 @@ document.getElementById("yt-form").onsubmit = async e => {
     const r = await (await fetch(u)).json();
     if (r.error) {
       const why = r.error.errors?.[0]?.reason || "";
-      return ytMsg(why === "quotaExceeded" ? "오늘 검색 횟수를 다 썼어요. 내일 다시 하거나, 유튜브 주소를 붙여넣어 주세요."
+      return ytMsg(/quota|[Ll]imitExceeded/.test(why) ? "API 할당량이 다 찼어요. 유튜브 영상 링크를 붙여넣어 주세요."
         : /keyInvalid|badRequest/.test(why) || r.error.code === 400 ? "API 키가 맞지 않아요. ⚙︎를 눌러 다시 넣어 주세요."
         : `검색하지 못했어요. (${ytEsc(r.error.message || why)})`);
     }
