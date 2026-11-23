@@ -1865,7 +1865,7 @@ const CARDS = [["topic", "✏️ 오늘의 주제", "board", "2", [340, 200]], [
   ["whiteboard", "🖍️ 화이트보드", "popup", "4", [420, 320]], ["dust", "😷 미세먼지·날씨", "board", "1", [190, 190]], ["noise", "🔉 소음 측정", "popup", "1", [240, 270]],
   ["thermo", "🌡️ 학급 온도계", "popup", "1", [240, 260]], ["qr", "🔳 QR 만들기", "popup", "1", [240, 280]],
   ["notice", "📋 알림장", "popup", "2", [340, 320]],
-  ["scores", "📊 성적 알리미", "popup", "2", [320, 280]], ["roles", "🧹 1인 1역", "popup", "2", [360, 360]], ["reward", "🏅 우리반 점수", "popup", "4", [420, 380]],
+  ["scores", "📊 성적 알리미", "popup", "2", [320, 280]], ["roles", "🧹 1인 1역", "popup", "2", [360, 360]], ["reward", "🏅 우리반 점수", "popup", "4", [470, 440]],
   ["check", "✅ 체크표", "popup", "2", [340, 300]], ["bracket", "🏆 토너먼트", "popup", "4", [420, 320]], ["dict", "🗣️ 받아쓰기", "popup", "4", [420, 340]]];
 const FITS = ["rules", "notice"]; // 글이 넘치면 카드가 아래로 커지는 카드
 const minOf = k => { const m = CARDS.find(c => c[0] === k)[4]; return FITS.includes(k) ? [m[0], Math.max(m[1], noteNeed(k))] : m; };
