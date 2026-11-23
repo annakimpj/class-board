@@ -827,6 +827,16 @@
   .memo-arc .ma-body { white-space: pre-wrap; font-size: 14px; background: #faf8f4; border-radius: 7px; padding: 6px 8px; max-height: 30vh; overflow-y: auto; }
   .memo-arc .ma-acts { display: flex; justify-content: flex-end; gap: 6px; margin-top: 6px; }
   .rw-menu.memo-arc .ma-acts button { width: auto; border: 1.5px solid #e3ddd3; padding: 3px 10px; font-size: 13px; } .rw-menu.memo-arc .ma-acts .danger { color: #e03131; }
+  .rw-prizepop { width: 320px; padding: 8px 10px; position: fixed; }
+  .rw-prizes { display: flex; flex-direction: column; }
+  .rw-prizes .pz { display: flex; justify-content: space-between; gap: 10px; padding: 7px 4px; border-bottom: 1px solid #eef1f6; font-size: 16px; }
+  .rw-prizes .pz b { color: #3b82f6; white-space: nowrap; }
+  .rw-prizes .pz-ed { display: grid; grid-template-columns: 1fr 56px auto 26px; gap: 4px; align-items: center; padding: 3px 0; font-size: 13px; color: var(--muted); }
+  .rw-prizes .pz-ed input { min-width: 0; font: 14px "Pretendard Variable", "Malgun Gothic", sans-serif; border: 1.5px solid #cddcfb; border-radius: 6px; padding: 4px 6px; }
+  .rw-menu .rw-prizes button.un { width: 26px; height: 26px; padding: 0; justify-content: center; color: #8a8178; }
+  .rw-menu .rw-prizes .pz-add { justify-content: center; color: #3b82f6; margin-top: 4px; }
+  .rw-menu .rw-loghead .pz-tog { width: auto; padding: 3px 10px; font-size: 13px; border: 1.5px solid #cddcfb; }
+  .rw-menu .rw-loghead .pz-tog.main { background: #3b82f6; color: #fff; border-color: #3b82f6; }
   .rw-logpop { width: 360px; padding: 8px 10px; position: fixed; }
   .rw-loghead { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; } .rw-loghead b { flex: 1; font-size: 15px; } .rw-loghead select { font: 13px inherit; border: 1.5px solid #cddcfb; border-radius: 6px; padding: 2px 4px; }
   .rw-logpop .rw-log .day { margin: 6px 0 2px; }
@@ -1028,8 +1038,8 @@
   [data-card="noise"] { --accent: #f97316; --card: #fff2e8; --line: #fbd6bb; }
   .dust-main { flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 0; }
   .dust-main .face, .noise-meter .face { font-size: clamp(36px, min(18cqw, 16cqh), 64px); line-height: 1; }
-  .dust-main b { font-weight: 700; font-size: clamp(20px, 9cqw, 32px); color: var(--grade, var(--ink)); }
-  .dust-main .face { font-size: clamp(28px, min(14cqw, 14cqh), 48px); }
+  .dust-main b { font-weight: 800; font-size: clamp(28px, min(15cqw, 22cqh), 56px); color: var(--grade, var(--ink)); }
+  .dust-main .face { font-size: clamp(30px, min(15cqw, 22cqh), 56px); }
   .dust-foot { display: flex; align-items: center; justify-content: center; gap: 2px; margin-top: 4px; font-size: 12px; color: var(--muted); }
   .dust-foot span { margin-right: 4px; }
   .tool-card .dust-foot button { width: 24px; height: 24px; padding: 0; display: grid; place-items: center; border-color: transparent; background: none; color: var(--muted); }
@@ -1261,7 +1271,7 @@
   </section>
   <section class="card tool-card" data-card="reward" id="rw-card">
     <p class="label">🏅 우리반 점수</p>
-    <div class="rw-bar"><span class="rw-count" id="rw-count"></span><span class="sp"></span><button class="rw-dress" onclick="rwDressPick(this)" title="학생 아바타 꾸미기 (학생 카드를 오른쪽 클릭해도 돼요)">👕 꾸미기</button><button class="rw-give" onclick="rwSendOpen(this)">🤝 주고받기</button><button class="rw-hist" onclick="rwLog(this)">📜 기록</button><button class="rw-set" onclick="rwSettings()">⚙︎ 설정</button></div>
+    <div class="rw-bar"><span class="rw-count" id="rw-count"></span><span class="sp"></span><button class="rw-dress" onclick="rwDressPick(this)" title="학생 아바타 꾸미기 (학생 카드를 오른쪽 클릭해도 돼요)">👕 꾸미기</button><button class="rw-give" onclick="rwSendOpen(this)">🤝 주고받기</button><button class="rw-prize" onclick="rwPrizes(this)">🎁 보상</button><button class="rw-hist" onclick="rwLog(this)">📜 기록</button><button class="rw-set" onclick="rwSettings()">⚙︎ 설정</button></div>
     <div class="rw-grid" id="rw-grid"></div>
     <div class="rw-foot"><span class="rw-sel"><button onclick="rwSel('all')">전체 선택</button><button onclick="rwSel('inv')">선택 반전</button><button onclick="rwSel('none')">선택 해제</button></span><span class="sp"></span><button class="rw-minus" onclick="rwGiveSel(this, -1)">− 노력해요</button><button class="main rw-plus" onclick="rwGiveSel(this, 1)">+ 칭찬해요</button></div>
   </section>
@@ -2266,17 +2276,16 @@ function cardStop(k) { // 닫은 카드에서 돌던 것 멈춤 (뽑기 애니�
   if (k === "picker") pickStop();
   if (k === "timer") { if (tEnd) timerToggle(); if (swStart) swToggle(); } // 닫으면 타이머·스톱워치 멈춤 (소리도)
   if (k === "noise" && nStream) noiseToggle();
+  if (k === "dict") dcStop(); if (k === "youtube") ytClose(); // 내린 카드에서 소리·영상이 계속 나지 않게
   if (k === "seat") { if (stOpen()) seTeachClose(); if ($s("se-form").matches(":popover-open")) $s("se-form").hidePopover(); }
 }
 function toggleCard(k) {
-  if (pops[k]) { cardBack(k); cardQuiet(k); return setLayout(k, { mode: "popup" }); } // 다른 창으로 뗀 카드: 보드로 돌려놓고 내림 (다시 누르면 보드에 붙음)
+  if (pops[k]) { cardBack(k); return setLayout(k, { mode: "popup" }); } // 다른 창으로 뗀 카드: 보드로 돌려놓고 내림 (다시 누르면 보드에 붙음)
   if (lay(k).mode !== "board") return showCard(k);
   if (lay(k).pinned) return pinAsk(k); // 고정한 카드는 내리지 않음
   if (document.fullscreenElement === card(k)) document.exitFullscreen().catch(() => {});
-  cardQuiet(k);
   setLayout(k, { mode: "popup" });
 }
-function cardQuiet(k) { if (k === "dict") dcStop(); if (k === "youtube") ytClose(); } // 내린 카드에서 소리가 계속 나지 않게
 function showCard(k) { // 아래쪽 바에서 누르면 보드에 바로 맨 앞으로
   if (pops[k]) return pops[k].w.focus();
   if (MULTI[k] && lay(k).mode === "board") { addCard(k); return; }
@@ -2434,7 +2443,9 @@ function memoArchive(btn, ta) {
   const keep = async clear => {
     const text = ta.innerText.trim();
     if (!text) return seConfirm(m, "메모가 비어 있어요.", "확인", null);
-    arc.unshift({ id: String(Date.now()), at: Date.now(), title: text.split("\n")[0].slice(0, 40), html: ta.innerHTML }); store();
+    const k = ta.dataset.key, l = layout[k] || {};
+    let style = null; try { style = JSON.parse(localStorage.getItem("note-style-" + k)); } catch (e) {}
+    arc.unshift({ id: String(Date.now()), at: Date.now(), title: text.split("\n")[0].slice(0, 40), html: ta.innerHTML, style, rect: l.rect }); store();
     if (clear) { ta.innerHTML = ""; ta.dispatchEvent(new Event("input")); }
     q.value = ""; draw();
   };
@@ -2445,7 +2456,14 @@ function memoArchive(btn, ta) {
       const view = h("div", { class: "ma-view", hidden: "" });
       const row = h("div", { class: "ma-item" },
         h("button", { class: "ma-head", onclick: () => { view.hidden = !view.hidden; if (!view.hidden && !view.firstChild) { const body = h("div", { class: "ma-body" }); body.innerHTML = a.html; view.prepend(body, h("div", { class: "ma-acts" },
-          h("button", { onclick: () => { addCard("memo"); const n = [...d.querySelectorAll('.card[data-card^="memo-"] .note')].at(-1); n.innerHTML = a.html; n.dispatchEvent(new Event("input")); m.hidePopover(); } }, "새 메모로 꺼내기"),
+          h("button", { onclick: () => { // 보관할 때의 카드 크기·글씨 크기·색 그대로
+            let i = 2; while (card(`memo-${i}`)) i++;
+            const id = `memo-${i}`;
+            try { a.style ? localStorage.setItem("note-style-" + id, JSON.stringify(a.style)) : localStorage.removeItem("note-style-" + id); } catch (e) {}
+            addCard("memo");
+            if (a.rect) { const r = { ...(layout[id]?.rect || a.rect), w: a.rect.w, h: a.rect.h }; r.x = Math.max(0, Math.min(r.x, 1 - r.w)); r.y = Math.max(0, Math.min(r.y, 1 - r.h)); setLayout(id, { rect: r }); }
+            const n = card(id).querySelector(".note"); n.innerHTML = a.html; n.dispatchEvent(new Event("input")); m.hidePopover();
+          } }, "새 메모로 꺼내기"),
           h("button", { class: "danger", onclick: async () => { if (!await seConfirm(m, `'${a.title}' 메모를 지울까요?`, "지우기")) return; arc = arc.filter(x => x !== a); store(); draw(); } }, "지우기"))); } } },
           h("b", {}, a.title), h("small", {}, new Date(a.at).toLocaleDateString("ko-KR", { year: "2-digit", month: "numeric", day: "numeric" }))), view);
       return row;
@@ -4051,6 +4069,31 @@ function rwLog(btn = rwCard.querySelector(".rw-hist")) { // 점수 기록 (작�
   who.onchange = draw; draw();
   const m = h("div", { class: "rw-menu rw-logpop", popover: "auto" }, h("div", { class: "rw-loghead" }, h("b", {}, "📜 점수 기록"), who), list);
   d.body.append(m); m.addEventListener("toggle", e => { if (e.newState === "closed") m.remove(); }); m.showPopover();
+  const r = btn.getBoundingClientRect();
+  m.style.left = Math.max(8, Math.min(r.right - m.offsetWidth, W.innerWidth - m.offsetWidth - 8)) + "px";
+  m.style.top = (r.bottom + 6 + m.offsetHeight < W.innerHeight ? r.bottom + 6 : Math.max(8, r.top - m.offsetHeight - 6)) + "px";
+}
+// 보상 가격표: 무엇을 하는 데 몇 점인지. reward.prizes = [{ t, pt }]. 작은 팝업, ✎로 고치기
+function rwPrizes(btn, editing = false) {
+  const d = btn.ownerDocument, W = d.defaultView, unit = reward.unit.trim() || "점";
+  d.querySelector(".rw-menu")?.remove();
+  reward.prizes ||= [{ t: "자리 바꾸기", pt: 10 }, { t: "급식 먼저 먹기", pt: 15 }, { t: "선생님과 점심 먹기", pt: 20 }]; // 처음 예시 (고치거나 지워도 돼요)
+  const list = h("div", { class: "rw-prizes" });
+  if (editing) {
+    const row = p => {
+      const t = h("input", { value: p.t, placeholder: "보상 (예: 자리 바꾸기)" }), n = h("input", { type: "number", min: "0", value: p.pt });
+      t.oninput = () => { p.t = t.value; rwStore(); }; n.oninput = () => { p.pt = Math.max(0, Math.round(+n.value || 0)); rwStore(); };
+      return h("div", { class: "pz-ed" }, t, n, h("span", {}, unit), h("button", { class: "un", title: "지우기", "aria-label": "지우기", onclick: () => { reward.prizes = reward.prizes.filter(x => x !== p); rwStore(); rwPrizes(btn, true); } }, "✕"));
+    };
+    list.append(...reward.prizes.map(row), h("button", { class: "pz-add", onclick: () => { reward.prizes.push({ t: "", pt: 10 }); rwStore(); rwPrizes(btn, true); d.querySelector(".rw-prizes .pz-ed:last-of-type input")?.focus(); } }, "+ 보상 더하기"));
+  } else {
+    const rows = reward.prizes.filter(p => p.t.trim()).sort((a, b) => a.pt - b.pt);
+    list.append(...(rows.length ? rows.map(p => h("div", { class: "pz" }, h("span", {}, p.t), h("b", {}, `${p.pt} ${unit}`))) : [h("p", { class: "rw-h" }, "아직 보상이 없어요. ✎를 눌러 넣어요.")]));
+  }
+  const done = () => { reward.prizes = reward.prizes.filter(p => p.t.trim()); rwStore(); rwPrizes(btn, false); };
+  const m = h("div", { class: "rw-menu rw-prizepop", popover: "auto" },
+    h("div", { class: "rw-loghead" }, h("b", {}, "🎁 보상"), editing ? h("button", { class: "pz-tog main", onclick: done }, "완료") : h("button", { class: "pz-tog", title: "보상 고치기", onclick: () => rwPrizes(btn, true) }, "✎ 고치기")), list);
+  d.body.append(m); m.addEventListener("toggle", e => { if (e.newState === "closed") m.remove(); }); m.showPopover(); // 빈 줄은 보기 화면에서 안 보임
   const r = btn.getBoundingClientRect();
   m.style.left = Math.max(8, Math.min(r.right - m.offsetWidth, W.innerWidth - m.offsetWidth - 8)) + "px";
   m.style.top = (r.bottom + 6 + m.offsetHeight < W.innerHeight ? r.bottom + 6 : Math.max(8, r.top - m.offsetHeight - 6)) + "px";
