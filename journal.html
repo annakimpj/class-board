@@ -120,7 +120,7 @@
   .ring > div { background: #fff; border-radius: 20px; padding: 24px 36px; text-align: center; box-shadow: 0 20px 50px rgba(0, 0, 0, .3); }
   .ring.near { background: none; display: block; } .ring.near > div { position: fixed; max-width: 300px; padding: 12px 16px; border-radius: 12px; box-shadow: 0 8px 28px rgba(0, 0, 0, .22); }
   .ring.near p { font-size: 15px; margin: 0 0 10px; }
-  .pop .btns .danger { color: #e03131; margin-right: auto; }
+  .pop .btns .danger { color: #e03131; margin-right: auto; } .pop .btns .nfoot { margin-right: auto; display: flex; align-items: center; gap: 8px; } .pop .nfoot .danger { margin: 0; }
   .ring b { display: block; font-size: 28px; color: var(--accent); } .ring p { font-size: 20px; margin: 6px 0 16px; white-space: pre-line; } .ring .btns { display: flex; gap: 8px; justify-content: center; }
   .cover { position: fixed; inset: 0; z-index: 40; background: #fbf3e4; display: grid; place-content: center; text-align: center; gap: 6px; user-select: none; }
   .cover b { font-size: 34px; color: #2b1d14; } .cover span { color: #a8927c; font-size: 18px; }
@@ -359,7 +359,8 @@ function noteForm(date, anchor) { // 일지: 쓰는 대로 저장
   let t = 0;
   const keep = () => { clearTimeout(t); if (x.value.trim()) J.notes[date] = x.value; else delete J.notes[date]; store(); };
   x.oninput = () => { sv.textContent = "저장하는 중…"; clearTimeout(t); t = setTimeout(() => { keep(); sv.textContent = "저장했어요"; }, 500); };
-  pop(anchor, `${dayName(date)} 일지`, "note", [x], () => {}, { noSave: true, foot: sv, onClose: keep });
+  const del = J.notes[date] ? el("button", { type: "button", class: "danger", onclick: async ev => { if (!await ask("이 날 일지를 지울까요?", "지우기", "취소", ev.currentTarget)) return; clearTimeout(t); x.value = ""; delete J.notes[date]; store(); close(); } }, "지우기") : null;
+  const close = pop(anchor, `${dayName(date)} 일지`, "note", [x], () => {}, { noSave: true, foot: el("span", { class: "nfoot" }, del, sv), onClose: keep });
 }
 
 // ── 달력: 칸마다 일정(누르면 줄 긋기), 기록·상담·일지 표시. 칸의 +나 오른쪽 버튼으로 바로 쓰기
@@ -517,8 +518,7 @@ function sideDraw() {
   $("day-evs").replaceChildren(...(evs.length ? evs.map(e => itemEv(e)) : [el("p", { class: "empty" }, "일정이 없어요.")]));
   sortable($("day-evs"), calDraw);
   $("day-list").replaceChildren(...[...(recs.length || cs.length || nt ? [] : [el("p", { class: "empty" }, "기록이 없어요.")]),
-    recs.length ? el("p", { class: "sub" }, "학생 기록") : null, ...recs.map(r => el("div", { class: "item" }, el("span", { class: "k", style: `background:${kindColor(r.kind)}` }, r.kind), el("span", { class: "x2", title: "고치기", onclick: ev => recForm(r.date, r, ev.currentTarget) }, `${names(r.ps)} · ${r.text}`),
-      el("button", { type: "button", class: "x", title: "지우기", onclick: ev => recDel(r, ev.currentTarget) }, "✕"))),
+    recs.length ? el("p", { class: "sub" }, "학생 기록") : null, ...recs.map(r => el("div", { class: "item" }, el("span", { class: "k", style: `background:${kindColor(r.kind)}` }, r.kind), el("span", { class: "x2", title: "고치기", onclick: ev => recForm(r.date, r, ev.currentTarget) }, `${names(r.ps)} · ${r.text}`))),
     cs.length ? el("p", { class: "sub" }, "상담") : null, ...cs.map(c => el("div", { class: "item" }, el("span", { class: "k", style: "background:#7048e8" }, c.way), el("span", { class: "x2", title: "고치기", onclick: ev => csForm(c.date, c, ev.currentTarget) }, `${names(c.ps) || c.target} · ${c.topic || c.text}`))),
     nt ? el("p", { class: "sub" }, "일지") : null, nt ? el("div", { class: "item" }, el("span", { class: "x2", onclick: ev => noteForm(pick, ev.currentTarget) }, nt.split("\n")[0])) : null].filter(Boolean));
 }
