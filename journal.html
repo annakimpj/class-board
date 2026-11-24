@@ -27,8 +27,13 @@
   header h1 { margin: 0 14px 0 0; font-size: 18px; display: flex; align-items: center; gap: 6px; }
   header .tab { border: 0; background: none; padding: 7px 14px; border-radius: 999px; font-size: 15px; color: var(--muted); }
   header .tab.on { background: var(--soft); color: var(--accent); font-weight: 600; }
-  header .dday { border: 0; background: none; font-size: 14px; color: var(--muted); padding: 5px 10px; border-radius: 8px; display: flex; gap: 12px; }
-  header .dday:hover { background: var(--soft); } header .dday b { color: var(--accent); font-weight: 700; } header .dday .dd-note { font-size: 11px; color: #b5aaa0; align-self: center; }
+  header .dday { border: 0; background: none; padding: 0; display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+  header .dday .dd { display: inline-flex; align-items: center; gap: 6px; background: var(--soft); border-radius: 8px; padding: 4px 10px; color: var(--ink); }
+  header .dday .dd b { font-weight: 600; } header .dday .dn { font-weight: 800; color: var(--accent); }
+  header .dday .dw { color: var(--muted); border-left: 1px solid var(--line); padding-left: 6px; }
+  header .dday .dd-note { font-size: 11px; color: #b5aaa0; }
+  header .dday:hover .dd { box-shadow: inset 0 0 0 1.5px var(--accent); } header .dday:empty::after, header .dday .dd-empty { padding: 4px 10px; }
+  header .today { margin-left: 8px; padding-left: 12px; border-left: 1px solid var(--line); font-size: 13px; }
   .ddl { display: grid; gap: 6px; } .ddl .row { display: flex; gap: 6px; align-items: center; } .ddl .row > * { min-width: 0; } .ddl .row .dbox { flex: none; width: 140px; } .ddl .dtext.bad { border-color: #e03131; color: #e03131; }
   .pop .tip { margin: 0 0 4px; font-size: 12px; color: var(--muted); line-height: 1.5; } .ddl .grow { flex: 1; width: 0; } .ddl .row .x { flex: none; }
   header .sp { flex: 1; } header .today { color: var(--muted); font-size: 14px; }
@@ -41,7 +46,7 @@
   /* 달력 (크게) + 오른쪽 좁게 */
   #p-cal { grid-template-columns: minmax(0, 1fr) 270px; }
   .cal-head { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; } .cal-head b { font-size: 20px; min-width: 130px; text-align: center; }
-  .cal-head .sp { flex: 1; } .cal-head .hint { color: var(--muted); font-size: 13px; }
+  .cal-head .sp { flex: 1; } .cal-head .hint { color: var(--muted); font-size: 12px; }
   .cal { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); grid-template-rows: auto repeat(6, minmax(0, 1fr)); gap: 4px; }
   .cal .dw { text-align: center; font-size: 13px; color: var(--muted); } .cal .dw.sun { color: #e03131; } .cal .dw.sat { color: #1c7ed6; }
   .day { position: relative; border-radius: 10px; background: #faf8f5; padding: 4px 6px; cursor: pointer; overflow: hidden; border: 1.5px solid transparent; display: flex; flex-direction: column; gap: 2px; min-height: 0; }
@@ -140,7 +145,7 @@
   <section class="pane" id="p-cal" hidden>
     <div class="box">
       <div class="cal-head"><button id="cal-prev" aria-label="지난달">◀</button><b id="cal-title"></b><button id="cal-next" aria-label="다음 달">▶</button><button id="cal-today">오늘</button>
-        <span class="sp"></span><span class="hint">칸의 +로 바로 써요 · 일정을 누르면 줄 긋기 · 끌어서 다른 날로 (목록은 ⠿를 끌어요)</span></div>
+        <span class="sp"></span><span class="hint">+로 쓰기 · 누르면 줄 긋기 · 끌어서 옮기기</span></div>
       <div class="cal" id="cal"></div>
     </div>
     <div class="side">
@@ -454,7 +459,7 @@ function workDays(from, to) {
 function ddayDraw() {
   const t = today(), ups = (J.dday || []).filter(x => x.d && x.d >= t).sort((a, b) => a.d.localeCompare(b.d)).slice(0, 2);
   const left = d => Math.round((new Date(d + "T00:00") - new Date(t + "T00:00")) / 864e5);
-  $("dday").replaceChildren(...(ups.length ? ups.map(x => el("span", { class: "dd" }, el("b", {}, x.t || "디데이"), ` ${left(x.d) ? "D-" + left(x.d) : "D-day"} · 출근 ${workDays(t, x.d)}일`)).concat(el("small", { class: "dd-note" }, "출근일은 오늘 포함")) : ["디데이 정하기"]));
+  $("dday").replaceChildren(...(ups.length ? ups.map(x => el("span", { class: "dd" }, el("b", {}, x.t || "디데이"), el("span", { class: "dn" }, left(x.d) ? "D-" + left(x.d) : "D-day"), el("span", { class: "dw" }, `출근 ${workDays(t, x.d)}일`))).concat(el("small", { class: "dd-note" }, "오늘 포함")) : [el("span", { class: "dd-empty" }, "디데이 정하기")]));
 }
 // 날짜 칸: 20270104 · 2027.1.4 · 2027-01-04 · 1/4(올해)처럼 써도 되고, 📅로 골라도 됨
 function parseDate(v) {
