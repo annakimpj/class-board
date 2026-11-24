@@ -52,7 +52,7 @@
   .day { position: relative; border-radius: 10px; background: #faf8f5; padding: 4px 6px; cursor: pointer; overflow: hidden; border: 1.5px solid transparent; display: flex; flex-direction: column; gap: 2px; min-height: 0; }
   .day:hover { border-color: var(--line); } .day.out { opacity: .45; } .day.sel { border-color: var(--accent); background: var(--soft); }
   .day .top { display: flex; align-items: center; gap: 4px; } .day .n { font-size: 14px; }
-  .day.sun .n { color: #e03131; } .day .holi { font-size: 11px; color: #e03131; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; } .day.sat .n { color: #1c7ed6; }
+  .day.sun .n { color: #e03131; } .day.off .holi { color: #e8590c; background: #fff4e6; border-radius: 4px; padding: 0 4px; } .day .holi { font-size: 11px; color: #e03131; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; } .day.sat .n { color: #1c7ed6; }
   .day.today .n { display: inline-grid; place-items: center; min-width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: #fff; }
   .day .marks { display: flex; align-items: center; gap: 3px; flex-wrap: wrap; margin-left: 2px; }
   .day .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
@@ -79,7 +79,10 @@
   .item .t { font-variant-numeric: tabular-nums; color: var(--accent); font-size: 12.5px; min-width: 40px; padding-top: 1px; }
   .item .x2 { flex: 1; min-width: 0; overflow-wrap: anywhere; cursor: pointer; } .item.done .x2 { text-decoration: line-through; color: var(--muted); }
   .item .d { font-size: 12px; color: var(--muted); min-width: 52px; padding-top: 1px; }
-  .item .k { font-size: 11px; padding: 0 7px; border-radius: 999px; color: #fff; white-space: nowrap; margin-top: 2px; }
+  .item.stack { display: block; cursor: pointer; } .item.stack:hover { background: var(--soft); border-radius: 6px; }
+  .item .ihead { display: flex; align-items: center; gap: 6px; font-weight: 600; } .item .ihead .k { margin-top: 0; }
+  .item .ibody { margin-top: 3px; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .item .k { display: inline-flex; align-items: center; justify-content: center; height: 19px; line-height: 1; font-size: 11px; padding: 0 8px; border-radius: 999px; color: #fff; white-space: nowrap; margin-top: 1px; flex: none; } /* 글자를 동그라미 정가운데로 */
   .sub { font-size: 12.5px; color: var(--muted); margin: 8px 0 2px; font-weight: 600; }
   /* 작은 팝업: 누른 곳 바로 옆에 (일정·학생 기록·상담·일지) */
   .pop-wrap { position: fixed; inset: 0; z-index: 20; }
@@ -105,7 +108,7 @@
   .bar { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; } .bar .sp { flex: 1; } .bar b { font-size: 17px; } .bar input[type=search] { width: 160px; }
   .rec { display: grid; grid-template-columns: 78px minmax(0, 150px) minmax(0, 1fr) auto; gap: 10px; align-items: start; padding: 9px 2px; border-bottom: 1px solid #f1ece5; }
   .rec .d { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; } .rec .who { font-weight: 600; font-size: 14px; overflow-wrap: anywhere; }
-  .rec .k { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 999px; color: #fff; margin-right: 6px; }
+  .rec .k { display: inline-flex; align-items: center; justify-content: center; height: 21px; line-height: 1; vertical-align: 1px; font-size: 12px; padding: 0 8px; border-radius: 999px; color: #fff; margin-right: 6px; }
   .rec .txt { white-space: pre-wrap; overflow-wrap: anywhere; } .rec .acts { display: flex; gap: 2px; }
   .rec.score .txt { color: var(--muted); } .rec.score .k { background: #adb5bd; }
   .rec .meta { font-size: 12.5px; color: var(--muted); display: block; } .rec .next { display: block; margin-top: 4px; color: #6741c4; font-size: 14px; }
@@ -331,26 +334,26 @@ function evForm(date, e, anchor) { // 일정: 위에 그날 일정, 아래 [입�
     ask("일정을 쓰고 Enter를 누르면 이어서 계속 써요.\n\n시간을 넣고 싶으면 앞에 14:00처럼 써요.\n(오후 2시, 2시 반도 알아봐요)\n입력칸의 🕒를 눌러 골라도 돼요.\n\n시간이 있는 일정은 🔔를 누르면 알람이 켜져요.\n(한 번 더: 10분 전 · 한 번 더: 원하는 분 전 · 한 번 더: 꺼짐)\n\n일정은 끌어서 달력의 다른 날로 옮길 수 있어요.", "알겠어요", null);
   } });
 }
-let lastKids = []; // 학생 기록·상담에서 고른 학생으로 시작
+const startKids = w => tab !== "cal" && w ? [w] : []; // 학생 기록·상담 탭에서 고른 학생으로 시작 (창을 닫으면 풀림)
 async function recDel(r, btn) { if (!await ask("이 학생 기록을 지울까요?", "지우기", "취소", btn)) return false; J.recs = J.recs.filter(x => x !== r); store(); draw(); return true; }
 function recForm(date, r, anchor) {
-  const kp = kidPick(r?.ps || lastKids), k = chips(KINDS.map(x => x[0]), r?.kind || "칭찬", kindColor), d = r ? dateIn(r.date) : null;
+  const kp = kidPick(r?.ps || startKids(who)), k = chips(KINDS.map(x => x[0]), r?.kind || "칭찬", kindColor), d = r ? dateIn(r.date) : null;
   const x = el("textarea", { rows: 3, placeholder: "있었던 일 (Ctrl+Enter로 저장)" }); x.value = r?.text || "";
   const close = pop(anchor, r ? "학생 기록 고치기" : `${dayName(date)} 학생 기록`, "pen", [kp.box, k.box, x], () => {
     const ps = kp.get(); if (!ps.length) { ask("학생을 골라 주세요. (여러 명도 돼요)", "확인", null); return false; } if (!x.value.trim()) return false;
     if (r) Object.assign(r, { date: d.value || r.date, ps, kind: k.get(), text: x.value.trim() }); else J.recs.push({ id: uid(), date, ps, kind: k.get(), text: x.value.trim(), at: Date.now() });
-    lastKids = ps; store();
+    store();
   }, { head: d, cancel: "취소", foot: r ? el("button", { type: "button", class: "danger", onclick: async ev => { if (await recDel(r, ev.currentTarget)) close(); } }, "지우기") : null });
 }
 function csForm(date, c, anchor) {
-  const kp = kidPick(c?.ps || lastKids), tg = sel(TARGETS, c?.target || "학생"), wy = sel(WAYS, c?.way || "대면"), d = c ? dateIn(c.date) : null;
+  const kp = kidPick(c?.ps || startKids(csWho)), tg = sel(TARGETS, c?.target || "학생"), wy = sel(WAYS, c?.way || "대면"), d = c ? dateIn(c.date) : null;
   const t = el("input", { type: "time", value: c?.time || "", title: "시간" }), topic = el("input", { type: "text", class: "grow", value: c?.topic || "", placeholder: "주제 (예: 교우관계)" });
   const x = el("textarea", { rows: 3, placeholder: "상담 내용" }), nx = el("input", { type: "text", value: c?.next || "", placeholder: "후속 조치 (있으면)" }); x.value = c?.text || "";
   pop(anchor, c ? "상담 고치기" : `${dayName(date)} 상담`, "chat", [kp.box, el("div", { class: "row" }, tg, wy, t), topic, x, nx], () => {
     const ps = kp.get(); if (!ps.length && tg.value !== "기타") { ask("상담한 학생을 골라 주세요.", "확인", null); return false; } if (!x.value.trim() && !topic.value.trim()) return false;
     const v = { date: d?.value || c?.date || date, time: t.value, ps, target: tg.value, way: wy.value, topic: topic.value.trim(), text: x.value.trim(), next: nx.value.trim() };
     if (c) Object.assign(c, v); else J.counsels.push({ id: uid(), ...v, at: Date.now() });
-    lastKids = ps; store();
+    store();
   }, { head: d, cancel: "취소" });
 }
 function noteForm(date, anchor) { // 일지: 쓰는 대로 저장
@@ -491,7 +494,7 @@ function ddayForm(anchor) { // 디데이(방학식 등)와 재량휴업일: 쓰�
   const drawOff = () => off.replaceChildren(...J.offs.map(x => row(J.offs, x, "d", "t", "재량휴업일", drawOff)), el("button", { type: "button", onclick: () => { J.offs.push({ d: "", t: "" }); drawOff(); off.querySelector(".row:last-of-type input")?.focus(); } }, "+ 재량휴업일"));
   drawDd(); drawOff();
   pop(anchor, "디데이", "cal", [el("p", { class: "sub" }, "디데이 (방학식 등)"), el("p", { class: "tip" }, "출근일은 오늘과 그날을 모두 포함해서 세요 (주말·공휴일·재량휴업일은 빼요). 그날 당일은 D-day(D-0)예요. 날짜는 20270104처럼 써도 돼요."), dd,
-    el("p", { class: "sub" }, "재량휴업일 — 출근일에서 빼고 달력에 빨갛게"), off], () => {}, { noSave: true, onClose: () => { J.dday = J.dday.filter(x => x.d); J.offs = J.offs.filter(x => x.d); store(); } });
+    el("p", { class: "sub" }, "재량휴업일 — 출근일에서 빼고 달력에 주황색으로"), off], () => {}, { noSave: true, onClose: () => { J.dday = J.dday.filter(x => x.d); J.offs = J.offs.filter(x => x.d); store(); } });
 }
 function calDraw() {
   const y = month.getFullYear(), m = month.getMonth(), start = new Date(y, m, 1 - new Date(y, m, 1).getDay()), t = today();
@@ -504,7 +507,7 @@ function calDraw() {
     const marks = el("span", { class: "marks" }, ...recs.slice(0, 8).map(r => el("i", { class: "dot", style: `background:${kindColor(r.kind)}`, title: `${r.kind} · ${names(r.ps)}` })),
       recs.length > 8 ? el("small", {}, "+") : null, nc ? mk("chat", "cs", `상담 ${nc}`) : null,
       wrote ? mk("note", "nt on", "일지 씀") : null);
-    cells.push(el("div", { class: `day${d.getMonth() !== m ? " out" : ""}${s === t ? " today" : ""}${s === pick ? " sel" : ""}${wd === 0 || holiName(s) ? " sun" : wd === 6 ? " sat" : ""}`, "data-d": s, onclick: () => choose(s) },
+    cells.push(el("div", { class: `day${d.getMonth() !== m ? " out" : ""}${s === t ? " today" : ""}${s === pick ? " sel" : ""}${wd === 0 || (holiName(s) && !offOf(s)) ? " sun" : wd === 6 ? " sat" : ""}${offOf(s) ? " off" : ""}`, "data-d": s, onclick: () => choose(s) },
       el("div", { class: "top" }, el("span", { class: "n", title: holiName(s) }, String(d.getDate())), holiName(s) ? el("small", { class: "holi" }, holiName(s)) : null, marks),
       el("div", { class: "evs" }, ...evs.map(e => { const c = el("span", { class: "ev" + (e.done ? " done" : ""), title: `${e.time ? e.time + " " : ""}${e.text} (누르면 줄 긋기 · 끌면 다른 날로)`, onclick: ev => { ev.stopPropagation(); if (!dragged) toggle(e); } }, (e.time ? e.time + " " : "") + e.text); chipDrag(c, e); return c; })), plus));
   }
@@ -518,8 +521,8 @@ function sideDraw() {
   $("day-evs").replaceChildren(...(evs.length ? evs.map(e => itemEv(e)) : [el("p", { class: "empty" }, "일정이 없어요.")]));
   sortable($("day-evs"), calDraw);
   $("day-list").replaceChildren(...[...(recs.length || cs.length || nt ? [] : [el("p", { class: "empty" }, "기록이 없어요.")]),
-    recs.length ? el("p", { class: "sub" }, "학생 기록") : null, ...recs.map(r => el("div", { class: "item" }, el("span", { class: "k", style: `background:${kindColor(r.kind)}` }, r.kind), el("span", { class: "x2", title: "고치기", onclick: ev => recForm(r.date, r, ev.currentTarget) }, `${names(r.ps)} · ${r.text}`))),
-    cs.length ? el("p", { class: "sub" }, "상담") : null, ...cs.map(c => el("div", { class: "item" }, el("span", { class: "k", style: "background:#7048e8" }, c.way), el("span", { class: "x2", title: "고치기", onclick: ev => csForm(c.date, c, ev.currentTarget) }, `${names(c.ps) || c.target} · ${c.topic || c.text}`))),
+    recs.length ? el("p", { class: "sub" }, "학생 기록") : null, ...recs.map(r => el("div", { class: "item stack", title: "누르면 고치기·지우기", onclick: ev => recForm(r.date, r, ev.currentTarget) }, el("div", { class: "ihead" }, el("span", { class: "k", style: `background:${kindColor(r.kind)}` }, r.kind), names(r.ps)), el("div", { class: "ibody" }, r.text))),
+    cs.length ? el("p", { class: "sub" }, "상담") : null, ...cs.map(c => el("div", { class: "item stack", title: "누르면 고치기", onclick: ev => csForm(c.date, c, ev.currentTarget) }, el("div", { class: "ihead" }, el("span", { class: "k", style: "background:#7048e8" }, c.way), names(c.ps) || c.target), el("div", { class: "ibody" }, [c.topic, c.text].filter(Boolean).join("\n")))),
     nt ? el("p", { class: "sub" }, "일지") : null, nt ? el("div", { class: "item" }, el("span", { class: "x2", onclick: ev => noteForm(pick, ev.currentTarget) }, nt.split("\n")[0])) : null].filter(Boolean));
 }
 $("cal-prev").onclick = () => { month.setMonth(month.getMonth() - 1); calDraw(); };
@@ -561,7 +564,7 @@ function recRows() {
   return rows.sort((a, b) => b.date.localeCompare(a.date) || (b.at || 0) - (a.at || 0));
 }
 function recDraw() {
-  kidList($("rec-kids"), who, p => J.recs.filter(r => !p || r.ps.includes(p)).length, p => { who = p; lastKids = p ? [p] : []; recDraw(); });
+  kidList($("rec-kids"), who, p => J.recs.filter(r => !p || r.ps.includes(p)).length, p => { who = p; recDraw(); });
   $("rec-filter").replaceChildren(el("option", { value: "" }, "모든 종류"), ...KINDS.map(([k]) => el("option", { value: k }, k))); $("rec-filter").value = kindFilter;
   $("rec-title").textContent = who ? `${numOf(who)}번 ${nameOf(who)}` : "전체 학생 기록";
   $("rec-ptitle").textContent = `학생 기록 · ${who ? nameOf(who) : "전체"} (${new Date().toLocaleDateString("ko-KR")})`;
@@ -585,7 +588,7 @@ function csRows() {
     .sort((a, b) => (b.date + (b.time || "")).localeCompare(a.date + (a.time || "")) || b.at - a.at);
 }
 function csDraw() {
-  kidList($("cs-kids"), csWho, p => J.counsels.filter(c => !p || c.ps.includes(p)).length, p => { csWho = p; lastKids = p ? [p] : []; csDraw(); });
+  kidList($("cs-kids"), csWho, p => J.counsels.filter(c => !p || c.ps.includes(p)).length, p => { csWho = p; csDraw(); });
   $("cs-filter").replaceChildren(el("option", { value: "" }, "모든 대상"), ...TARGETS.map(k => el("option", { value: k }, k))); $("cs-filter").value = csFilter;
   $("cs-title").textContent = csWho ? `${numOf(csWho)}번 ${nameOf(csWho)} 상담` : "전체 상담 일지";
   $("cs-ptitle").textContent = `상담 일지 · ${csWho ? nameOf(csWho) : "전체"} (${new Date().toLocaleDateString("ko-KR")})`;
