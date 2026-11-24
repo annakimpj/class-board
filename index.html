@@ -1495,7 +1495,7 @@
   </section>
   <section id="tab-account" hidden>
     <p class="sum">구글 계정으로 로그인하면 이 보드(명단·메모·급훈·시간표·카드 배치·사진·화이트보드·교사 일지)가 서버에 저장돼요. 다른 컴퓨터에서 같은 계정으로 로그인하면 같은 보드가 나와요. 고칠 때마다 몇 초 뒤 저절로 저장돼요.</p>
-    <p class="sum">🔒 서버에는 <b>잠근 상태로만</b> 올라가요. 선생님이 정한 '동기화 비밀번호'로 이 컴퓨터에서 잠근 뒤 올려서, 서버가 해킹되거나 개발자가 봐도 학생 이름·기록을 읽을 수 없어요. 비밀번호는 컴퓨터마다 처음 한 번만 넣어요. 학생 정보·출결은 아예 올리지 않아요. <a href="privacy.html" target="_blank" rel="noopener">개인정보처리방침</a></p>
+    <p class="sum">🔒 서버에는 <b>잠근 상태로만</b> 올라가요. 선생님이 정한 '동기화 비밀번호'로 이 컴퓨터에서 잠근 뒤 올려서, 서버가 해킹되거나 개발자가 봐도 학생 이름·기록·학생 정보·출결을 읽을 수 없어요. 비밀번호는 컴퓨터마다 처음 한 번만 넣어요. <a href="privacy.html" target="_blank" rel="noopener">개인정보처리방침</a></p>
     <p id="acct-status"></p>
     <div class="row">
       <button id="acct-in" onclick="syncLogin()">구글로 로그인</button>
@@ -6940,7 +6940,7 @@ const syncBlobs = new Set(), wbUp = new Set(); // 올려야 할 사진·화이�
 Storage.prototype.setItem = function (k, v) { const old = this.getItem(k); SET.call(this, k, v); if (this === localStorage && old !== String(v)) syncMark(k); };
 Storage.prototype.removeItem = function (k) { const had = this.getItem(k) !== null; DEL.call(this, k); if (this === localStorage && had) syncMark(k); };
 function syncMark(k) {
-  if (k.startsWith("sync-") || k.startsWith("local-")) return; // local-*: 이 컴퓨터에만 (서버에 안 올림)
+  if (k.startsWith("sync-")) return;
   lsSet("sync-dirty", "1");
   if (PHOTO_KEY.test(k) || k.startsWith("wb:")) syncBlobs.add(k);
   if (fbUser) { clearTimeout(syncT); syncT = setTimeout(() => syncPush(false), 3000); }
@@ -7149,7 +7149,7 @@ async function syncPush(all) {
       else { const v = lsGet(b); await (v ? fb.setDoc(blobRef(b), { data: await seal(v.startsWith("data:") ? await fitBlob(v) : v) }) : fb.deleteDoc(blobRef(b))); }
     }
     const ls = {}, photos = [];
-    for (const k of Object.keys(localStorage)) if (!k.startsWith("sync-") && !k.startsWith("local-")) PHOTO_KEY.test(k) ? photos.push(k) : ls[k] = lsGet(k); // local-*(학생 개인정보)은 안 올림
+    for (const k of Object.keys(localStorage)) if (!k.startsWith("sync-")) PHOTO_KEY.test(k) ? photos.push(k) : ls[k] = lsGet(k);
     const at = Date.now(); syncMine = at; // 내가 올린 것: 서버 지켜보기에서 다시 받지 않게
     await fb.setDoc(boardRef(), { lock: syncLock, box: await seal(JSON.stringify({ ls, photos })), updatedAt: at }); // 예전 ls(잠그지 않은 것)는 이때 지워짐
     lsSet("sync-at", String(at)); lsDel("sync-dirty"); syncShow();
@@ -7165,7 +7165,7 @@ async function syncPush(all) {
 async function syncPull(d) {
   syncShow("서버 보드를 받는 중…");
   if (d.box) d = { ...d, ...JSON.parse(await unseal(d.box)) }; // 잠근 것 풀기 (예전 자료는 ls 그대로)
-  for (const k of Object.keys(localStorage)) if (!k.startsWith("sync-") && !k.startsWith("local-") && !(k in d.ls) && !d.photos.includes(k)) lsDel(k); // local-*은 이 컴퓨터 것 그대로
+  for (const k of Object.keys(localStorage)) if (!k.startsWith("sync-") && !(k in d.ls) && !d.photos.includes(k)) lsDel(k);
   for (const k in d.ls) lsSet(k, d.ls[k]);
   for (const k of d.photos) { const b = await fb.getDoc(blobRef(k)); if (b.exists()) lsSet(k, await unseal(b.data().data)); }
   const pages = await fb.getDocs(fb.collection(fb.db, "boards", fbUser.uid, "wb")), have = new Set();

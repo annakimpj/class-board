@@ -263,8 +263,7 @@
 <script>
 // 저장: localStorage "journal" = { events: [{ id, date, time, text, done }], recs: [{ id, date, ps: [학생], kind, text, at }],
 //   counsels: [{ id, date, time, ps, target(학생·학부모·기타), way(대면·전화·문자·온라인), topic, text, next(후속 조치), at }], notes: { "YYYY-MM-DD": 글 } }
-//   (학생 정보·출결은 "local-journal" = L 에 따로: 이 컴퓨터에만, 서버에 절대 안 올림)
-//   L.info: { 학생: { birth, phone, addr, g1rel, g1name, g1phone, g2rel, g2name, g2phone, memo } }, L.att: { 날짜: { 학생: { t(결석·지각·조퇴·결과), r(질병·미인정·기타), m } } },
+//   info: { 학생: { birth, phone, addr, g1rel, g1name, g1phone, g2rel, g2name, g2phone, memo } }, att: { 날짜: { 학생: { t(결석·지각·조퇴·결과), r(질병·미인정·기타), m } } },
 //   box: [{ id, type(link·memo), title, url, text, tag, at }]
 // 보드와 같은 저장소라 보드에서 로그인해 두면 서버에도 올라감 (보드가 storage 이벤트로 알아채고, 꺼져 있으면 sync-dirty로 다음에)
 const $ = id => document.getElementById(id);
@@ -297,13 +296,13 @@ const targets = () => J.targets?.length ? J.targets : TARGETS, ways = () => J.wa
 const schoolYear = d => { const y = +d.slice(0, 4), m = +d.slice(5, 7); return m >= 3 ? y : y - 1; }; // 학년도는 3월 시작 (2027-02는 2026학년도)
 let recYear = null, csYear = null; // 처음 그릴 때 이번 학년도로 (J를 읽은 뒤)
 const yearOpts = (sel, list, cur) => { const ys = [...new Set([schoolYear(today()), ...list.map(x => schoolYear(x.date))])].sort((a, b) => b - a); sel.replaceChildren(...ys.map(y => el("option", { value: y }, `${y}학년도`)), el("option", { value: "" }, "모든 학년도")); sel.value = cur; };
-let J = { events: [], recs: [], counsels: [], notes: {} }, L = { info: {}, att: {} }; // L: 이 컴퓨터에만 (학생 개인정보)
+let J = { events: [], recs: [], counsels: [], notes: {} };
 function load() {
   try { J = Object.assign({ events: [], recs: [], counsels: [], notes: {} }, JSON.parse(localStorage.getItem("journal")) || {}); } catch (e) {}
-  try { L = Object.assign({ info: {}, att: {} }, JSON.parse(localStorage.getItem("local-journal")) || {}); } catch (e) {}
+  try { const old = JSON.parse(localStorage.getItem("local-journal")); if (old) { J.info = { ...old.info, ...J.info }; J.att = { ...old.att, ...J.att }; localStorage.setItem("journal", JSON.stringify(J)); localStorage.removeItem("local-journal"); } } catch (e) {} // 예전: 이 컴퓨터에만 두던 학생 정보·출결 → 일지로
   J.recs.forEach(r => { if (!r.ps) { r.ps = r.p ? [r.p] : []; delete r.p; } }); // 예전: 학생 한 명
 }
-function store() { try { localStorage.setItem("local-journal", JSON.stringify(L)); localStorage.setItem("journal", JSON.stringify(J)); localStorage.setItem("sync-dirty", "1"); } catch (e) { ask("저장할 자리가 모자라요.", "확인", null); } }
+function store() { try { localStorage.setItem("journal", JSON.stringify(J)); localStorage.setItem("sync-dirty", "1"); } catch (e) { ask("저장할 자리가 모자라요.", "확인", null); } }
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 function ask(text, ok = "확인", cancel = "취소", near = null) { // 창 안 팝업. near(누른 버튼)가 있으면 그 옆에 작게
   return new Promise(res => {
@@ -705,10 +704,10 @@ function jrSettings(anchor) {
     const j = b?.journal;
     if (!j || !Array.isArray(j.events) || !Array.isArray(j.recs)) return ask("교사 일지 백업 파일이 아니에요.", "확인", null);
     if (!await ask(`${b.at ? new Date(b.at).toLocaleString("ko-KR") + "에 만든 " : ""}백업으로 지금 일지를 바꿀까요?\n지금 일지 내용은 없어져요.`, "바꾸기")) return;
-    J = Object.assign({ events: [], recs: [], counsels: [], notes: {} }, j); if (b.local) L = Object.assign({ info: {}, att: {} }, b.local); store(); close();
+    J = Object.assign({ events: [], recs: [], counsels: [], notes: {} }, j); if (b.local) Object.assign(J, { info: b.local.info, att: b.local.att }); store(); close(); // b.local: 잠깐 따로 두던 때의 백업
   };
   const backup = () => { // 백업 내보내기: 다시 불러올 수 있는 파일 (읽거나 인쇄하려면 각 탭의 '출력' → PDF로 저장)
-    const a = el("a", { href: URL.createObjectURL(new Blob([JSON.stringify({ app: "class-board-journal", v: 1, at: Date.now(), journal: J, local: L })], { type: "application/json" })), download: `교사일지 백업 ${today()}.json` });
+    const a = el("a", { href: URL.createObjectURL(new Blob([JSON.stringify({ app: "class-board-journal", v: 1, at: Date.now(), journal: J })], { type: "application/json" })), download: `교사일지 백업 ${today()}.json` });
     document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
   };
   const grp = (title, ...kids) => el("div", { class: "sgroup" }, el("h4", {}, title), ...kids);
@@ -922,7 +921,7 @@ const INFO = [["학생", [["birth", "생년월일", "date"], ["phone", "학생 �
   ["보호자 2", [["g2rel", "관계", "text", "예: 아버지"], ["g2name", "이름", "text"], ["g2phone", "연락처", "tel"]]],
   ["특이사항", [["memo", "알레르기·건강·주의할 점", "area"]]]];
 let infoWho = "", infoAll = false, infoT = 0;
-const iv = p => L.info?.[p] || {}, filled = p => Object.values(iv(p)).some(Boolean);
+const iv = p => J.info?.[p] || {}, filled = p => Object.values(iv(p)).some(Boolean);
 function bdays() { const m = {}; people().forEach(p => { const b = iv(p).birth; if (b) (m[b.slice(5)] ||= []).push(nameOf(p)); }); return m; } // "MM-DD": [이름]
 const ageOf = b => { const t = today(); let a = +t.slice(0, 4) - +b.slice(0, 4); if (t.slice(5) < b.slice(5)) a--; return a; };
 const INFO_COLS = [["번호", numOf], ["이름", nameOf], ["생년월일", p => iv(p).birth || ""], ["학생 연락처", p => iv(p).phone || ""],
@@ -937,15 +936,15 @@ function infoDraw() {
   if (!ppl.length) return $("info-form").replaceChildren(el("p", { class: "empty" }, "보드 ⚙ 설정 → 명단에 학생을 넣어 주세요."));
   if (infoAll) return $("info-form").replaceChildren(el("table", { class: "itable" }, el("tr", {}, ...INFO_COLS.map(c => el("th", {}, c[0]))),
     ...ppl.map(p => el("tr", { title: "누르면 이 학생 정보 고치기", onclick: () => { infoAll = false; infoWho = p; infoDraw(); } }, ...INFO_COLS.map(c => el("td", {}, c[1](p)))))));
-  const v = (L.info ||= {})[infoWho] ||= {};
-  const save = () => { $("info-saved").textContent = "저장하는 중…"; clearTimeout(infoT); infoT = setTimeout(() => { if (!Object.values(v).some(Boolean)) delete L.info[infoWho]; store(); $("info-saved").textContent = "저장했어요"; }, 400); };
+  const v = (J.info ||= {})[infoWho] ||= {};
+  const save = () => { $("info-saved").textContent = "저장하는 중…"; clearTimeout(infoT); infoT = setTimeout(() => { if (!Object.values(v).some(Boolean)) delete J.info[infoWho]; store(); $("info-saved").textContent = "저장했어요"; }, 400); };
   const field = ([k, label, type, ph]) => {
     const x = type === "area" ? el("textarea", { rows: 4, placeholder: ph || label }) : el("input", { type, placeholder: ph || "" });
     x.value = v[k] || ""; x.oninput = () => { v[k] = x.value.trim(); save(); if (k === "birth") infoDraw(); };
     return el("label", { class: "f" + (type === "area" ? " wide" : "") }, type === "area" ? null : el("span", {}, label + (k === "birth" && v.birth ? ` (만 ${ageOf(v.birth)}세)` : "")), x);
   };
   $("info-form").replaceChildren(...INFO.map(([g, fs]) => el("div", { class: "infogrp" }, el("h4", {}, g), el("div", { class: "row" }, ...fs.map(field)))),
-    el("p", { class: "tip" }, "🔒 학생 정보와 출결은 이 컴퓨터에만 저장돼요. 로그인해도 서버에 올라가지 않아요. (다른 컴퓨터로 옮길 때는 ⚙ 설정 → 백업 파일로) 생일은 달력에 케이크로 보여요."));
+    el("p", { class: "tip" }, "🔒 로그인하면 다른 일지처럼 선생님의 동기화 비밀번호로 잠가서 서버에 올라가요. 학생 화면·학생 페이지에는 나오지 않아요. 생일은 달력에 케이크로 보여요."));
 }
 $("info-table").onclick = () => { infoAll = !infoAll; infoDraw(); };
 const tsv = rows => rows.map(r => r.map(c => String(c ?? "").replace(/[\t\n]/g, " ")).join("\t")).join("\n"); // 엑셀에 붙여 넣기
@@ -962,13 +961,13 @@ function attDays() {
   return out;
 }
 function attRows() { // [학생, {결석: n…}, [자세히]]
-  const A = L.att || {}, days = attDays();
+  const A = J.att || {}, days = attDays();
   return people().map(p => { const cnt = Object.fromEntries(ATT_T.map(k => [k, 0])), det = [];
     days.forEach(s => { const a = A[s]?.[p]; if (a) { cnt[a.t]++; det.push(`${+s.slice(5, 7)}/${+s.slice(8)} ${a.r}${a.t}${a.m ? `(${a.m})` : ""}`); } });
     return [p, cnt, det]; });
 }
 function attDraw() {
-  const days = attDays(), t = today(), A = L.att || {};
+  const days = attDays(), t = today(), A = J.att || {};
   $("att-title").textContent = `${attMonth.getFullYear()}년 ${attMonth.getMonth() + 1}월 출결`;
   $("att-ptitle").textContent = $("att-title").textContent;
   if (!people().length) return $("att").replaceChildren(el("tr", {}, el("td", { class: "empty" }, "보드 ⚙ 설정 → 명단에 학생을 넣어 주세요.")));
@@ -979,7 +978,7 @@ function attDraw() {
     ...ATT_T.map(k => el("td", { class: "sum" }, cnt[k] ? String(cnt[k]) : "")))));
 }
 function attForm(s, p, anchor) {
-  const A = L.att ||= {}, cur = A[s]?.[p];
+  const A = J.att ||= {}, cur = A[s]?.[p];
   const tc = chips(ATT_T, cur?.t || "결석"), rc = chips(ATT_R.map(x => x[0]), cur?.r || "질병", attColor), memo = el("input", { type: "text", value: cur?.m || "", placeholder: "사유 (예: 감기, 체험학습)" });
   const close = pop(anchor, `${nameOf(p)} · ${dayName(s)}`, "att", [tc.box, rc.box, memo], () => { (A[s] ||= {})[p] = { t: tc.get(), r: rc.get(), m: memo.value.trim() }; store(); },
     { cancel: "취소", foot: cur ? el("button", { type: "button", class: "danger", onclick: () => { delete A[s][p]; if (!Object.keys(A[s]).length) delete A[s]; store(); close(); } }, "출석으로") : null });
@@ -1026,7 +1025,7 @@ $("box-link").onclick = e => boxForm("link", null, e.currentTarget);
 $("box-memo").onclick = e => boxForm("memo", null, e.currentTarget);
 
 // 다른 창(보드)에서 바뀌면 다시 그림: 명단·점수·로그인해서 받은 일지
-addEventListener("storage", e => { if (["journal", "local-journal", "roster", "reward", null].includes(e.key)) { load(); if (!document.querySelector(".pop-wrap")) draw(); } });
+addEventListener("storage", e => { if (["journal", "roster", "reward", null].includes(e.key)) { load(); if (!document.querySelector(".pop-wrap")) draw(); } });
 // 학생이 보는 모니터에 떴으면(#cover) 평범한 보드 화면처럼 덮어 둠. 메인 모니터로 옮긴 뒤 두 번 누르면 열림
 const coverSync = () => { $("cover").hidden = location.hash !== "#cover"; };
 $("cover-date").textContent = new Date().toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "long" });
