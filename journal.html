@@ -43,6 +43,8 @@
   .sgroup { display: grid; gap: 8px; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; } .sgroup h4 { margin: 0; font-size: 13px; color: var(--ink); }
   .sgroup .tip { margin: 0; }
   .pop .chk { display: flex; align-items: center; gap: 6px; font-size: 14px; } .pop .num { width: 64px; } .pop .row .sp { flex: 1; }
+  .ddl .grab { cursor: grab; color: #c9beb3; padding: 0 2px; user-select: none; touch-action: none; } .ddl .grab.off { visibility: hidden; } .ddl .row.moving { opacity: .5; }
+  .ddl .fixtag { flex: none; width: 26px; font-size: 11px; color: var(--muted); text-align: center; }
   .ddl .sw { width: 30px; height: 28px; padding: 0; border: 0; background: none; flex: none; cursor: pointer; }
   .ring .btns.col { flex-direction: column; align-items: stretch; } .ring .btns .danger { color: #e03131; }
   .pop .wdays { display: flex; gap: 2px; } .pop .wdays button { width: 28px; height: 26px; padding: 0; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; } .pop .wdays button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
@@ -230,7 +232,8 @@ const DEF_KINDS = [["칭찬", "#2f9e44"], ["생활지도", "#e8590c"], ["학습"
 const DEF_CATS = [["학교 행사", "#1c7ed6"], ["업무", "#2f9e44"], ["개인", "#ae3ec9"]];
 const kinds = () => J.kinds || DEF_KINDS, evCats = () => J.evCats || DEF_CATS;
 const kindColor = k => (kinds().find(x => x[0] === k) || [, "#868e96"])[1];
-const evColor = e => e.cat && (evCats().find(x => x[0] === e.cat) || [])[1];
+const evBase = () => J.evBase || ["기본", "#4a7fb5"];
+const evColor = e => e.cat ? (evCats().find(x => x[0] === e.cat) || [])[1] : J.evBase?.[1];
 const evStyle = e => { const c = evColor(e); return c ? `background:color-mix(in srgb, ${c} 20%, #fff);color:color-mix(in srgb, ${c} 75%, #000)` : ""; };
 const TARGETS = ["학생", "학부모", "학생·학부모", "기타"], WAYS = ["대면", "전화", "문자", "온라인"];
 const targets = () => J.targets?.length ? J.targets : TARGETS, ways = () => J.ways?.length ? J.ways : WAYS, jset = () => J.set ||= {};
@@ -371,7 +374,8 @@ function evForm(date, e, anchor) { // 일정: 위에 그날 일정, 아래 [입�
   mbyDraw(); d?.addEventListener("change", mbyDraw);
   const repSub = () => { wdBox.hidden = repSel.value !== "week"; mbySel.hidden = repSel.value !== "month"; };
   repSel.onchange = repSub; repSub();
-  const catC = chips(["기본", ...evCats().map(x => x[0])], e?.cat && evCats().some(x => x[0] === e.cat) ? e.cat : "기본", k => (evCats().find(x => x[0] === k) || [, "#8aa4c2"])[1]);
+  const base = evBase()[0];
+  const catC = chips([base, ...evCats().map(x => x[0]).filter(k => k !== base)], e?.cat && evCats().some(x => x[0] === e.cat) ? e.cat : base, k => (evCats().find(x => x[0] === k) || [, evBase()[1]])[1]);
   const spanB = el("button", { type: "button", class: "mode", title: "여러 날 이어지는 일정", onclick: () => setMode(mode === "span" ? "" : "span") }, ico("span"), "연속");
   const repB = el("button", { type: "button", class: "mode", title: "되풀이되는 일정", onclick: () => setMode(mode === "rep" ? "" : "rep") }, ico("rep"), "반복");
   const spanRow = el("div", { class: "row moderow" }, el("span", {}, "끝나는 날"), endF), repRow = el("div", { class: "moderow col" }, el("div", { class: "row" }, repSel, mbySel, wdBox), el("div", { class: "row" }, el("span", {}, "끝나는 날(없으면 계속)"), untilF));
@@ -383,7 +387,7 @@ function evForm(date, e, anchor) { // 일정: 위에 그날 일정, 아래 [입�
     if (mode === "span" && endV > start) o.end = endV;
     if (mode === "rep") { o.rep = repSel.value; o.until = untilV && untilV >= start ? untilV : undefined; if (o.rep === "week") o.wdays = [...wset].sort(); if (o.rep === "month") o.mby = mbySel.value; }
     else o.skip = undefined;
-    o.cat = catC.get() === "기본" ? undefined : catC.get();
+    o.cat = catC.get() === base ? undefined : catC.get();
     return o;
   };
   const redraw = () => { drawList(); calDraw(); };
@@ -610,17 +614,27 @@ function dateField(value, set) {
   const btn = el("button", { type: "button", class: "clock", title: "달력에서 고르기", "aria-label": "달력에서 고르기", onclick: () => { dp.value = parseDate(x.value); try { dp.showPicker(); } catch (er) { dp.focus(); } } }, ico("cal"));
   return el("span", { class: "inbox dbox" }, x, btn, dp);
 }
-function colorList(get, set, rename, ph) { // 이름 + 색 목록 고치기. 이름을 바꾸면 이미 쓴 것도 같이 바뀜
+function colorList(get, set, rename, ph, fixed) { // 이름 + 색 목록 고치기. 이름을 바꾸면 이미 쓴 것도 같이 바뀜. ⠿를 끌면 순서
   const box = el("div", { class: "ddl" });
-  const draw = () => { const L = get(); box.replaceChildren(...L.map((it, i) => el("div", { class: "row" },
+  const grab = row => el("span", { class: "grab", title: "끌어서 순서 바꾸기", onpointerdown: p => {
+    p.preventDefault(); row.classList.add("moving");
+    const mv = ev => { const rows = [...box.querySelectorAll(".row.it")].filter(r => r !== row), over = rows.find(r => { const rr = r.getBoundingClientRect(); return ev.clientY < rr.top + rr.height / 2; }); if (over) over.before(row); else rows.at(-1)?.after(row); };
+    const up = () => { removeEventListener("pointermove", mv); removeEventListener("pointerup", up); const L = get(), byName = Object.fromEntries(L.map(x => [x[0], x])); const N = [...box.querySelectorAll(".row.it")].map(r => byName[r.dataset.n]).filter(Boolean); L.splice(0, L.length, ...N); set(L); draw(); };
+    addEventListener("pointermove", mv); addEventListener("pointerup", up);
+  } }, "⠿");
+  const draw = () => { const L = get(); box.replaceChildren(...(fixed ? [fixed()] : []), ...L.map((it, i) => { const row = el("div", { class: "row it", "data-n": it[0] }); row.append(grab(row), ...[
       el("input", { type: "color", class: "sw", value: it[1], title: "색", oninput: ev => { it[1] = ev.target.value; set(L); } }),
-      el("input", { type: "text", class: "grow", value: it[0], placeholder: ph, onchange: ev => { const v = ev.target.value.trim(); if (!v || L.some((x, j) => j !== i && x[0] === v)) { ev.target.value = it[0]; return; } rename(it[0], v); it[0] = v; set(L); } }),
-      el("button", { type: "button", class: "x", title: "지우기", onclick: () => { L.splice(i, 1); set(L); draw(); } }, "✕"))),
+      el("input", { type: "text", class: "grow", value: it[0], placeholder: ph, onchange: ev => { const v = ev.target.value.trim(); if (!v || L.some((x, j) => j !== i && x[0] === v)) { ev.target.value = it[0]; return; } rename(it[0], v); it[0] = v; ev.target.closest(".row").dataset.n = v; set(L); } }),
+      el("button", { type: "button", class: "x", title: "지우기", onclick: () => { L.splice(i, 1); set(L); draw(); } }, "✕")]); return row; }),
     el("button", { type: "button", onclick: () => { let n = 1; while (L.some(x => x[0] === `새 종류 ${n}`)) n++; L.push([`새 종류 ${n}`, "#868e96"]); set(L); draw(); box.querySelector(".row:last-of-type .grow")?.select(); } }, "+ 종류 더하기")); };
   draw(); return box;
 }
 function jrSettings(anchor) {
-  const cats = colorList(() => J.evCats ||= DEF_CATS.map(x => [...x]), L => { J.evCats = L; store(); }, (a, b) => J.events.forEach(x => { if (x.cat === a) x.cat = b; }), "일정 종류");
+  const baseRow = () => { const b = J.evBase ||= [...evBase()]; return el("div", { class: "row" }, el("span", { class: "grab off" }, "⠿"),
+    el("input", { type: "color", class: "sw", value: b[1], title: "색", oninput: ev => { b[1] = ev.target.value; store(); } }),
+    el("input", { type: "text", class: "grow", value: b[0], placeholder: "기본", onchange: ev => { const v = ev.target.value.trim(); if (v) b[0] = v; else ev.target.value = b[0]; store(); } }),
+    el("span", { class: "fixtag", title: "종류를 고르지 않은 일정" }, "기본")); };
+  const cats = colorList(() => J.evCats ||= DEF_CATS.map(x => [...x]), L => { J.evCats = L; store(); }, (a, b) => J.events.forEach(x => { if (x.cat === a) x.cat = b; }), "일정 종류", baseRow);
   const kds = colorList(() => J.kinds ||= DEF_KINDS.map(x => [...x]), L => { J.kinds = L; store(); }, (a, b) => J.recs.forEach(x => { if (x.kind === a) x.kind = b; }), "기록 종류");
   const st = jset(), chk = (k, t) => el("label", { class: "chk" }, el("input", { type: "checkbox", ...(st[k] ? { checked: "" } : {}), onchange: ev => { st[k] = ev.target.checked; store(); } }), t);
   const words = (get, setL, ph) => { const x = el("input", { type: "text", class: "grow", value: get().join(", "), placeholder: ph }); x.onchange = () => { const L = x.value.split(/[,，]/).map(v => v.trim()).filter(Boolean); setL(L.length ? L : undefined); store(); x.value = get().join(", "); }; return x; };
