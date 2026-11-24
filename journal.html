@@ -60,7 +60,7 @@
   #p-cal { grid-template-columns: minmax(0, 1fr) 270px; }
   .cal-head { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; } .cal-head b { font-size: 20px; min-width: 130px; text-align: center; }
   .cal-head .sp { flex: 1; } .cal-head .hint { color: var(--muted); font-size: 12px; }
-  .cal { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); grid-template-rows: auto repeat(6, minmax(0, 1fr)); gap: 4px; }
+  .cal { user-select: none; -webkit-user-select: none; flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); grid-template-rows: auto repeat(6, minmax(0, 1fr)); gap: 4px; }
   .cal .dw { text-align: center; font-size: 13px; color: var(--muted); } .cal .dw.sun { color: #e03131; } .cal .dw.sat { color: #1c7ed6; }
   .day { position: relative; border-radius: 10px; background: #faf8f5; padding: 4px 6px; cursor: pointer; overflow: hidden; border: 1.5px solid transparent; display: flex; flex-direction: column; gap: 2px; min-height: 0; }
   .day:hover { border-color: var(--line); } .day.out { opacity: .45; } .day.sel { border-color: var(--accent); background: var(--soft); }
@@ -545,7 +545,7 @@ function sortable(box, done) { // 줄(⠿·시간·글자 어디든)을 위아�
 function chipDrag(chip, e) { // 달력의 일정을 다른 날로 끌기 (조금만 움직이면 그냥 누르기 = 줄 긋기)
   chip.onpointerdown = p => {
     if (p.button) return;
-    p.stopPropagation();
+    p.stopPropagation(); p.preventDefault(); getSelection().removeAllRanges(); // 끌 때 글자가 파랗게 골라지지 않게
     const sx = p.clientX, sy = p.clientY, from = dayAt(sx, sy), gh = el("div", { class: "ghost", hidden: "" }, e.text), cell = chip.closest(".evs");
     let on = false, to = null;
     const mv = ev => {
