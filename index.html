@@ -1003,6 +1003,9 @@
   /* 아래쪽 바 버튼 끌어서 순서 바꾸기 */
   #launch button { touch-action: none; }
   #launch button.dragging, .drawer-items button.dragging { opacity: .55; background: var(--card); }
+  .dock-ghost { position: fixed; z-index: 2147483000; pointer-events: none; border: 0; background: #fff; border-radius: 12px; padding: 4px 8px; display: flex; flex-direction: column; align-items: center; font-size: 14px; color: var(--ink); box-shadow: 0 8px 24px rgba(60, 40, 20, .25); opacity: .9; }
+  .dock-ghost i { font-style: normal; display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; background: #fff; box-shadow: inset 0 0 0 1.5px var(--accent); }
+  .dock.drop-in { box-shadow: 0 0 0 3px var(--accent), 0 10px 28px rgba(60, 40, 20, .12); }
   .drawer-items button { touch-action: none; }
   .dock #drawer-btn.drop { background: #e9f5f7; box-shadow: -12px 0 0 #fff, 12px 0 0 #fff, inset 0 0 0 2px #2f7d8c; }
   /* 보드에 떠 있는 카드 버튼: 아이콘 테두리와 아래 점 */
@@ -2276,21 +2279,34 @@ function dockSaveOrder() { // 아래쪽 바 + 서랍의 지금 순서를 기억
   dockOrder = keys.concat(dockOrder.filter(k => !keys.includes(k)));
   try { localStorage.setItem("dock-order", JSON.stringify(dockOrder)); } catch (er) {}
 }
-document.getElementById("drawer-items").addEventListener("pointerdown", e => { // 서랍 안: 위아래·옆으로 끌어서 순서 바꾸기
+document.getElementById("drawer-items").addEventListener("pointerdown", e => { // 서랍 안: 위아래·옆으로 끌어서 순서 바꾸기. 서랍 밖 아래쪽 바에 놓으면 바로 꺼냄
   const b = e.target.closest("button"), box = e.currentTarget;
   if (!b || e.button || e.target.closest(".dock-add")) return;
-  const sx = e.clientX, sy = e.clientY;
-  let moved = false;
+  const sx = e.clientX, sy = e.clientY, dock = document.querySelector(".dock"), launch = document.getElementById("launch"), dr = document.getElementById("drawer");
+  let moved = false, ghost = null;
+  const inside = (ev, r) => ev.clientX >= r.left && ev.clientX <= r.right && ev.clientY >= r.top && ev.clientY <= r.bottom;
+  const onDock = ev => { const r = dock.getBoundingClientRect(); return !inside(ev, dr.getBoundingClientRect()) && ev.clientX >= r.left && ev.clientX <= r.right && ev.clientY >= r.top - 30 && ev.clientY <= r.bottom + 10; };
   const move = ev => {
     if (!moved && Math.hypot(ev.clientX - sx, ev.clientY - sy) < 8) return;
-    if (!moved) { moved = true; b.classList.add("dragging"); }
+    if (!moved) { moved = true; b.classList.add("dragging"); ghost = b.cloneNode(true); ghost.className = "dock-ghost"; document.body.append(ghost); }
+    const out = !inside(ev, dr.getBoundingClientRect()); // 서랍 밖에서는 버튼 모양이 손을 따라옴
+    ghost.hidden = !out; ghost.style.left = ev.clientX - ghost.offsetWidth / 2 + "px"; ghost.style.top = ev.clientY - ghost.offsetHeight / 2 + "px";
+    dock.classList.toggle("drop-in", onDock(ev));
+    if (out) return;
     const over = [...box.children].find(o => { const r = o.getBoundingClientRect(); return o !== b && ev.clientX >= r.left && ev.clientX <= r.right && ev.clientY >= r.top && ev.clientY <= r.bottom; });
     if (over) { const r = over.getBoundingClientRect(); if (ev.clientX < r.left + r.width / 2) over.before(b); else over.after(b); }
   };
-  const up = () => {
+  const up = ev => {
     removeEventListener("pointermove", move); removeEventListener("pointerup", up); removeEventListener("pointercancel", up);
     if (!moved) return;
     b.classList.remove("dragging"); dockDragged = true; setTimeout(() => dockDragged = false, 0);
+    ghost?.remove(); dock.classList.remove("drop-in");
+    if (ev.type === "pointerup" && onDock(ev)) { // 아래쪽 바로 꺼냄: 놓은 자리에
+      const k = b.dataset.card, next = [...launch.children].find(o => { const r = o.getBoundingClientRect(); return ev.clientX < r.left + r.width / 2; });
+      launch.insertBefore(b, next || null); dockSaveOrder();
+      drawer = drawer.filter(x => x !== k.split("-")[0] && x !== k); try { localStorage.setItem("drawer", JSON.stringify(drawer)); } catch (er) {}
+      dr.hidePopover(); return applyLayout();
+    }
     dockSaveOrder();
   };
   addEventListener("pointermove", move); addEventListener("pointerup", up); addEventListener("pointercancel", up);
