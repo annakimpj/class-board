@@ -83,6 +83,7 @@
     <p class="err" id="login-err"></p>
     <button class="main" id="login-go">다음</button>
     <button type="button" id="login-back" hidden>처음으로</button>
+    <p class="sub"><a href="privacy.html" target="_blank" rel="noopener">개인정보처리방침</a> · 이름 같은 개인정보는 저장하지 않아요</p>
   </form>
 </div>
 <div class="app" id="app" hidden>
@@ -103,7 +104,7 @@
 </div>
 <script src="avatar.js"></script>
 <script type="module">
-// 서버: classes/{반 코드} = { unit, prices } · classes/{반 코드}/kids/{번호}-{비밀번호} = { name, n, pt, av, wear, own, buys, kidAt }
+// 서버: classes/{반 코드} = { unit, prices } · classes/{반 코드}/kids/{번호}-{비밀번호} = { n, pt, av, wear, own, buys, kidAt } (이름 없음)
 // 점수는 선생님 보드만 바꿈. 가게 물건은 입어 보기만 하다가 저장할 때 삼(buys에 남김). 선생님 보드가 받아서 점수를 뺌
 const FB = "https://www.gstatic.com/firebasejs/10.14.1/";
 const CFG = { apiKey: "AIzaSyCEsOWNlfwrGdTKfbgL-C6JTPlc7Z3pUmo", authDomain: "class-board-aeed0.firebaseapp.com", projectId: "class-board-aeed0",
@@ -135,7 +136,7 @@ const login = () => { try { return JSON.parse(localStorage.getItem("kid-login"))
 const kidRef = l => fs.doc(db, "classes", l.code, "kids", l.key);
 
 function draw() {
-  $("me-name").replaceChildren(me.name || "", el("small", {}, me.n ? `${me.n}번` : ""));
+  $("me-name").replaceChildren(me.n ? `${me.n}번` : "내 아바타"); // 이름은 서버에 두지 않음 (번호만)
   const cost = cartCost(), after = left() - cost;
   $("me-pt").replaceChildren(String(left()), el("small", {}, unit()), ...(cost ? [el("small", { class: after < 0 ? "short" : "" }, ` → 저장하면 ${after}`)] : []));
   $("me-av").innerHTML = avSvg(d.av, d.wear);

@@ -457,6 +457,8 @@
   .se-ask { position: absolute; inset: 0; z-index: 30; display: grid; place-items: center; background: rgba(250, 247, 242, .72); border-radius: inherit; app-region: no-drag; -webkit-app-region: no-drag; }
   .se-ask > div { max-width: min(400px, 90%); background: #fff; border-radius: 14px; padding: 18px 20px 14px; box-shadow: 0 10px 34px rgba(60, 40, 20, .22); font: 15px/1.55 "Pretendard Variable", "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; color: var(--ink); }
   .se-ask p { margin: 0 0 14px; white-space: pre-line; max-height: 50vh; overflow-y: auto; }
+  body > .se-ask { position: fixed; z-index: 2147483000; } /* 로그인·잠금 물음은 화면 가운데 */
+  .se-ask p.rcode { font: 700 22px ui-monospace, Consolas, monospace; letter-spacing: .06em; text-align: center; background: #f8f9fa; border: 1.5px dashed #ced4da; border-radius: 10px; padding: 10px; user-select: all; white-space: nowrap; }
   .se-ask .row { display: flex; justify-content: flex-end; gap: 6px; }
   .se-ask button { font: inherit; font-size: 14px; border: 1.5px solid var(--line, #c3e1e6); background: #fff; color: var(--ink); border-radius: 7px; padding: 5px 16px; cursor: pointer; }
   .se-ask button.main { background: var(--accent, #2f7d8c); border-color: var(--accent, #2f7d8c); color: #fff; } /* 카드 색에 맞춤 */
@@ -1492,13 +1494,15 @@
     <div id="hp-body"></div>
   </section>
   <section id="tab-account" hidden>
-    <p class="sum">구글 계정으로 로그인하면 이 보드(명단·메모·급훈·시간표·카드 배치·사진·화이트보드)가 서버에 저장돼요. 다른 컴퓨터에서 같은 계정으로 로그인하면 같은 보드가 나와요. 고칠 때마다 몇 초 뒤 저절로 저장돼요.</p>
+    <p class="sum">구글 계정으로 로그인하면 이 보드(명단·메모·급훈·시간표·카드 배치·사진·화이트보드·교사 일지)가 서버에 저장돼요. 다른 컴퓨터에서 같은 계정으로 로그인하면 같은 보드가 나와요. 고칠 때마다 몇 초 뒤 저절로 저장돼요.</p>
+    <p class="sum">🔒 서버에는 <b>잠근 상태로만</b> 올라가요. 선생님이 정한 '동기화 비밀번호'로 이 컴퓨터에서 잠근 뒤 올려서, 서버가 해킹되거나 개발자가 봐도 학생 이름·기록을 읽을 수 없어요. 비밀번호는 컴퓨터마다 처음 한 번만 넣어요. 학생 정보·출결은 아예 올리지 않아요. <a href="privacy.html" target="_blank" rel="noopener">개인정보처리방침</a></p>
     <p id="acct-status"></p>
     <div class="row">
       <button id="acct-in" onclick="syncLogin()">구글로 로그인</button>
       <button id="acct-now" onclick="syncPush(true)" hidden>지금 모두 저장</button>
       <button id="acct-out" onclick="syncLogout()" hidden>로그아웃</button>
     </div>
+    <div class="row" id="acct-lock" hidden><button onclick="lockUnlockAgain()" id="acct-unlock">동기화 비밀번호 넣기</button><button onclick="lockChangePw()" id="acct-pw">동기화 비밀번호 바꾸기</button><button onclick="lockNewRecovery()" id="acct-rc">복구 키 새로 만들기</button></div>
     <p class="sum">로그아웃해도 이 컴퓨터의 보드는 그대로 남아요. 여럿이 쓰는 컴퓨터라면 로그아웃한 뒤 '초기화'에서 지워 주세요.</p>
   </section>
   <section id="tab-contact" hidden>
@@ -5665,13 +5669,13 @@ wbLoad(wbPage);
 // ───── 미세먼지 ─────
 // Open-Meteo 대기질 API (무료, 키 없음). 5단계: 환경부 기준(PM10: 30/80/150, PM2.5: 15/35/75)에서 '좋음'의 아래 절반을 '최고'로
 const DUST_GRADES = [["최고", "#1d4ed8", "😄"], ["좋음", "#3b82f6", "😊"], ["보통", "#1fa463", "🙂"], ["나쁨", "#f59e0b", "😷"], ["최악", "#ef4444", "😫"]];
-// 등급 얼굴: 단순한 선 얼굴 (선 색 = 등급 색). 최고 >< 웃음 · 좋음 눈웃음 · 보통 일자 입 · 나쁨 찡그림 · 최악 ×× 눈
+// 등급 얼굴: 단순한 선 얼굴 (선 색 = 등급 색). 최고 >< 눈 작은 미소 · 좋음 눈웃음 · 보통 일자 입 · 나쁨 찡그림 · 최악 ×× 눈 작은 입
 const DUST_FACE = [
-  '<path d="M15 17l5 3-5 3M33 17l-5 3 5 3"/><path d="M15 29h18a9 9 0 0 1-18 0z"/>',
+  '<path d="M15 17l5 3-5 3M33 17l-5 3 5 3"/><path d="M19 30a5 5 0 0 0 10 0"/>',
   '<path d="M14 21a4 4 0 0 1 8 0M26 21a4 4 0 0 1 8 0"/><path d="M15 29a10 10 0 0 0 18 0"/>',
   '<circle cx="17" cy="20" r="1.6" fill="currentColor"/><circle cx="31" cy="20" r="1.6" fill="currentColor"/><path d="M17 32h14"/>',
   '<circle cx="17" cy="20" r="1.6" fill="currentColor"/><circle cx="31" cy="20" r="1.6" fill="currentColor"/><path d="M16 34a9 9 0 0 1 16 0"/>',
-  '<path d="M14 17l6 6M20 17l-6 6M28 17l6 6M34 17l-6 6"/><path d="M19 34l5-5 5 5z"/>',
+  '<path d="M14 17l6 6M20 17l-6 6M28 17l6 6M34 17l-6 6"/><ellipse cx="24" cy="32" rx="3.5" ry="3"/>',
 ].map(d => `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="24" cy="24" r="21"/>${d}</svg>`);
 const dustGrade = (v, cuts) => { const i = cuts.findIndex(c => v <= c); return i < 0 ? cuts.length : i; };
 let dustPlace = null;
@@ -6204,7 +6208,7 @@ function seAskFields(host, text, fields, ok = "확인") {
   return new Promise(res => {
     host.querySelector(":scope > .se-ask")?.remove();
     const ins = fields.map(f => {
-      if (!f.options) return h("input", { class: "se-ask-in", value: f.value || "", placeholder: f.placeholder || "" });
+      if (!f.options) return h("input", { class: "se-ask-in", type: f.type || "text", value: f.value || "", placeholder: f.placeholder || "" });
       const sel = h("select", { class: "se-ask-in" }, f.options.map(([v, t]) => h("option", { value: v }, t))); sel.value = f.value ?? ""; return sel;
     });
     const done = v => { box.remove(); res(v); }, okv = () => done(ins.map(i => i.value.trim()));
@@ -6920,7 +6924,7 @@ function hpShot(k, at) {
 }
 
 // ───── 로그인·동기화 (Firebase, 무료 Spark 요금제) ─────
-// 서버 구조: boards/{uid} = { ls: 글로 된 설정 전부, photos: 사진 카드 이름들, updatedAt }
+// 서버 구조: boards/{uid} = { lock: 잠금 정보, box: 잠근 { ls: 글로 된 설정 전부, photos: 사진 카드 이름들 }, updatedAt }  ← 사진·화이트보드도 모두 잠가서 ("🔒…")
 //            boards/{uid}/blobs/{사진 카드 이름 | wbimg-사진 id} = { data: 사진(data URL) }   ← 문서 하나 1MB 제한이라 한 장씩
 //            boards/{uid}/wb/{화이트보드 이름} = { json: 글상자·사진 자리·펜 선 }  (되돌리기 기록은 이 컴퓨터에만)
 // 이 컴퓨터 쪽 표시: sync-uid(로그인한 계정), sync-at(마지막으로 맞춘 서버 시각), sync-dirty(아직 안 올린 변경)
@@ -6936,12 +6940,12 @@ const syncBlobs = new Set(), wbUp = new Set(); // 올려야 할 사진·화이�
 Storage.prototype.setItem = function (k, v) { const old = this.getItem(k); SET.call(this, k, v); if (this === localStorage && old !== String(v)) syncMark(k); };
 Storage.prototype.removeItem = function (k) { const had = this.getItem(k) !== null; DEL.call(this, k); if (this === localStorage && had) syncMark(k); };
 function syncMark(k) {
-  if (k.startsWith("sync-")) return;
+  if (k.startsWith("sync-") || k.startsWith("local-")) return; // local-*: 이 컴퓨터에만 (서버에 안 올림)
   lsSet("sync-dirty", "1");
   if (PHOTO_KEY.test(k) || k.startsWith("wb:")) syncBlobs.add(k);
   if (fbUser) { clearTimeout(syncT); syncT = setTimeout(() => syncPush(false), 3000); }
 }
-addEventListener("storage", e => { if (e.storageArea === localStorage && e.key && !e.key.startsWith("sync-")) syncMark(e.key); }); // 교사 일지 창에서 바꾼 것도 서버에 올림
+addEventListener("storage", e => { if (e.storageArea === localStorage && e.key) syncMark(e.key); }); // 교사 일지 창에서 바꾼 것도 서버에 올림
 async function fbLoad() { // 필요할 때만 불러옴 (로그인 안 하면 인터넷 없이도 그대로 씀)
   if (fb) return fb;
   const [app, auth, fs] = await Promise.all(["firebase-app.js", "firebase-auth.js", "firebase-firestore.js"].map(f => import(FB + f)));
@@ -6958,6 +6962,91 @@ async function fbLoad() { // 필요할 때만 불러옴 (로그인 안 하면 �
   });
   return fb;
 }
+// ───── 잠금(암호화): 서버에는 잠근 글만 올림. 잠그는 열쇠(dataKey)는 이 컴퓨터에만(sync-key) 두고,
+// 서버에는 그 열쇠를 '동기화 비밀번호'로 잠근 것(lock.pw)과 '복구 키'로 잠근 것(lock.r)만 둠 → 서버가 털려도 비밀번호 없이는 못 읽음
+// AES-GCM 256 + PBKDF2(SHA-256, 31만 번). 비밀번호를 잊으면: 복구 키로 열거나, 이미 열린 컴퓨터에서 옛 비밀번호 없이 바꿈
+const b64 = buf => { const u = new Uint8Array(buf); let x = ""; for (let i = 0; i < u.length; i += 0x8000) x += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(x); };
+const unb64 = t => Uint8Array.from(atob(t), c => c.charCodeAt(0));
+const TE = new TextEncoder(), TD = new TextDecoder();
+let dataKey = null, syncLock = null, lockFresh = false; // lockFresh: 방금 새로 시작함 → 이 컴퓨터 보드를 올림 // 이 컴퓨터의 열쇠 · 서버의 잠금 정보 { v, pw, r, check }
+async function kdf(secret, salt) { const base = await crypto.subtle.importKey("raw", TE.encode(secret), "PBKDF2", false, ["deriveKey"]); return crypto.subtle.deriveKey({ name: "PBKDF2", salt, iterations: 310000, hash: "SHA-256" }, base, { name: "AES-GCM", length: 256 }, false, ["wrapKey", "unwrapKey"]); }
+async function keyWrap(secret) { const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12)); return { salt: b64(salt), iv: b64(iv), k: b64(await crypto.subtle.wrapKey("raw", dataKey, await kdf(secret, salt), { name: "AES-GCM", iv })) }; }
+async function keyUnwrap(w, secret) { return crypto.subtle.unwrapKey("raw", unb64(w.k), await kdf(secret, unb64(w.salt)), { name: "AES-GCM", iv: unb64(w.iv) }, { name: "AES-GCM" }, true, ["encrypt", "decrypt"]); } // 틀리면 오류
+async function seal(text) { const iv = crypto.getRandomValues(new Uint8Array(12)); return "🔒" + b64(iv) + "." + b64(await crypto.subtle.encrypt({ name: "AES-GCM", iv }, dataKey, TE.encode(text))); }
+async function unseal(t) { if (!t?.startsWith?.("🔒")) return t; const [iv, c] = t.slice(2).split("."); return TD.decode(await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(iv) }, dataKey, unb64(c))); } // 예전에 잠그지 않은 글은 그대로
+const keyKeep = async () => lsSet("sync-key", b64(await crypto.subtle.exportKey("raw", dataKey))); // sync-*: 서버에 안 올라감
+async function keyLocal() { try { const r = lsGet("sync-key"); return r ? await crypto.subtle.importKey("raw", unb64(r), { name: "AES-GCM" }, true, ["encrypt", "decrypt"]) : null; } catch (e) { return null; } }
+const RC_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+const rcMake = () => Array.from(crypto.getRandomValues(new Uint8Array(20)), b => RC_CHARS[b % 32]).join("").match(/.{4}/g).join("-"); // 예: K7QD-…(20자)
+const rcNorm = t => (t || "").toUpperCase().replace(/[^A-Z0-9]/g, "").match(/.{1,4}/g)?.join("-") || "";
+const pwAsk = async (text, twice) => { // 새 비밀번호(두 번) 또는 비밀번호 하나
+  for (;;) {
+    const v = await seAskFields(document.body, text, twice ? [{ type: "password", label: "동기화 비밀번호 (6자 이상)" }, { type: "password", label: "한 번 더" }] : [{ type: "password", label: "동기화 비밀번호" }], twice ? "정하기" : "열기");
+    if (!v) return null;
+    if (!twice) return v[0];
+    if (v[0].length < 6) { await seConfirm(document.body, "6자 이상으로 정해 주세요.", "확인", null); continue; }
+    if (v[0] !== v[1]) { await seConfirm(document.body, "두 번 쓴 비밀번호가 달라요.", "확인", null); continue; }
+    return v[0];
+  }
+};
+function rcShow(code) { // 복구 키 보여 주기: 복사·출력, '보관했어요'를 눌러야 닫힘
+  return new Promise(res => {
+    const copy = h("button", { onclick: () => { navigator.clipboard?.writeText(code); copy.textContent = "복사했어요"; } }, "복사");
+    const printIt = h("button", { onclick: () => { const w = open("", "_blank"); if (!w) return; w.document.write(`<!doctype html><meta charset="utf-8"><title>우리반 보드 복구 키</title><body style="font-family:sans-serif;padding:20mm"><h2>우리반 보드 · 복구 키</h2><p>동기화 비밀번호를 잊었을 때 이 키로 새 비밀번호를 정해요. 안전한 곳에 보관하고 다른 사람에게 보여 주지 마세요.</p><p style="font:700 22pt monospace;letter-spacing:.05em">${code}</p><p>만든 날: ${new Date().toLocaleDateString("ko-KR")}</p></body>`); w.document.close(); w.print(); } }, "출력");
+    const box = h("div", { class: "se-ask" }, h("div", {}, h("p", {}, "🔑 복구 키예요. 동기화 비밀번호를 잊었을 때 이 키로 새 비밀번호를 정해요.\n지금 출력하거나 복사해서 안전한 곳에 보관해 주세요. 다시 보여 줄 수 없어요."),
+      h("p", { class: "rcode" }, code), h("div", { class: "row" }, copy, printIt, h("button", { class: "main", onclick: () => { box.remove(); res(); } }, "보관했어요"))));
+    document.body.append(box);
+  });
+}
+async function lockPut() { await fb.setDoc(boardRef(), { lock: syncLock }, { merge: true }); }
+// 서버와 맞추기 전에 열쇠 준비: 이 컴퓨터에 있으면 그대로, 서버 잠금만 있으면 비밀번호(또는 복구 키)로 열기, 둘 다 없으면 새로 정하기
+async function lockReady(d) {
+  syncLock = d?.lock || null;
+  dataKey ||= await keyLocal();
+  if (syncLock && dataKey) { try { await unseal(syncLock.check); return true; } catch (e) { dataKey = null; } } // 다른 열쇠면 다시 열기
+  if (syncLock) return lockOpen();
+  // 처음: 비밀번호 정하기 → 열쇠·복구 키 만들기
+  const pw = await pwAsk("🔒 서버에 잠가서 올릴 '동기화 비밀번호'를 정해 주세요.\n다른 컴퓨터에서 처음 로그인할 때 한 번 넣어요.\n(구글 비밀번호와 다르게 정하는 게 좋아요)", true);
+  if (!pw) return false;
+  dataKey = await crypto.subtle.generateKey({ name: "AES-GCM", length: 256 }, true, ["encrypt", "decrypt"]);
+  const rc = rcMake();
+  syncLock = { v: 1, pw: await keyWrap(pw), r: await keyWrap(rcNorm(rc)), check: await seal("class-board") };
+  await rcShow(rc); await lockPut(); await keyKeep();
+  return true;
+}
+async function lockOpen() { // 이 컴퓨터에서 처음: 비밀번호로 열기. 잊었으면 복구 키
+  for (;;) {
+    const how = await seChoose(document.body, "🔒 이 보드는 잠가서 저장돼 있어요.\n동기화 비밀번호를 넣어 열어 주세요. (이 컴퓨터에서는 처음 한 번만)", [["비밀번호 넣기", "pw"], ["비밀번호를 잊었어요 (복구 키)", "rc"], ["둘 다 잊었어요 (이 컴퓨터 보드로 새로 시작)", "reset"]]);
+    if (!how) return false;
+    if (how === "reset") { // 마지막 방법: 서버의 잠근 자료를 지우고 이 컴퓨터의 보드를 새 비밀번호로 다시 올림 (구글 로그인한 본인만 할 수 있음)
+      if (!await seConfirm(document.body, "서버에 잠가 둔 보드를 지우고, 지금 이 컴퓨터의 보드를 새 비밀번호로 다시 올릴까요?\n\n· 이 컴퓨터에 있는 내용은 그대로예요.\n· 다른 컴퓨터에만 있고 이 컴퓨터에 없는 내용은 서버에서 사라져요.\n· 다른 컴퓨터는 다음에 새 비밀번호를 넣어야 해요.", "지우고 새로 시작")) continue;
+      for (const c of ["blobs", "wb"]) for (const x of (await fb.getDocs(fb.collection(fb.db, "boards", fbUser.uid, c))).docs) await fb.deleteDoc(x.ref);
+      await fb.deleteDoc(boardRef()); syncLock = null; dataKey = null; lockFresh = true;
+      return lockReady(null);
+    }
+    try {
+      if (how === "pw") { const pw = await pwAsk("동기화 비밀번호를 넣어 주세요."); if (!pw) continue; dataKey = await keyUnwrap(syncLock.pw, pw); }
+      else {
+        const v = await seAskFields(document.body, "복구 키를 넣어 주세요. (예: ABCD-EFGH-…)", [{ placeholder: "복구 키 20자" }], "열기"); if (!v) continue;
+        dataKey = await keyUnwrap(syncLock.r, rcNorm(v[0]));
+        const pw = await pwAsk("열렸어요! 새 동기화 비밀번호를 정해 주세요.", true);
+        if (pw) { syncLock.pw = await keyWrap(pw); await lockPut(); }
+      }
+      await unseal(syncLock.check); await keyKeep(); return true;
+    } catch (e) { dataKey = null; await seConfirm(document.body, how === "pw" ? "비밀번호가 맞지 않아요." : "복구 키가 맞지 않아요.", "다시", null); }
+  }
+}
+async function lockChangePw() { // 이미 열린 컴퓨터: 옛 비밀번호 없이 바꿈
+  if (!dataKey || !syncLock) return;
+  const pw = await pwAsk("새 동기화 비밀번호를 정해 주세요.\n(옛 비밀번호는 몰라도 돼요. 다른 컴퓨터는 열린 그대로예요)", true);
+  if (!pw) return;
+  syncLock.pw = await keyWrap(pw); await lockPut(); syncShow("동기화 비밀번호를 바꿨어요.");
+}
+async function lockNewRecovery() { // 복구 키를 잃어버렸을 때: 새로 만들면 옛 복구 키는 못 씀
+  if (!dataKey || !syncLock || !await seConfirm(document.body, "복구 키를 새로 만들까요?\n옛 복구 키는 더 쓸 수 없어요.", "새로 만들기")) return;
+  const rc = rcMake(); syncLock.r = await keyWrap(rcNorm(rc)); await rcShow(rc); await lockPut(); syncShow("복구 키를 새로 만들었어요.");
+}
+async function lockUnlockAgain() { if (fbUser) syncStart(true).then(syncListen).catch(() => syncShow("서버에 연결하지 못했어요.")); }
 const boardRef = () => fb.doc(fb.db, "boards", fbUser.uid);
 const blobRef = k => fb.doc(fb.db, "boards", fbUser.uid, "blobs", k);
 const wbRef = k => fb.doc(fb.db, "boards", fbUser.uid, "wb", k);
@@ -6965,6 +7054,7 @@ function syncShow(msg) {
   const st = document.getElementById("acct-status");
   document.getElementById("acct-in").hidden = !!fbUser;
   document.getElementById("acct-out").hidden = document.getElementById("acct-now").hidden = !fbUser;
+  document.getElementById("acct-lock").hidden = !fbUser; document.getElementById("acct-unlock").hidden = !!dataKey; document.getElementById("acct-pw").hidden = document.getElementById("acct-rc").hidden = !dataKey;
   const at = +lsGet("sync-at");
   st.textContent = msg || (fbUser ? `${fbUser.email}로 로그인했어요.` + (at ? ` 마지막 저장: ${new Date(at).toLocaleString("ko-KR")}` : "") : "로그인하지 않았어요. 보드는 이 컴퓨터에만 저장돼요.");
 }
@@ -6993,15 +7083,16 @@ async function syncLogin() {
     syncShow(e.code in LOGIN_ERR ? LOGIN_ERR[e.code] : `로그인하지 못했어요. 다시 눌러 주세요. (${e.code || e.message})`);
   }
 }
-async function syncLogout() { syncUnsub?.(); syncUnsub = null; await fb.signOut(fb.auth); lsDel("sync-at"); syncShow(); }
+async function syncLogout() { syncUnsub?.(); syncUnsub = null; await fb.signOut(fb.auth); lsDel("sync-at"); lsDel("sync-key"); dataKey = null; syncShow(); } // 열쇠도 지움: 다음 로그인 때 비밀번호
 // 켤 때: 서버 보드가 우선. 서버가 바뀌었으면 늘 서버 것으로 바꿈 (이 컴퓨터에서 아직 안 올린 것보다 서버가 먼저)
 // 이 컴퓨터에서 처음 로그인할 때만: 서버가 비었으면 올리고, 둘 다 내용이 있으면 어느 쪽으로 맞출지 물어봄
 async function syncStart(first) {
   syncShow("서버와 맞추는 중…");
-  const snap = await fb.getDoc(boardRef());
-  if (!snap.exists()) return syncPush(true);
-  const d = snap.data(), dirty = lsGet("sync-dirty");
-  if (String(d.updatedAt) === lsGet("sync-at")) return dirty ? syncPush(false) : syncShow();
+  const snap = await fb.getDoc(boardRef()), d0 = snap.exists() ? snap.data() : null;
+  if (!await lockReady(d0)) return syncShow("🔒 동기화 비밀번호를 넣어야 서버와 맞춰요. 이 컴퓨터의 보드는 그대로 쓸 수 있어요.");
+  if (lockFresh || !d0 || (!d0.box && !d0.ls)) { lockFresh = false; return syncPush(true); }
+  const d = d0, dirty = lsGet("sync-dirty");
+  if (String(d.updatedAt) === lsGet("sync-at")) return !d.box ? syncPush(true) : dirty ? syncPush(false) : syncShow(); // 예전(잠그지 않은) 서버 자료는 잠가서 다시 올림
   if (first && dirty) { // 처음 로그인: 고르게 함. 취소하면 이번엔 그대로 두고 다음에 다시 물어봄
     const how = await seChoose(document.body, "서버에 저장된 보드와 이 컴퓨터의 보드가 달라요. 어느 쪽으로 맞출까요?\n\n· 서버 보드로 바꾸기: 이 컴퓨터 내용은 지워져요\n· 이 컴퓨터 보드 올리기: 서버 내용이 바뀌어요", [["이 컴퓨터 보드 올리기", "push"], ["서버 보드로 바꾸기", "pull"]]);
     if (how === "push") return syncPush(true);
@@ -7013,8 +7104,8 @@ async function syncStart(first) {
 function syncListen() {
   syncUnsub?.();
   syncUnsub = fb.onSnapshot(boardRef(), snap => {
-    if (!snap.exists() || snap.metadata.hasPendingWrites) return;
-    const d = snap.data();
+    if (!snap.exists() || snap.metadata.hasPendingWrites || !dataKey) return;
+    const d = snap.data(); if (d.lock) syncLock = d.lock;
     if (d.updatedAt === syncMine || String(d.updatedAt) === lsGet("sync-at")) return;
     syncWant = d; syncPullSoon();
   });
@@ -7028,7 +7119,7 @@ function syncPullSoon() { // 글을 쓰거나 고치는 중이면 끝날 때까�
 }
 // 사진이 1MB 문서 제한을 넘으면 줄여서 올림
 async function fitBlob(url) {
-  while (url.length > 950000) {
+  while (url.length > 700000) { // 잠그면 1.33배가 되므로 1MB 문서 제한 안에 들게
     const im = new Image(); im.src = url; await im.decode();
     const cv = document.createElement("canvas"), k = .8;
     cv.width = Math.round(im.naturalWidth * k); cv.height = Math.round(im.naturalHeight * k);
@@ -7039,13 +7130,14 @@ async function fitBlob(url) {
 async function pushWb(k) {
   const rec = await idb("readonly", s => s.get(k));
   if (!rec) return fb.deleteDoc(wbRef(k));
-  for (const o of rec.objs) if (o.type === "img" && !wbUp.has(o.id)) { await fb.setDoc(blobRef("wbimg-" + o.id), { data: await fitBlob(o.src) }); wbUp.add(o.id); }
+  for (const o of rec.objs) if (o.type === "img" && !wbUp.has(o.id)) { await fb.setDoc(blobRef("wbimg-" + o.id), { data: await seal(await fitBlob(o.src)) }); wbUp.add(o.id); }
   // shortcut: 지운 화이트보드 사진은 서버에 남음, 저장 공간이 모자라지면 정리하기
   const json = JSON.stringify({ objs: rec.objs.map(({ src, ...o }) => o), strokes: rec.strokes }, (_, v) => typeof v === "number" ? Math.round(v * 1e5) / 1e5 : v);
-  await fb.setDoc(wbRef(k), { json });
+  await fb.setDoc(wbRef(k), { json: await seal(json) });
 }
 async function syncPush(all) {
   if (!fbUser) return;
+  if (!dataKey || !syncLock) return syncShow("🔒 동기화 비밀번호를 넣어야 서버에 저장돼요. 이 컴퓨터에는 저장돼 있어요."); // 잠그지 않은 채로는 절대 안 올림
   if (syncBusy) { syncAgain = true; return; }
   syncBusy = true; syncShow("저장하는 중…");
   const todo = all ? [...Object.keys(localStorage).filter(k => PHOTO_KEY.test(k)), ...WB_KEYS.map(k => "wb:" + k)] : [...syncBlobs];
@@ -7054,12 +7146,12 @@ async function syncPush(all) {
   try {
     for (const b of todo) {
       if (b.startsWith("wb:")) await pushWb(b.slice(3));
-      else { const v = lsGet(b); await (v ? fb.setDoc(blobRef(b), { data: await fitBlob(v) }) : fb.deleteDoc(blobRef(b))); }
+      else { const v = lsGet(b); await (v ? fb.setDoc(blobRef(b), { data: await seal(v.startsWith("data:") ? await fitBlob(v) : v) }) : fb.deleteDoc(blobRef(b))); }
     }
     const ls = {}, photos = [];
-    for (const k of Object.keys(localStorage)) if (!k.startsWith("sync-")) PHOTO_KEY.test(k) ? photos.push(k) : ls[k] = lsGet(k);
+    for (const k of Object.keys(localStorage)) if (!k.startsWith("sync-") && !k.startsWith("local-")) PHOTO_KEY.test(k) ? photos.push(k) : ls[k] = lsGet(k); // local-*(학생 개인정보)은 안 올림
     const at = Date.now(); syncMine = at; // 내가 올린 것: 서버 지켜보기에서 다시 받지 않게
-    await fb.setDoc(boardRef(), { ls, photos, updatedAt: at });
+    await fb.setDoc(boardRef(), { lock: syncLock, box: await seal(JSON.stringify({ ls, photos })), updatedAt: at }); // 예전 ls(잠그지 않은 것)는 이때 지워짐
     lsSet("sync-at", String(at)); lsDel("sync-dirty"); syncShow();
   } catch (e) {
     todo.forEach(b => syncBlobs.add(b)); // 다음에 다시 올림
@@ -7072,13 +7164,14 @@ async function syncPush(all) {
 // 서버 보드로 이 컴퓨터를 바꾸고 다시 불러옴
 async function syncPull(d) {
   syncShow("서버 보드를 받는 중…");
-  for (const k of Object.keys(localStorage)) if (!k.startsWith("sync-") && !(k in d.ls) && !d.photos.includes(k)) lsDel(k);
+  if (d.box) d = { ...d, ...JSON.parse(await unseal(d.box)) }; // 잠근 것 풀기 (예전 자료는 ls 그대로)
+  for (const k of Object.keys(localStorage)) if (!k.startsWith("sync-") && !k.startsWith("local-") && !(k in d.ls) && !d.photos.includes(k)) lsDel(k); // local-*은 이 컴퓨터 것 그대로
   for (const k in d.ls) lsSet(k, d.ls[k]);
-  for (const k of d.photos) { const b = await fb.getDoc(blobRef(k)); if (b.exists()) lsSet(k, b.data().data); }
+  for (const k of d.photos) { const b = await fb.getDoc(blobRef(k)); if (b.exists()) lsSet(k, await unseal(b.data().data)); }
   const pages = await fb.getDocs(fb.collection(fb.db, "boards", fbUser.uid, "wb")), have = new Set();
   for (const pg of pages.docs) {
-    const { objs, strokes } = JSON.parse(pg.data().json);
-    for (const o of objs) if (o.type === "img") { const b = await fb.getDoc(blobRef("wbimg-" + o.id)); o.src = b.exists() ? b.data().data : ""; wbUp.add(o.id); }
+    const { objs, strokes } = JSON.parse(await unseal(pg.data().json));
+    for (const o of objs) if (o.type === "img") { const b = await fb.getDoc(blobRef("wbimg-" + o.id)); o.src = b.exists() ? await unseal(b.data().data) : ""; wbUp.add(o.id); }
     await idb("readwrite", s => s.put({ objs, strokes, hist: [], srcs: {} }, pg.id)); have.add(pg.id);
   }
   for (const k of WB_KEYS) if (!have.has(k)) await idb("readwrite", s => s.delete(k));
@@ -7087,8 +7180,8 @@ async function syncPull(d) {
 }
 // ───── 학생 화면(student.html): 반 코드 + 번호 + 비밀번호 4자리. 반 코드는 교사가, 비밀번호는 학생이 처음 들어올 때 직접 정함
 // 서버: classes/{반 코드} = { owner(교사 uid), unit, prices, at }
-//       classes/{반 코드}/claim/{번호} = { open, name }  ← 비밀번호를 아직 안 정한 학생. 학생이 pin을 써 넣으면 교사 보드가 받아 kids 문서를 만들고 지움
-//       classes/{반 코드}/kids/{번호}-{비밀번호} = { p, n, name, pt, av, wear, own, buys: [{ id, at }], kidAt }
+//       classes/{반 코드}/claim/{번호} = { open }  ← 비밀번호를 아직 안 정한 학생. 학생이 pin을 써 넣으면 교사 보드가 받아 kids 문서를 만들고 지움
+//       classes/{반 코드}/kids/{번호}-{비밀번호} = { n, pt, av, wear, own, buys: [{ id, at }], kidAt }  ← 학생 이름은 서버에 두지 않음
 //   점수·이름은 교사 보드만 씀. 학생은 av·wear·own·buys·kidAt만 바꿀 수 있음(서버 규칙). 학생이 산 것(buys)은 교사 보드가 받아서 점수를 빼고 비움
 //   reward.cls = { code, pins: { 학생: "1234" } }  (교사는 비밀번호를 보고 지울 수 있음 → 학생이 다시 정함)
 const kidUrl = () => new URL("student.html", location.href).href;
@@ -7109,14 +7202,15 @@ async function kidPush() { // 교사 쪽에서 바뀐 것만 올림 (서버에 �
   for (const p of people()) {
     if (!pins[p]) { // 아직 비밀번호 없음: 정할 수 있게 열어 둠
       open.add(kidNum(p));
-      if (!kidClaims[kidNum(p)]) { await fb.setDoc(kidDoc("claim", kidNum(p)), { open: true, name: seName(p) }); kidClaims[kidNum(p)] = { open: true }; }
+      if (!kidClaims[kidNum(p)] || "name" in kidClaims[kidNum(p)]) { await fb.setDoc(kidDoc("claim", kidNum(p)), { open: true }); kidClaims[kidNum(p)] = { open: true }; } // 이름 없이 (예전 것은 다시 씀)
       continue;
     }
     const s = rwSt(p), key = kidKey(p), was = kidSeen[key] || {}; live.add(key);
     if (kidBusy.has(key)) continue; // 학생 것을 받는 중
-    const now = { p, n: kidNum(p), name: seName(p), pt: s.pt, av: s.av, wear: rwWear(p, s.wear), own: s.own };
+    const now = { n: kidNum(p), pt: s.pt, av: s.av, wear: rwWear(p, s.wear), own: s.own }; // 이름은 서버에 안 올림 (번호만)
     const diff = Object.fromEntries(Object.entries(now).filter(([k, v]) => JSON.stringify(v) !== JSON.stringify(was[k])));
-    if (Object.keys(diff).length) { await fb.setDoc(kidDoc("kids", key), diff, { merge: true }); kidSeen[key] = { ...was, ...diff }; }
+    if ("name" in was || "p" in was) { diff.name = fb.deleteField(); diff.p = fb.deleteField(); } // 예전에 올린 이름 지우기
+    if (Object.keys(diff).length) { await fb.setDoc(kidDoc("kids", key), diff, { merge: true }); const nw = { ...was, ...diff }; delete nw.name; delete nw.p; kidSeen[key] = nw; }
   }
   for (const key in kidSeen) if (!live.has(key)) { delete kidSeen[key]; await fb.deleteDoc(kidDoc("kids", key)).catch(() => {}); } // 명단에서 빠졌거나 비밀번호를 지움
   for (const n in kidClaims) if (!open.has(n)) { delete kidClaims[n]; await fb.deleteDoc(kidDoc("claim", n)).catch(() => {}); }
