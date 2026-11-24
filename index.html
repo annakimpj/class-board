@@ -1020,7 +1020,15 @@
   .drawer { inset: auto; left: 50%; bottom: 84px; transform: translateX(-50%); margin: 0; padding: 12px; border: 0; border-radius: 18px; background: #fff; color: var(--ink);
             width: min(440px, calc(100vw - 24px)); box-sizing: border-box; box-shadow: 0 10px 34px rgba(60, 40, 20, .22); font: 14px "Pretendard Variable", "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; }
   .drawer-items { display: flex; flex-wrap: wrap; gap: 4px; }
-  .drawer-items:empty::before { content: "서랍이 비어 있어요. 아래에서 넣을 버튼을 고르세요."; color: var(--muted); font-size: 13px; padding: 4px; }
+  .drawer-items:empty::before { content: "서랍이 비어 있어요. 오른쪽 ＋로 넣을 버튼을 골라요."; color: var(--muted); font-size: 13px; padding: 4px; }
+  .drawer-row { display: flex; align-items: flex-start; gap: 6px; } .drawer-row .drawer-items { flex: 1; min-width: 0; }
+  .drawer-plus { flex: none; width: 38px; height: 38px; margin: 4px; border-radius: 50%; border: 1.5px dashed #d6ccbf; background: #fff; color: var(--muted); font-size: 20px; line-height: 1; cursor: pointer; display: grid; place-items: center; }
+  .drawer-plus:hover { border-color: var(--accent); color: var(--accent); }
+  .drawer-add { inset: auto; margin: 0; padding: 12px; border: 0; border-radius: 14px; background: #fff; color: var(--ink); width: min(420px, calc(100vw - 24px)); box-sizing: border-box;
+                box-shadow: 0 12px 36px rgba(60, 40, 20, .28); font: 14px "Pretendard Variable", "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; }
+  .drawer-add .drawer-h { margin: 0 0 8px; padding: 0; border: 0; }
+  .drawer-done { display: flex; justify-content: flex-end; margin-top: 10px; }
+  .drawer-done .main { border: 0; background: var(--accent); color: #fff; border-radius: 7px; padding: 6px 18px; font: inherit; cursor: pointer; }
   .drawer-items button { border: 0; background: none; display: flex; flex-direction: column; align-items: center; gap: 1px; min-width: 70px; padding: 4px 8px; border-radius: 14px;
                          cursor: pointer; font: inherit; color: var(--ink); }
   .drawer-items button i { font-style: normal; display: grid; place-items: center; width: 38px; height: 38px; border-radius: 12px; background: var(--card); font-size: 21px; }
@@ -1372,7 +1380,8 @@
 <nav class="dock" aria-label="필요할 때 띄우는 도구"><span id="launch" style="display:contents"></span><button id="drawer-btn" popovertarget="drawer" title="서랍 (자주 안 쓰는 버튼을 넣어 두는 곳)"><i>🗄︎</i>서랍</button></nav>
 <div id="lk-menu" class="lk-menu" popover><div class="lk-head"><b>🌐 즐겨찾기</b><button onclick="lkAddLink()">+ 링크</button><button onclick="lkAddFolder()">+ 폴더</button><button onclick="lkToggleEdit()" id="lk-edit" title="고치기·지우기" aria-label="고치기·지우기">✎</button></div>
   <div class="lk-list" id="lk-list"></div><div class="lk-sub" id="lk-sub" hidden></div></div>
-<div id="drawer" class="drawer" popover><div class="drawer-items" id="drawer-items"></div><p class="drawer-h">아래쪽 바에서 서랍에 넣을 버튼</p><div class="drawer-pick" id="drawer-pick"></div></div>
+<div id="drawer" class="drawer" popover><div class="drawer-row"><div class="drawer-items" id="drawer-items"></div><button class="drawer-plus" popovertarget="drawer-add" title="서랍에 넣을 버튼 고르기" aria-label="서랍에 넣을 버튼 고르기">＋</button></div>
+  <div id="drawer-add" class="drawer-add" popover><p class="drawer-h">서랍에 넣을 버튼을 골라요 (여러 개 골라도 돼요)</p><div class="drawer-pick" id="drawer-pick"></div><div class="drawer-done"><button class="main" popovertarget="drawer-add" popovertargetaction="hide">완료</button></div></div></div>
 <button class="gear jr-btn" onclick="journalOpen()" title="일지" aria-label="일지"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5zM5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3M9 7h6"/></svg></button>
 <button class="gear" onclick="togglePanel(true)" title="설정" aria-label="설정">
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true">
@@ -2247,6 +2256,12 @@ function applyLayout() {
   placeCards();
 }
 // 아래쪽 바 버튼을 옆으로 끌면 순서가 바뀜 (조금만 움직이면 그냥 누르기)
+document.getElementById("drawer-add").addEventListener("toggle", e => {
+  if (e.newState !== "open") return;
+  const m = e.target, r = document.querySelector(".drawer-plus").getBoundingClientRect();
+  m.style.left = Math.max(8, Math.min(r.right - m.offsetWidth, innerWidth - m.offsetWidth - 8)) + "px";
+  m.style.top = Math.max(8, r.top - m.offsetHeight - 8) + "px";
+});
 document.getElementById("launch").addEventListener("pointerdown", e => {
   const b = e.target.closest("button"), launch = e.currentTarget;
   if (!b || e.button || e.target.closest(".dock-add")) return;
