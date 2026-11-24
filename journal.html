@@ -49,7 +49,7 @@
   .ring .btns.col { flex-direction: column; align-items: stretch; } .ring .btns .danger { color: #e03131; }
   .pop .wdays { display: flex; gap: 2px; } .pop .wdays button { width: 28px; height: 26px; padding: 0; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; } .pop .wdays button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
   .pop .moderow.col { display: grid; gap: 6px; } .pop .modes .chips { flex: 1; min-width: 0; flex-wrap: wrap; } /* 종류는 왼쪽, 연속·반복은 오른쪽 */
-  header .sp { flex: 1; } header .today { color: var(--muted); font-size: 14px; }
+  header .sp { flex: 1; } header .hright { margin-left: auto; display: flex; align-items: center; gap: 4px; } header .today { color: var(--muted); font-size: 14px; }
   main { min-height: 0; overflow: hidden; padding: 12px 14px; }
   .pane { height: 100%; display: grid; gap: 12px; min-height: 0; }
   .box { background: var(--card); border-radius: 14px; padding: 14px 16px; min-height: 0; display: flex; flex-direction: column; }
@@ -112,7 +112,9 @@
   .pop { position: fixed; width: 380px; max-width: calc(100vw - 16px); max-height: calc(100vh - 16px); overflow-y: auto; background: #fff; border-radius: 14px; padding: 12px 14px; display: grid; gap: 8px; box-shadow: 0 12px 36px rgba(40, 30, 20, .22); }
   .pop h3 { margin: 0; font-size: 15px; display: flex; align-items: center; gap: 6px; } .pop h3 input[type=date] { margin-left: auto; font-size: 13px; padding: 2px 6px; }
   .pop .row { display: flex; gap: 6px; align-items: center; } .pop .grow { flex: 1; min-width: 0; }
-  .pop textarea { width: 100%; resize: vertical; } .pop.rs { resize: horizontal; overflow: auto; min-width: 320px; }
+  .pop textarea { width: 100%; resize: vertical; } .pop.rs { display: flex; flex-direction: column; max-width: none; } .pop.rs textarea { flex: 1; resize: none; min-height: 120px; }
+  .pop .grip { position: absolute; right: 3px; bottom: 3px; width: 16px; height: 16px; cursor: nwse-resize; touch-action: none;
+    background: linear-gradient(135deg, transparent 50%, #c9beb3 50%, #c9beb3 58%, transparent 58%, transparent 70%, #c9beb3 70%, #c9beb3 78%, transparent 78%); }
   .pop h3 .tt { margin-left: auto; padding: 2px 8px; color: var(--muted); font-size: 13px; font-weight: 600; align-items: baseline; gap: 0; } .pop h3 .tt b { font-size: 17px; } .pop h3 .tt:hover { color: var(--accent); } .pop select { padding: 4px 6px; }
   .pop .btns { display: flex; justify-content: flex-end; gap: 6px; align-items: center; } .pop .btns .saved { margin-right: auto; }
   .pop .plist { max-height: 140px; overflow-y: auto; } .pop .plist .item { font-size: 13px; padding: 3px 2px; }
@@ -153,7 +155,8 @@
   .cover b { font-size: 34px; color: #2b1d14; } .cover span { color: #a8927c; font-size: 18px; }
   /* 학생 정보 · 출결 · 보관함 */
   #p-info { grid-template-columns: 220px minmax(0, 1fr); }
-  .infogrp { margin-bottom: 14px; } .infogrp h4 { margin: 0 0 6px; font-size: 13px; color: var(--muted); }
+  .infogrp { margin-bottom: 14px; } .infogrp h4 { margin: 0 0 6px; font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 12px; }
+  .mainchk { display: inline-flex; align-items: center; gap: 4px; font-weight: normal; font-size: 12.5px; cursor: pointer; } .mainchk:has(input:checked) { color: var(--accent); font-weight: 600; }
   .infogrp .row { display: flex; flex-wrap: wrap; gap: 8px; } .infogrp .f { width: 170px; } .infogrp .f input { width: 100%; min-width: 0; } .infogrp .f.s { width: 120px; } .infogrp .f.grow { flex: 1; min-width: 220px; } .infogrp .f.wide { flex-basis: 100%; }
   .f { display: grid; gap: 2px; font-size: 12px; color: var(--muted); } .f.wide { grid-column: 1 / -1; } .f input, .f textarea { font-size: 15px; color: var(--ink); } .f textarea { resize: vertical; }
   .itable { border-collapse: collapse; font-size: 14px; width: 100%; } .itable th { text-align: left; font-size: 12px; color: var(--muted); font-weight: 600; padding: 6px 8px; border-bottom: 1.5px solid var(--line); white-space: nowrap; }
@@ -169,7 +172,8 @@
   .att .sum { background: #faf8f5; } .att td.sum { font-weight: 600; color: #5e554e; }
   .att-legend { font-size: 12px; color: var(--muted); display: flex; gap: 6px; align-items: center; flex-wrap: wrap; } .att-legend i { font-style: normal; font-weight: 700; color: var(--ink); }
   #box-tags { display: flex; align-items: center; flex-wrap: wrap; gap: 2px; margin-bottom: 6px; } #box-tags button { padding: 4px 10px; font-size: 14px; color: var(--muted); }
-  #box-tags button.on { color: var(--ink); font-weight: 700; } #box-tags small { opacity: .6; font-weight: normal; } #box-tags .vl { width: 1px; height: 13px; background: #e8e1d8; }
+  #box-tags button.on { color: var(--accent); background: var(--soft); font-weight: 600; } #box-tags button.all { color: var(--ink); font-size: 15px; font-weight: 700; } #box-tags button.all.on { color: var(--accent); }
+  #box-tags .vl.big { height: 20px; width: 1.5px; background: #d6cdc2; margin: 0 8px 0 6px; } #box-tags small { opacity: .6; font-weight: normal; } #box-tags .vl { width: 1px; height: 13px; background: #e8e1d8; }
   #box-tags button.drop, .brow.drop, .crumbs button.drop { background: #dbe7f5; color: var(--accent); } #box-tags .addf { font-size: 17px; padding: 0 9px; line-height: 1.4; }
   .crumbs { display: flex; align-items: center; gap: 2px; font-size: 14px; color: var(--muted); margin: -2px 0 4px; } .crumbs:empty { display: none; } .crumbs button { padding: 3px 6px; } .crumbs b { color: var(--ink); padding: 3px 6px; }
   .brow.folder { cursor: pointer; } .brow.folder > .i { color: #e0a42f; } .brow.folder .btitle { font-weight: 600; } .brow.folder small { display: inline; margin-left: 6px; }
@@ -198,7 +202,7 @@
 <header>
   <h1 data-i="book">교사 일지</h1>
   <button class="tab" data-tab="cal" data-i="cal">달력</button><button class="tab" data-tab="rec" data-i="pen">학생 기록</button><button class="tab" data-tab="cs" data-i="chat">상담 일지</button><button class="tab" data-tab="note" data-i="note">일지</button><button class="tab" data-tab="info" data-i="info">학생 정보</button><button class="tab" data-tab="att" data-i="att">출결</button><button class="tab" data-tab="box" data-i="box">보관함</button>
-  <span class="sp"></span><button class="dday" id="dday" title="디데이·재량휴업일 정하기"></button><button class="jset" id="jset" title="설정" aria-label="설정" data-i="gear"></button><span class="today" id="today"></span>
+  <div class="hright"><button class="dday" id="dday" title="디데이·재량휴업일 정하기"></button><button class="jset" id="jset" title="설정" aria-label="설정" data-i="gear"></button><span class="today" id="today"></span></div>
 </header>
 <main>
   <section class="pane" id="p-cal" hidden>
@@ -273,7 +277,7 @@
 <script>
 // 저장: localStorage "journal" = { events: [{ id, date, time, text, done }], recs: [{ id, date, ps: [학생], kind, text, at }],
 //   counsels: [{ id, date, time, ps, target(학생·학부모·기타), way(대면·전화·문자·온라인), topic, text, next(후속 조치), at }], notes: { "YYYY-MM-DD": 글 } }
-//   info: { 학생: { birth, phone, addr, g1rel, g1name, g1phone, g2rel, g2name, g2phone, memo } }, att: { 날짜: { 학생: { t(결석·지각·조퇴·결과), r(질병·미인정·기타), m } } },
+//   info: { 학생: { birth, phone, addr, main(주 보호자 "1"·"2"), g1rel, g1name, g1phone, g2rel, g2name, g2phone, memo } }, att: { 날짜: { 학생: { t(결석·지각·조퇴·결과), r(질병·미인정·기타), m } } },
 //   box: [{ id, type(link·memo), title, url, text, tag(폴더), at }], boxFolders: [폴더 이름]
 // 보드와 같은 저장소라 보드에서 로그인해 두면 서버에도 올라감 (보드가 storage 이벤트로 알아채고, 꺼져 있으면 sync-dirty로 다음에)
 const $ = id => document.getElementById(id);
@@ -937,7 +941,7 @@ const iv = p => J.info?.[p] || {}, filled = p => Object.values(iv(p)).some(Boole
 function bdays() { const m = {}; people().forEach(p => { const b = iv(p).birth; if (b) (m[b.slice(5)] ||= []).push(nameOf(p)); }); return m; } // "MM-DD": [이름]
 const ageOf = b => { const t = today(); let a = +t.slice(0, 4) - +b.slice(0, 4); if (t.slice(5) < b.slice(5)) a--; return a; };
 const INFO_COLS = [["번호", numOf], ["이름", nameOf], ["생년월일", p => iv(p).birth || ""], ["학생 연락처", p => iv(p).phone || ""],
-  ["보호자1", p => [iv(p).g1rel, iv(p).g1name, iv(p).g1phone].filter(Boolean).join(" ")], ["보호자2", p => [iv(p).g2rel, iv(p).g2name, iv(p).g2phone].filter(Boolean).join(" ")],
+  ["보호자1", p => [iv(p).main === "1" ? "(주)" : "", iv(p).g1rel, iv(p).g1name, iv(p).g1phone].filter(Boolean).join(" ")], ["보호자2", p => [iv(p).main === "2" ? "(주)" : "", iv(p).g2rel, iv(p).g2name, iv(p).g2phone].filter(Boolean).join(" ")],
   ["주소", p => iv(p).addr || ""], ["특이사항", p => iv(p).memo || ""]];
 function infoDraw() {
   const ppl = people(); if (!ppl.includes(infoWho)) infoWho = ppl[0] || "";
@@ -954,14 +958,15 @@ function infoDraw() {
     x.value = v[k] || ""; x.oninput = () => { v[k] = x.value.trim(); save(); if (k === "birth") infoDraw(); };
     return el("label", { class: "f" + (type === "area" ? " wide" : k === "addr" ? " grow" : /rel$/.test(k) ? " s" : "") }, type === "area" ? null : el("span", {}, label + (k === "birth" && v.birth ? ` (만 ${ageOf(v.birth)}세)` : "")), x);
   };
-  $("info-form").replaceChildren(...INFO.map(([g, fs]) => el("div", { class: "infogrp" }, el("h4", {}, g), el("div", { class: "row" }, ...fs.map(field)))),
+  const mainChk = n => el("label", { class: "mainchk", title: "연락할 때 먼저 할 보호자" }, el("input", { type: "checkbox", ...(v.main === n ? { checked: "" } : {}), onchange: ev => { if (ev.target.checked) v.main = n; else delete v.main; save(); infoDraw(); } }), "주 보호자");
+  $("info-form").replaceChildren(...INFO.map(([g, fs]) => el("div", { class: "infogrp" }, el("h4", {}, g, /^보호자 [12]$/.test(g) ? mainChk(g.slice(-1)) : null), el("div", { class: "row" }, ...fs.map(field)))),
     el("p", { class: "tip" }, "🔒 로그인하면 다른 일지처럼 선생님의 동기화 비밀번호로 잠가서 서버에 올라가요. 학생 화면·학생 페이지에는 나오지 않아요. 생일은 달력에 고깔모자로 보여요 (⚙ 설정에서 끌 수 있어요)."));
 }
 const tsv = rows => rows.map(r => r.map(c => String(c ?? "").replace(/[\t\n]/g, " ")).join("\t")).join("\n"); // 엑셀에 붙여 넣기
 $("info-copy").onclick = () => copyRows($("info-copy"), [tsv([INFO_COLS.map(c => c[0]), ...people().map(p => INFO_COLS.map(c => c[1](p)))])]);
 // 엑셀: 필요할 때만 SheetJS를 불러옴 (파일은 이 컴퓨터 안에서만 읽고 만듦)
 const INFO_XL = [["번호"], ["이름"], ["생년월일", "birth"], ["학생 연락처", "phone"], ["주소", "addr"], ["보호자1 관계", "g1rel"], ["보호자1 이름", "g1name"], ["보호자1 연락처", "g1phone"],
-  ["보호자2 관계", "g2rel"], ["보호자2 이름", "g2name"], ["보호자2 연락처", "g2phone"], ["특이사항", "memo"]];
+  ["보호자2 관계", "g2rel"], ["보호자2 이름", "g2name"], ["보호자2 연락처", "g2phone"], ["주 보호자 (1 또는 2)", "main"], ["특이사항", "memo"]];
 async function xlsxLib() {
   if (window.XLSX) return window.XLSX;
   await new Promise((res, rej) => document.head.append(el("script", { src: "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js", onload: res, onerror: rej })));
@@ -971,7 +976,7 @@ $("info-xl").onclick = async () => {
   try {
     const X = await xlsxLib(), aoa = [INFO_XL.map(c => c[0]), ...people().map(p => INFO_XL.map((c, i) => i === 0 ? +numOf(p) || "" : i === 1 ? nameOf(p) : iv(p)[c[1]] || ""))];
     const ws = X.utils.aoa_to_sheet(aoa), wb = X.utils.book_new();
-    ws["!cols"] = INFO_XL.map((c, i) => ({ wch: i === 0 ? 6 : i === 11 ? 30 : i === 4 ? 28 : 14 }));
+    ws["!cols"] = INFO_XL.map(c => ({ wch: c[0] === "번호" ? 6 : c[1] === "memo" ? 30 : c[1] === "addr" ? 28 : c[1] === "main" ? 18 : 14 }));
     X.utils.book_append_sheet(wb, ws, "학생 정보"); X.writeFile(wb, "학생정보 양식.xlsx");
   } catch (e) { ask("엑셀 양식을 만들지 못했어요. 인터넷 연결을 확인해 주세요.", "확인", null); }
 };
@@ -981,7 +986,7 @@ $("info-file").onchange = async () => {
   let rows; try { const X = await xlsxLib(), wb = X.read(await f.arrayBuffer(), { cellDates: true }); rows = X.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, raw: false, dateNF: "yyyy-mm-dd", defval: "" }); }
   catch (e) { return ask("파일을 읽지 못했어요. '엑셀 양식 받기'로 받은 파일에 채워서 올려 주세요.", "확인", null); }
   const hi = rows.findIndex(r => r.some(c => String(c).trim() === "이름")); if (hi < 0) return ask("'이름' 칸이 있는 줄을 찾지 못했어요. 엑셀 양식을 받아 거기에 채워 주세요.", "확인", null);
-  const head = rows[hi].map(c => String(c).replace(/\s/g, "")), col = name => head.indexOf(name.replace(/\s/g, ""));
+  const head = rows[hi].map(c => String(c).replace(/\s|\(.*\)/g, "")), col = name => head.indexOf(name.replace(/\s|\(.*\)/g, ""));
   const ppl = people(), info = J.info ||= {};
   const date = v => { const d = String(v).trim().replace(/[.\/년월]\s*/g, "-").replace(/일$/, "").replace(/-+$/, ""); const m = d.match(/^(\d{4})-?(\d{1,2})-?(\d{1,2})$/) || d.match(/^(\d{4})(\d{2})(\d{2})$/); return m ? `${m[1]}-${m[2].padStart(2, "0")}-${m[3].padStart(2, "0")}` : d; };
   const tel = v => { const t = String(v).trim(); return /^1\d{8,9}$/.test(t) ? "0" + t : t; }; // 엑셀이 앞의 0을 지운 번호
@@ -991,7 +996,7 @@ $("info-file").onchange = async () => {
     const p = ppl.find(x => num && numOf(x) === String(parseInt(num, 10))) || ppl.find(x => nm && nameOf(x) === nm);
     if (!p) { skip.push(nm || num + "번"); continue; }
     const v = info[p] ||= {};
-    for (const [h, k] of INFO_XL.slice(2)) { const i = col(h); if (i < 0) continue; const c = String(r[i] ?? "").trim(); if (!c) continue; v[k] = k === "birth" ? date(c) : /phone/.test(k) ? tel(c) : c; }
+    for (const [h, k] of INFO_XL.slice(2)) { const i = col(h); if (i < 0) continue; const c = String(r[i] ?? "").trim(); if (!c) continue; v[k] = k === "main" ? (c.match(/[12]/)?.[0] || v.main) : k === "birth" ? date(c) : /phone/.test(k) ? tel(c) : c; }
     done++;
   }
   store(); infoDraw();
@@ -1071,9 +1076,9 @@ function boxMoveTag(x, tag) { x.tag = tag; if (x.type === "folder") boxKids(x.id
 function boxDraw() {
   const B = J.box ||= [], q = $("box-q").value.trim(), L = boxTags();
   if (boxIn && (!boxById(boxIn) || (boxTag && boxById(boxIn).tag !== boxTag))) boxIn = "";
-  const tabBtn = t => el("button", { type: "button", class: boxTag === t ? "on" : "", "data-tag": t, title: t ? "더블클릭: 이름 바꾸기 · 줄을 끌어 놓으면 이 분류로" : "",
+  const tabBtn = t => el("button", { type: "button", class: (t ? "" : "all ") + (boxTag === t ? "on" : ""), "data-tag": t, title: t ? "더블클릭: 이름 바꾸기 · 줄을 끌어 놓으면 이 분류로" : "",
     onclick: () => { boxTag = t; boxIn = ""; boxDraw(); }, ondblclick: ev => t && boxTagEdit(t, ev.currentTarget) }, t || "전체", el("small", {}, " " + B.filter(x => x.type !== "folder" && (!t || x.tag === t)).length));
-  $("box-tags").replaceChildren(...["", ...L].flatMap((t, i) => i ? [el("span", { class: "vl" }), tabBtn(t)] : [tabBtn(t)]),
+  $("box-tags").replaceChildren(...["", ...L].flatMap((t, i) => i ? [el("span", { class: "vl" + (i === 1 ? " big" : "") }), tabBtn(t)] : [tabBtn(t)]),
     el("button", { type: "button", class: "addf", title: "분류 추가", onclick: ev => boxTagEdit("", ev.currentTarget) }, "+"));
   // 경로: 분류 › 폴더 › 폴더
   const path = []; for (let x = boxById(boxIn); x; x = boxById(x.in)) path.unshift(x);
@@ -1176,7 +1181,16 @@ function boxForm(type, x, anchor) {
     else (J.box ||= []).push({ id: uid(), type, ...v, ...(here && v.tag === here.tag ? { in: here.id } : {}), at: Date.now() });
     store();
   }, { cancel: "취소", head: tt });
-  if (!link) tx.closest(".pop").classList.add("rs");
+  if (!link) { // 오른쪽 아래 모서리를 끌어 가로·세로 크기 바꾸기
+    const f = tx.closest(".pop"), grip = el("span", { class: "grip", title: "끌어서 크기 바꾸기" });
+    f.classList.add("rs"); f.append(grip);
+    grip.onpointerdown = p => {
+      p.preventDefault(); const r = f.getBoundingClientRect(), sx = p.clientX, sy = p.clientY;
+      const mv = e => { f.style.width = Math.max(320, Math.min(innerWidth - r.left - 8, r.width + e.clientX - sx)) + "px"; f.style.height = Math.max(300, Math.min(innerHeight - r.top - 8, r.height + e.clientY - sy)) + "px"; };
+      const up = () => { removeEventListener("pointermove", mv); removeEventListener("pointerup", up); };
+      addEventListener("pointermove", mv); addEventListener("pointerup", up);
+    };
+  }
 }
 $("box-q").oninput = boxDraw;
 

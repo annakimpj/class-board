@@ -1024,7 +1024,7 @@
   /* 서랍: 아래쪽 바에서 고른 버튼을 넣어 두는 곳 */
   .dock #drawer-btn { position: sticky; right: 0; margin-left: 9px; background: #fff; overflow: visible; box-shadow: -12px 0 0 #fff, 12px 0 0 #fff; } /* 바가 넘쳐 밀려도 늘 맨 오른쪽 */
   .dock #drawer-btn::before { content: ""; position: absolute; left: -7px; top: 10px; bottom: 10px; width: 1.5px; background: #e6dccf; } /* 다른 기능: 세로 선으로 구분 */
-  .drawer { inset: auto; left: 50%; bottom: 84px; transform: translateX(-50%); margin: 0; padding: 12px; border: 0; border-radius: 18px; background: #fff; color: var(--ink);
+  .drawer { inset: auto; left: 12px; bottom: 84px; margin: 0; padding: 12px; border: 0; border-radius: 18px; background: #fff; color: var(--ink);
             width: min(440px, calc(100vw - 24px)); box-sizing: border-box; box-shadow: 0 10px 34px rgba(60, 40, 20, .22); font: 14px "Pretendard Variable", "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; }
   .drawer-items { display: flex; flex-wrap: wrap; gap: 4px; }
   .drawer-items:empty::before { content: "서랍이 비어 있어요. 오른쪽 ＋로 넣을 버튼을 골라요."; color: var(--muted); font-size: 13px; padding: 4px; }
@@ -2265,6 +2265,12 @@ function applyLayout() {
   placeCards();
 }
 // 아래쪽 바 버튼을 옆으로 끌면 순서가 바뀜 (조금만 움직이면 그냥 누르기)
+document.getElementById("drawer").addEventListener("toggle", e => { // 서랍 버튼 바로 위에 (오른쪽 끝을 버튼에 맞춤)
+  if (e.newState !== "open") return;
+  const m = e.target, r = document.getElementById("drawer-btn").getBoundingClientRect();
+  m.style.left = Math.max(8, Math.min(r.right - m.offsetWidth, innerWidth - m.offsetWidth - 8)) + "px";
+  m.style.bottom = Math.max(8, innerHeight - r.top + 8) + "px";
+});
 document.getElementById("drawer-add").addEventListener("toggle", e => {
   if (e.newState !== "open") return;
   const m = e.target, r = document.querySelector(".drawer-plus").getBoundingClientRect();
