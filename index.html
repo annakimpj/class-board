@@ -459,7 +459,7 @@
   .se-ask p { margin: 0 0 14px; white-space: pre-line; max-height: 50vh; overflow-y: auto; }
   body > .se-ask { position: fixed; z-index: 2147483000; } /* 로그인·잠금 물음은 화면 가운데 */
   .se-ask p.rcode { font: 700 22px ui-monospace, Consolas, monospace; letter-spacing: .06em; text-align: center; background: #f8f9fa; border: 1.5px dashed #ced4da; border-radius: 10px; padding: 10px; user-select: all; white-space: nowrap; }
-  .se-ask .row { display: flex; justify-content: flex-end; gap: 6px; }
+  .se-ask .row { display: flex; justify-content: flex-end; gap: 6px; } .se-ask .row .del { margin-right: auto; color: #e2643f; border-color: transparent; }
   .se-ask button { font: inherit; font-size: 14px; border: 1.5px solid var(--line, #c3e1e6); background: #fff; color: var(--ink); border-radius: 7px; padding: 5px 16px; cursor: pointer; }
   .se-ask button.main { background: var(--accent, #2f7d8c); border-color: var(--accent, #2f7d8c); color: #fff; } /* 카드 색에 맞춤 */
   /* 선생님 모드 → 분리 */
@@ -971,7 +971,9 @@
   .lk-head { display: flex; align-items: center; gap: 4px; padding: 2px 4px 8px; border-bottom: 1px solid #eee5d8; margin-bottom: 4px; }
   .lk-head b { flex: 1; font-weight: normal; }
   .lk-menu button { font: 13px "Pretendard Variable", "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; border: 1.5px solid var(--line); background: #fff; color: var(--ink); border-radius: 8px; padding: 2px 8px; cursor: pointer; }
-  .lk-menu #lk-edit.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .lk-adds { display: flex; align-items: center; background: #e3f6f8; border-radius: 999px; padding: 1px 3px 1px 10px; color: var(--accent); } .lk-adds i { font-style: normal; font-size: 16px; font-weight: 600; margin-right: 2px; }
+  .lk-menu .lk-adds button { border: 0; background: none; color: var(--accent); padding: 4px 6px; border-radius: 999px; display: grid; place-items: center; } .lk-menu .lk-adds button:hover { background: #c9edf1; }
+  .lk-menu .lk-ctx hr { border: 0; border-top: 1px solid #eee5d8; margin: 4px 2px; }
   .lk-list { max-height: 60vh; overflow-y: auto; }
   .tp-find { width: 100%; box-sizing: border-box; margin: 2px 0 6px; padding: 6px 10px; font: 15px "GangwonEdu", "Malgun Gothic", "Noto Emoji", sans-serif;
              border: 1.5px solid #eee5d8; border-radius: 10px; outline: none; }
@@ -979,7 +981,7 @@
   .shelf-menu:has(.tp-find) { width: 340px; }
   .shelf-menu:has(.tp-find) .lk-list { max-height: 270px; }
   .shelf-menu:has(.tp-find) .lk-name { white-space: normal; overflow: visible; text-overflow: clip; word-break: keep-all; }
-  .lk-list:empty::before { content: "'+ 링크'로 자주 가는 주소를 넣어요."; display: block; padding: 14px 6px; color: var(--muted); font-size: 13px; }
+  .lk-list:empty::before { content: "위의 + 🔗로 자주 가는 주소를 넣어요. (오른쪽 버튼으로도)"; display: block; padding: 14px 6px; color: var(--muted); font-size: 13px; }
   .lk-row { display: flex; align-items: center; gap: 8px; padding: 5px 6px; border-radius: 8px; cursor: pointer; user-select: none; touch-action: none; }
   .lk-row:hover, .lk-row.open { background: #e3f6f8; }
   .lk-row.drop { background: var(--accent); color: #fff; }
@@ -1385,7 +1387,7 @@
   </section>
 </div>
 <nav class="dock" aria-label="필요할 때 띄우는 도구"><span id="launch" style="display:contents"></span><button id="drawer-btn" popovertarget="drawer" title="서랍 (자주 안 쓰는 버튼을 넣어 두는 곳)"><i>🗄︎</i>서랍</button></nav>
-<div id="lk-menu" class="lk-menu" popover><div class="lk-head"><b>🌐 즐겨찾기</b><button onclick="lkAddLink()">+ 링크</button><button onclick="lkAddFolder()">+ 폴더</button><button onclick="lkToggleEdit()" id="lk-edit" title="고치기·지우기" aria-label="고치기·지우기">✎</button></div>
+<div id="lk-menu" class="lk-menu" popover><div class="lk-head"><b>🌐 즐겨찾기</b><span class="lk-adds"><i>+</i><button onclick="lkAddLink()" title="링크 넣기" aria-label="링크 넣기"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg></button><button onclick="lkAddFolder()" title="폴더 만들기" aria-label="폴더 만들기"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h3.6a2 2 0 0 1 1.5.7l1.3 1.6a2 2 0 0 0 1.5.7H19a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></button></span></div>
   <div class="lk-list" id="lk-list"></div><div class="lk-sub" id="lk-sub" hidden></div></div>
 <div id="drawer" class="drawer" popover><div class="drawer-row"><div class="drawer-items" id="drawer-items"></div><button class="drawer-plus" popovertarget="drawer-add" title="서랍에 넣을 버튼 고르기" aria-label="서랍에 넣을 버튼 고르기">＋</button></div>
   <div id="drawer-add" class="drawer-add" popover><p class="drawer-h">서랍에 넣을 버튼을 골라요 (여러 개 골라도 돼요)</p><div class="drawer-pick" id="drawer-pick"></div><div class="drawer-done"><button class="main" popovertarget="drawer-add" popovertargetaction="hide">완료</button></div></div></div>
@@ -5010,8 +5012,8 @@ document.getElementById("roster").addEventListener("change", () => scDraw());
 
 // ───── 즐겨찾기: 아래쪽 바 🌐 버튼을 누르면 뜨는 메뉴 (엣지 즐겨찾기처럼 한 줄에 하나). links = [{ id, type: "link"|"folder", name, url?, in?(폴더 id) }]
 // 폴더는 누르면 옆에 펼쳐짐(한 단계). 링크를 끌어 폴더에 넣고, 폴더 안 링크를 왼쪽 목록에 놓으면 밖으로 뺌
-// 누르면 새 창(설치한 앱이면 그 앱을 설치한 브라우저)으로 열림. ✎를 켜면 고치기·지우기
-let links = [], lkOpen = null, lkEditing = false, lkAnchor = null, lkShut = 0;
+// 누르면 새 창(설치한 앱이면 그 앱을 설치한 브라우저)으로 열림. 더블클릭 = 고치기(지우기도), 오른쪽 버튼 = 메뉴
+let links = [], lkOpen = null, lkAnchor = null, lkShut = 0, lkTap = null;
 try { links = JSON.parse(localStorage.getItem("links")) || []; } catch (e) {}
 const lkMenu = document.getElementById("lk-menu");
 function lkSave() { try { localStorage.setItem("links", JSON.stringify(links)); } catch (e) {} lkDraw(); }
@@ -5020,12 +5022,10 @@ const lkHost = u => { try { return new URL(u).hostname.replace(/^www\./, ""); } 
 const lkColor = t => `hsl(${[...t].reduce((a, c) => a + c.charCodeAt(0), 0) * 47 % 360} 55% 48%)`;
 const lkSort = a => a.sort((x, y) => (x.type === "folder" ? 0 : 1) - (y.type === "folder" ? 0 : 1));
 function lkRow(x) {
-  const folder = x.type === "folder", stop = f => e => { e.stopPropagation(); f(x); };
+  const folder = x.type === "folder";
   const row = h("div", { class: `lk-row${folder ? " folder" : ""}${folder && lkOpen === x.id ? " open" : ""}`, "data-id": x.id, title: folder ? x.name : `${x.name}\n${x.url}` },
     folder ? h("span", { class: "lk-ic folder" }, "📁") : h("span", { class: "lk-ic", style: `background:${lkColor(x.name)}` }, [...x.name][0] || "?"),
-    h("span", { class: "lk-name" }, x.name),
-    lkEditing ? [h("button", { class: "lk-x", title: "고치기", "aria-label": "고치기", onpointerdown: e => e.stopPropagation(), onclick: stop(lkEdit) }, "✎"),
-      h("button", { class: "lk-x del", title: "지우기", "aria-label": "지우기", onpointerdown: e => e.stopPropagation(), onclick: stop(lkDelete) }, "✕")] : folder ? h("span", { class: "lk-more" }, "›") : null);
+    h("span", { class: "lk-name" }, x.name), folder ? h("span", { class: "lk-more" }, "›") : null);
   row.onpointerdown = e => lkDown(e, x, row);
   row.oncontextmenu = e => { e.preventDefault(); lkCtx(e, x); };
   return row;
@@ -5034,7 +5034,6 @@ function lkDraw() {
   const list = $s("lk-list"), sub = $s("lk-sub"), f = links.find(x => x.id === lkOpen && x.type === "folder");
   if (!f) lkOpen = null;
   list.replaceChildren(...lkSort(links.filter(x => !x.in)).map(lkRow));
-  $s("lk-edit").classList.toggle("on", lkEditing);
   sub.hidden = !f;
   if (!f) return;
   const kids = links.filter(x => x.in === f.id);
@@ -5065,10 +5064,13 @@ function lkDown(e, x, row) {
   };
   const up = ev => {
     removeEventListener("pointermove", move); removeEventListener("pointerup", up); removeEventListener("pointercancel", up);
-    if (!gh) { // 그냥 누름
+    if (!gh) { // 그냥 누름 (두 번 빨리 누르면 고치기)
       if (ev.type !== "pointerup") return;
-      if (x.type === "folder") { lkOpen = lkOpen === x.id ? null : x.id; lkDraw(); }
-      else { window.open(x.url, "_blank", "noopener"); lkMenu.hidePopover(); }
+      if (lkTap?.id === x.id) { clearTimeout(lkTap.t); lkTap = null; return lkEdit(x); }
+      clearTimeout(lkTap?.t);
+      lkTap = { id: x.id, t: setTimeout(() => { lkTap = null;
+        if (x.type === "folder") { lkOpen = lkOpen === x.id ? null : x.id; lkDraw(); }
+        else { window.open(x.url, "_blank", "noopener"); lkMenu.hidePopover(); } }, 250) };
       return;
     }
     gh.remove(); row.classList.remove("dragging"); over?.classList.remove("drop");
@@ -5084,7 +5086,7 @@ function lkToggle(btn) {
   lkAnchor = btn; lkMenu.showPopover();
 }
 lkMenu.addEventListener("beforetoggle", e => {
-  if (e.newState !== "open") { lkShut = Date.now(); lkEditing = false; return; }
+  if (e.newState !== "open") { lkShut = Date.now(); return; }
   const r = (lkAnchor?.isConnected && lkAnchor.offsetParent ? lkAnchor : document.getElementById("drawer-btn")).getBoundingClientRect();
   lkMenu.style.left = Math.max(8, Math.min(r.left + r.width / 2 - 140, innerWidth - 288)) + "px";
   lkMenu.style.bottom = innerHeight - r.top + 8 + "px";
@@ -5108,8 +5110,9 @@ async function lkAddFolder() {
   links.push({ id: String(Date.now()), type: "folder", name: v[0].slice(0, 30) }); lkSave();
 }
 async function lkEdit(x) {
-  if (x.type === "folder") { const v = await seAskFields(lkMenu, "폴더 이름 바꾸기", [{ label: "폴더 이름", value: x.name }], "바꾸기"); if (v?.[0]) { x.name = v[0].slice(0, 30); lkSave(); } return; }
-  const v = await seAskFields(lkMenu, "즐겨찾기 고치기", [{ label: "주소", value: x.url }, { label: "이름", value: x.name }, { label: "폴더", value: x.in || "", options: lkFolders() }], "바꾸기");
+  if (x.type === "folder") { const v = await seAskFields(lkMenu, "폴더 이름 바꾸기", [{ label: "폴더 이름", value: x.name }], "바꾸기", "지우기"); if (v === "del") return lkDelete(x); if (v?.[0]) { x.name = v[0].slice(0, 30); lkSave(); } return; }
+  const v = await seAskFields(lkMenu, "즐겨찾기 고치기", [{ label: "주소", value: x.url }, { label: "이름", value: x.name }, { label: "폴더", value: x.in || "", options: lkFolders() }], "바꾸기", "지우기");
+  if (v === "del") return lkDelete(x);
   if (!v) return;
   const url = lkUrl(v[0]);
   if (!url) return seConfirm(lkMenu, "주소가 올바르지 않아요. 다시 확인해 주세요.", "확인", null);
@@ -5123,9 +5126,11 @@ async function lkDelete(x) {
 // 오른쪽 버튼 메뉴: 이름 바꾸기·삭제. 다른 곳을 누르면 닫힘
 function lkCtx(e, x) {
   lkMenu.querySelector(".lk-ctx")?.remove();
+  const item = (t, f, cls) => h("button", { class: cls || "", onclick: () => { close(); f(); } }, t);
   const close = () => m.remove(), m = h("div", { class: "lk-ctx" },
-    h("button", { onclick: () => { close(); lkRename(x); } }, "✎ 이름 바꾸기"),
-    h("button", { class: "del", onclick: () => { close(); lkDelete(x); } }, "🗑︎ 삭제"));
+    x ? [x.type === "folder" ? item(lkOpen === x.id ? "닫기" : "열기", () => { lkOpen = lkOpen === x.id ? null : x.id; lkDraw(); }) : item("열기", () => { window.open(x.url, "_blank", "noopener"); lkMenu.hidePopover(); }),
+      x.type === "folder" ? item("이름 바꾸기", () => lkRename(x)) : item("고치기", () => lkEdit(x)), item("삭제", () => lkDelete(x), "del"), h("hr")] : null,
+    item("새 링크", lkAddLink), item("새 폴더", lkAddFolder));
   m.style.left = Math.min(e.clientX, innerWidth - 150) + "px"; m.style.top = Math.min(e.clientY, innerHeight - 80) + "px";
   lkMenu.append(m);
 }
@@ -5134,7 +5139,7 @@ async function lkRename(x) {
   const v = await seAskFields(lkMenu, x.type === "folder" ? "폴더 이름 바꾸기" : "이름 바꾸기", [{ label: "이름", value: x.name }], "바꾸기");
   if (v?.[0]) { x.name = v[0].slice(0, 30); lkSave(); }
 }
-function lkToggleEdit() { lkEditing = !lkEditing; lkDraw(); }
+$s("lk-list").oncontextmenu = e => { if (!e.target.closest(".lk-row")) { e.preventDefault(); lkCtx(e, null); } };
 
 // ───── QR 만들기: 넣은 글을 바로 QR로 (인터넷 없이 이 컴퓨터에서 만듦)
 // 바이트 모드, 오류 정정 M, 1~25버전. 반환: 칸 배열(true = 검정), 너무 길면 null
@@ -6210,7 +6215,7 @@ function seChoose(host, text, choices) {
   });
 }
 // 카드 안에서 여러 칸 받기. fields: [{ label, value, placeholder, options?: [[값, 표시]] }] → 값 배열, 취소면 null
-function seAskFields(host, text, fields, ok = "확인") {
+function seAskFields(host, text, fields, ok = "확인", del = null) { // del: 왼쪽에 지우기 버튼 (누르면 "del")
   return new Promise(res => {
     host.querySelector(":scope > .se-ask")?.remove();
     const ins = fields.map(f => {
@@ -6219,7 +6224,7 @@ function seAskFields(host, text, fields, ok = "확인") {
     });
     const done = v => { box.remove(); res(v); }, okv = () => done(ins.map(i => i.value.trim()));
     const box = h("div", { class: "se-ask" }, h("div", {}, h("p", {}, text), fields.flatMap((f, i) => [f.label ? h("label", { class: "se-ask-f" }, f.label) : null, ins[i]]),
-      h("div", { class: "row" }, h("button", { onclick: () => done(null) }, "취소"), h("button", { class: "main", onclick: okv }, ok))));
+      h("div", { class: "row" }, del ? h("button", { class: "del", onclick: () => done("del") }, del) : null, h("button", { onclick: () => done(null) }, "취소"), h("button", { class: "main", onclick: okv }, ok))));
     box.onpointerdown = e => { e.stopPropagation(); if (e.target === box) done(null); };
     box.onkeydown = e => { if (e.key === "Escape") { e.stopPropagation(); done(null); } else if (e.key === "Enter" && e.target.tagName === "INPUT") { e.preventDefault(); okv(); } };
     host.append(box); ins[0].focus(); ins[0].select?.();

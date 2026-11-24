@@ -42,6 +42,8 @@
   .spane { display: grid; gap: 10px; min-height: 160px; align-content: start; }
   .sgroup { display: grid; gap: 8px; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; } .sgroup h4 { margin: 0; font-size: 13px; color: var(--ink); }
   .sgroup .tip { margin: 0; }
+  .ctx { position: fixed; z-index: 60; display: grid; min-width: 150px; padding: 4px; background: #fff; border-radius: 10px; box-shadow: 0 8px 26px rgba(40, 30, 20, .22); }
+  .ctx button { justify-content: flex-start; padding: 6px 12px; font-size: 14px; border-radius: 6px; } .ctx button:hover { background: var(--soft); } .ctx .danger { color: var(--warn); } .ctx hr { border: 0; border-top: 1px solid #efe9e1; margin: 4px 2px; }
   .pop .chk { display: flex; align-items: center; gap: 6px; font-size: 14px; } .pop .num { width: 64px; } .pop .row .sp { flex: 1; }
   .ddl .grab { cursor: grab; color: #c9beb3; padding: 0 2px; user-select: none; touch-action: none; } .ddl .grab.off { visibility: hidden; } .ddl .row.moving { opacity: .5; }
   .ddl .fixtag { flex: none; width: 26px; font-size: 11px; color: var(--muted); text-align: center; }
@@ -82,7 +84,8 @@
   .pop .modes { gap: 6px; } .pop .mode { flex: none; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; font-size: 13px; padding: 4px 10px; } .pop .mode.on { background: var(--soft); border-color: var(--accent); color: var(--accent); }
   .pop .moderow { gap: 6px; font-size: 13px; color: var(--muted); } .pop .moderow .dbox { width: 140px; flex: none; }
   .day .ev:hover { background: #d3e2f3; } .day .ev.done { text-decoration: line-through; opacity: .5; } .day .more { font-size: 11px; color: var(--muted); }
-  .side { display: grid; grid-template-rows: auto minmax(0, 1fr) minmax(0, 1fr); gap: 12px; min-height: 0; }
+  .side { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 12px; min-height: 0; }
+  .duo .scroll { flex: 1 1 0; } .duo .h2b { margin-top: 12px; padding-top: 12px; border-top: 1px solid #efe9e1; }
   .ghost { position: fixed; z-index: 50; pointer-events: none; background: var(--accent); color: #fff; font-size: 13px; padding: 3px 10px; border-radius: 8px; box-shadow: 0 6px 18px rgba(0, 0, 0, .2); max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .day.drop { background: #dbe7f5; } .ev.moving { opacity: .4; } .day .ev { cursor: grab; touch-action: none; }
   .minpop { position: fixed; z-index: 40; display: flex; align-items: center; gap: 6px; background: #fff; border-radius: 10px; padding: 6px 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, .18); font-size: 14px; }
@@ -100,7 +103,6 @@
   .item .cdot { flex: none; width: 7px; height: 7px; border-radius: 50%; margin-top: 7px; }
   .item .x2 { flex: 1; min-width: 0; overflow-wrap: anywhere; cursor: pointer; } .item.done .x2 { text-decoration: line-through; color: var(--muted); }
   .item .d { font-size: 12px; color: var(--muted); min-width: 52px; padding-top: 1px; }
-  .h2tip { margin-left: auto; font-size: 11px; font-weight: 400; color: #b5aaa0; }
   .item.stack, .item[data-id], .rec { user-select: none; } /* 더블클릭할 때 글자가 파랗게 골라지지 않게 */
   .item.stack { display: block; cursor: pointer; } .item.stack:hover { background: var(--soft); border-radius: 6px; }
   .item .ihead { display: flex; align-items: center; gap: 6px; font-weight: 600; } .item .ihead .k { margin-top: 0; }
@@ -215,8 +217,8 @@
       <div class="box"><h2 id="day-title"></h2>
         <div class="quick"><button data-add="ev" data-i="cal">일정</button><button data-add="rec" data-i="pen">학생 기록</button><button data-add="cs" data-i="chat">상담</button><button data-add="note" data-i="note">일지</button></div>
       </div>
-      <div class="box"><h2 data-i="cal">일정<small class="h2tip">더블클릭으로 수정</small></h2><div class="scroll" id="day-evs"></div></div>
-      <div class="box"><h2 data-i="pen">학생 기록 · 상담 · 일지<small class="h2tip">더블클릭으로 수정</small></h2><div class="scroll" id="day-list"></div></div>
+      <div class="box duo"><h2 data-i="cal">일정</h2><div class="scroll" id="day-evs"></div>
+        <h2 data-i="pen" class="h2b">학생 기록 · 상담 · 일지</h2><div class="scroll" id="day-list"></div></div>
     </div>
   </section>
   <section class="pane" id="p-rec" hidden>
@@ -501,6 +503,21 @@ function evForm(date, e, anchor) { // 일정: 위에 그날 일정, 아래 [입�
   } });
 }
 const startKids = w => tab !== "cal" && w ? [w] : []; // 학생 기록·상담 탭에서 고른 학생으로 시작 (창을 닫으면 풀림)
+// 오른쪽 버튼 메뉴 (탐색기·즐겨찾기처럼). items: [글, (누른 줄) => 할 일, "danger"?] 또는 null(구분선)
+function ctx(ev, items) {
+  ev.preventDefault(); ev.stopPropagation(); document.querySelector(".ctx")?.remove();
+  const a = ev.currentTarget, m = el("div", { class: "ctx", role: "menu" }, ...items.map(it => it ? el("button", { type: "button", class: it[2] || "", onclick: () => { shut(); it[1](a); } }, it[0]) : el("hr")));
+  const shut = () => { m.remove(); removeEventListener("pointerdown", out, true); removeEventListener("keydown", esc, true); removeEventListener("blur", shut); };
+  const out = e => { if (!m.contains(e.target)) shut(); }, esc = e => { if (e.key === "Escape") shut(); };
+  document.body.append(m);
+  m.style.left = Math.min(ev.clientX, innerWidth - m.offsetWidth - 6) + "px"; m.style.top = Math.min(ev.clientY, innerHeight - m.offsetHeight - 6) + "px";
+  addEventListener("pointerdown", out, true); addEventListener("keydown", esc, true); addEventListener("blur", shut);
+}
+const evCtx = (ev, e, day, refresh = calDraw) => ctx(ev, [["고치기", a => evForm(day, e, a)], [isDone(e, day) ? "줄 긋기 취소" : "줄 긋기", () => { setDone(e, day); refresh(); }], null,
+  ["지우기", async a => { if (await evDel(e, day, a)) refresh(); }, "danger"]]);
+const recCtx = (ev, r) => ctx(ev, [["고치기", a => recForm(r.date, r, a)], null, ["지우기", a => recDel(r, a), "danger"]]);
+const csCtx = (ev, c) => ctx(ev, [["고치기", a => csForm(c.date, c, a)], null, ["지우기", a => csDel(c, a), "danger"]]);
+async function csDel(c, btn) { if (!await ask("이 상담 기록을 지울까요?", "지우기", "취소", btn)) return false; J.counsels = J.counsels.filter(x => x !== c); store(); draw(); return true; }
 async function recDel(r, btn) { if (!await ask("이 학생 기록을 지울까요?", "지우기", "취소", btn)) return false; J.recs = J.recs.filter(x => x !== r); store(); draw(); return true; }
 function recForm(date, r, anchor) {
   const kp = kidPick(r?.ps || startKids(who)), k = chips(kinds().map(x => x[0]), r?.kind || kinds()[0]?.[0] || "기타", kindColor), d = r ? dateIn(r.date) : null;
@@ -576,7 +593,7 @@ async function evDel(e, day, btn) { // 반복 일정은 이 일정만 / 앞으�
 }
 function itemEv(e, refresh = calDraw, day = e.date, icon = false) {
   const bell = e.time ? bellBtn(() => e.alarm || "", v => { e.alarm = v; store(); }) : null; // 시간이 있는 일정만 (종은 그 자리에서 바뀜)
-  return el("div", { class: "item" + (isDone(e, day) ? " done" : ""), "data-id": e.id, "data-day": day, title: "누르면 줄 긋기 · 더블클릭으로 수정 · 끌면 옮기기",
+  return el("div", { class: "item" + (isDone(e, day) ? " done" : ""), "data-id": e.id, "data-day": day, title: "누르면 줄 긋기 · 더블클릭으로 수정 · 끌면 옮기기 · 오른쪽 버튼: 메뉴", oncontextmenu: ev => evCtx(ev, e, day, refresh),
     onclick: tap(() => { setDone(e, day); refresh(); }, a => evForm(day, e, a)) }, el("i", { class: "cdot", style: `background:${evColor(e) || evBase()[1]}` }), e.time ? el("span", { class: "t" }, e.time) : null,
     el("span", { class: "x2" }, icon ? evIcon(e) : null, e.text), bell,
     el("button", { type: "button", class: "x", title: "지우기", onclick: async ev => { if (await evDel(e, day, ev.currentTarget)) refresh(); } }, "✕"));
@@ -770,7 +787,7 @@ function calDraw() {
       let ln = 0; while (used[ln]?.some(c => c >= c0 && c <= c1)) ln++;
       (used[ln] ||= []).push(...Array.from({ length: c1 - c0 + 1 }, (_, k) => c0 + k));
       const bar = el("div", { class: "spbar" + (e.date < a ? " cl" : "") + (e.end > b ? " cr" : "") + (e.done ? " done" : ""), title: `${e.text} (${short(e.date)}~${short(e.end)}) · 누르면 줄 긋기 · 더블클릭으로 수정 · 끌면 옮기기`,
-        style: `grid-row:${w + 2};grid-column:${c0 + 1}/${c1 + 2};margin-top:${29 + ln * 19}px;${evStyle(e)}`, onclick: tap(() => toggle(e, e.date), a2 => evForm(e.date, e, a2)) }, (e.time ? e.time + " " : "") + e.text);
+        style: `grid-row:${w + 2};grid-column:${c0 + 1}/${c1 + 2};margin-top:${29 + ln * 19}px;${evStyle(e)}`, oncontextmenu: ev => evCtx(ev, e, e.date), onclick: tap(() => toggle(e, e.date), a2 => evForm(e.date, e, a2)) }, (e.time ? e.time + " " : "") + e.text);
       chipDrag(bar, e); bars.push(bar);
     });
     lanes[w] = used.length;
@@ -786,7 +803,7 @@ function calDraw() {
       wrote ? mk("note", "nt on", "일지 씀") : null, bd[s.slice(5)] ? mk("cake", "bd", "생일: " + bd[s.slice(5)].join(", ")) : null);
     cells.push(el("div", { class: `day${d.getMonth() !== m ? " out" : ""}${s === t ? " today" : ""}${s === pick ? " sel" : ""}${wd === 0 || (holiName(s) && !offOf(s)) ? " sun" : wd === 6 ? " sat" : ""}${offOf(s) ? " off" : ""}`, "data-d": s, style: `grid-row:${Math.floor(i / 7) + 2};grid-column:${i % 7 + 1}`, onclick: () => choose(s) }, // 자리를 정해 둬야 연속 일정 막대와 겹쳐 놓을 수 있음
       el("div", { class: "top" }, el("span", { class: "n", title: holiName(s) }, String(d.getDate())), holiName(s) ? el("small", { class: "holi" }, holiName(s)) : null, marks),
-      el("div", { class: "evs", style: lanes[Math.floor(i / 7)] ? `padding-top:${lanes[Math.floor(i / 7)] * 19}px` : "" }, ...evs.map(e => { const c = el("span", { class: "ev" + (isDone(e, s) ? " done" : ""), "data-id": e.id, style: evStyle(e), title: `${e.time ? e.time + " " : ""}${e.text}${e.rep ? " (반복)" : ""} (누르면 줄 긋기 · 더블클릭으로 수정 · 끌면 다른 날로)`, onclick: tap(() => toggle(e, s), a => evForm(s, e, a)) }, (e.time ? e.time + " " : "") + e.text); chipDrag(c, e); return c; })), plus));
+      el("div", { class: "evs", style: lanes[Math.floor(i / 7)] ? `padding-top:${lanes[Math.floor(i / 7)] * 19}px` : "" }, ...evs.map(e => { const c = el("span", { class: "ev" + (isDone(e, s) ? " done" : ""), "data-id": e.id, oncontextmenu: ev => evCtx(ev, e, s), style: evStyle(e), title: `${e.time ? e.time + " " : ""}${e.text}${e.rep ? " (반복)" : ""} (누르면 줄 긋기 · 더블클릭으로 수정 · 끌면 다른 날로)`, onclick: tap(() => toggle(e, s), a => evForm(s, e, a)) }, (e.time ? e.time + " " : "") + e.text); chipDrag(c, e); return c; })), plus));
   }
   $("cal").replaceChildren(...cells, ...bars);
   sideDraw();
@@ -825,11 +842,28 @@ function sideDraw() {
   sortable($("day-evs"), calDraw);
   const bdn = jset().hideBd ? null : bdays()[pick.slice(5)];
   $("day-list").replaceChildren(...[bdn ? el("p", { class: "sub bdline" }, ico("cake"), `생일: ${bdn.join(", ")}`) : null, ...(recs.length || cs.length || nt ? [] : [el("p", { class: "empty" }, "기록이 없어요.")]),
-    recs.length ? el("p", { class: "sub" }, "학생 기록") : null, ...recs.map(r => el("div", { "data-rid": r.id, class: "item stack", title: "더블클릭으로 수정", ondblclick: ev => recForm(r.date, r, ev.currentTarget) }, el("div", { class: "ihead" }, el("span", { class: "k", style: `background:${kindColor(r.kind)}` }, r.kind), names(r.ps)), el("div", { class: "ibody" }, r.text))),
-    cs.length ? el("p", { class: "sub" }, "상담") : null, ...cs.map(c => el("div", { class: "item stack", title: "더블클릭으로 수정", ondblclick: ev => csForm(c.date, c, ev.currentTarget) }, el("div", { class: "ihead" }, el("span", { class: "k", style: "background:#7048e8" }, c.way), names(c.ps) || c.target), el("div", { class: "ibody" }, [c.topic, c.text].filter(Boolean).join("\n")))),
-    nt ? el("p", { class: "sub" }, "일지") : null, nt ? el("div", { class: "item stack", title: "더블클릭으로 수정", ondblclick: ev => noteForm(pick, ev.currentTarget) }, el("div", { class: "ibody" }, nt)) : null].filter(Boolean));
+    recs.length ? el("p", { class: "sub" }, "학생 기록") : null, ...recs.map(r => el("div", { "data-rid": r.id, class: "item stack", title: "더블클릭으로 수정", ondblclick: ev => recForm(r.date, r, ev.currentTarget), oncontextmenu: ev => recCtx(ev, r) }, el("div", { class: "ihead" }, el("span", { class: "k", style: `background:${kindColor(r.kind)}` }, r.kind), names(r.ps)), el("div", { class: "ibody" }, r.text))),
+    cs.length ? el("p", { class: "sub" }, "상담") : null, ...cs.map(c => el("div", { class: "item stack", title: "더블클릭으로 수정", ondblclick: ev => csForm(c.date, c, ev.currentTarget), oncontextmenu: ev => csCtx(ev, c) }, el("div", { class: "ihead" }, el("span", { class: "k", style: "background:#7048e8" }, c.way), names(c.ps) || c.target), el("div", { class: "ibody" }, [c.topic, c.text].filter(Boolean).join("\n")))),
+    nt ? el("p", { class: "sub" }, "일지") : null, nt ? el("div", { class: "item stack", title: "더블클릭으로 수정", ondblclick: ev => noteForm(pick, ev.currentTarget), oncontextmenu: ev => ctx(ev, [["고치기", a => noteForm(pick, a)]]) }, el("div", { class: "ibody" }, nt)) : null].filter(Boolean));
   recSortable($("day-list"));
+  sideFit();
 }
+function sideFit() { // 일정·학생 기록 칸: 기본 반반, 한쪽이 적으면 그만큼만 주고 나머지를 다른 쪽에
+  const a = $("day-evs"), b = $("day-list"); if (!a.isConnected || !a.offsetParent) return;
+  a.style.flex = b.style.flex = "1 1 0"; const H = a.clientHeight + b.clientHeight;
+  a.style.flex = b.style.flex = "0 0 auto"; const na = a.scrollHeight, nb = b.scrollHeight;
+  let ha = H / 2;
+  if (na <= H / 2 && nb <= H / 2) ha = H / 2; else if (na <= H / 2) ha = na; else if (nb <= H / 2) ha = H - nb; else ha = H * na / (na + nb);
+  ha = Math.max(Math.min(60, H / 2), Math.min(ha, H - Math.min(60, H / 2)));
+  a.style.flex = `0 0 ${ha}px`; b.style.flex = "1 1 0";
+}
+new ResizeObserver(() => sideFit()).observe(document.querySelector(".duo"));
+function hdrFit() { // 위 바가 두 줄이면 아랫줄의 디데이·설정·날짜는 창 오른쪽 끝까지 (윗줄만 창 단추 자리를 비움)
+  const h = document.querySelector("header"), r = h.querySelector(".hright");
+  r.style.marginRight = "";
+  if (r.offsetTop > h.querySelector("h1").offsetTop + 8) r.style.marginRight = -Math.max(0, parseFloat(getComputedStyle(h).paddingRight) - 16) + "px";
+}
+new ResizeObserver(hdrFit).observe(document.querySelector("header"));
 $("cal-prev").onclick = () => { month.setMonth(month.getMonth() - 1); calDraw(); };
 $("cal-next").onclick = () => { month.setMonth(month.getMonth() + 1); calDraw(); };
 $("cal-today").onclick = () => { month = new Date(); month.setDate(1); pick = today(); calDraw(); };
@@ -875,9 +909,9 @@ function recDraw() {
   $("rec-title").textContent = who ? `${numOf(who)}번 ${nameOf(who)}` : "전체 학생 기록";
   $("rec-ptitle").textContent = `학생 기록 · ${who ? nameOf(who) : "전체"} (${new Date().toLocaleDateString("ko-KR")})`;
   const rows = recRows();
-  $("rec-list").replaceChildren(...(rows.length ? rows.map(r => el("div", { class: "rec" + (r.score ? " score" : ""), title: r.score ? "" : "더블클릭으로 수정", ondblclick: ev => { if (!r.score && !ev.target.closest("button")) recForm(r.date, r, ev.currentTarget); } }, el("span", { class: "d" }, short(r.date)), el("span", { class: "who" }, names(r.ps)),
+  $("rec-list").replaceChildren(...(rows.length ? rows.map(r => el("div", { class: "rec" + (r.score ? " score" : ""), title: r.score ? "" : "더블클릭으로 수정", ondblclick: ev => { if (!r.score && !ev.target.closest("button")) recForm(r.date, r, ev.currentTarget); }, oncontextmenu: ev => { if (!r.score) recCtx(ev, r); } }, el("span", { class: "d" }, short(r.date)), el("span", { class: "who" }, names(r.ps)),
     el("span", { class: "txt" }, el("span", { class: "k", style: r.score ? "" : `background:${kindColor(r.kind)}` }, r.kind), r.text),
-    r.score ? el("span") : el("span", { class: "acts" }, el("button", { class: "x", title: "고치기", onclick: ev => recForm(r.date, r, ev.currentTarget) }, "✎"), el("button", { class: "x", title: "지우기", onclick: ev => recDel(r, ev.currentTarget) }, "✕"))))
+    r.score ? el("span") : el("span", { class: "acts" }, el("button", { class: "x", title: "지우기", onclick: ev => recDel(r, ev.currentTarget) }, "✕"))))
     : [el("p", { class: "empty" }, "아직 기록이 없어요. '+ 기록'이나 달력에서 써요.")]));
 }
 $("rec-add").onclick = e => recForm(today(), null, e.currentTarget);
@@ -902,10 +936,10 @@ function csDraw() {
   $("cs-title").textContent = csWho ? `${numOf(csWho)}번 ${nameOf(csWho)} 상담` : "전체 상담 일지";
   $("cs-ptitle").textContent = `상담 일지 · ${csWho ? nameOf(csWho) : "전체"} (${new Date().toLocaleDateString("ko-KR")})`;
   const rows = csRows();
-  $("cs-list").replaceChildren(...(rows.length ? rows.map(c => el("div", { class: "rec", title: "더블클릭으로 수정", ondblclick: ev => { if (!ev.target.closest("button")) csForm(c.date, c, ev.currentTarget); } }, el("span", { class: "d" }, short(c.date), c.time ? el("span", { class: "meta" }, c.time) : null),
+  $("cs-list").replaceChildren(...(rows.length ? rows.map(c => el("div", { class: "rec", title: "더블클릭으로 수정", ondblclick: ev => { if (!ev.target.closest("button")) csForm(c.date, c, ev.currentTarget); }, oncontextmenu: ev => csCtx(ev, c) }, el("span", { class: "d" }, short(c.date), c.time ? el("span", { class: "meta" }, c.time) : null),
     el("span", { class: "who" }, names(c.ps) || "-", el("span", { class: "meta" }, `${c.target} · ${c.way}`)),
     el("span", { class: "txt" }, c.topic ? el("b", {}, c.topic + (c.text ? "\n" : "")) : null, c.text, c.next ? el("span", { class: "next" }, "→ " + c.next) : null),
-    el("span", { class: "acts" }, el("button", { class: "x", title: "고치기", onclick: ev => csForm(c.date, c, ev.currentTarget) }, "✎"), el("button", { class: "x", title: "지우기", onclick: async ev => { if (await ask("이 상담 기록을 지울까요?", "지우기", "취소", ev.currentTarget)) { J.counsels = J.counsels.filter(x => x !== c); store(); csDraw(); } } }, "✕"))))
+    el("span", { class: "acts" }, el("button", { class: "x", title: "지우기", onclick: ev => csDel(c, ev.currentTarget) }, "✕"))))
     : [el("p", { class: "empty" }, "아직 상담 기록이 없어요. '+ 상담 기록'이나 달력에서 써요.")]));
 }
 $("cs-add").onclick = e => csForm(today(), null, e.currentTarget);
@@ -1077,7 +1111,8 @@ function boxDraw() {
   const B = J.box ||= [], q = $("box-q").value.trim(), L = boxTags();
   if (boxIn && (!boxById(boxIn) || (boxTag && boxById(boxIn).tag !== boxTag))) boxIn = "";
   const tabBtn = t => el("button", { type: "button", class: (t ? "" : "all ") + (boxTag === t ? "on" : ""), "data-tag": t, title: t ? "더블클릭: 이름 바꾸기 · 줄을 끌어 놓으면 이 분류로" : "",
-    onclick: () => { boxTag = t; boxIn = ""; boxDraw(); }, ondblclick: ev => t && boxTagEdit(t, ev.currentTarget) }, t || "전체", el("small", {}, " " + B.filter(x => x.type !== "folder" && (!t || x.tag === t)).length));
+    onclick: () => { boxTag = t; boxIn = ""; boxDraw(); }, ondblclick: ev => t && boxTagEdit(t, ev.currentTarget),
+    oncontextmenu: ev => ctx(ev, [...(t ? [["이름 바꾸기", a => boxTagEdit(t, a)], ["분류 지우기", () => boxTagDel(t), "danger"], null] : []), ["새 분류", a => boxTagEdit("", a)]]) }, t || "전체", el("small", {}, " " + B.filter(x => x.type !== "folder" && (!t || x.tag === t)).length));
   $("box-tags").replaceChildren(...["", ...L].flatMap((t, i) => i ? [el("span", { class: "vl" + (i === 1 ? " big" : "") }), tabBtn(t)] : [tabBtn(t)]),
     el("button", { type: "button", class: "addf", title: "분류 추가", onclick: ev => boxTagEdit("", ev.currentTarget) }, "+"));
   // 경로: 분류 › 폴더 › 폴더
@@ -1094,9 +1129,12 @@ function boxDraw() {
   $("box-list").replaceChildren(...(rows.length ? rows.map(boxRow) : [el("p", { class: "empty" }, q ? "찾는 게 없어요." : boxIn ? "빈 폴더예요." : "자주 쓰는 링크(수업자료, 생기부·나이스 관련 사이트)나 메모를 넣어 두세요.")]), add);
   boxSortable($("box-list"));
 }
+function boxTagDel(old) { // 분류를 지우면 안의 것은 '기타'로
+  J.boxFolders = boxTags().filter(t => t !== old); (J.box || []).forEach(b => { if (b.tag === old) b.tag = "기타"; }); if (boxTag === old) boxTag = ""; store(); boxDraw();
+}
 function boxTagEdit(old, anchor) { // 분류 추가 / 이름 바꾸기 / 지우기 (안의 것은 '기타'로)
   const x = el("input", { type: "text", value: old, placeholder: "분류 이름 (예: 연수)" });
-  const del = old ? el("button", { type: "button", class: "danger", onclick: () => { J.boxFolders = boxTags().filter(t => t !== old); (J.box || []).forEach(b => { if (b.tag === old) b.tag = "기타"; }); if (boxTag === old) boxTag = ""; store(); document.querySelector(".pop-wrap")?.remove(); boxDraw(); } }, "분류 지우기") : null;
+  const del = old ? el("button", { type: "button", class: "danger", onclick: () => { document.querySelector(".pop-wrap")?.remove(); boxTagDel(old); } }, "분류 지우기") : null;
   pop(anchor, old ? "분류 이름 바꾸기" : "분류 추가", "box", [x], () => {
     const v = x.value.trim(); if (!v) return false;
     const L = boxTags(); J.boxFolders = old ? L.map(t => t === old ? v : t) : [...L.filter(t => t !== v), v];
@@ -1113,20 +1151,28 @@ function boxFolderForm(f, anchor) { // 폴더 만들기 / 이름 바꾸기
   }, { cancel: "취소" });
 }
 function boxRow(x) {
-  const edit = el("button", { class: "x", title: x.type === "folder" ? "이름 바꾸기" : "고치기", onclick: ev => x.type === "folder" ? boxFolderForm(x, ev.currentTarget) : boxForm(x.type, x, ev.currentTarget) }, "✎");
-  const del = el("button", { class: "x", title: "지우기", onclick: async ev => {
-    const n = x.type === "folder" ? boxCount(x.id) : 0;
-    if (!await ask(x.type === "folder" ? `'${x.title}' 폴더를 지울까요?` + (n ? `\n안에 있던 ${n}개는 한 칸 위로 꺼내 둬요.` : "") : `'${x.title || "이것"}'을(를) 지울까요?`, "지우기", "취소", ev.currentTarget)) return;
-    boxKids(x.id).forEach(k => { if (x.in) k.in = x.in; else delete k.in; });
-    J.box = J.box.filter(v => v !== x); store(); boxDraw();
-  } }, "✕");
-  if (x.type === "folder") return el("div", { class: "brow folder", "data-id": x.id, "data-into": x.id, title: "열기 · 다른 줄을 끌어 여기에 놓으면 이 폴더 안으로", onclick: ev => { if (boxDragged || ev.target.closest("button")) return; boxIn = x.id; boxDraw(); } },
-    ico("folder"), el("div", { class: "bmain" }, el("span", { class: "btitle" }, x.title), el("small", {}, String(boxCount(x.id)))), !boxTag && x.tag ? el("span", { class: "btag" }, x.tag) : null, edit, del);
+  const del = el("button", { class: "x", title: "지우기", onclick: ev => boxDel(x, ev.currentTarget) }, "✕");
+  if (x.type === "folder") return el("div", { class: "brow folder", "data-id": x.id, "data-into": x.id, oncontextmenu: ev => boxCtx(ev, x), title: "열기 · 다른 줄을 끌어 여기에 놓으면 이 폴더 안으로", onclick: ev => { if (boxDragged || ev.target.closest("button")) return; boxIn = x.id; boxDraw(); } },
+    ico("folder"), el("div", { class: "bmain" }, el("span", { class: "btitle" }, x.title), el("small", {}, String(boxCount(x.id)))), !boxTag && x.tag ? el("span", { class: "btag" }, x.tag) : null, del);
   const copy = el("button", { class: "x", title: x.type === "link" ? "주소 복사" : "메모 복사", onclick: async () => { try { await navigator.clipboard.writeText(x.type === "link" ? x.url : x.text); copy.textContent = "✓"; setTimeout(() => copy.textContent = "⧉", 1200); } catch (e) {} } }, "⧉");
   const title = x.type === "link" ? el("a", { href: x.url, target: "_blank", rel: "noopener", class: "btitle", draggable: "false", title: "새 창으로 열기", onclick: e => { if (boxDragged) e.preventDefault(); } }, x.title || x.url) : el("b", { class: "btitle" }, x.title || (x.text || "").split("\n")[0]);
-  return el("div", { class: "brow", "data-id": x.id, title: "끌어서 순서 바꾸기 · 폴더나 위의 분류에 놓으면 옮겨져요" }, ico(x.type === "link" ? "link" : "memo"), el("div", { class: "bmain", ondblclick: ev => { if (!ev.target.closest("a")) boxForm(x.type, x, ev.currentTarget); } }, title, x.type === "link" ? el("small", {}, x.url) : x.text && x.title ? el("div", { class: "btext", style: x.fs ? `font-size:${x.fs}px` : "" }, x.text) : null),
-    !boxTag && x.tag ? el("span", { class: "btag" }, x.tag) : null, copy, edit, del);
+  return el("div", { class: "brow", "data-id": x.id, title: "끌어서 순서 바꾸기 · 폴더나 위의 분류에 놓으면 옮겨져요 · 더블클릭: 고치기 · 오른쪽 버튼: 메뉴", oncontextmenu: ev => boxCtx(ev, x) }, ico(x.type === "link" ? "link" : "memo"), el("div", { class: "bmain", ondblclick: ev => { if (!ev.target.closest("a")) boxForm(x.type, x, ev.currentTarget); } }, title, x.type === "link" ? el("small", {}, x.url) : x.text && x.title ? el("div", { class: "btext", style: x.fs ? `font-size:${x.fs}px` : "" }, x.text) : null),
+    !boxTag && x.tag ? el("span", { class: "btag" }, x.tag) : null, copy, del);
 }
+async function boxDel(x, near) { // 폴더를 지우면 안의 것은 한 칸 위로
+  const n = x.type === "folder" ? boxCount(x.id) : 0;
+  if (!await ask(x.type === "folder" ? `'${x.title}' 폴더를 지울까요?` + (n ? `\n안에 있던 ${n}개는 한 칸 위로 꺼내 둬요.` : "") : `'${x.title || "이것"}'을(를) 지울까요?`, "지우기", "취소", near)) return false;
+  boxKids(x.id).forEach(k => { if (x.in) k.in = x.in; else delete k.in; });
+  J.box = J.box.filter(v => v !== x); store(); boxDraw(); return true;
+}
+const boxNew = [["새 링크", a => boxForm("link", null, a)], ["새 메모", a => boxForm("memo", null, a)], ["새 폴더", a => boxFolderForm(null, a)]];
+function boxCtx(ev, x) {
+  const copy = async () => { try { await navigator.clipboard.writeText(x.type === "link" ? x.url : x.text); } catch (e) {} };
+  ctx(ev, [x.type === "folder" ? ["열기", () => { boxIn = x.id; boxDraw(); }] : x.type === "link" ? ["열기", () => open(x.url, "_blank", "noopener")] : null,
+    x.type === "folder" ? ["이름 바꾸기", a => boxFolderForm(x, a)] : ["고치기", a => boxForm(x.type, x, a)],
+    x.type === "folder" ? null : [x.type === "link" ? "주소 복사" : "메모 복사", copy], ["지우기", a => boxDel(x, a), "danger"], null, ...boxNew].filter((v, i, L) => v || (i && L[i - 1])));
+}
+$("box-list").oncontextmenu = ev => { if (!ev.target.closest(".brow")) ctx(ev, boxNew); };
 function boxSortable(list) { // 줄 아무 데나 잡고 끌기
   list.querySelectorAll(".brow").forEach(row => row.onpointerdown = p => {
     if (p.button || p.target.closest("button, input")) return;
@@ -1180,7 +1226,7 @@ function boxForm(type, x, anchor) {
     if (x) { if (here && v.tag !== here.tag) delete x.in; Object.assign(x, v); } // 분류를 바꾸면 그 분류 맨 위로
     else (J.box ||= []).push({ id: uid(), type, ...v, ...(here && v.tag === here.tag ? { in: here.id } : {}), at: Date.now() });
     store();
-  }, { cancel: "취소", head: tt });
+  }, { cancel: "취소", head: tt, foot: x ? el("button", { type: "button", class: "danger", onclick: async ev => { if (await boxDel(x, ev.currentTarget)) document.querySelector(".pop-wrap")?.remove(); } }, "지우기") : null });
   if (!link) { // 오른쪽 아래 모서리를 끌어 가로·세로 크기 바꾸기
     const f = tx.closest(".pop"), grip = el("span", { class: "grip", title: "끌어서 크기 바꾸기" });
     f.classList.add("rs"); f.append(grip);
