@@ -5139,7 +5139,7 @@ async function lkRename(x) {
   const v = await seAskFields(lkMenu, x.type === "folder" ? "폴더 이름 바꾸기" : "이름 바꾸기", [{ label: "이름", value: x.name }], "바꾸기");
   if (v?.[0]) { x.name = v[0].slice(0, 30); lkSave(); }
 }
-$s("lk-list").oncontextmenu = e => { if (!e.target.closest(".lk-row")) { e.preventDefault(); lkCtx(e, null); } };
+document.getElementById("lk-list").oncontextmenu = e => { if (!e.target.closest(".lk-row")) { e.preventDefault(); lkCtx(e, null); } };
 
 // ───── QR 만들기: 넣은 글을 바로 QR로 (인터넷 없이 이 컴퓨터에서 만듦)
 // 바이트 모드, 오류 정정 M, 1~25버전. 반환: 칸 배열(true = 검정), 너무 길면 null
