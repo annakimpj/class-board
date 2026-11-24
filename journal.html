@@ -61,6 +61,13 @@
   .day:hover .plus, .day.sel .plus { opacity: 1; }
   .day .evs { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; scrollbar-width: thin; padding-bottom: 22px; }
   .day .ev { flex: none; font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 1px 6px; border-radius: 5px; background: #e3ecf6; color: #2c4f75; }
+  .day .ev .i, .item .x2 .i { width: 12px; height: 12px; vertical-align: -1px; margin-right: 3px; }
+  .spbar { position: relative; z-index: 2; align-self: start; height: 17px; margin: 0 6px; padding: 0 6px; border-radius: 5px; background: #cfe0f2; color: #1f4a73; font-size: 12px; line-height: 17px;
+           white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: grab; touch-action: none; user-select: none; }
+  .spbar .i { width: 12px; height: 12px; vertical-align: -1px; margin-right: 3px; } .spbar:hover { background: #bdd4ec; } .spbar.done { text-decoration: line-through; opacity: .5; }
+  .spbar.cl { margin-left: 0; border-top-left-radius: 0; border-bottom-left-radius: 0; } .spbar.cr { margin-right: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; } /* 지난주·다음 주로 이어짐 */
+  .pop .modes { gap: 6px; } .pop .mode { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; padding: 4px 10px; } .pop .mode.on { background: var(--soft); border-color: var(--accent); color: var(--accent); }
+  .pop .moderow { gap: 6px; font-size: 13px; color: var(--muted); } .pop .moderow .dbox { width: 140px; flex: none; }
   .day .ev:hover { background: #d3e2f3; } .day .ev.done { text-decoration: line-through; opacity: .5; } .day .more { font-size: 11px; color: var(--muted); }
   .side { display: grid; grid-template-rows: auto minmax(0, 1fr) minmax(0, 1fr); gap: 12px; min-height: 0; }
   .ghost { position: fixed; z-index: 50; pointer-events: none; background: var(--accent); color: #fff; font-size: 13px; padding: 3px 10px; border-radius: 8px; box-shadow: 0 6px 18px rgba(0, 0, 0, .2); max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -79,6 +86,8 @@
   .item .t { font-variant-numeric: tabular-nums; color: var(--accent); font-size: 12.5px; min-width: 40px; padding-top: 1px; }
   .item .x2 { flex: 1; min-width: 0; overflow-wrap: anywhere; cursor: pointer; } .item.done .x2 { text-decoration: line-through; color: var(--muted); }
   .item .d { font-size: 12px; color: var(--muted); min-width: 52px; padding-top: 1px; }
+  .h2tip { margin-left: auto; font-size: 11px; font-weight: 400; color: #b5aaa0; }
+  .item.stack, .item[data-id], .rec { user-select: none; } /* 더블클릭할 때 글자가 파랗게 골라지지 않게 */
   .item.stack { display: block; cursor: pointer; } .item.stack:hover { background: var(--soft); border-radius: 6px; }
   .item .ihead { display: flex; align-items: center; gap: 6px; font-weight: 600; } .item .ihead .k { margin-top: 0; }
   .item .ibody { margin-top: 3px; white-space: pre-wrap; overflow-wrap: anywhere; }
@@ -148,15 +157,15 @@
   <section class="pane" id="p-cal" hidden>
     <div class="box">
       <div class="cal-head"><button id="cal-prev" aria-label="지난달">◀</button><b id="cal-title"></b><button id="cal-next" aria-label="다음 달">▶</button><button id="cal-today">오늘</button>
-        <span class="sp"></span><span class="hint">+로 쓰기 · 누르면 줄 긋기 · 끌어서 옮기기</span></div>
+        <span class="sp"></span><span class="hint">+로 쓰기 · 누르면 줄 긋기 · 더블클릭으로 수정 · 끌어서 옮기기</span></div>
       <div class="cal" id="cal"></div>
     </div>
     <div class="side">
       <div class="box"><h2 id="day-title"></h2>
         <div class="quick"><button data-add="ev" data-i="cal">일정</button><button data-add="rec" data-i="pen">학생 기록</button><button data-add="cs" data-i="chat">상담</button><button data-add="note" data-i="note">일지</button></div>
       </div>
-      <div class="box"><h2 data-i="cal">일정</h2><div class="scroll" id="day-evs"></div></div>
-      <div class="box"><h2 data-i="pen">학생 기록 · 상담 · 일지</h2><div class="scroll" id="day-list"></div></div>
+      <div class="box"><h2 data-i="cal">일정<small class="h2tip">더블클릭으로 수정</small></h2><div class="scroll" id="day-evs"></div></div>
+      <div class="box"><h2 data-i="pen">학생 기록 · 상담 · 일지<small class="h2tip">더블클릭으로 수정</small></h2><div class="scroll" id="day-list"></div></div>
     </div>
   </section>
   <section class="pane" id="p-rec" hidden>
@@ -195,7 +204,7 @@
 const $ = id => document.getElementById(id);
 const el = (tag, attrs = {}, ...kids) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) k.startsWith("on") ? e[k] = v : e.setAttribute(k, v); e.append(...kids.flat().filter(x => x != null && x !== false)); return e; };
 // 선 아이콘 (보드 아이콘과 같은 모양)
-const IC = { cal: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>', pen: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13 7l4 4"/>',
+const IC = { span: '<path d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4"/>', rep: '<path d="M12 12c-2-3-3.5-4-5.5-4a4 4 0 0 0 0 8c2 0 3.5-1 5.5-4s3.5-4 5.5-4a4 4 0 0 1 0 8c-2 0-3.5-1-5.5-4z"/>', cal: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>', pen: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13 7l4 4"/>',
   chat: '<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>', note: '<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h7M9 16h7"/>',
   book: '<path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5zM5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3M9 7h6"/>', plus: '<path d="M12 5v14M5 12h14"/>',
   clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
@@ -318,16 +327,33 @@ function evForm(date, e, anchor) { // 일정: 위에 그날 일정, 아래 [입�
   tp.onchange = () => { if (!tp.value) return; const p = parseTime(x.value); x.value = `${tp.value} ${p.time ? p.text : x.value.trim()}`.trim(); upd(); x.focus(); };
   x.oninput = upd; upd();
   const d = e ? dateIn(e.date) : null, list = el("div", { class: "plist" });
+  let mode = e?.end ? "span" : e?.rep ? "rep" : "", endV = e?.end || "", untilV = e?.until || "";
+  const endF = dateField(endV, v => endV = v), untilF = dateField(untilV, v => untilV = v);
+  const repSel = el("select", { "aria-label": "반복" }, ...REPS.map(([k, t]) => el("option", { value: k }, t))); repSel.value = e?.rep || "week";
+  const spanB = el("button", { type: "button", class: "mode", title: "여러 날 이어지는 일정", onclick: () => setMode(mode === "span" ? "" : "span") }, ico("span"), "연속");
+  const repB = el("button", { type: "button", class: "mode", title: "되풀이되는 일정", onclick: () => setMode(mode === "rep" ? "" : "rep") }, ico("rep"), "반복");
+  const spanRow = el("div", { class: "row moderow" }, el("span", {}, "끝나는 날"), endF), repRow = el("div", { class: "row moderow" }, repSel, el("span", {}, "끝나는 날(없으면 계속)"), untilF);
+  const setMode = v => { mode = v; spanB.classList.toggle("on", v === "span"); repB.classList.toggle("on", v === "rep"); spanRow.hidden = v !== "span"; repRow.hidden = v !== "rep";
+    const f = spanB.closest(".pop"); if (f) { const r = f.getBoundingClientRect(); if (r.bottom > innerHeight - 8) f.style.top = Math.max(8, innerHeight - 8 - r.height) + "px"; } }; // 칸이 늘어 화면 밖으로 나가면 위로
+  setMode(mode);
+  const modeOf = start => { // 저장할 연속·반복 값
+    const o = { end: undefined, rep: undefined, until: undefined };
+    if (mode === "span" && endV > start) o.end = endV;
+    if (mode === "rep") { o.rep = repSel.value; o.until = untilV && untilV >= start ? untilV : undefined; }
+    return o;
+  };
   const redraw = () => { drawList(); calDraw(); };
-  const drawList = () => { list.replaceChildren(...evOf(date).map(v => itemEv(v, redraw))); sortable(list, redraw); };
+  const drawList = () => { list.replaceChildren(...evOf(date).map(v => itemEv(v, redraw, date))); sortable(list, redraw); };
   if (!e) drawList();
   pop(anchor, e ? "일정 고치기" : `${dayName(date)} 일정`, "cal", [e ? null : list,
-    el("div", { class: "row addrow" }, el("span", { class: "inbox" }, x, clock, tp), bell, el("button", { class: "main" }, e ? "저장" : "추가"))], () => {
+    el("div", { class: "row addrow" }, el("span", { class: "inbox" }, x, clock, tp), bell, el("button", { class: "main" }, e ? "저장" : "추가")),
+    el("div", { class: "row modes" }, spanB, repB), spanRow, repRow], () => {
     const v = x.value.trim(); if (!v) return false;
     const { time, text } = parseTime(v);
-    if (e) { Object.assign(e, { date: d.value || e.date, time, text, alarm: time ? alarm : "" }); store(); return; }
-    J.events.push({ id: uid(), date, time, text, done: false, alarm: time ? alarm : "", ord: evOf(date).length }); store();
-    x.value = ""; alarm = ""; bell.show(); upd(); redraw(); x.focus(); return false; // 닫지 않고 이어서 (종은 다시 꺼짐)
+    const clean = o => { for (const k in o) if (o[k] === undefined) delete o[k]; return o; };
+    if (e) { const st = d.value || e.date; clean(Object.assign(e, { date: st, time, text, alarm: time ? alarm : "" }, modeOf(st))); store(); return; }
+    J.events.push(clean({ id: uid(), date, time, text, done: false, alarm: time ? alarm : "", ord: evOf(date).length, ...modeOf(date) })); store();
+    x.value = ""; alarm = ""; bell.show(); upd(); setMode(""); redraw(); x.focus(); return false; // 닫지 않고 이어서 (종·연속·반복은 다시 꺼짐)
   }, { head: d, noFoot: true, opened: () => { // 처음 한 번 사용법
     if (localStorage.getItem("journal-tip-ev")) return;
     try { localStorage.setItem("journal-tip-ev", "1"); } catch (er) {}
@@ -349,12 +375,12 @@ function csForm(date, c, anchor) {
   const kp = kidPick(c?.ps || startKids(csWho)), tg = sel(TARGETS, c?.target || "학생"), wy = sel(WAYS, c?.way || "대면"), d = c ? dateIn(c.date) : null;
   const t = el("input", { type: "time", value: c?.time || "", title: "시간" }), topic = el("input", { type: "text", class: "grow", value: c?.topic || "", placeholder: "주제 (예: 교우관계)" });
   const x = el("textarea", { rows: 3, placeholder: "상담 내용" }), nx = el("input", { type: "text", value: c?.next || "", placeholder: "후속 조치 (있으면)" }); x.value = c?.text || "";
-  pop(anchor, c ? "상담 고치기" : `${dayName(date)} 상담`, "chat", [kp.box, el("div", { class: "row" }, tg, wy, t), topic, x, nx], () => {
+  const close = pop(anchor, c ? "상담 고치기" : `${dayName(date)} 상담`, "chat", [kp.box, el("div", { class: "row" }, tg, wy, t), topic, x, nx], () => {
     const ps = kp.get(); if (!ps.length && tg.value !== "기타") { ask("상담한 학생을 골라 주세요.", "확인", null); return false; } if (!x.value.trim() && !topic.value.trim()) return false;
     const v = { date: d?.value || c?.date || date, time: t.value, ps, target: tg.value, way: wy.value, topic: topic.value.trim(), text: x.value.trim(), next: nx.value.trim() };
     if (c) Object.assign(c, v); else J.counsels.push({ id: uid(), ...v, at: Date.now() });
     store();
-  }, { head: d, cancel: "취소" });
+  }, { head: d, cancel: "취소", foot: c ? el("button", { type: "button", class: "danger", onclick: async ev => { if (!await ask("이 상담 기록을 지울까요?", "지우기", "취소", ev.currentTarget)) return; J.counsels = J.counsels.filter(x => x !== c); store(); close(); } }, "지우기") : null });
 }
 function noteForm(date, anchor) { // 일지: 쓰는 대로 저장
   const x = el("textarea", { rows: 9, placeholder: "오늘 수업, 생활지도, 전달할 것… 쓰는 대로 저장돼요." }), sv = el("span", { class: "saved" });
@@ -369,9 +395,22 @@ function noteForm(date, anchor) { // 일지: 쓰는 대로 저장
 // ── 달력: 칸마다 일정(누르면 줄 긋기), 기록·상담·일지 표시. 칸의 +나 오른쪽 버튼으로 바로 쓰기
 let month = new Date(), pick = today();
 month.setDate(1);
-const evOf = d => J.events.filter(e => e.date === d).sort((a, b) => (a.ord ?? 1e9) - (b.ord ?? 1e9)); // 끌어서 정한 순서
+const REPS = [["day", "매일"], ["wday", "평일마다"], ["week", "매주"], ["month", "매월"], ["year", "매년"]];
+const addDays = (s, n) => { const d = new Date(s + "T00:00"); d.setDate(d.getDate() + n); return iso(d); };
+const dayGap = (a, b) => Math.round((new Date(b + "T00:00") - new Date(a + "T00:00")) / 864e5);
+function occurs(e, d) { // 이 일정이 그날에 있나
+  if (e.end) return e.date <= d && d <= e.end;
+  if (!e.rep) return e.date === d;
+  if (d < e.date || (e.until && d > e.until)) return false;
+  const a = new Date(e.date + "T00:00"), b = new Date(d + "T00:00");
+  return { day: true, wday: b.getDay() % 6 !== 0, week: a.getDay() === b.getDay(), month: a.getDate() === b.getDate(), year: a.getMonth() === b.getMonth() && a.getDate() === b.getDate() }[e.rep];
+}
+const isDone = (e, d) => e.rep ? !!e.dones?.[d] : !!e.done;
+function setDone(e, d) { if (e.rep) { e.dones ||= {}; if (e.dones[d]) delete e.dones[d]; else e.dones[d] = 1; } else e.done = !e.done; store(); }
+const evIcon = e => e.end ? ico("span") : e.rep ? ico("rep") : null;
+const evOf = d => J.events.filter(e => occurs(e, d)).sort((a, b) => (b.end ? 1 : 0) - (a.end ? 1 : 0) || (a.ord ?? 1e9) - (b.ord ?? 1e9)); // 연속 일정 먼저, 그다음 끌어서 정한 순서
 const recOf = d => J.recs.filter(r => r.date === d), csOf = d => J.counsels.filter(c => c.date === d);
-const toggle = e => { e.done = !e.done; store(); calDraw(); };
+const toggle = (e, d) => { setDone(e, d); calDraw(); };
 function addMenu(btn, date) { // 칸의 +: 무엇을 쓸지
   document.querySelector(".addmenu")?.remove();
   const r = btn.getBoundingClientRect(), m = el("div", { class: "addmenu box", style: `position:fixed;z-index:15;left:${Math.min(r.left, innerWidth - 150)}px;top:${Math.min(r.bottom + 4, innerHeight - 190)}px;padding:6px;gap:2px;box-shadow:0 10px 30px rgba(0,0,0,.18)` },
@@ -381,16 +420,22 @@ function addMenu(btn, date) { // 칸의 +: 무엇을 쓸지
 }
 const add = (k, date, anchor) => k === "note" ? noteForm(date, anchor) : ({ ev: evForm, rec: recForm, cs: csForm })[k](date, null, anchor);
 function choose(s) { pick = s; document.querySelectorAll(".day").forEach(d => d.classList.toggle("sel", d.dataset.d === s)); sideDraw(); } // 다시 그리지 않고 고르기만
-function itemEv(e, refresh = calDraw) {
+const tap = (one, two) => { let t = 0; return ev => { if (dragged || ev.target.closest("button")) return; ev.stopPropagation(); const a = ev.currentTarget; if (t) { clearTimeout(t); t = 0; two(a); } else t = setTimeout(() => { t = 0; one(a); }, 260); }; };
+function itemEv(e, refresh = calDraw, day = e.date) {
   const bell = e.time ? bellBtn(() => e.alarm || "", v => { e.alarm = v; store(); }) : null; // 시간이 있는 일정만 (종은 그 자리에서 바뀜)
-  return el("div", { class: "item" + (e.done ? " done" : ""), "data-id": e.id }, el("span", { class: "grab", title: "끌어서 순서 바꾸기" }, "⠿"), el("span", { class: "t" }, e.time || ""),
-    el("span", { class: "x2", title: "누르면 줄이 그어져요 (한 번 더 누르면 지워져요). 끌면 옮겨져요", onclick: () => { if (dragged) return; e.done = !e.done; store(); refresh(); } }, e.text), bell,
-    el("button", { type: "button", class: "x", title: "고치기", onclick: ev => evForm(e.date, e, ev.currentTarget) }, "✎"),
-    el("button", { type: "button", class: "x", title: "지우기", onclick: async ev => { if (await ask(`'${e.text}' 일정을 지울까요?`, "지우기", "취소", ev.currentTarget)) { J.events = J.events.filter(x => x !== e); store(); refresh(); } } }, "✕"));
+  return el("div", { class: "item" + (isDone(e, day) ? " done" : ""), "data-id": e.id, "data-day": day, title: "누르면 줄 긋기 · 더블클릭으로 수정 · 끌면 옮기기",
+    onclick: tap(() => { setDone(e, day); refresh(); }, a => evForm(e.date, e, a)) }, el("span", { class: "grab" }, "⠿"), el("span", { class: "t" }, e.time || ""),
+    el("span", { class: "x2" }, evIcon(e), e.text), bell,
+    el("button", { type: "button", class: "x", title: "지우기", onclick: async ev => { if (await ask(e.rep ? `'${e.text}' 반복 일정을 모든 날짜에서 지울까요?` : e.end ? `'${e.text}' 연속 일정을 지울까요?` : `'${e.text}' 일정을 지울까요?`, "지우기", "취소", ev.currentTarget)) { J.events = J.events.filter(x => x !== e); store(); refresh(); } } }, "✕"));
 }
 const dayAt = (x, y) => document.elementsFromPoint(x, y).find(n => n.classList?.contains("day"))?.dataset.d; // 그 자리의 달력 날짜
 const dropMark = d => document.querySelectorAll(".day").forEach(c => c.classList.toggle("drop", !!d && c.dataset.d === d));
-function moveDay(e, d) { if (!d || d === e.date) return false; e.date = d; e.ord = evOf(d).length; store(); return true; } // 다른 날 맨 아래로
+function moveDay(e, d, from = e.date) { // 다른 날 맨 아래로. 연속·반복 일정은 통째로 같은 날 수만큼 옮김
+  if (!d || d === from) return false;
+  const n = dayGap(from, d); e.date = addDays(e.date, n); if (e.end) e.end = addDays(e.end, n);
+  if (e.rep && e.dones) e.dones = Object.fromEntries(Object.entries(e.dones).map(([k, v]) => [addDays(k, n), v]));
+  e.ord = evOf(d).length; store(); return true;
+}
 let dragged = false; // 끈 뒤 따라오는 클릭(줄 긋기)은 무시
 function sortable(box, done) { // 줄(⠿·시간·글자 어디든)을 위아래로 끌면 순서, 목록 밖 달력 날짜에 놓으면 그날로 옮김
   box.querySelectorAll(".item[data-id]").forEach(row => row.onpointerdown = p => {
@@ -412,7 +457,7 @@ function sortable(box, done) { // 줄(⠿·시간·글자 어디든)을 위아�
       removeEventListener("pointermove", mv); removeEventListener("pointerup", up); gh.remove(); dropMark(null);
       if (!on) return;
       row.classList.remove("moving"); dragged = true; setTimeout(() => dragged = false, 50); // 끈 뒤 따라오는 클릭(줄 긋기)은 무시
-      if (!(to && ev0 && moveDay(ev0, to))) { [...box.querySelectorAll(".item[data-id]")].forEach((r, i) => { const x = J.events.find(v => v.id === r.dataset.id); if (x) x.ord = i; }); store(); }
+      if (!(to && ev0 && moveDay(ev0, to, row.dataset.day))) { [...box.querySelectorAll(".item[data-id]")].forEach((r, i) => { const x = J.events.find(v => v.id === r.dataset.id); if (x) x.ord = i; }); store(); }
       done();
     };
     addEventListener("pointermove", mv); addEventListener("pointerup", up);
@@ -422,7 +467,7 @@ function chipDrag(chip, e) { // 달력의 일정을 다른 날로 끌기 (조금
   chip.onpointerdown = p => {
     if (p.button) return;
     p.stopPropagation();
-    const sx = p.clientX, sy = p.clientY, gh = el("div", { class: "ghost", hidden: "" }, e.text);
+    const sx = p.clientX, sy = p.clientY, from = dayAt(sx, sy), gh = el("div", { class: "ghost", hidden: "" }, e.text);
     let on = false, to = null;
     const mv = ev => {
       if (!on && Math.hypot(ev.clientX - sx, ev.clientY - sy) < 6) return;
@@ -434,7 +479,7 @@ function chipDrag(chip, e) { // 달력의 일정을 다른 날로 끌기 (조금
       removeEventListener("pointermove", mv); removeEventListener("pointerup", up); gh.remove(); dropMark(null);
       if (!on) return;
       dragged = true; setTimeout(() => dragged = false, 50);
-      if (moveDay(e, to)) calDraw(); else chip.classList.remove("moving");
+      if (moveDay(e, to, from)) calDraw(); else chip.classList.remove("moving");
     };
     addEventListener("pointermove", mv); addEventListener("pointerup", up);
   };
@@ -475,7 +520,7 @@ function parseDate(v) {
   return d.getMonth() === +m[2] - 1 && d.getDate() === +m[3] ? iso(d) : ""; // 2월 30일 같은 날은 안 됨
 }
 function dateField(value, set) {
-  const x = el("input", { type: "text", class: "grow dtext", value: value || "", placeholder: "20270104", autocomplete: "off" });
+  const x = el("input", { type: "text", class: "grow dtext", value: value || "", placeholder: "예) 20270104", autocomplete: "off" });
   const dp = el("input", { type: "date", class: "tpick", tabindex: "-1", "aria-hidden": "true" });
   const ok = () => { const v = parseDate(x.value); x.classList.remove("bad"); if (v || !x.value.trim()) set(v); return v; };
   x.oninput = ok; x.onblur = () => { const v = ok(); if (v) x.value = v; else if (x.value.trim()) x.classList.add("bad"); }; // 다 쓴 뒤에만 빨갛게
@@ -499,31 +544,45 @@ function ddayForm(anchor) { // 디데이(방학식 등)와 재량휴업일: 쓰�
 function calDraw() {
   const y = month.getFullYear(), m = month.getMonth(), start = new Date(y, m, 1 - new Date(y, m, 1).getDay()), t = today();
   $("cal-title").textContent = `${y}년 ${m + 1}월`;
+  // 연속 일정 막대: 주마다 겹치지 않게 줄(lane)을 정해서 달력 칸 위에 가로로 놓음 (칸 사이도 이어짐)
+  const lanes = [], bars = [];
+  for (let w = 0; w < 6; w++) {
+    const a = iso(new Date(y, m, 1 - new Date(y, m, 1).getDay() + w * 7)), b = addDays(a, 6), used = [];
+    J.events.filter(e => e.end && e.date <= b && e.end >= a).sort((p, q) => p.date.localeCompare(q.date) || (q.end > p.end ? 1 : -1)).forEach(e => {
+      const c0 = dayGap(a, e.date > a ? e.date : a), c1 = dayGap(a, e.end < b ? e.end : b);
+      let ln = 0; while (used[ln]?.some(c => c >= c0 && c <= c1)) ln++;
+      (used[ln] ||= []).push(...Array.from({ length: c1 - c0 + 1 }, (_, k) => c0 + k));
+      const bar = el("div", { class: "spbar" + (e.date < a ? " cl" : "") + (e.end > b ? " cr" : "") + (e.done ? " done" : ""), title: `${e.text} (${short(e.date)}~${short(e.end)}) · 누르면 줄 긋기 · 더블클릭으로 수정 · 끌면 옮기기`,
+        style: `grid-row:${w + 2};grid-column:${c0 + 1}/${c1 + 2};margin-top:${29 + ln * 19}px`, onclick: tap(() => toggle(e, e.date), a2 => evForm(e.date, e, a2)) }, ico("span"), (e.time ? e.time + " " : "") + e.text);
+      chipDrag(bar, e); bars.push(bar);
+    });
+    lanes[w] = used.length;
+  }
   const cells = ["일", "월", "화", "수", "목", "금", "토"].map((d, i) => el("div", { class: "dw" + (i === 0 ? " sun" : i === 6 ? " sat" : "") }, d));
   for (let i = 0; i < 42; i++) {
-    const d = new Date(start); d.setDate(start.getDate() + i); const s = iso(d), evs = evOf(s), recs = recOf(s), nc = csOf(s).length, wd = d.getDay(), wrote = !!J.notes[s]?.trim();
+    const d = new Date(start); d.setDate(start.getDate() + i); const s = iso(d), evs = evOf(s).filter(e => !e.end), recs = recOf(s), nc = csOf(s).length, wd = d.getDay(), wrote = !!J.notes[s]?.trim();
     const plus = el("button", { class: "plus", title: "이 날에 쓰기", "aria-label": "이 날에 쓰기", onclick: ev => { ev.stopPropagation(); choose(s); addMenu(ev.currentTarget, s); } }, ico("plus"));
     const mk = (n, cls, title) => { const x = ico(n); x.setAttribute("class", "i mk " + cls); x.append(Object.assign(document.createElementNS("http://www.w3.org/2000/svg", "title"), { textContent: title })); return x; };
     const marks = el("span", { class: "marks" }, ...recs.slice(0, 8).map(r => el("i", { class: "dot", style: `background:${kindColor(r.kind)}`, title: `${r.kind} · ${names(r.ps)}` })),
       recs.length > 8 ? el("small", {}, "+") : null, nc ? mk("chat", "cs", `상담 ${nc}`) : null,
       wrote ? mk("note", "nt on", "일지 씀") : null);
-    cells.push(el("div", { class: `day${d.getMonth() !== m ? " out" : ""}${s === t ? " today" : ""}${s === pick ? " sel" : ""}${wd === 0 || (holiName(s) && !offOf(s)) ? " sun" : wd === 6 ? " sat" : ""}${offOf(s) ? " off" : ""}`, "data-d": s, onclick: () => choose(s) },
+    cells.push(el("div", { class: `day${d.getMonth() !== m ? " out" : ""}${s === t ? " today" : ""}${s === pick ? " sel" : ""}${wd === 0 || (holiName(s) && !offOf(s)) ? " sun" : wd === 6 ? " sat" : ""}${offOf(s) ? " off" : ""}`, "data-d": s, style: `grid-row:${Math.floor(i / 7) + 2};grid-column:${i % 7 + 1}`, onclick: () => choose(s) }, // 자리를 정해 둬야 연속 일정 막대와 겹쳐 놓을 수 있음
       el("div", { class: "top" }, el("span", { class: "n", title: holiName(s) }, String(d.getDate())), holiName(s) ? el("small", { class: "holi" }, holiName(s)) : null, marks),
-      el("div", { class: "evs" }, ...evs.map(e => { const c = el("span", { class: "ev" + (e.done ? " done" : ""), title: `${e.time ? e.time + " " : ""}${e.text} (누르면 줄 긋기 · 끌면 다른 날로)`, onclick: ev => { ev.stopPropagation(); if (!dragged) toggle(e); } }, (e.time ? e.time + " " : "") + e.text); chipDrag(c, e); return c; })), plus));
+      el("div", { class: "evs", style: lanes[Math.floor(i / 7)] ? `padding-top:${lanes[Math.floor(i / 7)] * 19}px` : "" }, ...evs.map(e => { const c = el("span", { class: "ev" + (isDone(e, s) ? " done" : ""), title: `${e.time ? e.time + " " : ""}${e.text}${e.rep ? " (반복)" : ""} (누르면 줄 긋기 · 더블클릭으로 수정 · 끌면 다른 날로)`, onclick: tap(() => toggle(e, s), a => evForm(e.date, e, a)) }, evIcon(e), (e.time ? e.time + " " : "") + e.text); chipDrag(c, e); return c; })), plus));
   }
-  $("cal").replaceChildren(...cells);
+  $("cal").replaceChildren(...cells, ...bars);
   sideDraw();
 }
 function sideDraw() {
   const t = today();
   $("day-title").textContent = dayName(pick) + (pick === t ? " · 오늘" : "");
   const evs = evOf(pick), recs = recOf(pick), cs = csOf(pick), nt = J.notes[pick]?.trim();
-  $("day-evs").replaceChildren(...(evs.length ? evs.map(e => itemEv(e)) : [el("p", { class: "empty" }, "일정이 없어요.")]));
+  $("day-evs").replaceChildren(...(evs.length ? evs.map(e => itemEv(e, calDraw, pick)) : [el("p", { class: "empty" }, "일정이 없어요.")]));
   sortable($("day-evs"), calDraw);
   $("day-list").replaceChildren(...[...(recs.length || cs.length || nt ? [] : [el("p", { class: "empty" }, "기록이 없어요.")]),
-    recs.length ? el("p", { class: "sub" }, "학생 기록") : null, ...recs.map(r => el("div", { class: "item stack", title: "누르면 고치기·지우기", onclick: ev => recForm(r.date, r, ev.currentTarget) }, el("div", { class: "ihead" }, el("span", { class: "k", style: `background:${kindColor(r.kind)}` }, r.kind), names(r.ps)), el("div", { class: "ibody" }, r.text))),
-    cs.length ? el("p", { class: "sub" }, "상담") : null, ...cs.map(c => el("div", { class: "item stack", title: "누르면 고치기", onclick: ev => csForm(c.date, c, ev.currentTarget) }, el("div", { class: "ihead" }, el("span", { class: "k", style: "background:#7048e8" }, c.way), names(c.ps) || c.target), el("div", { class: "ibody" }, [c.topic, c.text].filter(Boolean).join("\n")))),
-    nt ? el("p", { class: "sub" }, "일지") : null, nt ? el("div", { class: "item" }, el("span", { class: "x2", onclick: ev => noteForm(pick, ev.currentTarget) }, nt.split("\n")[0])) : null].filter(Boolean));
+    recs.length ? el("p", { class: "sub" }, "학생 기록") : null, ...recs.map(r => el("div", { class: "item stack", title: "더블클릭으로 수정", ondblclick: ev => recForm(r.date, r, ev.currentTarget) }, el("div", { class: "ihead" }, el("span", { class: "k", style: `background:${kindColor(r.kind)}` }, r.kind), names(r.ps)), el("div", { class: "ibody" }, r.text))),
+    cs.length ? el("p", { class: "sub" }, "상담") : null, ...cs.map(c => el("div", { class: "item stack", title: "더블클릭으로 수정", ondblclick: ev => csForm(c.date, c, ev.currentTarget) }, el("div", { class: "ihead" }, el("span", { class: "k", style: "background:#7048e8" }, c.way), names(c.ps) || c.target), el("div", { class: "ibody" }, [c.topic, c.text].filter(Boolean).join("\n")))),
+    nt ? el("p", { class: "sub" }, "일지") : null, nt ? el("div", { class: "item stack", title: "더블클릭으로 수정", ondblclick: ev => noteForm(pick, ev.currentTarget) }, el("div", { class: "ibody" }, nt)) : null].filter(Boolean));
 }
 $("cal-prev").onclick = () => { month.setMonth(month.getMonth() - 1); calDraw(); };
 $("cal-next").onclick = () => { month.setMonth(month.getMonth() + 1); calDraw(); };
@@ -534,8 +593,8 @@ const rung = new Set();
 setInterval(() => {
   const n = new Date(), now = n.getHours() * 60 + n.getMinutes(), t = today();
   for (const e of J.events) {
-    if (e.date !== t || !e.time || !e.alarm || e.done) continue;
-    const [h, mi] = e.time.split(":").map(Number), at = h * 60 + mi - (+e.alarm || 0), key = e.id + "@" + at;
+    if (!occurs(e, t) || !e.time || !e.alarm || isDone(e, t)) continue;
+    const [h, mi] = e.time.split(":").map(Number), at = h * 60 + mi - (+e.alarm || 0), key = e.id + t + "@" + at;
     if (now !== at || rung.has(key)) continue;
     rung.add(key); ask(`⏰ ${+e.alarm ? `${e.alarm}분 뒤` : "지금"} ${e.time}\n${e.text}`, "확인", null);
     try { const a = new AudioContext(); [880, 1175, 880, 1175].forEach((f, i) => { const o = a.createOscillator(), g = a.createGain(), s0 = a.currentTime + i * .18; o.frequency.value = f; o.type = "triangle"; o.connect(g); g.connect(a.destination); g.gain.setValueAtTime(.18, s0); g.gain.exponentialRampToValueAtTime(.001, s0 + .16); o.start(s0); o.stop(s0 + .16); }); } catch (er) {}
@@ -569,7 +628,7 @@ function recDraw() {
   $("rec-title").textContent = who ? `${numOf(who)}번 ${nameOf(who)}` : "전체 학생 기록";
   $("rec-ptitle").textContent = `학생 기록 · ${who ? nameOf(who) : "전체"} (${new Date().toLocaleDateString("ko-KR")})`;
   const rows = recRows();
-  $("rec-list").replaceChildren(...(rows.length ? rows.map(r => el("div", { class: "rec" + (r.score ? " score" : "") }, el("span", { class: "d" }, short(r.date)), el("span", { class: "who" }, names(r.ps)),
+  $("rec-list").replaceChildren(...(rows.length ? rows.map(r => el("div", { class: "rec" + (r.score ? " score" : ""), title: r.score ? "" : "더블클릭으로 수정", ondblclick: ev => { if (!r.score && !ev.target.closest("button")) recForm(r.date, r, ev.currentTarget); } }, el("span", { class: "d" }, short(r.date)), el("span", { class: "who" }, names(r.ps)),
     el("span", { class: "txt" }, el("span", { class: "k", style: r.score ? "" : `background:${kindColor(r.kind)}` }, r.kind), r.text),
     r.score ? el("span") : el("span", { class: "acts" }, el("button", { class: "x", title: "고치기", onclick: ev => recForm(r.date, r, ev.currentTarget) }, "✎"), el("button", { class: "x", title: "지우기", onclick: ev => recDel(r, ev.currentTarget) }, "✕"))))
     : [el("p", { class: "empty" }, "아직 기록이 없어요. '+ 기록'이나 달력에서 써요.")]));
@@ -593,7 +652,7 @@ function csDraw() {
   $("cs-title").textContent = csWho ? `${numOf(csWho)}번 ${nameOf(csWho)} 상담` : "전체 상담 일지";
   $("cs-ptitle").textContent = `상담 일지 · ${csWho ? nameOf(csWho) : "전체"} (${new Date().toLocaleDateString("ko-KR")})`;
   const rows = csRows();
-  $("cs-list").replaceChildren(...(rows.length ? rows.map(c => el("div", { class: "rec" }, el("span", { class: "d" }, short(c.date), c.time ? el("span", { class: "meta" }, c.time) : null),
+  $("cs-list").replaceChildren(...(rows.length ? rows.map(c => el("div", { class: "rec", title: "더블클릭으로 수정", ondblclick: ev => { if (!ev.target.closest("button")) csForm(c.date, c, ev.currentTarget); } }, el("span", { class: "d" }, short(c.date), c.time ? el("span", { class: "meta" }, c.time) : null),
     el("span", { class: "who" }, names(c.ps) || "-", el("span", { class: "meta" }, `${c.target} · ${c.way}`)),
     el("span", { class: "txt" }, c.topic ? el("b", {}, c.topic + (c.text ? "\n" : "")) : null, c.text, c.next ? el("span", { class: "next" }, "→ " + c.next) : null),
     el("span", { class: "acts" }, el("button", { class: "x", title: "고치기", onclick: ev => csForm(c.date, c, ev.currentTarget) }, "✎"), el("button", { class: "x", title: "지우기", onclick: async ev => { if (await ask("이 상담 기록을 지울까요?", "지우기", "취소", ev.currentTarget)) { J.counsels = J.counsels.filter(x => x !== c); store(); csDraw(); } } }, "✕"))))
