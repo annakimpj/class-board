@@ -5671,11 +5671,11 @@ wbLoad(wbPage);
 const DUST_GRADES = [["최고", "#1d4ed8", "😄"], ["좋음", "#3b82f6", "😊"], ["보통", "#1fa463", "🙂"], ["나쁨", "#f59e0b", "😷"], ["최악", "#ef4444", "😫"]];
 // 등급 얼굴: 단순한 선 얼굴 (선 색 = 등급 색). 최고 >< 눈 작은 미소 · 좋음 눈웃음 · 보통 일자 입 · 나쁨 찡그림 · 최악 ×× 눈 작은 입
 const DUST_FACE = [
-  '<path d="M15 17l5 3-5 3M33 17l-5 3 5 3"/><path d="M19 30a5 5 0 0 0 10 0"/>',
-  '<path d="M14 21a4 4 0 0 1 8 0M26 21a4 4 0 0 1 8 0"/><path d="M15 29a10 10 0 0 0 18 0"/>',
-  '<circle cx="17" cy="20" r="1.6" fill="currentColor"/><circle cx="31" cy="20" r="1.6" fill="currentColor"/><path d="M17 32h14"/>',
-  '<circle cx="17" cy="20" r="1.6" fill="currentColor"/><circle cx="31" cy="20" r="1.6" fill="currentColor"/><path d="M16 34a9 9 0 0 1 16 0"/>',
-  '<path d="M14 17l6 6M20 17l-6 6M28 17l6 6M34 17l-6 6"/><ellipse cx="24" cy="32" rx="3.5" ry="3"/>',
+  '<path d="M12 17l5 3-5 3M36 17l-5 3 5 3"/><path d="M19 30a5 5 0 0 0 10 0"/>',
+  '<path d="M11 21a4 4 0 0 1 8 0M29 21a4 4 0 0 1 8 0"/><path d="M15 29a10 10 0 0 0 18 0"/>',
+  '<circle cx="15" cy="20" r="1.6" fill="currentColor"/><circle cx="33" cy="20" r="1.6" fill="currentColor"/><path d="M17 32h14"/>',
+  '<circle cx="15" cy="20" r="1.6" fill="currentColor"/><circle cx="33" cy="20" r="1.6" fill="currentColor"/><path d="M16 34a9 9 0 0 1 16 0"/>',
+  '<path d="M11 17l6 6M17 17l-6 6M31 17l6 6M37 17l-6 6"/><ellipse cx="24" cy="32" rx="3.5" ry="3"/>',
 ].map(d => `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="24" cy="24" r="21"/>${d}</svg>`);
 const dustGrade = (v, cuts) => { const i = cuts.findIndex(c => v <= c); return i < 0 ? cuts.length : i; };
 let dustPlace = null;
