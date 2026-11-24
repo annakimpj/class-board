@@ -12,9 +12,9 @@
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font: 15px/1.5 "Pretendard Variable", "Malgun Gothic", sans-serif; }
   button, input, select, textarea { font: inherit; color: inherit; }
-  button { cursor: pointer; border: 1.5px solid var(--line); background: #fff; border-radius: 8px; padding: 5px 12px; display: inline-flex; align-items: center; gap: 5px; }
-  button:hover { border-color: var(--accent); }
-  button.main { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button { cursor: pointer; border: 0; background: none; border-radius: 8px; padding: 5px 10px; display: inline-flex; align-items: center; gap: 5px; color: #4a413a; }
+  button:hover { background: #f1ece5; }
+  button.main { background: var(--accent); color: #fff; } button.main:hover { background: color-mix(in srgb, var(--accent) 85%, #000); }
   button.x { border: 0; background: none; color: #b5aca4; padding: 2px 6px; } button.x:hover { color: var(--warn); }
   input, select, textarea { border: 1.5px solid var(--line); border-radius: 8px; padding: 5px 9px; background: #fff; }
   input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
@@ -94,7 +94,7 @@
   .inbox .clock { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); border: 0; background: none; padding: 3px; color: var(--muted); }
   .inbox .clock:hover { color: var(--accent); } .inbox .tpick { position: absolute; right: 0; bottom: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; border: 0; padding: 0; }
   .pop .bell { padding: 4px; } .pop .addrow .bell .i { width: 18px; height: 18px; }
-  .quick { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; } .quick button { justify-content: center; padding: 7px 6px; font-size: 14px; }
+  .quick { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; } .quick button { justify-content: flex-start; padding: 6px 8px; font-size: 14px; }
   .item { display: flex; align-items: flex-start; gap: 6px; padding: 5px 2px; border-bottom: 1px solid #f1ece5; font-size: 14px; }
   .item .t { font-variant-numeric: tabular-nums; color: var(--accent); font-size: 12.5px; min-width: 40px; padding-top: 1px; }
   .item .x2 { flex: 1; min-width: 0; overflow-wrap: anywhere; cursor: pointer; } .item.done .x2 { text-decoration: line-through; color: var(--muted); }
@@ -116,8 +116,8 @@
   .pop .plist { max-height: 140px; overflow-y: auto; } .pop .plist .item { font-size: 13px; padding: 3px 2px; }
   .pop .kidpick { max-height: 120px; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); } .pop .kidpick button { font-size: 13px; padding: 3px 6px; }
   .pop .chips button { font-size: 13px; padding: 2px 9px; }
-  .chips { display: flex; flex-wrap: wrap; gap: 4px; } .chips button { border-radius: 999px; padding: 3px 11px; font-size: 14px; }
-  .chips button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .chips { display: flex; flex-wrap: wrap; gap: 4px; } .chips button { border-radius: 999px; padding: 3px 11px; font-size: 14px; color: var(--muted); }
+  .chips button.on { background: var(--accent); color: #fff; }
   .kidpick { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 4px; max-height: 150px; overflow-y: auto; padding: 2px; }
   .kidpick button { justify-content: flex-start; padding: 4px 8px; font-size: 14px; border-radius: 8px; white-space: nowrap; overflow: hidden; }
   .kidpick button i { font-style: normal; color: var(--muted); font-size: 11px; } .kidpick button.on { background: var(--soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
@@ -156,16 +156,18 @@
   .f { display: grid; gap: 2px; font-size: 12px; color: var(--muted); } .f.wide { grid-column: 1 / -1; } .f input, .f textarea { font-size: 15px; color: var(--ink); } .f textarea { resize: vertical; }
   .itable { border-collapse: collapse; font-size: 14px; width: 100%; } .itable th { text-align: left; font-size: 12px; color: var(--muted); font-weight: 600; padding: 6px 8px; border-bottom: 1.5px solid var(--line); white-space: nowrap; }
   .itable td { border-bottom: 1px solid #f1ece5; padding: 6px 8px; white-space: nowrap; } .itable td:last-child { white-space: normal; min-width: 160px; } .itable tr:hover td { background: #faf8f5; cursor: pointer; }
-  .att { border-collapse: separate; border-spacing: 0; font-size: 14px; }
-  .att th, .att td { border-right: 1px solid #eee7dd; border-bottom: 1px solid #eee7dd; text-align: center; padding: 0; min-width: 30px; height: 30px; }
-  .att th { font-size: 12px; font-weight: 600; color: var(--muted); background: #faf8f5; position: sticky; top: 0; z-index: 2; } .att th small { display: block; font-weight: normal; font-size: 10px; }
-  .att .n { position: sticky; left: 0; min-width: 34px; background: #fff; z-index: 1; color: var(--muted); font-size: 12px; }
-  .att .nm { position: sticky; left: 34px; text-align: left; padding: 0 10px; white-space: nowrap; background: #fff; z-index: 1; }
+  .att { border-collapse: separate; border-spacing: 0; font-size: var(--af, 14px); width: 100%; table-layout: fixed; }
+  .att th, .att td { border-right: 1px solid #eee7dd; border-bottom: 1px solid #eee7dd; text-align: center; padding: 0; height: var(--rh, 30px); overflow: hidden; }
+  .att col.n { width: var(--nw, 36px); } .att col.nm { width: var(--mw, 90px); } .att col.sum { width: var(--sw, 40px); }
+  .att th { font-size: .85em; font-weight: 600; color: var(--muted); background: #faf8f5; position: sticky; top: 0; z-index: 2; } .att th small { display: block; font-weight: normal; font-size: .8em; }
+  .att .n { position: sticky; left: 0; background: #fff; z-index: 1; color: var(--muted); font-size: 12px; }
+  .att .nm { position: sticky; left: var(--nw, 36px); text-align: left; padding: 0 10px; white-space: nowrap; background: #fff; z-index: 1; }
   .att th.n, .att th.nm { background: #faf8f5; z-index: 3; }
   .att td.c { cursor: pointer; font-weight: 700; } .att td.c:hover { background: var(--soft); } .att td.c.on { background: #fbf7f1; } .att .today { background: #fff8e1; }
-  .att .sum { min-width: 42px; background: #faf8f5; } .att td.sum { font-weight: 600; color: #5e554e; }
+  .att .sum { background: #faf8f5; } .att td.sum { font-weight: 600; color: #5e554e; }
   .att-legend { font-size: 12px; color: var(--muted); display: flex; gap: 6px; align-items: center; flex-wrap: wrap; } .att-legend i { font-style: normal; font-weight: 700; color: var(--ink); }
-  #box-tags { margin-bottom: 8px; } #box-tags small { opacity: .7; } .bar .tip { font-size: 12.5px; color: var(--muted); }
+  #box-tags { margin-bottom: 8px; } #box-tags small { opacity: .7; } #box-tags button.drop { background: #dbe7f5; color: var(--accent); } #box-tags .addf { color: var(--accent); }
+  .brow { cursor: grab; user-select: none; } .brow.moving { background: var(--soft); border-radius: 8px; opacity: .7; } .bar .tip { font-size: 12.5px; color: var(--muted); }
   .brow { display: flex; align-items: flex-start; gap: 10px; padding: 9px 4px; border-bottom: 1px solid #f1ece5; } .brow > .i { margin-top: 3px; color: var(--accent); }
   .bmain { flex: 1; min-width: 0; } .btitle { font-weight: 600; color: var(--ink); text-decoration: none; } a.btitle:hover { text-decoration: underline; color: var(--accent); }
   .bmain small { display: block; color: var(--muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -238,7 +240,7 @@
     <div class="box">
       <p class="print-title" id="info-ptitle"></p>
       <div class="bar"><b id="info-title"></b><span class="sp"></span><span class="saved" id="info-saved"></span>
-        <button id="info-table">전체 표</button><button id="info-copy" title="전체 표를 엑셀에 붙여 넣을 수 있게 복사">복사</button><button id="info-print">출력</button></div>
+        <button id="info-table">전체 표</button><button id="info-xl" title="지금 명단과 적어 둔 정보가 들어간 엑셀 양식">엑셀 양식 받기</button><button id="info-up" title="엑셀 양식에 채워서 한꺼번에 올리기">엑셀로 올리기</button><input type="file" id="info-file" accept=".xlsx,.xls,.csv" hidden><button id="info-copy" title="전체 표를 엑셀에 붙여 넣을 수 있게 복사">복사</button><button id="info-print">출력</button></div>
       <div class="scroll" id="info-form"></div>
     </div>
   </section>
@@ -248,7 +250,7 @@
       <div class="bar"><button id="att-prev" aria-label="지난달">◀</button><b id="att-title"></b><button id="att-next" aria-label="다음 달">▶</button><button id="att-now">이번 달</button><span class="sp"></span>
         <span class="att-legend"><i>결</i>결석 <i>지</i>지각 <i>조</i>조퇴 <i>과</i>결과 · <i style="color:#1c7ed6">질병</i><i style="color:#e03131">미인정</i><i style="color:#868e96">기타</i></span>
         <button id="att-copy" title="이달 출결을 엑셀에 붙여 넣을 수 있게 복사">복사</button><button id="att-print">출력</button></div>
-      <div class="scroll"><table class="att" id="att"></table></div>
+      <div class="scroll" id="att-wrap"><table class="att" id="att"></table></div>
     </div>
   </section>
   <section class="pane" id="p-box" hidden>
@@ -264,7 +266,7 @@
 // 저장: localStorage "journal" = { events: [{ id, date, time, text, done }], recs: [{ id, date, ps: [학생], kind, text, at }],
 //   counsels: [{ id, date, time, ps, target(학생·학부모·기타), way(대면·전화·문자·온라인), topic, text, next(후속 조치), at }], notes: { "YYYY-MM-DD": 글 } }
 //   info: { 학생: { birth, phone, addr, g1rel, g1name, g1phone, g2rel, g2name, g2phone, memo } }, att: { 날짜: { 학생: { t(결석·지각·조퇴·결과), r(질병·미인정·기타), m } } },
-//   box: [{ id, type(link·memo), title, url, text, tag, at }]
+//   box: [{ id, type(link·memo), title, url, text, tag(폴더), at }], boxFolders: [폴더 이름]
 // 보드와 같은 저장소라 보드에서 로그인해 두면 서버에도 올라감 (보드가 storage 이벤트로 알아채고, 꺼져 있으면 sync-dirty로 다음에)
 const $ = id => document.getElementById(id);
 const el = (tag, attrs = {}, ...kids) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) k.startsWith("on") ? e[k] = v : e.setAttribute(k, v); e.append(...kids.flat().filter(x => x != null && x !== false)); return e; };
@@ -949,6 +951,44 @@ function infoDraw() {
 $("info-table").onclick = () => { infoAll = !infoAll; infoDraw(); };
 const tsv = rows => rows.map(r => r.map(c => String(c ?? "").replace(/[\t\n]/g, " ")).join("\t")).join("\n"); // 엑셀에 붙여 넣기
 $("info-copy").onclick = () => copyRows($("info-copy"), [tsv([INFO_COLS.map(c => c[0]), ...people().map(p => INFO_COLS.map(c => c[1](p)))])]);
+// 엑셀: 필요할 때만 SheetJS를 불러옴 (파일은 이 컴퓨터 안에서만 읽고 만듦)
+const INFO_XL = [["번호"], ["이름"], ["생년월일", "birth"], ["학생 연락처", "phone"], ["주소", "addr"], ["보호자1 관계", "g1rel"], ["보호자1 이름", "g1name"], ["보호자1 연락처", "g1phone"],
+  ["보호자2 관계", "g2rel"], ["보호자2 이름", "g2name"], ["보호자2 연락처", "g2phone"], ["특이사항", "memo"]];
+async function xlsxLib() {
+  if (window.XLSX) return window.XLSX;
+  await new Promise((res, rej) => document.head.append(el("script", { src: "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js", onload: res, onerror: rej })));
+  return window.XLSX;
+}
+$("info-xl").onclick = async () => {
+  try {
+    const X = await xlsxLib(), aoa = [INFO_XL.map(c => c[0]), ...people().map(p => INFO_XL.map((c, i) => i === 0 ? +numOf(p) || "" : i === 1 ? nameOf(p) : iv(p)[c[1]] || ""))];
+    const ws = X.utils.aoa_to_sheet(aoa), wb = X.utils.book_new();
+    ws["!cols"] = INFO_XL.map((c, i) => ({ wch: i === 0 ? 6 : i === 11 ? 30 : i === 4 ? 28 : 14 }));
+    X.utils.book_append_sheet(wb, ws, "학생 정보"); X.writeFile(wb, "학생정보 양식.xlsx");
+  } catch (e) { ask("엑셀 양식을 만들지 못했어요. 인터넷 연결을 확인해 주세요.", "확인", null); }
+};
+$("info-up").onclick = () => $("info-file").click();
+$("info-file").onchange = async () => {
+  const f = $("info-file").files[0]; $("info-file").value = ""; if (!f) return;
+  let rows; try { const X = await xlsxLib(), wb = X.read(await f.arrayBuffer(), { cellDates: true }); rows = X.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, raw: false, dateNF: "yyyy-mm-dd", defval: "" }); }
+  catch (e) { return ask("파일을 읽지 못했어요. '엑셀 양식 받기'로 받은 파일에 채워서 올려 주세요.", "확인", null); }
+  const hi = rows.findIndex(r => r.some(c => String(c).trim() === "이름")); if (hi < 0) return ask("'이름' 칸이 있는 줄을 찾지 못했어요. 엑셀 양식을 받아 거기에 채워 주세요.", "확인", null);
+  const head = rows[hi].map(c => String(c).replace(/\s/g, "")), col = name => head.indexOf(name.replace(/\s/g, ""));
+  const ppl = people(), info = J.info ||= {};
+  const date = v => { const d = String(v).trim().replace(/[.\/년월]\s*/g, "-").replace(/일$/, "").replace(/-+$/, ""); const m = d.match(/^(\d{4})-?(\d{1,2})-?(\d{1,2})$/) || d.match(/^(\d{4})(\d{2})(\d{2})$/); return m ? `${m[1]}-${m[2].padStart(2, "0")}-${m[3].padStart(2, "0")}` : d; };
+  const tel = v => { const t = String(v).trim(); return /^1\d{8,9}$/.test(t) ? "0" + t : t; }; // 엑셀이 앞의 0을 지운 번호
+  let done = 0, skip = [];
+  for (const r of rows.slice(hi + 1)) {
+    const num = String(r[col("번호")] ?? "").trim(), nm = String(r[col("이름")] ?? "").trim(); if (!num && !nm) continue;
+    const p = ppl.find(x => num && numOf(x) === String(parseInt(num, 10))) || ppl.find(x => nm && nameOf(x) === nm);
+    if (!p) { skip.push(nm || num + "번"); continue; }
+    const v = info[p] ||= {};
+    for (const [h, k] of INFO_XL.slice(2)) { const i = col(h); if (i < 0) continue; const c = String(r[i] ?? "").trim(); if (!c) continue; v[k] = k === "birth" ? date(c) : /phone/.test(k) ? tel(c) : c; }
+    done++;
+  }
+  store(); infoDraw();
+  ask(`${done}명의 정보를 채웠어요.` + (skip.length ? `\n명단에 없어서 건너뛴 줄: ${skip.slice(0, 8).join(", ")}${skip.length > 8 ? " 외" : ""}` : "") + "\n(빈 칸은 원래 적어 둔 것을 그대로 둬요)", "확인", null);
+};
 $("info-print").onclick = () => { if (!infoAll) { infoAll = true; infoDraw(); } setTimeout(print, 50); };
 
 // ── 출결: 달마다 표 (평일만, 공휴일·재량휴업일 빼고). 칸을 누르면 결석·지각·조퇴·결과 + 질병·미인정·기타
@@ -971,17 +1011,37 @@ function attDraw() {
   $("att-title").textContent = `${attMonth.getFullYear()}년 ${attMonth.getMonth() + 1}월 출결`;
   $("att-ptitle").textContent = $("att-title").textContent;
   if (!people().length) return $("att").replaceChildren(el("tr", {}, el("td", { class: "empty" }, "보드 ⚙ 설정 → 명단에 학생을 넣어 주세요.")));
+  const cols = el("colgroup", {}, el("col", { class: "n" }), el("col", { class: "nm" }), ...days.map(() => el("col")), ...ATT_T.map(() => el("col", { class: "sum" })));
   const head = el("tr", {}, el("th", { class: "n" }, "번호"), el("th", { class: "nm" }, "이름"),
     ...days.map(s => el("th", { class: s === t ? "today" : "" }, String(+s.slice(8)), el("small", {}, "일월화수목금토"[new Date(s + "T12:00").getDay()]))), ...ATT_T.map(k => el("th", { class: "sum" }, k)));
-  $("att").replaceChildren(head, ...attRows().map(([p, cnt]) => el("tr", {}, el("td", { class: "n" }, numOf(p)), el("td", { class: "nm" }, nameOf(p)),
+  $("att").replaceChildren(cols, head, ...attRows().map(([p, cnt]) => el("tr", {}, el("td", { class: "n" }, numOf(p)), el("td", { class: "nm" }, nameOf(p)),
     ...days.map(s => { const a = A[s]?.[p]; return el("td", { class: "c" + (s === t ? " today" : "") + (a ? " on" : ""), title: a ? `${dayName(s)} ${a.r}${a.t}${a.m ? " · " + a.m : ""}` : `${dayName(s)} 출석 (누르면 결석·지각…)`, style: a ? `color:${attColor(a.r)}` : "", onclick: ev => attForm(s, p, ev.currentTarget) }, a ? ATT_SYM[a.t] : ""); }),
     ...ATT_T.map(k => el("td", { class: "sum" }, cnt[k] ? String(cnt[k]) : "")))));
+  attFit();
 }
-function attForm(s, p, anchor) {
+function attFit() { // 창 크기에 맞춰 줄 높이·글씨 크기
+  const w = $("att-wrap"), tb = $("att"), n = people().length + 1, days = attDays().length || 20;
+  if (!w.clientHeight) return;
+  const rh = Math.max(22, Math.min(56, Math.floor((w.clientHeight - 4) / (n + .6))));
+  const colW = (w.clientWidth - 0) / (days + 2.6 + 6.5 * 0 + ATT_T.length * 1.1 + 4);
+  const f = Math.max(11, Math.min(22, rh * .5, colW * .55));
+  tb.style.setProperty("--rh", rh + "px"); tb.style.setProperty("--af", f + "px");
+  tb.style.setProperty("--nw", Math.round(f * 2.2) + "px"); tb.style.setProperty("--mw", Math.round(f * 5.5 + 20) + "px"); tb.style.setProperty("--sw", Math.round(f * 2.6) + "px");
+}
+new ResizeObserver(() => { if (tab === "att") attFit(); }).observe($("att-wrap"));
+function attSpan(a, b) { // a~b 사이 학교 가는 날 (주말·공휴일·재량휴업일 빼고)
+  const out = []; for (let d = a; d <= b; d = addDays(d, 1)) { const wd = new Date(d + "T12:00").getDay(); if (wd > 0 && wd < 6 && !holiName(d) && !offOf(d)) out.push(d); if (out.length > 120) break; }
+  return out;
+}
+function attForm(s, p, anchor) { // 하루 또는 여러 날 (~까지)
   const A = J.att ||= {}, cur = A[s]?.[p];
   const tc = chips(ATT_T, cur?.t || "결석"), rc = chips(ATT_R.map(x => x[0]), cur?.r || "질병", attColor), memo = el("input", { type: "text", value: cur?.m || "", placeholder: "사유 (예: 감기, 체험학습)" });
-  const close = pop(anchor, `${nameOf(p)} · ${dayName(s)}`, "att", [tc.box, rc.box, memo], () => { (A[s] ||= {})[p] = { t: tc.get(), r: rc.get(), m: memo.value.trim() }; store(); },
-    { cancel: "취소", foot: cur ? el("button", { type: "button", class: "danger", onclick: () => { delete A[s][p]; if (!Object.keys(A[s]).length) delete A[s]; store(); close(); } }, "출석으로") : null });
+  const until = el("input", { type: "date", value: s, min: s, title: "여러 날이면 끝나는 날" });
+  const span = () => attSpan(s, until.value > s ? until.value : s);
+  const close = pop(anchor, `${nameOf(p)} · ${dayName(s)}`, "att", [tc.box, rc.box, memo, el("div", { class: "row" }, el("span", { class: "tip" }, "여러 날이면"), until, el("span", { class: "tip" }, "까지 (주말·공휴일 빼고)"))], () => {
+    for (const d of span()) (A[d] ||= {})[p] = { t: tc.get(), r: rc.get(), m: memo.value.trim() };
+    store();
+  }, { cancel: "취소", foot: cur ? el("button", { type: "button", class: "danger", onclick: () => { for (const d of span()) if (A[d]) { delete A[d][p]; if (!Object.keys(A[d]).length) delete A[d]; } store(); close(); } }, "출석으로") : null });
 }
 $("att-prev").onclick = () => { attMonth.setMonth(attMonth.getMonth() - 1); attDraw(); };
 $("att-next").onclick = () => { attMonth.setMonth(attMonth.getMonth() + 1); attDraw(); };
@@ -989,33 +1049,77 @@ $("att-now").onclick = () => { attMonth = new Date(); attMonth.setDate(1); attDr
 $("att-copy").onclick = () => copyRows($("att-copy"), [tsv([["번호", "이름", ...ATT_T, "자세히"], ...attRows().map(([p, cnt, det]) => [numOf(p), nameOf(p), ...ATT_T.map(k => cnt[k] || ""), det.join(", ")])])]);
 $("att-print").onclick = () => print();
 
-// ── 보관함: 자주 쓰는 링크·메모 (수업자료, 생기부…). 분류로 나눠 보고 찾기·복사
+// ── 보관함: 자주 쓰는 링크·메모. 폴더로 나눠 보고, 줄을 끌어서 순서를 바꾸거나 위의 폴더에 놓아 옮김
 const BOX_TAGS = ["수업자료", "생기부", "업무", "기타"];
-let boxTag = "";
-const boxTags = () => [...new Set([...BOX_TAGS, ...(J.box || []).map(x => x.tag).filter(Boolean)])];
+let boxTag = "", boxDragged = false;
+const boxTags = () => [...new Set([...(J.boxFolders || BOX_TAGS), ...(J.box || []).map(x => x.tag).filter(Boolean)])];
 function boxDraw() {
   const B = J.box ||= [], q = $("box-q").value.trim();
-  $("box-tags").replaceChildren(...["", ...boxTags()].map(t => el("button", { type: "button", class: boxTag === t ? "on" : "", onclick: () => { boxTag = t; boxDraw(); } }, t || "전체", el("small", {}, " " + B.filter(x => !t || x.tag === t).length))));
+  $("box-tags").replaceChildren(...["", ...boxTags()].map(t => el("button", { type: "button", class: boxTag === t ? "on" : "", "data-tag": t, title: t ? "누르면 이 폴더만 · 줄을 끌어 여기에 놓으면 이 폴더로 · 더블클릭으로 이름 바꾸기" : "",
+    onclick: () => { boxTag = t; boxDraw(); }, ondblclick: ev => t && boxFolderEdit(t, ev.currentTarget) }, t || "전체", el("small", {}, " " + B.filter(x => !t || x.tag === t).length))),
+    el("button", { type: "button", class: "addf", title: "새 폴더", onclick: ev => boxFolderEdit("", ev.currentTarget) }, "+ 폴더"));
   const rows = B.filter(x => (!boxTag || x.tag === boxTag) && (!q || [x.title, x.url, x.text].some(v => v?.includes(q))));
   $("box-list").replaceChildren(...(rows.length ? rows.map(boxRow) : [el("p", { class: "empty" }, B.length ? "찾는 게 없어요." : "자주 쓰는 링크(수업자료, 생기부·나이스 관련 사이트)나 메모를 넣어 두세요. 위의 '링크' · '메모'를 눌러요.")]));
+  boxSortable($("box-list"));
+}
+function boxFolderEdit(old, anchor) { // 새 폴더 / 이름 바꾸기 / 지우기 (안의 것은 '기타'로)
+  const x = el("input", { type: "text", value: old, placeholder: "폴더 이름" });
+  const del = old ? el("button", { type: "button", class: "danger", onclick: () => { J.boxFolders = boxTags().filter(t => t !== old); (J.box || []).forEach(b => { if (b.tag === old) b.tag = "기타"; }); if (boxTag === old) boxTag = ""; store(); document.querySelector(".pop-wrap")?.remove(); boxDraw(); } }, "폴더 지우기") : null;
+  pop(anchor, old ? "폴더 이름 바꾸기" : "새 폴더", "box", [x], () => {
+    const v = x.value.trim(); if (!v) return false;
+    const L = boxTags(); J.boxFolders = old ? L.map(t => t === old ? v : t) : [...L.filter(t => t !== v), v];
+    if (old) (J.box || []).forEach(b => { if (b.tag === old) b.tag = v; });
+    boxTag = v; store();
+  }, { cancel: "취소", foot: del });
 }
 function boxRow(x) {
   const copy = el("button", { class: "x", title: x.type === "link" ? "주소 복사" : "메모 복사", onclick: async () => { try { await navigator.clipboard.writeText(x.type === "link" ? x.url : x.text); copy.textContent = "✓"; setTimeout(() => copy.textContent = "⧉", 1200); } catch (e) {} } }, "⧉");
-  const title = x.type === "link" ? el("a", { href: x.url, target: "_blank", rel: "noopener", class: "btitle", title: "새 창으로 열기" }, x.title || x.url) : el("b", { class: "btitle" }, x.title || (x.text || "").split("\n")[0]);
-  return el("div", { class: "brow" }, ico(x.type === "link" ? "link" : "note"), el("div", { class: "bmain", ondblclick: ev => { if (!ev.target.closest("a")) boxForm(x.type, x, ev.currentTarget); } }, title, x.type === "link" ? el("small", {}, x.url) : x.text && x.title ? el("div", { class: "btext" }, x.text) : null),
+  const title = x.type === "link" ? el("a", { href: x.url, target: "_blank", rel: "noopener", class: "btitle", draggable: "false", title: "새 창으로 열기", onclick: e => { if (boxDragged) e.preventDefault(); } }, x.title || x.url) : el("b", { class: "btitle" }, x.title || (x.text || "").split("\n")[0]);
+  return el("div", { class: "brow", "data-id": x.id, title: "끌어서 순서 바꾸기 · 위의 폴더에 놓으면 옮겨져요" }, ico(x.type === "link" ? "link" : "note"), el("div", { class: "bmain", ondblclick: ev => { if (!ev.target.closest("a")) boxForm(x.type, x, ev.currentTarget); } }, title, x.type === "link" ? el("small", {}, x.url) : x.text && x.title ? el("div", { class: "btext" }, x.text) : null),
     x.tag ? el("span", { class: "btag" }, x.tag) : null, copy, el("button", { class: "x", title: "고치기", onclick: ev => boxForm(x.type, x, ev.currentTarget) }, "✎"),
     el("button", { class: "x", title: "지우기", onclick: async ev => { if (await ask(`'${x.title || "이것"}'을(를) 지울까요?`, "지우기", "취소", ev.currentTarget)) { J.box = J.box.filter(v => v !== x); store(); boxDraw(); } } }, "✕"));
+}
+function boxSortable(list) { // 줄 아무 데나 잡고 끌기: 목록 안에서는 순서, 위의 폴더 위에 놓으면 그 폴더로
+  list.querySelectorAll(".brow").forEach(row => row.onpointerdown = p => {
+    if (p.button || p.target.closest("button, input")) return;
+    const sx = p.clientX, sy = p.clientY, item = J.box.find(v => v.id === row.dataset.id), gh = el("div", { class: "ghost", hidden: "" }, item?.title || "");
+    let on = false, to = null;
+    const mv = ev => {
+      if (!on && Math.hypot(ev.clientX - sx, ev.clientY - sy) < 6) return;
+      if (!on) { on = true; row.classList.add("moving"); document.body.append(gh); getSelection().removeAllRanges(); }
+      const f = document.elementsFromPoint(ev.clientX, ev.clientY).find(n => n.dataset?.tag !== undefined && n.closest?.("#box-tags"));
+      to = f && f.dataset.tag ? f.dataset.tag : null;
+      document.querySelectorAll("#box-tags button").forEach(b => b.classList.toggle("drop", b === f && !!to));
+      gh.hidden = !to; gh.style.left = ev.clientX + 12 + "px"; gh.style.top = ev.clientY + 8 + "px";
+      if (to) return;
+      const rows = [...list.querySelectorAll(".brow")].filter(r => r !== row), over = rows.find(r => { const b = r.getBoundingClientRect(); return ev.clientY < b.top + b.height / 2; });
+      if (over) over.before(row); else rows.at(-1)?.after(row);
+    };
+    const up = () => {
+      removeEventListener("pointermove", mv); removeEventListener("pointerup", up); gh.remove();
+      document.querySelectorAll("#box-tags button.drop").forEach(b => b.classList.remove("drop"));
+      if (!on) return;
+      boxDragged = true; setTimeout(() => boxDragged = false, 50);
+      if (to && item) item.tag = to;
+      else { // 보이는 줄의 새 순서를 전체 목록의 같은 자리들에 그대로
+        const ids = [...list.querySelectorAll(".brow")].map(r => r.dataset.id), slots = J.box.map((v, i) => ids.includes(v.id) ? i : -1).filter(i => i >= 0), byId = Object.fromEntries(J.box.map(v => [v.id, v]));
+        slots.forEach((slot, k) => J.box[slot] = byId[ids[k]]);
+      }
+      store(); boxDraw();
+    };
+    addEventListener("pointermove", mv); addEventListener("pointerup", up);
+  });
 }
 function boxForm(type, x, anchor) {
   const link = type === "link", t = el("input", { type: "text", value: x?.title || "", placeholder: link ? "이름 (예: 에듀넷 티-클리어, 학교 홈페이지)" : "제목" });
   const u = link ? el("input", { type: "text", value: x?.url || "", placeholder: "주소 (https://…)" }) : null, tx = link ? null : el("textarea", { rows: 7, placeholder: "메모 (예: 생기부 문구, 자주 쓰는 안내문)" });
   if (tx) tx.value = x?.text || "";
-  const tg = el("input", { type: "text", value: x?.tag ?? (boxTag || BOX_TAGS[0]), list: "box-taglist", placeholder: "분류" });
-  pop(anchor, x ? "고치기" : link ? "링크 넣기" : "메모 넣기", link ? "link" : "note", [t, u, tx, el("div", { class: "row" }, el("span", { class: "tip" }, "분류"), tg), el("datalist", { id: "box-taglist" }, ...boxTags().map(v => el("option", { value: v })))], () => {
+  const tg = chips(boxTags(), x?.tag || boxTag || boxTags()[0]); // 폴더: 모두 보이게
+  pop(anchor, x ? "고치기" : link ? "링크 넣기" : "메모 넣기", link ? "link" : "note", [t, u, tx, el("span", { class: "tip" }, "폴더"), tg.box], () => {
     let url = u?.value.trim() || "";
     if (link && !url) return false; if (url && !/^[a-z][a-z0-9+.-]*:/i.test(url)) url = "https://" + url;
     if (!link && !tx.value.trim() && !t.value.trim()) return false;
-    const v = { title: t.value.trim(), tag: tg.value.trim(), ...(link ? { url } : { text: tx.value }) };
+    const v = { title: t.value.trim(), tag: tg.get(), ...(link ? { url } : { text: tx.value }) };
     if (x) Object.assign(x, v); else (J.box ||= []).unshift({ id: uid(), type, ...v, at: Date.now() });
     store();
   }, { cancel: "취소" });
