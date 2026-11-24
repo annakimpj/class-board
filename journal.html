@@ -43,7 +43,7 @@
   .day { position: relative; border-radius: 10px; background: #faf8f5; padding: 4px 6px; cursor: pointer; overflow: hidden; border: 1.5px solid transparent; display: flex; flex-direction: column; gap: 2px; min-height: 0; }
   .day:hover { border-color: var(--line); } .day.out { opacity: .45; } .day.sel { border-color: var(--accent); background: var(--soft); }
   .day .top { display: flex; align-items: center; gap: 4px; } .day .n { font-size: 14px; }
-  .day.sun .n { color: #e03131; } .day.sat .n { color: #1c7ed6; }
+  .day.sun .n { color: #e03131; } .day .holi { font-size: 11px; color: #e03131; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; } .day.sat .n { color: #1c7ed6; }
   .day.today .n { display: inline-grid; place-items: center; min-width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: #fff; }
   .day .marks { display: flex; align-items: center; gap: 3px; flex-wrap: wrap; margin-left: 2px; }
   .day .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
@@ -425,6 +425,18 @@ function chipDrag(chip, e) { // 달력의 일정을 다른 날로 끌기 (조금
     addEventListener("pointermove", mv); addEventListener("pointerup", up);
   };
 }
+// 공휴일 (대체공휴일·선거일 포함). shortcut: 해마다 손으로 넣음, 2028년부터는 여기에 더하기
+const HOLI = {
+  "2025-01-01": "신정", "2025-01-27": "임시공휴일", "2025-01-28": "설날 연휴", "2025-01-29": "설날", "2025-01-30": "설날 연휴", "2025-03-01": "삼일절", "2025-03-03": "대체공휴일",
+  "2025-05-05": "어린이날·부처님오신날", "2025-05-06": "대체공휴일", "2025-06-03": "대통령 선거", "2025-06-06": "현충일", "2025-08-15": "광복절", "2025-10-03": "개천절",
+  "2025-10-05": "추석 연휴", "2025-10-06": "추석", "2025-10-07": "추석 연휴", "2025-10-08": "대체공휴일", "2025-10-09": "한글날", "2025-12-25": "성탄절",
+  "2026-01-01": "신정", "2026-02-16": "설날 연휴", "2026-02-17": "설날", "2026-02-18": "설날 연휴", "2026-03-01": "삼일절", "2026-03-02": "대체공휴일", "2026-05-05": "어린이날",
+  "2026-05-24": "부처님오신날", "2026-05-25": "대체공휴일", "2026-06-03": "지방선거", "2026-06-06": "현충일", "2026-08-15": "광복절", "2026-08-17": "대체공휴일",
+  "2026-09-24": "추석 연휴", "2026-09-25": "추석", "2026-09-26": "추석 연휴", "2026-10-03": "개천절", "2026-10-05": "대체공휴일", "2026-10-09": "한글날", "2026-12-25": "성탄절",
+  "2027-01-01": "신정", "2027-02-06": "설날", "2027-02-07": "설날 연휴", "2027-02-08": "설날 연휴", "2027-02-09": "대체공휴일", "2027-03-01": "삼일절", "2027-05-05": "어린이날",
+  "2027-05-13": "부처님오신날", "2027-06-06": "현충일", "2027-08-15": "광복절", "2027-08-16": "대체공휴일", "2027-09-14": "추석 연휴", "2027-09-15": "추석", "2027-09-16": "추석 연휴",
+  "2027-10-03": "개천절", "2027-10-04": "대체공휴일", "2027-10-09": "한글날", "2027-10-11": "대체공휴일", "2027-12-25": "성탄절", "2027-12-27": "대체공휴일",
+};
 function calDraw() {
   const y = month.getFullYear(), m = month.getMonth(), start = new Date(y, m, 1 - new Date(y, m, 1).getDay()), t = today();
   $("cal-title").textContent = `${y}년 ${m + 1}월`;
@@ -436,8 +448,8 @@ function calDraw() {
     const marks = el("span", { class: "marks" }, ...recs.slice(0, 8).map(r => el("i", { class: "dot", style: `background:${kindColor(r.kind)}`, title: `${r.kind} · ${names(r.ps)}` })),
       recs.length > 8 ? el("small", {}, "+") : null, nc ? mk("chat", "cs", `상담 ${nc}`) : null,
       wrote ? mk("note", "nt on", "일지 씀") : null);
-    cells.push(el("div", { class: `day${d.getMonth() !== m ? " out" : ""}${s === t ? " today" : ""}${s === pick ? " sel" : ""}${wd === 0 ? " sun" : wd === 6 ? " sat" : ""}`, "data-d": s, onclick: () => choose(s) },
-      el("div", { class: "top" }, el("span", { class: "n" }, String(d.getDate())), marks),
+    cells.push(el("div", { class: `day${d.getMonth() !== m ? " out" : ""}${s === t ? " today" : ""}${s === pick ? " sel" : ""}${wd === 0 || HOLI[s] ? " sun" : wd === 6 ? " sat" : ""}`, "data-d": s, onclick: () => choose(s) },
+      el("div", { class: "top" }, el("span", { class: "n", title: HOLI[s] || "" }, String(d.getDate())), HOLI[s] ? el("small", { class: "holi" }, HOLI[s]) : null, marks),
       el("div", { class: "evs" }, ...evs.map(e => { const c = el("span", { class: "ev" + (e.done ? " done" : ""), title: `${e.time ? e.time + " " : ""}${e.text} (누르면 줄 긋기 · 끌면 다른 날로)`, onclick: ev => { ev.stopPropagation(); if (!dragged) toggle(e); } }, (e.time ? e.time + " " : "") + e.text); chipDrag(c, e); return c; })), plus));
   }
   $("cal").replaceChildren(...cells);
