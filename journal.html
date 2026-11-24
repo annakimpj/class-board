@@ -37,11 +37,16 @@
   .ddl { display: grid; gap: 6px; } .ddl .row { display: flex; gap: 6px; align-items: center; } .ddl .row > * { min-width: 0; } .ddl .row .dbox { flex: none; width: 140px; } .ddl .dtext.bad { border-color: #e03131; color: #e03131; }
   .pop .tip { margin: 0 0 4px; font-size: 12px; color: var(--muted); line-height: 1.5; } .ddl .grow { flex: 1; width: 0; } .ddl .row .x { flex: none; }
   header .jset { border: 0; background: none; padding: 5px; border-radius: 8px; color: var(--muted); display: grid; place-items: center; margin-left: 4px; } header .jset:hover { background: var(--soft); color: var(--accent); }
+  .setpop { width: 400px; } .stabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+  .stabs button { border: 0; background: none; padding: 5px 12px; border-radius: 999px; font-size: 14px; color: var(--muted); } .stabs button.on { background: var(--soft); color: var(--accent); font-weight: 600; }
+  .spane { display: grid; gap: 10px; min-height: 160px; align-content: start; }
+  .sgroup { display: grid; gap: 8px; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; } .sgroup h4 { margin: 0; font-size: 13px; color: var(--ink); }
+  .sgroup .tip { margin: 0; }
   .pop .chk { display: flex; align-items: center; gap: 6px; font-size: 14px; } .pop .num { width: 64px; } .pop .row .sp { flex: 1; }
   .ddl .sw { width: 30px; height: 28px; padding: 0; border: 0; background: none; flex: none; cursor: pointer; }
   .ring .btns.col { flex-direction: column; align-items: stretch; } .ring .btns .danger { color: #e03131; }
-  .pop .wdays { display: flex; gap: 2px; } .pop .wdays button { width: 28px; height: 26px; padding: 0; font-size: 12px; } .pop .wdays button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .pop .moderow.col { display: grid; gap: 6px; } .pop .modes .sp { flex: 1; } .pop .modes .chips { flex-wrap: wrap; }
+  .pop .wdays { display: flex; gap: 2px; } .pop .wdays button { width: 28px; height: 26px; padding: 0; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; } .pop .wdays button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .pop .moderow.col { display: grid; gap: 6px; } .pop .modes .chips { flex: 1; min-width: 0; flex-wrap: wrap; } /* 종류는 왼쪽, 연속·반복은 오른쪽 */
   header .sp { flex: 1; } header .today { color: var(--muted); font-size: 14px; }
   main { min-height: 0; overflow: hidden; padding: 12px 14px; }
   .pane { height: 100%; display: grid; gap: 12px; min-height: 0; }
@@ -387,7 +392,8 @@ function evForm(date, e, anchor) { // 일정: 위에 그날 일정, 아래 [입�
   const saveB = el("button", { class: "main" }, e ? "저장" : "추가");
   const close = pop(anchor, e ? "일정 고치기" : `${dayName(date)} 일정`, "cal", [e ? null : list,
     el("div", { class: "row addrow" }, el("span", { class: "inbox" }, x, clock, tp), bell, saveB),
-    el("div", { class: "row modes" }, catC.box), el("div", { class: "row modes" }, spanB, repB), spanRow, repRow], () => {
+    el("div", { class: "row modes" }, catC.box, spanB, repB), spanRow, repRow,
+    e ? el("div", { class: "btns" }, el("button", { type: "button", class: "danger", onclick: async ev => { if (await evDel(e, date, ev.currentTarget)) close(); } }, "지우기")) : null], () => {
     const v = x.value.trim(); if (!v) return false;
     const { time, text } = parseTime(v);
     const clean = o => { for (const k in o) if (o[k] === undefined) delete o[k]; return o; };
@@ -478,20 +484,24 @@ function addMenu(btn, date) { // 칸의 +: 무엇을 쓸지
 const add = (k, date, anchor) => k === "note" ? noteForm(date, anchor) : ({ ev: evForm, rec: recForm, cs: csForm })[k](date, null, anchor);
 function choose(s) { pick = s; document.querySelectorAll(".day").forEach(d => d.classList.toggle("sel", d.dataset.d === s)); sideDraw(); } // 다시 그리지 않고 고르기만
 const tap = (one, two) => { let t = 0; return ev => { if (dragged || ev.target.closest("button")) return; ev.stopPropagation(); const a = ev.currentTarget; if (t) { clearTimeout(t); t = 0; two(a); } else t = setTimeout(() => { t = 0; one(a); }, 260); }; };
+async function evDel(e, day, btn) { // 반복 일정은 이 일정만 / 앞으로 / 모두
+  if (e.rep) {
+    const how = await askPick(`'${e.text}' 반복 일정을 지울까요?`, [["이 일정만", "one"], ["이 날부터 앞으로의 일정", "next"], ["모든 일정", "all"]], btn);
+    if (how === "one") (e.skip ||= []).push(day);
+    else if (how === "next" && day > e.date) e.until = addDays(day, -1);
+    else if (how) J.events = J.events.filter(x => x !== e);
+    if (how) store();
+    return !!how;
+  }
+  if (!await ask(e.end ? `'${e.text}' 연속 일정을 지울까요?` : `'${e.text}' 일정을 지울까요?`, "지우기", "취소", btn)) return false;
+  J.events = J.events.filter(x => x !== e); store(); return true;
+}
 function itemEv(e, refresh = calDraw, day = e.date, icon = false) {
   const bell = e.time ? bellBtn(() => e.alarm || "", v => { e.alarm = v; store(); }) : null; // 시간이 있는 일정만 (종은 그 자리에서 바뀜)
   return el("div", { class: "item" + (isDone(e, day) ? " done" : ""), "data-id": e.id, "data-day": day, title: "누르면 줄 긋기 · 더블클릭으로 수정 · 끌면 옮기기",
     onclick: tap(() => { setDone(e, day); refresh(); }, a => evForm(day, e, a)) }, el("span", { class: "grab" }, "⠿"), el("span", { class: "t" }, e.time || ""),
     el("span", { class: "x2" }, icon ? evIcon(e) : null, e.text), bell,
-    el("button", { type: "button", class: "x", title: "지우기", onclick: async ev => {
-      if (e.rep) {
-        const how = await askPick(`'${e.text}' 반복 일정을 지울까요?`, [["이 일정만", "one"], ["이 날부터 앞으로의 일정", "next"], ["모든 일정", "all"]], ev.currentTarget);
-        if (how === "one") (e.skip ||= []).push(day);
-        else if (how === "next" && day > e.date) e.until = addDays(day, -1);
-        else if (how) J.events = J.events.filter(x => x !== e);
-        if (how) { store(); refresh(); }
-      } else if (await ask(e.end ? `'${e.text}' 연속 일정을 지울까요?` : `'${e.text}' 일정을 지울까요?`, "지우기", "취소", ev.currentTarget)) { J.events = J.events.filter(x => x !== e); store(); refresh(); }
-    } }, "✕"));
+    el("button", { type: "button", class: "x", title: "지우기", onclick: async ev => { if (await evDel(e, day, ev.currentTarget)) refresh(); } }, "✕"));
 }
 const dayAt = (x, y) => document.elementsFromPoint(x, y).find(n => n.classList?.contains("day"))?.dataset.d; // 그 자리의 달력 날짜
 const dropMark = d => document.querySelectorAll(".day").forEach(c => c.classList.toggle("drop", !!d && c.dataset.d === d));
@@ -629,16 +639,26 @@ function jrSettings(anchor) {
     const a = el("a", { href: URL.createObjectURL(new Blob([JSON.stringify({ app: "class-board-journal", v: 1, at: Date.now(), journal: J })], { type: "application/json" })), download: `교사일지 백업 ${today()}.json` });
     document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
   };
-  const close = pop(anchor, "설정", "gear", [
-    el("p", { class: "sub" }, "달력"), chk("mon", "월요일부터 보기"),
-    el("p", { class: "sub" }, "일정 종류 (달력 색)"), cats, el("p", { class: "sub" }, "학생 기록 종류"), kds,
-    el("p", { class: "sub" }, "상담 대상 · 방법 (쉼표로 나눠 써요)"), words(targets, L => J.targets = L, "학생, 학부모, 기타"), words(ways, L => J.ways = L, "대면, 전화, 문자"),
-    el("p", { class: "sub" }, "알람"), el("div", { class: "row" }, el("span", {}, "미리 알림"), amin, el("span", {}, "분 전"), el("span", { class: "sp" }), chk("mute", "소리 끄기")),
-    el("p", { class: "sub" }, "학년도"), el("div", { class: "row" }, el("span", {}, "학년도 시작"), ym, el("span", { class: "tip" }, "학생 기록·상담을 학년도별로 봐요")),
-    el("p", { class: "sub" }, "디데이"), el("button", { type: "button", onclick: () => ddayForm(anchor) }, "디데이 · 재량휴업일 정하기"),
-    el("p", { class: "sub" }, "백업 (다른 컴퓨터로 옮기거나 보관)"), el("div", { class: "row" }, el("button", { type: "button", onclick: backup }, "파일로 내보내기"), el("button", { type: "button", onclick: () => file.click() }, "파일에서 불러오기"), file)],
-    () => {}, { noSave: true });
+  const grp = (title, ...kids) => el("div", { class: "sgroup" }, el("h4", {}, title), ...kids);
+  const panes = {
+    gen: [grp("달력", chk("mon", "월요일부터 보기")),
+      grp("알람", el("div", { class: "row" }, el("span", {}, "미리 알림"), amin, el("span", {}, "분 전"), el("span", { class: "sp" }), chk("mute", "소리 끄기"))),
+      grp("학년도", el("div", { class: "row" }, el("span", {}, "시작하는 달"), ym), el("p", { class: "tip" }, "학생 기록·상담 일지를 학년도별로 봐요.")),
+      grp("디데이", el("button", { type: "button", onclick: () => ddayForm(anchor) }, "디데이 · 재량휴업일 정하기"))],
+    kind: [grp("일정 종류 (달력 색)", cats), grp("학생 기록 종류", kds)],
+    cs: [grp("상담 대상", words(targets, L => J.targets = L, "학생, 학부모, 기타"), el("p", { class: "tip" }, "쉼표(,)로 나눠 써요.")),
+      grp("상담 방법", words(ways, L => J.ways = L, "대면, 전화, 문자"))],
+    bak: [grp("백업", el("p", { class: "tip" }, "일지 전체를 파일로 내보내 보관하거나 다른 컴퓨터에서 불러와요. 읽거나 인쇄하려면 각 탭의 '출력'에서 PDF로 저장해요."),
+      el("div", { class: "row" }, el("button", { type: "button", onclick: backup }, "파일로 내보내기"), el("button", { type: "button", onclick: () => file.click() }, "파일에서 불러오기"), file))],
+  };
+  const body = el("div", { class: "spane" }), tabs = el("div", { class: "stabs" });
+  const show = k => { setTab = k; tabs.querySelectorAll("button").forEach(x => x.classList.toggle("on", x.dataset.k === k)); body.replaceChildren(...panes[k]); };
+  tabs.append(...[["gen", "일반"], ["kind", "종류 · 색"], ["cs", "상담"], ["bak", "백업"]].map(([k, t]) => el("button", { type: "button", "data-k": k, onclick: () => show(k) }, t)));
+  show(setTab);
+  const close = pop(anchor, "설정", "gear", [tabs, body], () => {}, { noSave: true });
+  tabs.closest(".pop").classList.add("setpop");
 }
+let setTab = "gen";
 function ddayForm(anchor) { // 디데이(방학식 등)와 재량휴업일: 쓰는 대로 저장
   J.dday ||= []; J.offs ||= [];
   const dd = el("div", { class: "ddl" }), off = el("div", { class: "ddl" });
