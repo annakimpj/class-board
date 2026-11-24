@@ -27,6 +27,9 @@
   header h1 { margin: 0 14px 0 0; font-size: 18px; display: flex; align-items: center; gap: 6px; }
   header .tab { border: 0; background: none; padding: 7px 14px; border-radius: 999px; font-size: 15px; color: var(--muted); }
   header .tab.on { background: var(--soft); color: var(--accent); font-weight: 600; }
+  header .dday { border: 0; background: none; font-size: 14px; color: var(--muted); padding: 5px 10px; border-radius: 8px; display: flex; gap: 12px; }
+  header .dday:hover { background: var(--soft); } header .dday b { color: var(--accent); font-weight: 700; }
+  .ddl { display: grid; gap: 6px; } .ddl .row { display: flex; gap: 6px; align-items: center; } .ddl .row > * { min-width: 0; } .ddl .row input[type=date] { flex: none; width: 136px; } .ddl .grow { flex: 1; width: 0; } .ddl .row .x { flex: none; }
   header .sp { flex: 1; } header .today { color: var(--muted); font-size: 14px; }
   main { min-height: 0; overflow: hidden; padding: 12px 14px; }
   .pane { height: 100%; display: grid; gap: 12px; min-height: 0; }
@@ -130,7 +133,7 @@
 <header>
   <h1 data-i="book">교사 일지</h1>
   <button class="tab" data-tab="cal" data-i="cal">달력</button><button class="tab" data-tab="rec" data-i="pen">학생 기록</button><button class="tab" data-tab="cs" data-i="chat">상담 일지</button><button class="tab" data-tab="note" data-i="note">일지</button>
-  <span class="sp"></span><span class="today" id="today"></span>
+  <span class="sp"></span><button class="dday" id="dday" title="디데이·재량휴업일 정하기"></button><span class="today" id="today"></span>
 </header>
 <main>
   <section class="pane" id="p-cal" hidden>
@@ -236,7 +239,8 @@ function showTab(t) {
   draw();
 }
 document.querySelectorAll(".tab").forEach(b => b.onclick = () => showTab(b.dataset.tab));
-function draw() { $("today").textContent = new Date().toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric", weekday: "long" }); ({ cal: calDraw, rec: recDraw, cs: csDraw, note: noteDraw })[tab](); }
+$("dday").onclick = e => ddayForm(e.currentTarget);
+function draw() { ddayDraw(); $("today").textContent = new Date().toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric", weekday: "long" }); ({ cal: calDraw, rec: recDraw, cs: csDraw, note: noteDraw })[tab](); }
 
 // ── 작은 팝업 (누른 곳 바로 옆). 바깥을 누르거나 Esc면 닫힘
 function pop(anchor, title, icon, body, onSave, o = {}) {
@@ -425,18 +429,45 @@ function chipDrag(chip, e) { // 달력의 일정을 다른 날로 끌기 (조금
     addEventListener("pointermove", mv); addEventListener("pointerup", up);
   };
 }
-// 공휴일 (대체공휴일·선거일 포함). shortcut: 해마다 손으로 넣음, 2028년부터는 여기에 더하기
-const HOLI = {
-  "2025-01-01": "신정", "2025-01-27": "임시공휴일", "2025-01-28": "설날 연휴", "2025-01-29": "설날", "2025-01-30": "설날 연휴", "2025-03-01": "삼일절", "2025-03-03": "대체공휴일",
-  "2025-05-05": "어린이날·부처님오신날", "2025-05-06": "대체공휴일", "2025-06-03": "대통령 선거", "2025-06-06": "현충일", "2025-08-15": "광복절", "2025-10-03": "개천절",
-  "2025-10-05": "추석 연휴", "2025-10-06": "추석", "2025-10-07": "추석 연휴", "2025-10-08": "대체공휴일", "2025-10-09": "한글날", "2025-12-25": "성탄절",
-  "2026-01-01": "신정", "2026-02-16": "설날 연휴", "2026-02-17": "설날", "2026-02-18": "설날 연휴", "2026-03-01": "삼일절", "2026-03-02": "대체공휴일", "2026-05-05": "어린이날",
-  "2026-05-24": "부처님오신날", "2026-05-25": "대체공휴일", "2026-06-03": "지방선거", "2026-06-06": "현충일", "2026-08-15": "광복절", "2026-08-17": "대체공휴일",
-  "2026-09-24": "추석 연휴", "2026-09-25": "추석", "2026-09-26": "추석 연휴", "2026-10-03": "개천절", "2026-10-05": "대체공휴일", "2026-10-09": "한글날", "2026-12-25": "성탄절",
-  "2027-01-01": "신정", "2027-02-06": "설날", "2027-02-07": "설날 연휴", "2027-02-08": "설날 연휴", "2027-02-09": "대체공휴일", "2027-03-01": "삼일절", "2027-05-05": "어린이날",
-  "2027-05-13": "부처님오신날", "2027-06-06": "현충일", "2027-08-15": "광복절", "2027-08-16": "대체공휴일", "2027-09-14": "추석 연휴", "2027-09-15": "추석", "2027-09-16": "추석 연휴",
-  "2027-10-03": "개천절", "2027-10-04": "대체공휴일", "2027-10-09": "한글날", "2027-10-11": "대체공휴일", "2027-12-25": "성탄절", "2027-12-27": "대체공휴일",
-};
+// 공휴일: Nager.Date(무료, 키 없음)에서 해마다 한 번 받아 이 컴퓨터에 저장 (대체공휴일·선거일·근로자의 날 포함)
+// 날짜가 정해진 공휴일은 따로 넣어 둠: 토요일이어도 빨갛게, 인터넷이 안 돼도 보이게
+const FIXED_HOLI = { "01-01": "신정", "03-01": "삼일절", "05-05": "어린이날", "06-06": "현충일", "08-15": "광복절", "10-03": "개천절", "10-09": "한글날", "12-25": "성탄절" };
+const holiYears = {};
+function holiYear(y) {
+  if (holiYears[y]) return holiYears[y];
+  let m = null; try { m = JSON.parse(localStorage.getItem("holi-" + y)); } catch (e) {}
+  holiYears[y] = m || {};
+  if (!m) fetch(`https://date.nager.at/api/v3/PublicHolidays/${y}/KR`).then(r => r.ok ? r.json() : Promise.reject())
+    .then(list => { const o = {}; for (const x of list) o[x.date] = o[x.date] ? o[x.date] + "·" + x.localName : x.localName; holiYears[y] = o; try { localStorage.setItem("holi-" + y, JSON.stringify(o)); } catch (e) {} draw(); })
+    .catch(() => {}); // 못 받으면 이번엔 날짜가 정해진 공휴일만 (다음에 켤 때 다시)
+  return holiYears[y];
+}
+const offOf = s => (J.offs || []).find(o => o.d === s);
+const holiName = s => offOf(s) ? offOf(s).t || "재량휴업일" : holiYear(+s.slice(0, 4))[s] || FIXED_HOLI[s.slice(5)] || "";
+// 디데이: 방학식 등까지 남은 날과 출근하는 날(오늘 포함, 주말·공휴일·재량휴업일 빼고)
+function workDays(from, to) {
+  let n = 0;
+  for (const d = new Date(from + "T00:00"); iso(d) <= to; d.setDate(d.getDate() + 1)) { const w = d.getDay(); if (w && w < 6 && !holiName(iso(d))) n++; }
+  return n;
+}
+function ddayDraw() {
+  const t = today(), ups = (J.dday || []).filter(x => x.d && x.d >= t).sort((a, b) => a.d.localeCompare(b.d)).slice(0, 2);
+  const left = d => Math.round((new Date(d + "T00:00") - new Date(t + "T00:00")) / 864e5);
+  $("dday").replaceChildren(...(ups.length ? ups.map(x => el("span", { class: "dd" }, el("b", {}, x.t || "디데이"), ` ${left(x.d) ? "D-" + left(x.d) : "D-day"} · 출근 ${workDays(t, x.d)}일`)) : ["디데이 정하기"]));
+}
+function ddayForm(anchor) { // 디데이(방학식 등)와 재량휴업일: 쓰는 대로 저장
+  J.dday ||= []; J.offs ||= [];
+  const dd = el("div", { class: "ddl" }), off = el("div", { class: "ddl" });
+  const row = (list, x, k1, k2, ph, redraw) => el("div", { class: "row" },
+    el("input", { type: "date", value: x[k1] || "", oninput: e => { x[k1] = e.target.value; store(); } }),
+    el("input", { type: "text", class: "grow", value: x[k2] || "", placeholder: ph, oninput: e => { x[k2] = e.target.value; store(); } }),
+    el("button", { type: "button", class: "x", title: "지우기", onclick: () => { list.splice(list.indexOf(x), 1); store(); redraw(); } }, "✕"));
+  const drawDd = () => dd.replaceChildren(...J.dday.map(x => row(J.dday, x, "d", "t", "예: 여름방학식", drawDd)), el("button", { type: "button", onclick: () => { J.dday.push({ d: "", t: "" }); drawDd(); dd.querySelector(".row:last-of-type input")?.focus(); } }, "+ 디데이"));
+  const drawOff = () => off.replaceChildren(...J.offs.map(x => row(J.offs, x, "d", "t", "재량휴업일", drawOff)), el("button", { type: "button", onclick: () => { J.offs.push({ d: "", t: "" }); drawOff(); off.querySelector(".row:last-of-type input")?.focus(); } }, "+ 재량휴업일"));
+  drawDd(); drawOff();
+  pop(anchor, "디데이", "cal", [el("p", { class: "sub" }, "디데이 (방학식 등) — 오늘부터 그날까지 출근하는 날을 세요"), dd,
+    el("p", { class: "sub" }, "재량휴업일 — 출근일에서 빼고 달력에 빨갛게"), off], () => {}, { noSave: true, onClose: () => { J.dday = J.dday.filter(x => x.d); J.offs = J.offs.filter(x => x.d); store(); } });
+}
 function calDraw() {
   const y = month.getFullYear(), m = month.getMonth(), start = new Date(y, m, 1 - new Date(y, m, 1).getDay()), t = today();
   $("cal-title").textContent = `${y}년 ${m + 1}월`;
@@ -448,8 +479,8 @@ function calDraw() {
     const marks = el("span", { class: "marks" }, ...recs.slice(0, 8).map(r => el("i", { class: "dot", style: `background:${kindColor(r.kind)}`, title: `${r.kind} · ${names(r.ps)}` })),
       recs.length > 8 ? el("small", {}, "+") : null, nc ? mk("chat", "cs", `상담 ${nc}`) : null,
       wrote ? mk("note", "nt on", "일지 씀") : null);
-    cells.push(el("div", { class: `day${d.getMonth() !== m ? " out" : ""}${s === t ? " today" : ""}${s === pick ? " sel" : ""}${wd === 0 || HOLI[s] ? " sun" : wd === 6 ? " sat" : ""}`, "data-d": s, onclick: () => choose(s) },
-      el("div", { class: "top" }, el("span", { class: "n", title: HOLI[s] || "" }, String(d.getDate())), HOLI[s] ? el("small", { class: "holi" }, HOLI[s]) : null, marks),
+    cells.push(el("div", { class: `day${d.getMonth() !== m ? " out" : ""}${s === t ? " today" : ""}${s === pick ? " sel" : ""}${wd === 0 || holiName(s) ? " sun" : wd === 6 ? " sat" : ""}`, "data-d": s, onclick: () => choose(s) },
+      el("div", { class: "top" }, el("span", { class: "n", title: holiName(s) }, String(d.getDate())), holiName(s) ? el("small", { class: "holi" }, holiName(s)) : null, marks),
       el("div", { class: "evs" }, ...evs.map(e => { const c = el("span", { class: "ev" + (e.done ? " done" : ""), title: `${e.time ? e.time + " " : ""}${e.text} (누르면 줄 긋기 · 끌면 다른 날로)`, onclick: ev => { ev.stopPropagation(); if (!dragged) toggle(e); } }, (e.time ? e.time + " " : "") + e.text); chipDrag(c, e); return c; })), plus));
   }
   $("cal").replaceChildren(...cells);
