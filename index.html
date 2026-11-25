@@ -794,6 +794,16 @@
   .kid-tb .pin { font-weight: 700; font-size: 22px; letter-spacing: .1em; font-variant-numeric: tabular-nums; }
   .hw-new { display: grid; gap: 6px; margin-bottom: 12px; } .hw-new textarea, .hw-new input:not([type=file]) { font: inherit; font-size: 15px; padding: 6px 8px; border: 1.5px solid var(--line); border-radius: 8px; width: 100%; box-sizing: border-box; }
   .hw-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; } .hw-img { max-width: 160px; max-height: 120px; border-radius: 6px; cursor: zoom-in; display: block; } .hw-img.big { max-width: 100%; max-height: none; cursor: zoom-out; }
+  .hw-gal { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin-top: 6px; }
+  .hw-card { border: 1.5px solid var(--line); border-radius: 10px; background: #fff; overflow: hidden; cursor: zoom-in; display: flex; flex-direction: column; font: inherit; color: inherit; padding: 0; text-align: left; }
+  .hw-card .pic { aspect-ratio: 4 / 3; background: #f1f3f5; display: grid; place-items: center; overflow: hidden; } .hw-card .pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .hw-card .pic span { font-size: 13px; color: var(--muted); padding: 6px; word-break: break-all; text-align: center; } .hw-card b { font-size: 14px; padding: 4px 8px; } .hw-card.none { opacity: .45; cursor: default; }
+  .hw-view { position: fixed; inset: 0; z-index: 9999; background: rgba(15, 12, 10, .92); display: grid; grid-template-rows: auto 1fr auto; color: #fff; }
+  .hw-view .bar { display: flex; gap: 8px; align-items: center; padding: 10px 14px; font-size: 18px; } .hw-view .bar b { flex: 1; }
+  .hw-view button { font: inherit; font-size: 16px; background: rgba(255, 255, 255, .15); color: #fff; border: 0; border-radius: 10px; padding: 6px 14px; cursor: pointer; }
+  .hw-view .stage { display: grid; place-items: center; min-height: 0; padding: 0 56px; position: relative; } .hw-view .stage img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 6px; }
+  .hw-view .stage a { color: #9cc5ff; font-size: 22px; word-break: break-all; } .hw-view .nav { position: absolute; top: 50%; transform: translateY(-50%); font-size: 30px; padding: 10px 14px; } .hw-view .nav.l { left: 8px; } .hw-view .nav.r { right: 8px; }
+  .hw-view .foot { text-align: center; padding: 8px; font-size: 14px; opacity: .8; }
   .hw-it { border: 1.5px solid var(--line); border-radius: 10px; padding: 8px 10px; margin-bottom: 8px; background: #fff; } .hw-it p { margin: 0 0 6px; white-space: pre-line; font-size: 16px; } .hw-it a { word-break: break-all; }
   .tool-card .hw-it button, .tool-card .hw-new button { font-size: 13px; padding: 2px 10px; border-radius: 8px; } .hw-it .kid-tb { margin-top: 6px; font-size: 15px; }
   .tool-card .kid-tb button, .tool-card .kid-acts button, .tool-card .kid-url button { font-size: 13px; padding: 2px 10px; border-radius: 8px; } .kid-acts { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
@@ -7661,12 +7671,43 @@ function hwPanel(host) { // 점수 설정 → 과제
     try { await fb.addDoc(hwCol(code), v); t.value = link.value = ""; setImg(""); msg.textContent = "✅ 과제를 냈어요. 학생 화면에 보여요."; load(); }
     catch (e) { msg.textContent = "⚠︎ 올리지 못했어요. 인터넷 연결이나 Firestore 규칙을 확인해 주세요."; } finally { go.disabled = false; }
   } }, "과제 내기");
+  // 낸 것 크게 보기: 화살표·←→로 넘기고, Esc로 닫고, ⛶로 전체 화면
+  const hwView = (cards, i) => {
+    const v = h("div", { class: "hw-view", tabindex: "-1" }), close = () => { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); v.remove(); removeEventListener("keydown", key, true); };
+    const show = () => {
+      const c = cards[i], u = hwLink(c.v.link), img = c.v.img?.startsWith("data:image/") ? h("img", { src: c.v.img, alt: "사진" }) : null;
+      v.replaceChildren(h("div", { class: "bar" }, h("b", {}, `${c.n}번 ${c.name}`), h("span", {}, `${i + 1} / ${cards.length}`),
+          h("button", { title: "전체 화면", onclick: () => document.fullscreenElement ? document.exitFullscreen() : v.requestFullscreen?.().catch(() => {}) }, "⛶ 전체 화면"), h("button", { onclick: close }, "✕ 닫기")),
+        h("div", { class: "stage" }, img || (u ? h("a", { href: u, target: "_blank", rel: "noopener noreferrer" }, "🔗 " + u) : h("span", {}, "사진이 없어요")),
+          cards.length > 1 ? h("button", { class: "nav l", onclick: () => { i = (i + cards.length - 1) % cards.length; show(); } }, "‹") : null,
+          cards.length > 1 ? h("button", { class: "nav r", onclick: () => { i = (i + 1) % cards.length; show(); } }, "›") : null),
+        h("div", { class: "foot" }, img && u ? h("a", { href: u, target: "_blank", rel: "noopener noreferrer", style: "color:#9cc5ff" }, "🔗 " + u) : new Date(c.v.at).toLocaleString("ko-KR", { month: "numeric", day: "numeric", hour: "numeric", minute: "2-digit" })));
+    };
+    function key(e) { // 다른 단축키보다 먼저 받음
+      if (e.key === "Escape") { if (!document.fullscreenElement) close(); } else if (e.key === "ArrowRight") { i = (i + 1) % cards.length; show(); } else if (e.key === "ArrowLeft") { i = (i + cards.length - 1) % cards.length; show(); } else return;
+      e.preventDefault(); e.stopImmediatePropagation();
+    }
+    addEventListener("keydown", key, true);
+    v.onclick = e => { if (e.target === v || e.target.classList.contains("stage")) close(); };
+    show(); document.body.append(v); v.focus();
+  };
+  let hwGal = true; // 낸 것: 갤러리(기본) / 표
   const subs = async (d, box) => { // 학생별로 낸 것 (번호로 맞춤. 비밀번호를 다시 정했으면 예전 것도 번호로 보임)
     box.replaceChildren(h("p", { class: "rw-h" }, "불러오는 중…"));
     const by = {};
     for (const s of (await fb.getDocs(hwCol(code, d.id, "sub"))).docs) { const n = s.id.split("-")[0], v = s.data(); if (!by[n] || (v.at || 0) > (by[n].at || 0)) by[n] = v; }
     const kids = people(), done = kids.filter(p => by[kidNum(p)]).length;
-    box.replaceChildren(h("div", { class: "hw-row" }, h("b", {}, `낸 학생 ${done} / ${kids.length}명`), h("button", { onclick: () => subs(d, box) }, "새로 고침")),
+    const head = h("div", { class: "hw-row" }, h("b", {}, `낸 학생 ${done} / ${kids.length}명`), h("button", { onclick: () => subs(d, box) }, "새로 고침"),
+      h("button", { onclick: () => { hwGal = !hwGal; subs(d, box); } }, hwGal ? "표로 보기" : "갤러리로 보기"));
+    if (hwGal) {
+      const cards = kids.filter(p => by[kidNum(p)]).map(p => ({ n: kidNum(p), name: seName(p), v: by[kidNum(p)] }));
+      return box.replaceChildren(head, h("div", { class: "hw-gal" }, ...kids.map(p => {
+        const v = by[kidNum(p)], i = cards.findIndex(c => c.v === v);
+        const pic = !v ? h("span", {}, "아직 안 냄") : v.img?.startsWith("data:image/") ? h("img", { src: v.img, alt: "", loading: "lazy" }) : h("span", {}, hwLink(v.link) ? "🔗 " + hwLink(v.link) : "");
+        return h("button", { class: "hw-card" + (v ? "" : " none"), onclick: () => v && hwView(cards, i) }, h("div", { class: "pic" }, pic), h("b", {}, `${kidNum(p)} ${seName(p)}`));
+      })));
+    }
+    box.replaceChildren(head,
       h("table", { class: "kid-tb" }, h("tr", {}, h("th", {}, "번호"), h("th", {}, "이름"), h("th", {}, "낸 것")),
         ...kids.map(p => { const v = by[kidNum(p)], u = hwLink(v?.link);
           return h("tr", {}, h("td", {}, kidNum(p)), h("td", {}, seName(p)), h("td", { class: v ? "" : "none" }, !v ? "아직 안 냄"
