@@ -15,8 +15,9 @@ from PIL import Image; import numpy as np; from scipy import ndimage
 import sys, os
 AV='./'; OUT=sys.argv[1] if len(sys.argv)>1 else './'
 W,H=516,772; S=2   # 2배 캔버스에서 작업
+FIT=0.39            # 시트 → 몸 크기 (몸에 맞게)
 INK=np.array([45,34,38.]); TEE=np.array([246,244,241.])
-SC=0.48*S; TOPY=203*S; CX=129*S
+SC=FIT*S; TOPY=203*S; CX=129*S
 OPEN={2,6,12,26}           # 앞이 열린 자켓: 사이를 흰 티로
 HOLE={17,19,20,21,23}       # 목 안쪽 흰 빈 곳이 있는 옷: 흰 티로
 NOCUT={0,3,5,8,13,15,16,24,28,29,30,31,33,35,36,37}  # 앞 깃이 목에 걸친 옷: 목선 자르지 않음
