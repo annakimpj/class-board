@@ -105,6 +105,7 @@
       <div class="me" id="me-av"></div>
       <div class="sw" id="sw-skin"></div>
       <div class="sw" id="sw-hair"></div>
+      <div class="sw" id="sw-cheek"></div>
       <div class="save"><button id="undo">원래대로</button><button class="main" id="save">저장하기</button></div>
       <p class="note" id="note"></p>
     </div>
@@ -153,7 +154,7 @@ function draw() {
   $("me-pt").replaceChildren(String(left()), el("small", {}, unit()), ...(cost ? [el("small", { class: after < 0 ? "short" : "" }, ` → 저장하면 ${after}`)] : []));
   $("me-av").innerHTML = avPic(d.av, d.wear);
   const sw = (box, list, key, label) => $(box).replaceChildren(el("span", {}, label), ...list.map((c, i) => el("button", { class: (d.av[key] || 0) === i ? "on" : "", style: `background:${c[0]}`, "aria-label": label, onclick: () => { d.av = { ...d.av, [key]: i }; dirty = true; draw(); } })));
-  sw("sw-skin", AV_SKIN, "skin", "피부"); sw("sw-hair", AV_HAIR, "hc", "머리색");
+  sw("sw-skin", AV_SKIN, "skin", "피부"); sw("sw-hair", AV_HAIR, "hc", "머리색"); sw("sw-cheek", AV_CHEEK, "cc", "볼색");
   // 살 게 있으면 저장 버튼이 "3으쓱으로 바꾸기", 모자라면 아래에 "3 으쓱이 모자라요"
   $("save").disabled = !dirty || after < 0; $("save").textContent = cost && after >= 0 ? avPay(cost, unit()) : "저장하기"; $("undo").disabled = d.wear.top === AV_REQ.top && d.wear.bottom === AV_REQ.bottom && !cost;
   $("note").textContent = !dirty ? "" : after < 0 ? avShort(-after, unit()) : !cost ? "저장하기를 눌러야 바뀌어요." : "";

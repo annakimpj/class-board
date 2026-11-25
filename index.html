@@ -4176,7 +4176,7 @@ function rwAvatar(p) {
       if (!owns(avItem(d.wear.hair))) d.wear.hair = owns(avItem(was.hair)) ? was.hair : AV_REQ.hair;
       d.wear.top = AV_REQ.top; d.wear.bottom = AV_REQ.bottom; draw();
     };
-    me.append(h("div", {}, h("b", {}, seName(p)), h("br"), h("span", { class: "rw-pt" }, `${s.pt} ${unit}`), sw(AV_SKIN, "skin", "피부"), sw(AV_HAIR, "hc", "머리색"),
+    me.append(h("div", {}, h("b", {}, seName(p)), h("br"), h("span", { class: "rw-pt" }, `${s.pt} ${unit}`), sw(AV_SKIN, "skin", "피부"), sw(AV_HAIR, "hc", "머리색"), sw(AV_CHEEK, "cc", "볼색"),
       Object.assign(h("button", { class: "rw-reset", onclick: reset }, "원래대로"), { disabled: d.wear.top === AV_REQ.top && d.wear.bottom === AV_REQ.bottom && !cost }),
       after < 0 ? h("p", { class: "rw-short" }, avShort(-after, unit)) : null));
     const tabs = h("div", { class: "rw-tabs" }, AV_TABS.map(([k, t]) => h("button", { class: rwTab === k ? "on" : "", onclick: () => { rwTab = k; draw(); } }, t)));
