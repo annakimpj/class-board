@@ -4118,7 +4118,7 @@ function rwSettings() {
       return;
     }
     const its = AV_ITEMS.filter(it => it.price && (rwShopTab === "acc" ? AV_ACC.includes(it.slot) : it.slot === rwShopTab)).sort((a, b) => price[a.id] - price[b.id]);
-    const cats = h("div", { class: "rw-tabs sm" }, AV_TABS.map(([k, t]) => h("button", { class: rwShopTab === k ? "on" : "", onclick: () => { rwShopTab = k; draw(); } }, t)));
+    const cats = h("div", { class: "rw-tabs sm" }, AV_TABS.filter(([k]) => AV_ITEMS.some(it => it.slot === k && it.price)).map(([k, t]) => h("button", { class: rwShopTab === k ? "on" : "", onclick: () => { rwShopTab = k; draw(); } }, t)));
     const all = h("input", { type: "checkbox" }); all.checked = its.length && its.every(it => chosen.has(it.id));
     all.onchange = () => { its.forEach(it => all.checked ? chosen.add(it.id) : chosen.delete(it.id)); draw(); };
     const grid = h("div", { class: "rw-prices" }, ...its.map(it => {
