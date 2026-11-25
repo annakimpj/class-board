@@ -5714,7 +5714,7 @@ wb.addEventListener("contextmenu", e => { // 펜일 때는 그림판(캔버스)�
     it("다른 이름으로 저장", () => wbSaveAs(o)), h("hr"),
     it("왼쪽으로 돌리기", () => wbRotate(o, -1)), it("오른쪽으로 돌리기", () => wbRotate(o, 1)), it("자르기", () => wbCrop(o)), it("배경 지우기", () => wbCutout(o)), h("hr"),
     it("맨 앞으로", () => wbOrder(o, "top")), it("앞으로", () => wbOrder(o, "up")), it("뒤로", () => wbOrder(o, "down")), it("맨 뒤로", () => wbOrder(o, "bottom")));
-  d.body.append(m);
+  (d.fullscreenElement || d.body).append(m); // 전체 화면이면 그 안에 띄워야 보임
   m.style.left = Math.min(e.clientX, W.innerWidth - m.offsetWidth - 8) + "px"; m.style.top = Math.min(e.clientY, W.innerHeight - m.offsetHeight - 8) + "px";
   const off = ev => { if (m.contains(ev.target)) return; m.remove(); d.removeEventListener("pointerdown", off, true); };
   d.addEventListener("pointerdown", off, true);
@@ -5723,7 +5723,7 @@ function wbModal(title, body, tools, onOk) { // 사진 고치는 큰 창 (취소
   const d = wb.ownerDocument, m = h("div", { class: "wb-modal" }, h("div", { class: "wb-mbox" },
     h("div", { class: "wb-mhead" }, h("b", {}, title), ...tools, h("span", { class: "sp" }), h("button", { onclick: () => m.remove() }, "취소"), h("button", { class: "main", onclick: async () => { if (await onOk() !== false) m.remove(); } }, "적용")), body));
   m.onkeydown = e => { if (e.key === "Escape") m.remove(); };
-  d.body.append(m); m.tabIndex = -1; m.focus();
+  (d.fullscreenElement || d.body).append(m); m.tabIndex = -1; m.focus(); // 전체 화면이면 그 안에
   return m;
 }
 const wbDragOn = (start, move) => p => { // 눌러서 끄는 동안 move(dx, dy, ev)
