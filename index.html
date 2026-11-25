@@ -5649,6 +5649,7 @@ function wbSize() {
 }
 new ResizeObserver(wbSize).observe(wb);
 wbCv.addEventListener("pointerdown", e => {
+  if (e.button === 2) return; // 오른쪽 클릭은 선을 긋지 않음 (사진 메뉴)
   const r = wb.getBoundingClientRect(), pt = ev => [(ev.clientX - r.left) / r.width, (ev.clientY - r.top) / r.height];
   wbCv.setPointerCapture(e.pointerId); wbSnap(); wb.focus();
   const s = { c: wbColor, w: wbWidth, pts: pt(e) };
@@ -5703,8 +5704,8 @@ function wbOrder(o, how) { // 겹친 순서: 맨 앞 · 앞 · 뒤 · 맨 뒤
   L.splice(how === "top" ? L.length : how === "bottom" ? 0 : how === "up" ? Math.min(L.length, i + 1) : Math.max(0, i - 1), 0, o);
   wbRender(); wbSelect(o); wbSave();
 }
-wbObjs.addEventListener("contextmenu", e => {
-  const o = wbImgOf(e.target.closest(".wb-obj"));
+wb.addEventListener("contextmenu", e => { // 펜일 때는 그림판(캔버스)이 사진 위에 있어서, 누른 자리 아래의 사진을 찾음
+  const o = wbImgOf(wb.ownerDocument.elementsFromPoint(e.clientX, e.clientY).find(x => x.classList?.contains("wb-obj") && x.classList.contains("img")));
   if (!o) return;
   e.preventDefault(); wbSelect(o);
   const d = wb.ownerDocument, W = d.defaultView; d.querySelector(".wb-ctx")?.remove();
