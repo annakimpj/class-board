@@ -137,6 +137,8 @@
   .wb-mhead { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; } .wb-mhead b { font-size: 16px; margin-right: 6px; } .wb-mhead .sp { flex: 1; } .wb-mhead .tip { color: var(--muted); font-size: 12px; }
   .wb-mhead button { border: 1.5px solid #e3ddd3; background: #fff; border-radius: 7px; padding: 5px 12px; font: inherit; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
   .wb-mhead button.main { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .wb-mhead .lasso.on { background: #1c7ed6; border-color: #1c7ed6; color: #fff; }
+  .wb-stage .wb-lasso { position: absolute; left: 0; top: 0; width: 100%; height: 100%; max-width: none; max-height: none; cursor: crosshair; touch-action: none; background: none !important; }
   .wb-mhead .keep.on { background: #2f9e44; border-color: #2f9e44; color: #fff; } .wb-mhead .erase.on { background: #e03131; border-color: #e03131; color: #fff; }
   .wb-mhead .rng { display: inline-flex; align-items: center; gap: 4px; color: var(--muted); font-size: 12px; } .wb-mhead .rng input { width: 80px; } .wb-mhead .rng.wide input { width: 140px; }
   .wb-stage { position: relative; justify-self: center; overflow: hidden; line-height: 0; }
@@ -5727,10 +5729,10 @@ function wbModal(title, body, tools, onOk) { // 사진 고치는 큰 창 (취소
   (d.fullscreenElement || d.body).append(m); m.tabIndex = -1; m.focus(); // 전체 화면이면 그 안에
   return m;
 }
-const wbDragOn = (start, move) => p => { // 눌러서 끄는 동안 move(dx, dy, ev)
+const wbDragOn = (start, move, end) => p => { // 눌러서 끄는 동안 move(dx, dy, ev), 놓으면 end()
   p.preventDefault(); p.stopPropagation(); start?.(p);
   const W = wb.ownerDocument.defaultView, sx = p.clientX, sy = p.clientY, mv = ev => move(ev.clientX - sx, ev.clientY - sy, ev);
-  const up = () => { W.removeEventListener("pointermove", mv); W.removeEventListener("pointerup", up); };
+  const up = () => { W.removeEventListener("pointermove", mv); W.removeEventListener("pointerup", up); end?.(); };
   W.addEventListener("pointermove", mv); W.addEventListener("pointerup", up);
 };
 async function wbCrop(o) { // 자르기: 네모를 옮기거나 모서리를 끌어 남길 부분을 고름
@@ -5824,7 +5826,11 @@ async function wbCutout(o) {
   const base = wbCanvas(W, H), bx = base.getContext("2d", { willReadFrequently: true }); bx.drawImage(im, 0, 0, W, H);
   const org = bx.getImageData(0, 0, W, H).data, cv = wbCanvas(W, H), cx = cv.getContext("2d"), out = cx.createImageData(W, H);
   const strokes = []; let mode = "erase", size = 24, tol = 40, cut = 128, raf = 0, auto = null, ai = null, mask = new Uint8ClampedArray(W * H).fill(255);
-  const paint = ([md, x, y, r]) => { // 붓 한 점: 둥글게 살리거나 지움 (가장자리 1px 부드럽게)
+  const paint = ([md, x, y, r]) => { // 붓 한 점: 둥글게 살리거나 지움 (가장자리 1px 부드럽게). md가 "lasso"면 x = 테두리 점들
+    if (md === "lasso") {
+      const t = wbCanvas(W, H), c = t.getContext("2d", { willReadFrequently: true }); c.beginPath(); x.forEach(([px, py], i) => i ? c.lineTo(px, py) : c.moveTo(px, py)); c.closePath(); c.fill();
+      const a = c.getImageData(0, 0, W, H).data; for (let i = 0; i < W * H; i++) mask[i] = a[i * 4 + 3]; return;
+    }
     for (let yy = Math.max(0, Math.floor(y - r - 1)); yy <= Math.min(H - 1, y + r + 1); yy++) for (let xx = Math.max(0, Math.floor(x - r - 1)); xx <= Math.min(W - 1, x + r + 1); xx++) {
       const d = Math.hypot(xx - x, yy - y), a = wbClamp(r + .5 - d, 0, 1); if (!a) continue;
       const i = yy * W + xx; mask[i] = md === "keep" ? Math.max(mask[i], a * 255) : Math.min(mask[i], (1 - a) * 255);
@@ -5841,18 +5847,25 @@ async function wbCutout(o) {
   let tT = 0; const level = v => { cancelAnimationFrame(tT); tT = requestAnimationFrame(() => { if (ai) { cut = 20 + v * 2.2; useAi(); } else { tol = 5 + (100 - v) * .7; useColor(); } }); }; // 0~100
   const at = ev => { const r = cv.getBoundingClientRect(); return [(ev.clientX - r.left) * W / r.width, (ev.clientY - r.top) * H / r.height]; };
   let cur = null;
-  cv.onpointerdown = p => wbDragOn(ev => { cur = []; strokes.push(cur); const [x, y] = at(ev); const s0 = [mode, x, y, size]; cur.push(s0); paint(s0); show(); }, (dx, dy, ev) => {
+  const ov = wbCanvas(W, H), ox = ov.getContext("2d"); ov.className = "wb-lasso"; // 테두리를 그리는 동안 보이는 선
+  cv.onpointerdown = p => mode === "lasso" ? wbDragOn(ev => { cur = [at(ev)]; }, (dx, dy, ev) => {
+    cur.push(at(ev)); ox.clearRect(0, 0, W, H); ox.lineWidth = Math.max(2, W / 300); ox.strokeStyle = "#1c7ed6"; ox.setLineDash([8, 6]);
+    ox.beginPath(); cur.forEach(([px, py], i) => i ? ox.lineTo(px, py) : ox.moveTo(px, py)); ox.stroke();
+  }, () => { ox.clearRect(0, 0, W, H); if (cur.length > 2) { const g = [["lasso", cur]]; strokes.push(g); paint(g[0]); show(); } })(p)
+  : wbDragOn(ev => { cur = []; strokes.push(cur); const [x, y] = at(ev); const s0 = [mode, x, y, size]; cur.push(s0); paint(s0); show(); }, (dx, dy, ev) => {
     const [x, y] = at(ev), last = cur.at(-1), n = Math.max(1, Math.ceil(Math.hypot(x - last[1], y - last[2]) / (size / 3)));
     for (let j = 1; j <= n; j++) { const s1 = [mode, last[1] + (x - last[1]) * j / n, last[2] + (y - last[2]) * j / n, size]; cur.push(s1); paint(s1); } // 빠르게 끌어도 이어지게
     show();
   })(p);
+  ov.onpointerdown = e => cv.onpointerdown(e); // 선 그림판이 위에 있어도 같은 동작
   const keepB = h("button", { class: "keep", onclick: () => setMode("keep") }, "살리기"), eraseB = h("button", { class: "erase", onclick: () => setMode("erase") }, "지우기");
-  const setMode = v => { mode = v; keepB.classList.toggle("on", v === "keep"); eraseB.classList.toggle("on", v === "erase"); };
+  const lassoB = h("button", { class: "lasso", title: "남길 것 둘레에 선을 그리면 그 밖은 모두 지워요", onclick: () => setMode("lasso") }, "테두리 그리기");
+  const setMode = v => { mode = v; keepB.classList.toggle("on", v === "keep"); eraseB.classList.toggle("on", v === "erase"); lassoB.classList.toggle("on", v === "lasso"); };
   const sizeR = h("input", { type: "range", min: "4", max: "80", value: size, title: "붓 굵기", oninput: e => size = +e.target.value });
   const tolR = h("input", { type: "range", min: "0", max: "100", value: 50, title: "끌어서 지우는 정도 정하기 (오른쪽일수록 많이 지움)", oninput: e => level(+e.target.value) });
   const tolL = h("label", { class: "rng wide" }, "덜 지움", tolR, "더 지움"), stat = h("span", { class: "tip" }, "피사체를 찾는 중… (처음 한 번은 1분쯤 걸려요)");
   setMode("erase"); show();
-  const m = wbModal("배경 지우기", h("div", { class: "wb-stage cut" }, cv), [keepB, eraseB, h("label", { class: "rng" }, "붓", sizeR), tolL,
+  const m = wbModal("배경 지우기", h("div", { class: "wb-stage cut" }, cv, ov), [lassoB, keepB, eraseB, h("label", { class: "rng" }, "붓", sizeR), tolL,
     h("button", { title: "붓질 하나 되돌리기", onclick: () => { strokes.pop(); redo(); } }, "↶ 되돌리기"), stat], () => {
     wbImgSet(o, cv.toDataURL("image/png"), o.w, o.h, 0, 0, W / H);
   });
