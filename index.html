@@ -128,6 +128,24 @@
   .wb-objs { position: absolute; inset: 0; z-index: 0; } .wb-obj.text { z-index: 1; } /* 글상자는 늘 사진 위, 펜 선(캔버스)은 그 위 */
   .wb-obj { position: absolute; box-sizing: border-box; touch-action: none; }
   .wb[data-tool="select"] .wb-obj { cursor: move; }
+  /* 화이트보드 사진 메뉴·고치는 창 */
+  .wb-ctx { position: fixed; z-index: 2147483000; display: flex; flex-direction: column; min-width: 150px; padding: 4px; background: #fff; border-radius: 10px; box-shadow: 0 6px 22px rgba(60, 40, 20, .22); font: 14px "Pretendard Variable", "Malgun Gothic", sans-serif; }
+  .wb-ctx button { border: 0; background: none; text-align: left; padding: 6px 10px; border-radius: 6px; font: inherit; color: var(--ink); cursor: pointer; } .wb-ctx button:hover { background: #f1ede6; }
+  .wb-ctx hr { border: 0; border-top: 1px solid #eee8de; margin: 3px 4px; }
+  .wb-modal { position: fixed; inset: 0; z-index: 2147483000; background: rgba(30, 30, 40, .55); display: grid; place-items: center; font: 14px "Pretendard Variable", "Malgun Gothic", sans-serif; }
+  .wb-mbox { background: #fff; border-radius: 14px; padding: 12px; display: grid; gap: 10px; max-width: 94vw; max-height: 94vh; box-shadow: 0 20px 50px rgba(0, 0, 0, .3); }
+  .wb-mhead { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; } .wb-mhead b { font-size: 16px; margin-right: 6px; } .wb-mhead .sp { flex: 1; } .wb-mhead .tip { color: var(--muted); font-size: 12px; }
+  .wb-mhead button { border: 1.5px solid #e3ddd3; background: #fff; border-radius: 7px; padding: 5px 12px; font: inherit; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+  .wb-mhead button.main { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .wb-mhead .keep.on { background: #2f9e44; border-color: #2f9e44; color: #fff; } .wb-mhead .erase.on { background: #e03131; border-color: #e03131; color: #fff; }
+  .wb-mhead .rng { display: inline-flex; align-items: center; gap: 4px; color: var(--muted); font-size: 12px; } .wb-mhead .rng input { width: 80px; }
+  .wb-stage { position: relative; justify-self: center; overflow: hidden; line-height: 0; }
+  .wb-stage img, .wb-stage canvas { display: block; max-width: 88vw; max-height: 78vh; user-select: none; }
+  .wb-stage.cut canvas { cursor: crosshair; touch-action: none; background: repeating-conic-gradient(#e9e9e9 0 25%, #fff 0 50%) 0 0 / 16px 16px; } /* 체크무늬 = 지운 곳 */
+  .wb-cbox { position: absolute; outline: 2px dashed #fff; box-shadow: 0 0 0 9999px rgba(0, 0, 0, .5); cursor: move; touch-action: none; }
+  .wb-cbox .h { position: absolute; width: 14px; height: 14px; background: #fff; border: 2px solid var(--accent); border-radius: 3px; }
+  .wb-cbox .nw { left: -8px; top: -8px; cursor: nwse-resize; } .wb-cbox .se { right: -8px; bottom: -8px; cursor: nwse-resize; }
+  .wb-cbox .ne { right: -8px; top: -8px; cursor: nesw-resize; } .wb-cbox .sw { left: -8px; bottom: -8px; cursor: nesw-resize; }
   .wb-obj img { width: 100%; height: 100%; object-fit: fill; display: block; pointer-events: none; user-select: none; }
   .wb-obj.text { font-family: "Pretendard Variable", "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; line-height: 1.3; padding: 2px 4px;
                  white-space: pre-wrap; word-break: keep-all; overflow-wrap: anywhere; outline: none; color: var(--ink); }
@@ -5502,6 +5520,7 @@ function wbEditText(o) {
 }
 // 옮기기·크기 조절·글상자 만들기
 wbObjs.addEventListener("pointerdown", e => {
+  if (e.button === 2) return; // 오른쪽 클릭: 사진 메뉴
   const el = e.target.closest(".wb-obj"), r = wb.getBoundingClientRect(), editing = wbObjs.querySelector('.wb-obj[contenteditable="true"]');
   if (el && el.isContentEditable) return; // 글 고치는 중
   if (editing) { editing.blur(); setTool("select"); e.preventDefault(); return; } // 글 쓰다가 다른 곳을 누르면 글쓰기를 끝내고 옮기기로
@@ -5652,6 +5671,133 @@ async function wbAddImage(file) {
     const o = { id: String(Date.now()), type: "img", x: .08 + n * .04, y: .08 + n * .04, w, h, ar, src: cv.toDataURL("image/webp", .9) };
     wbData.objs.push(o); setTool("select"); wbRender(); wbSelect(o); wbSave();
   } catch (e) { seConfirm(card("whiteboard"), "이 파일은 사진으로 넣을 수 없어요.", "확인", null); }
+}
+// ───── 화이트보드 사진: 오른쪽 클릭 메뉴 (다른 이름으로 저장 · 돌리기 · 자르기 · 배경 지우기 · 순서)
+// 사진을 바꾸면 새 id로 바꿔 끼움 (되돌리기 가능, 로그인 동기화에서도 새 사진으로 올라감)
+const wbImgOf = el => el && wbData.objs.find(x => x.id === el.dataset.id && x.type === "img");
+const wbImg = async o => { const im = new Image(); im.src = o.src; await im.decode(); return im; };
+const wbCanvas = (w, hh) => { const c = document.createElement("canvas"); c.width = w; c.height = hh; return c; };
+const wbClamp = (v, a, b) => Math.max(a, Math.min(b, v));
+function wbImgSet(o, src, w, hh, dx, dy, ar) {
+  wbSnap();
+  const n = { ...o, id: String(Date.now()), src, w, h: hh, x: o.x + dx, y: o.y + dy, ar };
+  wbData.objs[wbData.objs.indexOf(o)] = n; wbRender(); wbSelect(n); wbSave();
+}
+async function wbSaveAs(o) { // PNG로 저장. 고르는 창이 되는 브라우저면 이름·자리를 고름
+  const im = await wbImg(o), cv = wbCanvas(im.naturalWidth, im.naturalHeight); cv.getContext("2d").drawImage(im, 0, 0);
+  const png = await new Promise(ok => cv.toBlob(ok, "image/png")), name = `화이트보드 사진 ${iso(new Date())}.png`, W = wb.ownerDocument.defaultView;
+  if (W.showSaveFilePicker) {
+    try { const fh = await W.showSaveFilePicker({ suggestedName: name, types: [{ description: "PNG 사진", accept: { "image/png": [".png"] } }] }); const ws = await fh.createWritable(); await ws.write(png); await ws.close(); return; }
+    catch (e) { if (e.name === "AbortError") return; }
+  }
+  const a = h("a", { href: URL.createObjectURL(png), download: name }); wb.ownerDocument.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+}
+async function wbRotate(o, dir) { // 90도씩. 화면에서 보이는 크기는 그대로 (가로·세로만 바뀜)
+  const im = await wbImg(o), cv = wbCanvas(im.naturalHeight, im.naturalWidth), c = cv.getContext("2d");
+  c.translate(cv.width / 2, cv.height / 2); c.rotate(dir * Math.PI / 2); c.drawImage(im, -im.naturalWidth / 2, -im.naturalHeight / 2);
+  const r = wb.getBoundingClientRect(), w = o.h * r.height / r.width, hh = o.w * r.width / r.height;
+  wbImgSet(o, cv.toDataURL("image/webp", .92), w, hh, (o.w - w) / 2, (o.h - hh) / 2, cv.width / cv.height);
+}
+function wbOrder(o, how) { // 겹친 순서: 맨 앞 · 앞 · 뒤 · 맨 뒤
+  const L = wbData.objs, i = L.indexOf(o); wbSnap(); L.splice(i, 1);
+  L.splice(how === "top" ? L.length : how === "bottom" ? 0 : how === "up" ? Math.min(L.length, i + 1) : Math.max(0, i - 1), 0, o);
+  wbRender(); wbSelect(o); wbSave();
+}
+wbObjs.addEventListener("contextmenu", e => {
+  const o = wbImgOf(e.target.closest(".wb-obj"));
+  if (!o) return;
+  e.preventDefault(); wbSelect(o);
+  const d = wb.ownerDocument, W = d.defaultView; d.querySelector(".wb-ctx")?.remove();
+  const it = (t, fn) => h("button", { onclick: () => { m.remove(); fn(); } }, t);
+  const m = h("div", { class: "wb-ctx" },
+    it("다른 이름으로 저장", () => wbSaveAs(o)), h("hr"),
+    it("왼쪽으로 돌리기", () => wbRotate(o, -1)), it("오른쪽으로 돌리기", () => wbRotate(o, 1)), it("자르기", () => wbCrop(o)), it("배경 지우기", () => wbCutout(o)), h("hr"),
+    it("맨 앞으로", () => wbOrder(o, "top")), it("앞으로", () => wbOrder(o, "up")), it("뒤로", () => wbOrder(o, "down")), it("맨 뒤로", () => wbOrder(o, "bottom")));
+  d.body.append(m);
+  m.style.left = Math.min(e.clientX, W.innerWidth - m.offsetWidth - 8) + "px"; m.style.top = Math.min(e.clientY, W.innerHeight - m.offsetHeight - 8) + "px";
+  const off = ev => { if (m.contains(ev.target)) return; m.remove(); d.removeEventListener("pointerdown", off, true); };
+  d.addEventListener("pointerdown", off, true);
+});
+function wbModal(title, body, tools, onOk) { // 사진 고치는 큰 창 (취소 · 적용)
+  const d = wb.ownerDocument, m = h("div", { class: "wb-modal" }, h("div", { class: "wb-mbox" },
+    h("div", { class: "wb-mhead" }, h("b", {}, title), ...tools, h("span", { class: "sp" }), h("button", { onclick: () => m.remove() }, "취소"), h("button", { class: "main", onclick: async () => { if (await onOk() !== false) m.remove(); } }, "적용")), body));
+  m.onkeydown = e => { if (e.key === "Escape") m.remove(); };
+  d.body.append(m); m.tabIndex = -1; m.focus();
+  return m;
+}
+const wbDragOn = (start, move) => p => { // 눌러서 끄는 동안 move(dx, dy, ev)
+  p.preventDefault(); p.stopPropagation(); start?.(p);
+  const W = wb.ownerDocument.defaultView, sx = p.clientX, sy = p.clientY, mv = ev => move(ev.clientX - sx, ev.clientY - sy, ev);
+  const up = () => { W.removeEventListener("pointermove", mv); W.removeEventListener("pointerup", up); };
+  W.addEventListener("pointermove", mv); W.addEventListener("pointerup", up);
+};
+async function wbCrop(o) { // 자르기: 네모를 옮기거나 모서리를 끌어 남길 부분을 고름
+  const im = await wbImg(o), IW = im.naturalWidth, IH = im.naturalHeight;
+  let c = { x: .05, y: .05, w: .9, h: .9 }, s = null;
+  const box = h("div", { class: "wb-cbox" }, ...["nw", "ne", "sw", "se"].map(k => h("i", { class: "h " + k, "data-k": k })));
+  const stage = h("div", { class: "wb-stage crop" }, h("img", { src: o.src, alt: "", draggable: "false" }), box);
+  const draw = () => Object.assign(box.style, { left: c.x * 100 + "%", top: c.y * 100 + "%", width: c.w * 100 + "%", height: c.h * 100 + "%" });
+  box.onpointerdown = p => wbDragOn(() => s = { ...c, k: p.target.dataset.k }, (dx, dy) => {
+    const r = stage.getBoundingClientRect(); dx /= r.width; dy /= r.height;
+    if (!s.k) { c.x = wbClamp(s.x + dx, 0, 1 - s.w); c.y = wbClamp(s.y + dy, 0, 1 - s.h); }
+    else {
+      let x0 = s.x, y0 = s.y, x1 = s.x + s.w, y1 = s.y + s.h;
+      if (s.k.includes("w")) x0 = wbClamp(x0 + dx, 0, x1 - .04); if (s.k.includes("e")) x1 = wbClamp(x1 + dx, x0 + .04, 1);
+      if (s.k.includes("n")) y0 = wbClamp(y0 + dy, 0, y1 - .04); if (s.k.includes("s")) y1 = wbClamp(y1 + dy, y0 + .04, 1);
+      c = { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+    }
+    draw();
+  })(p);
+  draw();
+  wbModal("자르기", stage, [h("span", { class: "tip" }, "네모를 옮기거나 모서리를 끌어요")], () => {
+    const sx = Math.round(c.x * IW), sy = Math.round(c.y * IH), sw = Math.max(1, Math.round(c.w * IW)), sh = Math.max(1, Math.round(c.h * IH)), cv = wbCanvas(sw, sh);
+    cv.getContext("2d").drawImage(im, sx, sy, sw, sh, 0, 0, sw, sh);
+    wbImgSet(o, cv.toDataURL("image/webp", .92), o.w * c.w, o.h * c.h, o.w * c.x, o.h * c.y, sw / sh); // 남긴 부분은 보드에서 제자리
+  });
+}
+// 배경 지우기: 가장자리에서 이어진 비슷한 색을 지움 → 초록 붓(살리기)·빨간 붓(지우기)으로 고침
+async function wbCutout(o) {
+  const im = await wbImg(o), k = Math.min(1, 1000 / Math.max(im.naturalWidth, im.naturalHeight)), W = Math.round(im.naturalWidth * k), H = Math.round(im.naturalHeight * k);
+  const cv = wbCanvas(W, H), cx = cv.getContext("2d", { willReadFrequently: true }); cx.drawImage(im, 0, 0, W, H);
+  const org = cx.getImageData(0, 0, W, H).data.slice(), mask = new Uint8Array(W * H), out = cx.createImageData(W, H);
+  const strokes = []; let mode = "erase", size = 24, tol = 40, raf = 0;
+  const auto = () => { // 가장자리 점마다 그 색에서 tol 안쪽인 이웃을 따라가며 지움
+    mask.fill(1);
+    const seen = new Uint8Array(W * H), q = new Int32Array(W * H), seed = new Int32Array(W * H), t2 = tol * tol * 3;
+    let hd = 0, tl = 0;
+    const push = (i, sd) => { if (seen[i]) return; seen[i] = 1; q[tl] = i; seed[tl++] = sd; };
+    for (let x = 0; x < W; x++) { push(x, x); push((H - 1) * W + x, (H - 1) * W + x); }
+    for (let y = 0; y < H; y++) { push(y * W, y * W); push(y * W + W - 1, y * W + W - 1); }
+    while (hd < tl) {
+      const i = q[hd], sd = seed[hd++], a = i * 4, b = sd * 4;
+      if (org[a + 3] > 16) { const dr = org[a] - org[b], dg = org[a + 1] - org[b + 1], db = org[a + 2] - org[b + 2]; if (dr * dr + dg * dg + db * db > t2) continue; }
+      mask[i] = 0;
+      const x = i % W;
+      if (x > 0) push(i - 1, sd); if (x < W - 1) push(i + 1, sd); if (i >= W) push(i - W, sd); if (i < W * (H - 1)) push(i + W, sd);
+    }
+    strokes.forEach(g => g.forEach(paint)); show();
+  };
+  const paint = ([m, x, y, r]) => { // 붓 한 점: 둥글게 살리거나 지움
+    for (let yy = Math.max(0, Math.floor(y - r)); yy <= Math.min(H - 1, y + r); yy++) for (let xx = Math.max(0, Math.floor(x - r)); xx <= Math.min(W - 1, x + r); xx++)
+      if ((xx - x) ** 2 + (yy - y) ** 2 <= r * r) mask[yy * W + xx] = m === "keep" ? 1 : 0;
+  };
+  const show = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => { const d = out.data; for (let i = 0; i < W * H; i++) { const a = i * 4; d[a] = org[a]; d[a + 1] = org[a + 1]; d[a + 2] = org[a + 2]; d[a + 3] = mask[i] ? org[a + 3] : 0; } cx.putImageData(out, 0, 0); }); };
+  const at = ev => { const r = cv.getBoundingClientRect(); return [(ev.clientX - r.left) * W / r.width, (ev.clientY - r.top) * H / r.height]; };
+  let cur = null;
+  cv.onpointerdown = p => wbDragOn(ev => { cur = []; strokes.push(cur); const [x, y] = at(ev); const s0 = [mode, x, y, size]; cur.push(s0); paint(s0); show(); }, (dx, dy, ev) => {
+    const [x, y] = at(ev), last = cur.at(-1), n = Math.max(1, Math.ceil(Math.hypot(x - last[1], y - last[2]) / (size / 3)));
+    for (let j = 1; j <= n; j++) { const s1 = [mode, last[1] + (x - last[1]) * j / n, last[2] + (y - last[2]) * j / n, size]; cur.push(s1); paint(s1); } // 빠르게 끌어도 이어지게
+    show();
+  })(p);
+  const keepB = h("button", { class: "keep", onclick: () => setMode("keep") }, "살리기"), eraseB = h("button", { class: "erase", onclick: () => setMode("erase") }, "지우기");
+  const setMode = v => { mode = v; keepB.classList.toggle("on", v === "keep"); eraseB.classList.toggle("on", v === "erase"); };
+  const sizeR = h("input", { type: "range", min: "4", max: "80", value: size, title: "붓 굵기", oninput: e => size = +e.target.value });
+  const tolR = h("input", { type: "range", min: "5", max: "120", value: tol, title: "자동으로 지우는 정도", onchange: e => { tol = +e.target.value; auto(); } });
+  setMode("erase"); auto();
+  wbModal("배경 지우기", h("div", { class: "wb-stage cut" }, cv), [keepB, eraseB, h("label", { class: "rng" }, "붓", sizeR), h("label", { class: "rng" }, "자동", tolR),
+    h("button", { title: "붓질 하나 되돌리기", onclick: () => { strokes.pop(); auto(); } }, "↶ 되돌리기")], () => {
+    wbImgSet(o, cv.toDataURL("image/png"), o.w, o.h, 0, 0, W / H);
+  });
 }
 const wbShown = () => wb.offsetParent !== null && panel.hidden && document.getElementById("seat-ed").hidden;
 document.addEventListener("paste", e => {
