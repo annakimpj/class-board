@@ -793,7 +793,7 @@
   .kid-tb { width: 100%; border-collapse: collapse; font-size: 18px; } .kid-tb th { font-size: 13px; font-weight: normal; color: var(--muted); text-align: left; }
   .kid-tb td, .kid-tb th { border-bottom: 1px solid var(--line); padding: 4px 6px; } .kid-tb .none { color: var(--muted); font-size: 14px; } .kid-status { margin: 0 0 8px; } .kid-code button { font-size: 13px; padding: 2px 10px; border-radius: 8px; }
   .kid-tb .pin { font-weight: 700; font-size: 22px; letter-spacing: .1em; font-variant-numeric: tabular-nums; }
-  .hw-new { display: grid; gap: 6px; margin-bottom: 12px; } .hw-new textarea, .hw-new input:not([type=file]) { font: inherit; font-size: 15px; padding: 6px 8px; border: 1.5px solid var(--line); border-radius: 8px; width: 100%; box-sizing: border-box; }
+  .hw-new { display: grid; gap: 6px; margin-bottom: 12px; } .hw-new[hidden] { display: none; } .hw-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; } .hw-head > b { flex: 1; } .hw-send { justify-content: flex-end; } .hw-send .rw-h { margin-right: auto; } .hw-it p a { word-break: break-all; } .hw-new textarea, .hw-new input:not([type=file]) { font: inherit; font-size: 15px; padding: 6px 8px; border: 1.5px solid var(--line); border-radius: 8px; width: 100%; box-sizing: border-box; }
   .hw-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; } .hw-img { max-width: 160px; max-height: 120px; border-radius: 6px; cursor: zoom-in; display: block; } .hw-img.big { max-width: 100%; max-height: none; cursor: zoom-out; }
   .hw-gal { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin-top: 6px; }
   .hw-card { border: 1.5px solid var(--line); border-radius: 10px; background: #fff; overflow: hidden; cursor: zoom-in; display: flex; flex-direction: column; font: inherit; color: inherit; padding: 0; text-align: left; }
@@ -7656,6 +7656,18 @@ async function hwPhoto(file) { // 긴 쪽 1280px JPEG로 줄임 (보통 100~250K
   g.drawImage(im, 0, 0, cv.width, cv.height);
   return fitBlob(cv.toDataURL("image/jpeg", .8));
 }
+// 과제 글 속 링크: [글](https://…) 와 https://… · www.… 를 눌러지는 링크로 (나머지는 글 그대로)
+const hwText = t => {
+  const out = [], re = /\[([^\]\n]+)\]\((https?:\/\/[^\s)]+)\)|(https?:\/\/[^\s<>"]+|www\.[^\s<>"]+)/g; let i = 0, m;
+  while ((m = re.exec(t))) {
+    if (m.index > i) out.push(t.slice(i, m.index));
+    let u = m[2] || m[3], tail = "";
+    if (!m[2]) { const k = u.match(/[.,!?)\]]+$/); if (k) { tail = k[0]; u = u.slice(0, -tail.length); } }
+    const href = /^www\./i.test(u) ? "https://" + u : u;
+    out.push(h("a", { href, target: "_blank", rel: "noopener noreferrer" }, m[1] || u), tail); i = m.index + m[0].length;
+  }
+  out.push(t.slice(i)); return out;
+};
 const hwImg = src => src?.startsWith("data:image/") ? h("img", { class: "hw-img", src, alt: "사진", onclick: e => e.target.classList.toggle("big") }) : null;
 async function hwClear(code) { // 과제와 학생이 낸 것 모두 지우기
   for (const d of (await fb.getDocs(hwCol(code))).docs) {
@@ -7666,17 +7678,26 @@ async function hwClear(code) { // 과제와 학생이 낸 것 모두 지우기
 function hwPanel(host) { // 점수 설정 → 과제
   if (!kidOn()) return h("p", { class: "rw-h" }, "과제는 학생 화면으로 내요. 먼저 🏅 우리반 점수 카드의 설정 → '학생 입장' 탭에서 로그인하고 반 코드를 정해 주세요.");
   const code = reward.cls.code, list = h("div", {}, h("p", { class: "rw-h" }, "불러오는 중…"));
-  const t = h("textarea", { rows: "3", placeholder: "과제 내용 (예: 수학 익힘 32쪽을 풀고 사진을 찍어 내요)" }), link = h("input", { placeholder: "링크 (없으면 비워요) https://…" });
+  const t = h("textarea", { rows: "4", placeholder: "과제 내용 (예: 수학 익힘 32쪽을 풀고 사진을 찍어 내요)\n링크는 https://… 로 붙여 넣으면 저절로 걸려요" });
+  // 🔗 링크 달기: 고른 글(없으면 주소)에 링크를 걸어 [글](주소)로 넣음. 저절로 안 걸리는 주소(naver.com 같은)도 이걸로
+  const lkIn = h("input", { placeholder: "주소 (예: naver.com 또는 https://…)", "aria-label": "링크 주소" }), lkRow = h("div", { class: "hw-row", hidden: "" });
+  const lkGo = () => {
+    let u = lkIn.value.trim(); if (!u) return; if (!/^https?:\/\//i.test(u)) u = "https://" + u;
+    if (!hwLink(u)) return msg.textContent = "⚠︎ 주소를 확인해 주세요.";
+    const a = t.selectionStart, b = t.selectionEnd, sel = t.value.slice(a, b).trim() || u.replace(/^https?:\/\//, "");
+    t.setRangeText(`[${sel}](${u})`, a, b, "end"); lkIn.value = ""; lkRow.hidden = true; msg.textContent = ""; t.focus();
+  };
+  lkIn.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); lkGo(); } };
+  lkRow.append(lkIn, h("button", { onclick: lkGo }, "달기"), h("button", { onclick: () => { lkRow.hidden = true; } }, "취소"));
   const file = h("input", { type: "file", accept: "image/*", hidden: "" }), prev = h("span", { class: "hw-row" }), msg = h("span", { class: "rw-h" });
   let img = "";
   const setImg = v => { img = v; prev.replaceChildren(...(v ? [hwImg(v), h("button", { onclick: () => setImg("") }, "사진 빼기")] : [])); };
   file.onchange = async () => { const f = file.files[0]; file.value = ""; if (!f) return; msg.textContent = "사진 줄이는 중…"; try { setImg(await hwPhoto(f)); msg.textContent = ""; } catch (e) { msg.textContent = "⚠︎ 이 사진은 열 수 없어요."; } };
   const go = h("button", { class: "main", onclick: async () => {
-    const v = { t: t.value.trim(), link: link.value.trim(), img, at: Date.now() };
-    if (v.link && !hwLink(v.link)) return msg.textContent = "⚠︎ 링크는 https:// 로 시작해야 해요.";
-    if (!v.t && !v.link && !img) return msg.textContent = "⚠︎ 내용·링크·사진 중 하나는 있어야 해요.";
+    const v = { t: t.value.trim(), img, at: Date.now() };
+    if (!v.t && !img) return msg.textContent = "⚠︎ 내용이나 사진 중 하나는 있어야 해요.";
     go.disabled = true; msg.textContent = "올리는 중…";
-    try { await fb.addDoc(hwCol(code), v); t.value = link.value = ""; setImg(""); msg.textContent = "✅ 과제를 냈어요. 학생 화면에 보여요."; load(); }
+    try { await fb.addDoc(hwCol(code), v); t.value = ""; setImg(""); msg.textContent = ""; form.hidden = true; addB.hidden = false; note.textContent = "✅ 과제를 냈어요. 학생 화면에 보여요."; load(); }
     catch (e) { msg.textContent = "⚠︎ 올리지 못했어요. 인터넷 연결이나 Firestore 규칙을 확인해 주세요."; } finally { go.disabled = false; }
   } }, "과제 내기");
   // 낸 것 크게 보기: 화살표·←→로 넘기고, Esc로 닫고, ⛶로 전체 화면
@@ -7724,7 +7745,7 @@ function hwPanel(host) { // 점수 설정 → 과제
   };
   const item = d => {
     const v = d.data(), u = hwLink(v.link), box = h("div");
-    return h("div", { class: "hw-it" }, v.t ? h("p", {}, v.t) : null, u ? h("p", {}, "🔗 ", h("a", { href: u, target: "_blank", rel: "noopener noreferrer" }, u)) : null, hwImg(v.img),
+    return h("div", { class: "hw-it" }, v.t ? h("p", {}, ...hwText(v.t)) : null, u ? h("p", {}, "🔗 ", h("a", { href: u, target: "_blank", rel: "noopener noreferrer" }, u)) : null, hwImg(v.img),
       h("div", { class: "hw-row", style: "margin-top:6px" }, h("small", { class: "rw-h" }, new Date(v.at).toLocaleDateString("ko-KR")),
         h("button", { onclick: () => subs(d, box).catch(() => box.replaceChildren(h("p", { class: "rw-h" }, "⚠︎ 불러오지 못했어요."))) }, "낸 것 보기"),
         h("button", { class: "danger", onclick: async () => {
@@ -7737,9 +7758,13 @@ function hwPanel(host) { // 점수 설정 → 과제
     list.replaceChildren(...(ds.length ? ds.map(item) : [h("p", { class: "rw-h" }, "아직 낸 과제가 없어요.")]));
   }, () => list.replaceChildren(h("p", { class: "rw-h" }, "⚠︎ 과제를 불러오지 못했어요. Firestore 규칙을 새로 게시했는지 확인해 주세요.")));
   load();
-  return h("div", {}, h("p", { class: "rw-h" }, "학생 화면(반 코드 + 번호 + 비밀번호)에 과제가 보여요. 학생은 링크나 사진으로 내요."),
-    h("div", { class: "hw-new" }, t, link, h("div", { class: "hw-row" }, h("button", { onclick: () => file.click() }, "📷 사진 넣기"), file, prev), h("div", { class: "hw-row" }, go, msg)),
-    h("b", {}, "낸 과제"), list);
+  // 첫 화면은 낸 과제 목록. 오른쪽 위 '+ 과제 추가'로 쓰는 칸을 열고, '과제 내기'는 오른쪽 아래
+  const note = h("span", { class: "rw-h" });
+  const form = h("div", { class: "hw-new", hidden: "" }, t,
+    h("div", { class: "hw-row" }, h("button", { onclick: () => file.click() }, "📷 사진 넣기"), h("button", { onclick: () => { lkRow.hidden = false; lkIn.focus(); } }, "🔗 링크 달기"), file, prev), lkRow,
+    h("div", { class: "hw-row hw-send" }, msg, h("button", { onclick: () => { form.hidden = true; addB.hidden = false; msg.textContent = ""; } }, "취소"), go));
+  const addB = h("button", { class: "main", onclick: () => { form.hidden = false; addB.hidden = true; note.textContent = ""; t.focus(); } }, "+ 과제 추가");
+  return h("div", {}, h("div", { class: "hw-head" }, h("b", {}, "낸 과제"), note, addB), form, list);
 }
 // 메인 보드 📮 과제함 카드: 점수 설정 → 과제 탭과 같은 화면. 로그인·반 코드가 바뀌면 새로 그림
 let hwCardKey = null;

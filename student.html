@@ -67,6 +67,7 @@
   .hw-it { background: #fff; border-radius: 22px; padding: 18px 20px; box-shadow: 0 2px 10px rgba(60, 40, 20, .06); }
   .hw-it > p { margin: 0 0 10px; font-size: 21px; white-space: pre-line; } .hw-it .when { font-size: 15px; color: var(--muted); }
   .hw-it img { display: block; max-width: 100%; max-height: 420px; border-radius: 12px; margin: 0 0 10px; }
+  .hw-it > p a { color: var(--accent); word-break: break-all; }
   .hw-it a.go { display: inline-block; margin: 0 0 10px; padding: 8px 18px; border-radius: 12px; background: var(--card); border: 1.5px solid var(--line); color: var(--ink); font-size: 19px; text-decoration: none; }
   .hw-me { border-top: 2px dashed var(--line); padding-top: 12px; display: grid; gap: 8px; }
   .hw-me .done { margin: 0; font-size: 20px; font-weight: 600; color: #2f9e44; }
@@ -187,6 +188,18 @@ async function save() { // 입어 본 가게 물건은 이때 삼. 점수가 모
 // ───── 과제: 선생님이 낸 과제를 보고 링크나 사진으로 냄
 // 서버: classes/{반 코드}/hw/{id} = { t, link, img, at } · classes/{반 코드}/hw/{id}/sub/{번호}-{비밀번호} = { link, img, at } (내 것만 쓸 수 있음)
 let hws = [], mine = {}, hwDraft = {}, hwOpen = true, hwL = null; // 과제가 첫 화면, 꾸미기는 오른쪽 위 작은 버튼
+// 과제 글 속 링크: [글](https://…) 와 https://… · www.… 를 눌러지는 링크로 (교사 보드 hwText와 같음)
+const hwText = t => {
+  const out = [], re = /\[([^\]\n]+)\]\((https?:\/\/[^\s)]+)\)|(https?:\/\/[^\s<>"]+|www\.[^\s<>"]+)/g; let i = 0, m;
+  while ((m = re.exec(t))) {
+    if (m.index > i) out.push(t.slice(i, m.index));
+    let u = m[2] || m[3], tail = "";
+    if (!m[2]) { const k = u.match(/[.,!?)\]]+$/); if (k) { tail = k[0]; u = u.slice(0, -tail.length); } }
+    const href = /^www\./i.test(u) ? "https://" + u : u;
+    out.push(el("a", { href, target: "_blank", rel: "noopener noreferrer" }, m[1] || u), tail); i = m.index + m[0].length;
+  }
+  out.push(t.slice(i)); return out;
+};
 const okLink = u => /^https?:\/\/\S+$/i.test(u || "") ? u : ""; // javascript: 같은 주소는 안 씀
 const subRef = id => fs.doc(db, "classes", hwL.code, "hw", id, "sub", hwL.key);
 const pic = src => src?.startsWith("data:image/") ? el("img", { src, alt: "사진" }) : null;
@@ -223,7 +236,7 @@ function hwDraw() {
         dr.img ? el("button", { onclick: () => { dr.img = ""; hwDraw(); } }, "사진 빼기") : null), pic(dr.img),
         el("div", { class: "row" }, go, s ? el("button", { onclick: () => { hwDraft[x.id] = { link: s.link || "", img: s.img || "", edit: false }; hwDraw(); } }, "취소") : null)];
     }
-    return el("div", { class: "hw-it" }, x.t ? el("p", {}, x.t) : null, u ? el("a", { class: "go", href: u, target: "_blank", rel: "noopener noreferrer" }, "🔗 링크 열기") : null, pic(x.img),
+    return el("div", { class: "hw-it" }, x.t ? el("p", {}, ...hwText(x.t)) : null, u ? el("a", { class: "go", href: u, target: "_blank", rel: "noopener noreferrer" }, "🔗 링크 열기") : null, pic(x.img),
       el("div", { class: "hw-me" }, el("span", { class: "when" }, new Date(x.at).toLocaleDateString("ko-KR") + " 과제"), ...me));
   }));
 }
