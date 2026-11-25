@@ -6,8 +6,8 @@ sys.path.insert(0,os.path.dirname(os.path.abspath(__file__))); from outline impo
 OUT=sys.argv[1] if len(sys.argv)>1 else './'
 W,H=516,772; S=2                      # 2배 캔버스에서 작업
 INK=np.array([45,34,38.])
-TOPY=248; CX=129*S                    # 허리 위 끝 (출력 px), 상의 밑에 들어감
-WAIST=63                              # 허리 폭 (출력 px): 몸통 60 + 조금
+TOPY=260; CX=129*S                    # 허리 위 끝 (출력 px). 상의 밑단 안쪽에서 시작해 허리가 상의보다 넓어 보이지 않게
+WAIST=58                              # 허리 폭 (출력 px)
 FOOT=374                              # 긴 바지·치마 끝 (발목). 이보다 길면 세로로 줄임
 SHEETS=['bot8','bot7','bot9','bot10']
 def ramp(m,s=1.2): return np.clip((ndimage.gaussian_filter(m.astype(float),s)-.5)*3+.5,0,1)
