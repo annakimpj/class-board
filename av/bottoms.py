@@ -1,5 +1,5 @@
 # 하의 시트(raw/bot7~10.webp, 저장소에 없음)를 잘라 av/bottom-N.png로. av/ 안에서: python3 bottoms.py ./
-# 순서: bot8(예전 하의 12개, 번호 그대로) → bot7 → bot9 → bot10
+# 하의 12개 (bot8)
 from PIL import Image; import numpy as np; from scipy import ndimage
 import sys, os
 sys.path.insert(0,os.path.dirname(os.path.abspath(__file__))); from outline import uniform
@@ -9,7 +9,7 @@ INK=np.array([45,34,38.])
 TOPY=260; CX=129*S                    # 허리 위 끝 (출력 px). 상의 밑단 안쪽에서 시작해 허리가 상의보다 넓어 보이지 않게
 WAIST=58                              # 허리 폭 (출력 px)
 FOOT=374                              # 긴 바지·치마 끝 (발목). 이보다 길면 세로로 줄임
-SHEETS=['bot8','bot7','bot9','bot10']
+SHEETS=['bot8']
 def ramp(m,s=1.2): return np.clip((ndimage.gaussian_filter(m.astype(float),s)-.5)*3+.5,0,1)
 def items(f):
   a=np.array(Image.open(f'raw/{f}.webp').convert('RGB')).astype(float)

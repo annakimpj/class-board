@@ -2,11 +2,11 @@
 import numpy as np; from scipy import ndimage
 INK=np.array([45,34,38.])
 def ramp(m,s=1.0): return np.clip((ndimage.gaussian_filter(m.astype(float),s)-.5)*3+.5,0,1)
-def uniform(a, rgb, S, R=2.0, D=2.5):
+def uniform(a, rgb, S, R=3.0, D=3.0):
   # a: 옷 자리(bool), rgb: 색. 2배 캔버스. R: 새 선 굵기, D: 벗길 원래 선 두께 (둘 다 출력 px)
   din=ndimage.distance_transform_edt(a)
   strip=a&(rgb.max(-1)<120)&(din<=D*S)          # 가장자리의 어두운 픽셀 = 원래 선
-  inner=ndimage.binary_opening(a&~strip,iterations=1)
+  inner=ndimage.gaussian_filter(ndimage.binary_opening(a&~strip,iterations=1).astype(float),1.2*S)>.5  # 계단 진 가장자리를 매끈하게
   sil=ndimage.distance_transform_edt(~inner)<=R*S  # 안쪽 + 고른 굵기 선
   _,idx=ndimage.distance_transform_edt(~inner,return_indices=True); col=rgb[idx[0],idx[1]]
   body=ramp(inner)[...,None]

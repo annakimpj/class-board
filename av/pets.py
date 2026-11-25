@@ -4,10 +4,10 @@ from PIL import Image; import numpy as np; from scipy import ndimage
 import sys, os
 sys.path.insert(0,os.path.dirname(os.path.abspath(__file__))); from outline import uniform
 OUT=sys.argv[1] if len(sys.argv)>1 else './'
-W,H=516,772; S=2
+W,H=756,852; S=2                 # 펫 칸 378×426 = 아바타 칸(258×386)을 위로 40, 좌우로 60씩 넓힘 (avatar.js .avb 자리)
 AIR={7,8,9,10,11,12,19}          # 펫 번호 (1부터): 날개 고양이, 아기 드래곤, 천사 별, 달 고양이, 로봇, 불새, 천사 종
-BOX=66                           # 펫 크기 (출력 px, 긴 쪽)
-FOOT=(40,384); SKY=(226,228)     # 발치: 가운데 x·바닥 y / 허공: 가운데 (출력 px)
+BOX=92; BOXAIR=84                # 펫 크기 (출력 px, 긴 쪽): 발치 / 허공
+FOOT=(104,424); SKY=(328,56)     # 발치: 가운데 x·바닥 y / 허공(머리 오른쪽 위): 가운데 (넓힌 칸 기준)
 def items(f):
   a=np.array(Image.open(f'raw/{f}.webp').convert('RGB')).astype(float)
   m=a.min(-1)<225; lab,n=ndimage.label(ndimage.binary_dilation(m,iterations=14))
@@ -30,10 +30,10 @@ def make(c,m0,n):
   ys,xs=np.where(m); y0,y1,x0,x1=ys.min(),ys.max()+1,xs.min(),xs.max()+1
   core=ndimage.binary_erosion(m,iterations=1); _,idx=ndimage.distance_transform_edt(~core,return_indices=True); rgb=c[idx[0],idx[1]]
   im=Image.fromarray(np.dstack([rgb,m*255.]).astype(np.uint8)).crop((x0,y0,x1,y1))
-  k=BOX*S/max(im.size); im=im.resize((round(im.width*k),round(im.height*k)),Image.LANCZOS)
+  k=(BOXAIR if n in AIR else BOX)*S/max(im.size); im=im.resize((round(im.width*k),round(im.height*k)),Image.LANCZOS)
   if n in AIR: ox,oy=SKY[0]*S-im.width//2,SKY[1]*S-im.height//2
   else: ox,oy=FOOT[0]*S-im.width//2,FOOT[1]*S-im.height
-  ox=int(np.clip(ox,2*S,W-im.width-2*S))
+  ox=int(np.clip(ox,2*S,W-im.width-2*S)); oy=int(np.clip(oy,2*S,H-im.height))
   cv=np.zeros((H,W,4)); cv[oy:oy+im.height,ox:ox+im.width]=np.array(im)
   out,al=uniform(cv[...,3]>128,cv[...,:3],S)
   Image.fromarray(np.dstack([out,al*255]).round().clip(0,255).astype(np.uint8)).resize((W//2,H//2),Image.LANCZOS).save(f'{OUT}pet-{n}.png',optimize=True)
