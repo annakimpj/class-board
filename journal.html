@@ -72,7 +72,8 @@
   .day.sun .n { color: #e03131; } .day.off .holi { color: #e8590c; background: #fff4e6; border-radius: 4px; padding: 0 4px; } .day .holi { font-size: 11px; color: #e03131; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; } .day.sat .n { color: #1c7ed6; }
   .day.today .n { display: inline-grid; place-items: center; min-width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: #fff; }
   .day .marks { display: flex; align-items: center; gap: 3px; flex-wrap: wrap; margin-left: 2px; }
-  .day .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .day .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; cursor: pointer; } .day .marks > * { cursor: pointer; } .day .dot:hover { transform: scale(1.4); }
+  .pop .daylist { max-height: 50vh; } .pop .daylist .meta { margin-left: auto; font-weight: 400; color: var(--muted); font-size: 12px; }
   .day .mk { width: 14px; height: 14px; } .day .mk.cs { color: #7048e8; } .day .mk.nt { color: #d8cfc5; } .day .mk.nt.on { color: #e8a317; }
   .day .plus { position: absolute; right: 4px; bottom: 4px; width: 24px; height: 24px; padding: 0; justify-content: center; border-radius: 50%; opacity: 0; background: #fff; }
   .day:hover .plus, .day.sel .plus { opacity: 1; }
@@ -99,7 +100,11 @@
   .inbox .clock { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); border: 0; background: none; padding: 3px; color: var(--muted); }
   .inbox .clock:hover { color: var(--accent); } .inbox .tpick { position: absolute; right: 0; bottom: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; border: 0; padding: 0; }
   .pop .bell { padding: 4px; } .pop .addrow .bell .i { width: 18px; height: 18px; }
-  .quick { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; } .quick button { justify-content: flex-start; padding: 6px 8px; font-size: 14px; }
+  .evquick { margin-top: 6px; } .evquick input { width: 100%; box-sizing: border-box; font: inherit; font-size: 14px; border: 1.5px solid var(--line); border-radius: 8px; padding: 6px 10px; background: #fff; }
+  .evquick input:focus { outline: none; border-color: var(--accent); }
+  .addseg { display: flex; margin-top: 8px; border: 1.5px solid var(--line); border-radius: 8px; overflow: hidden; background: #fff; } /* 한 버튼을 셋으로 나눔 */
+  .addseg button { flex: 1; border: 0; border-radius: 0; background: none; padding: 7px 4px; font-size: 13.5px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; color: var(--ink); }
+  .addseg button + button { border-left: 1.5px solid var(--line); } .addseg button:hover { background: var(--soft); color: var(--accent); } .addseg .i { width: 15px; height: 15px; }
   .item { display: flex; align-items: flex-start; gap: 6px; padding: 5px 2px; border-bottom: 1px solid #f1ece5; font-size: 14px; }
   .item .t { font-variant-numeric: tabular-nums; color: var(--accent); font-size: 12.5px; padding-top: 1px; flex: none; }
   .item .cdot { flex: none; width: 7px; height: 7px; border-radius: 50%; margin-top: 7px; }
@@ -218,11 +223,11 @@
       <div class="cal" id="cal"></div>
     </div>
     <div class="side">
-      <div class="box"><h2 id="day-title"></h2>
-        <div class="quick"><button data-add="ev" data-i="cal">일정</button><button data-add="rec" data-i="pen">학생 기록</button><button data-add="cs" data-i="chat">상담</button><button data-add="note" data-i="note">일지</button></div>
-      </div>
+      <div class="box"><h2 id="day-title"></h2></div>
       <div class="box duo"><h2 data-i="cal">일정</h2><div class="scroll" id="day-evs"></div>
-        <h2 data-i="pen" class="h2b">학생 기록 · 상담 · 일지</h2><div class="scroll" id="day-list"></div></div>
+        <form class="evquick" id="ev-quick"><input type="text" id="ev-q" placeholder="일정 쓰고 Enter (예: 14:00 회의)" autocomplete="off" aria-label="일정 쓰기"></form>
+        <h2 data-i="pen" class="h2b">학생 기록 · 상담 · 일지</h2><div class="scroll" id="day-list"></div>
+        <div class="addseg"><button data-add="rec" data-i="plus">학생 기록</button><button data-add="cs" data-i="plus">상담</button><button data-add="note" data-i="plus">일지</button></div></div>
     </div>
   </section>
   <section class="pane" id="p-rec" hidden>
@@ -779,6 +784,14 @@ function ddayForm(anchor) { // 디데이(방학식 등)와 재량휴업일: 쓰�
   pop(anchor, "디데이", "cal", [el("p", { class: "sub" }, "디데이 (방학식 등)"), el("p", { class: "tip" }, (jset().noToday ? "출근일은 내일부터 그날까지 세요" : "출근일은 오늘과 그날을 모두 포함해서 세요") + " (주말·공휴일·재량휴업일은 빼요. 설정에서 바꿔요)." + " 그날 당일은 D-day(D-0)예요. 날짜는 20270104처럼 써도 돼요."), dd,
     el("p", { class: "sub" }, "재량휴업일 — 출근일에서 빼고 달력에 주황색으로"), off], () => {}, { noSave: true, onClose: () => { J.dday = J.dday.filter(x => x.d); J.offs = J.offs.filter(x => x.d); store(); } });
 }
+// 달력 칸 표시를 눌렀을 때: 그날 학생 기록·상담·생일을 팝업으로 (줄을 누르면 고치기)
+function dayList(anchor, title, icon, rows) { pop(anchor, title, icon, [el("div", { class: "plist daylist" }, ...rows)], () => {}, { noSave: true }); }
+const dayRecs = (d, a) => dayList(a, `${dayName(d)} 학생 기록`, "pen", recOf(d).map(r => el("div", { class: "item stack", title: "누르면 고치기", onclick: ev => recForm(r.date, r, ev.currentTarget) },
+  el("div", { class: "ihead" }, el("span", { class: "k", style: `background:${kindColor(r.kind)}` }, r.kind), names(r.ps)), el("div", { class: "ibody" }, r.text))));
+const dayCs = (d, a) => dayList(a, `${dayName(d)} 상담`, "chat", csOf(d).map(c => el("div", { class: "item stack", title: "누르면 고치기", onclick: ev => csForm(c.date, c, ev.currentTarget) },
+  el("div", { class: "ihead" }, el("span", { class: "k", style: "background:#7048e8" }, c.way), names(c.ps) || c.target, c.time ? el("small", { class: "meta" }, c.time) : null),
+  el("div", { class: "ibody" }, [c.topic, c.text, c.next ? "→ " + c.next : ""].filter(Boolean).join("\n")))));
+const dayBd = (d, list, a) => dayList(a, `${dayName(d)} 생일`, "cake", list.map(n => el("div", { class: "item bdline" }, ico("cake"), `${n} 생일이에요`)));
 function calDraw() {
   const off = jset().mon ? 1 : 0, y = month.getFullYear(), m = month.getMonth(), lead = (new Date(y, m, 1).getDay() - off + 7) % 7, start = new Date(y, m, 1 - lead), t = today();
   $("cal-title").textContent = `${y}년 ${m + 1}월`;
@@ -802,10 +815,11 @@ function calDraw() {
     const d = new Date(start); d.setDate(start.getDate() + i); const s = iso(d), evs = evOf(s).filter(e => !e.end), recs = recOf(s), nc = csOf(s).length, wd = d.getDay(), wrote = !!J.notes[s]?.trim();
     const plus = el("button", { class: "plus", title: "이 날에 쓰기", "aria-label": "이 날에 쓰기", onclick: ev => { ev.stopPropagation(); choose(s); addMenu(ev.currentTarget, s); } }, ico("plus"));
     const mk = (n, cls, title) => { const x = ico(n); x.setAttribute("class", "i mk " + cls); x.append(Object.assign(document.createElementNS("http://www.w3.org/2000/svg", "title"), { textContent: title })); return x; };
-    const marks = el("span", { class: "marks" }, ...recs.slice(0, 8).map(r => el("i", { class: "dot", style: `background:${kindColor(r.kind)}`, title: `${r.kind} · ${names(r.ps)}` })),
-      recs.length > 8 ? el("small", {}, "+") : null, nc ? mk("chat", "cs", `상담 ${nc}`) : null,
-      wrote ? mk("note", "nt on", "일지 씀") : null, bd[s.slice(5)] ? mk("cake", "bd", "생일: " + bd[s.slice(5)].join(", ")) : null);
-    cells.push(el("div", { class: `day${d.getMonth() !== m ? " out" : ""}${s === t ? " today" : ""}${s === pick ? " sel" : ""}${wd === 0 || (holiName(s) && !offOf(s)) ? " sun" : wd === 6 ? " sat" : ""}${offOf(s) ? " off" : ""}`, "data-d": s, style: `grid-row:${Math.floor(i / 7) + 2};grid-column:${i % 7 + 1}`, onclick: () => choose(s) }, // 자리를 정해 둬야 연속 일정 막대와 겹쳐 놓을 수 있음
+    const on = (x, fn) => { if (x) x.onclick = ev => { ev.stopPropagation(); choose(s); fn(ev.currentTarget); }; return x; }; // 표시를 누르면 그날 내용 팝업
+    const marks = el("span", { class: "marks" }, ...recs.slice(0, 8).map(r => on(el("i", { class: "dot", style: `background:${kindColor(r.kind)}`, title: `${r.kind} · ${names(r.ps)} (누르면 자세히)` }), a => dayRecs(s, a))),
+      recs.length > 8 ? on(el("small", {}, "+"), a => dayRecs(s, a)) : null, on(nc ? mk("chat", "cs", `상담 ${nc}`) : null, a => dayCs(s, a)),
+      on(wrote ? mk("note", "nt on", "일지 씀") : null, a => noteForm(s, a)), on(bd[s.slice(5)] ? mk("cake", "bd", "생일: " + bd[s.slice(5)].join(", ")) : null, a => dayBd(s, bd[s.slice(5)], a)));
+    cells.push(el("div", { class: `day${d.getMonth() !== m ? " out" : ""}${s === t ? " today" : ""}${s === pick ? " sel" : ""}${wd === 0 || (holiName(s) && !offOf(s)) ? " sun" : wd === 6 ? " sat" : ""}${offOf(s) ? " off" : ""}`, "data-d": s, style: `grid-row:${Math.floor(i / 7) + 2};grid-column:${i % 7 + 1}`, ondblclick: ev => { if (!ev.target.closest(".ev, .spbar, .plus, .marks, button")) evForm(s, null, ev.currentTarget); }, onclick: () => choose(s) }, // 자리를 정해 둬야 연속 일정 막대와 겹쳐 놓을 수 있음
       el("div", { class: "top" }, el("span", { class: "n", title: holiName(s) }, String(d.getDate())), holiName(s) ? el("small", { class: "holi" }, holiName(s)) : null, marks),
       el("div", { class: "evs", style: lanes[Math.floor(i / 7)] ? `padding-top:${lanes[Math.floor(i / 7)] * 19}px` : "" }, ...evs.map(e => { const c = el("span", { class: "ev" + (isDone(e, s) ? " done" : ""), "data-id": e.id, oncontextmenu: ev => evCtx(ev, e, s), style: evStyle(e), title: `${e.time ? e.time + " " : ""}${e.text}${e.rep ? " (반복)" : ""} (누르면 줄 긋기 · 더블클릭으로 수정 · 끌면 다른 날로)`, onclick: tap(() => toggle(e, s), a => evForm(s, e, a)) }, (e.time ? e.time + " " : "") + e.text); chipDrag(c, e); return c; })), plus));
   }
@@ -872,6 +886,11 @@ $("cal-prev").onclick = () => { month.setMonth(month.getMonth() - 1); calDraw();
 $("cal-next").onclick = () => { month.setMonth(month.getMonth() + 1); calDraw(); };
 $("cal-today").onclick = () => { month = new Date(); month.setDate(1); pick = today(); calDraw(); };
 document.querySelectorAll("[data-add]").forEach(b => b.onclick = () => add(b.dataset.add, pick, b));
+$("ev-quick").onsubmit = e => { // 오른쪽 일정 칸에서 바로 쓰기: Enter마다 하나씩 (고른 날에)
+  e.preventDefault(); const v = $("ev-q").value.trim(); if (!v) return;
+  const { time, text } = parseTime(v);
+  J.events.push({ id: uid(), date: pick, time, text, done: false, alarm: "", ord: evOf(pick).length }); store(); $("ev-q").value = ""; calDraw(); $("ev-q").focus();
+};
 // 알람: 알람을 켠 일정만 (정시 / 10분 전). 이 창에서만 울림 (학생 화면에는 안 나옴)
 const rung = new Set();
 setInterval(() => {
