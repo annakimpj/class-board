@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#e9e2d6"><!-- 창 위 버튼 줄과 머리줄을 같은 색으로: 잡고 옮기는 곳이 보이게 -->
 <title>일지 · 우리반 보드</title>
 <link rel="icon" href="icon-192.png">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
@@ -21,9 +22,11 @@
   svg.i { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
   [hidden] { display: none !important; }
   body { display: grid; grid-template-rows: auto 1fr; }
-  header { display: flex; align-items: center; gap: 4px; padding: 10px 16px; padding-right: calc(100vw - env(titlebar-area-x, 0px) - env(titlebar-area-width, 100vw) + 16px); background: #fff; border-bottom: 1.5px solid var(--line); flex-wrap: wrap;
+  header { display: flex; align-items: center; gap: 4px; padding: 12px 16px; min-height: 52px; box-sizing: border-box; padding-right: calc(100vw - env(titlebar-area-x, 0px) - env(titlebar-area-width, 100vw) + 16px); background: #e9e2d6; border-bottom: 1.5px solid #ddd3c4; flex-wrap: wrap;
            app-region: drag; -webkit-app-region: drag; } /* 머리줄을 잡고 창을 옮겨요 */
   header button, header input { app-region: no-drag; -webkit-app-region: no-drag; }
+  header h1::before { content: ""; width: 8px; height: 18px; margin-right: 2px; background: radial-gradient(circle, #a89c8e 1.2px, transparent 1.6px) 0 0 / 4px 4px; opacity: .8; } /* 잡는 곳 표시 */
+  header .tab:not(.on):hover { background: rgba(255, 255, 255, .5); } header .dday .dd { background: #fff; }
   header h1 { margin: 0 14px 0 0; font-size: 18px; display: flex; align-items: center; gap: 6px; }
   header .tab { border: 0; background: none; padding: 7px 14px; border-radius: 999px; font-size: 15px; color: var(--muted); }
   header .tab.on { background: var(--soft); color: var(--accent); font-weight: 600; }
@@ -154,6 +157,9 @@
   .pop .btns .danger { color: #e03131; margin-right: auto; } .pop .btns .nfoot { margin-right: auto; display: flex; align-items: center; gap: 8px; } .pop .nfoot .danger { margin: 0; }
   .ring b { display: block; font-size: 28px; color: var(--accent); } .ring p { font-size: 20px; margin: 6px 0 16px; white-space: pre-line; } .ring .btns { display: flex; gap: 8px; justify-content: center; }
   .cover { position: fixed; inset: 0; z-index: 40; background: #fbf3e4; display: grid; place-content: center; text-align: center; gap: 6px; user-select: none; }
+  .cover-bar { position: fixed; left: 0; right: 0; top: 0; height: max(44px, env(titlebar-area-height, 0px)); display: flex; align-items: center; gap: 8px; padding: 0 16px;
+               background: #e9e2d6; border-bottom: 1.5px solid #ddd3c4; color: #8d8279; font-size: 13px; app-region: drag; -webkit-app-region: drag; cursor: grab; } /* 덮개가 켜져 있어도 잡고 메인 모니터로 옮길 수 있게 */
+  .cover-bar::before { content: ""; width: 8px; height: 18px; background: radial-gradient(circle, #a89c8e 1.2px, transparent 1.6px) 0 0 / 4px 4px; }
   .cover b { font-size: 34px; color: #2b1d14; } .cover span { color: #a8927c; font-size: 18px; }
   /* 학생 정보 · 출결 · 보관함 */
   #p-info { grid-template-columns: 220px minmax(0, 1fr); }
@@ -200,7 +206,7 @@
 </style>
 </head>
 <body>
-<div class="cover" id="cover" hidden title="두 번 누르면 열려요"><b>우리반 보드</b><span id="cover-date"></span></div>
+<div class="cover" id="cover" hidden title="두 번 누르면 열려요"><div class="cover-bar" title="여기를 잡고 끌어서 옮겨요">잡고 옮기기</div><b>우리반 보드</b><span id="cover-date"></span></div>
 <header>
   <h1 data-i="book">교사 일지</h1>
   <button class="tab" data-tab="cal" data-i="cal">달력</button><button class="tab" data-tab="rec" data-i="pen">학생 기록</button><button class="tab" data-tab="cs" data-i="chat">상담 일지</button><button class="tab" data-tab="note" data-i="note">일지</button><button class="tab" data-tab="info" data-i="info">학생 정보</button><button class="tab" data-tab="att" data-i="att">출결</button><button class="tab" data-tab="box" data-i="box">보관함</button>
