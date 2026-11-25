@@ -6,7 +6,8 @@ const AV_SKIN = [["#fff0f1"], ["#ffddd7"], ["#efc7b8"], ["#cea095"], ["#906a68"]
 const AV_HAIR = [["#6b4a3f"], ["#3a3a46"], ["#ffe066"], ["#ffb347"], ["#ff6b6b"], ["#ff9ccf"], ["#c39bff"], ["#6fa8ff"], ["#7fe3ff"], ["#6ee7b7"], ["#9be36b"], ["#eef1f6"]];
 // 볼색: 볼터치 그림(av/cheek-N.png, av/cheek.py로 만듦)은 모양만 있어서 이 색을 곱해서 칠함. 주근깨(av/cheek-N-f.png)는 그림 색 그대로
 const AV_CHEEK = [["#ff8fa3"], ["#ffab91"], ["#ff5c8a"], ["#ff6b6b"], ["#ffb36b"], ["#c9a0ff"]];
-const AV_FRECK = [2, 3]; // 주근깨가 같이 있는 볼터치 번호
+const AV_FRECK = [2, 3];
+const AV_EAR = new Set([0, 1, 4, 5, 6, 7, 9, 10]); // 귀가 보이는 머리: 몸에서 뗀 귀(av/ear-피부.png)를 머리 위에 그림 (av/hairfix.py) // 주근깨가 같이 있는 볼터치 번호
 const AV_NAMES = {
   hair: ["부스스 짧은 머리", "레이어드 단발", "일자 단발", "웨이브 단발", "짧은 스포츠머리", "뾰족 머리", "뽀글 머리", "똥머리", "긴 생머리", "양 똥머리", "양 갈래 땋은 머리", "긴 웨이브"],
   top: ["세일러 블라우스", "크림 후드티", "검정 재킷", "분홍 가디건", "고양이 후드티", "흰 셔츠", "야구 점퍼", "곰돌이 니트", "검정 프릴 블라우스", "줄무늬 티", "하얀 패딩", "빨간 망토", "카키 야상", "멜빵 원피스", "검정 후드티", "레이스 블라우스"],
@@ -38,7 +39,7 @@ const avWear = (wear = {}) => ({ ...AV_REQ, ...Object.fromEntries(Object.entries
 // av = { skin, hc(머리색 번호), cc(볼색 번호) }, wear = { pet, cheek, eye, mouth, hair, top, bottom } → 겹친 그림 (div 하나)
 // 처음 그릴 때 모든 그림을 미리 받아 풀어 둠: 색·옷을 바꿀 때 새 <img>가 잠깐 비었다가 뜨지 않게 (Image를 잡아 둬야 풀린 채로 남음)
 let avPre = null;
-const avPreload = () => avPre ||= [...AV_SKIN.map((_, i) => `av/base-${i}.png`), ...AV_ITEMS.filter(it => it.id !== "pet-0").map(it => it.img), ...AV_ITEMS.filter(it => it.slot === "hair").map(it => it.img.replace(".png", "-g.png")), ...AV_FRECK.map(i => `av/cheek-${i}-f.png`)]
+const avPreload = () => avPre ||= [...AV_SKIN.map((_, i) => `av/base-${i}.png`), ...AV_ITEMS.filter(it => it.id !== "pet-0").map(it => it.img), ...AV_ITEMS.filter(it => it.slot === "hair").map(it => it.img.replace(".png", "-g.png")), ...AV_FRECK.map(i => `av/cheek-${i}-f.png`), ...AV_SKIN.map((_, i) => `av/ear-${i}.png`)]
   .map(s => { const im = new Image(); im.src = s; im.decode?.().catch(() => {}); return im; });
 function avPic(av, wear = {}) {
   avPreload();
@@ -48,5 +49,5 @@ function avPic(av, wear = {}) {
   const ck = avItem(w.cheek).img, cn = +w.cheek.split("-")[1];
   const cheekL = !cn ? "" : `<i style="background:${AV_CHEEK[cc][0]};-webkit-mask-image:url(${ck});mask-image:url(${ck})"></i>` + (AV_FRECK.includes(cn) ? img(ck.replace(".png", "-f.png")) : "");
   // .avp = 펫 칸(378×426), 그 안의 .avb = 아바타 칸(258×386, 위 40·왼쪽 60 띄움). 펫 그림은 펫 칸 크기
-  return `<div class="avp" aria-hidden="true"><div class="avb">${img(`av/base-${skin}.png`)}${cheekL}${[avItem(w.eye).img, avItem(w.mouth).img, avItem(w.bottom).img, avItem(w.top).img].map(img).join("")}${hairL}</div>${w.pet !== "pet-0" ? img(avItem(w.pet).img) : ""}</div>`;
+  return `<div class="avp" aria-hidden="true"><div class="avb">${img(`av/base-${skin}.png`)}${cheekL}${[avItem(w.eye).img, avItem(w.mouth).img, avItem(w.bottom).img, avItem(w.top).img].map(img).join("")}${hairL}${AV_EAR.has(+w.hair.split("-")[1]) ? img(`av/ear-${skin}.png`) : ""}</div>${w.pet !== "pet-0" ? img(avItem(w.pet).img) : ""}</div>`;
 }
