@@ -22,7 +22,9 @@ SC=FIT*S; TOPY=203*S; CX=129*S
 OPEN={2,6,12,26}           # 앞이 열린 자켓: 사이를 흰 티로
 HOLE={17,19,20,21,23}       # 목 안쪽 흰 빈 곳이 있는 옷: 흰 티로
 NOCUT={0,3,5,8,13,15,16,24,28,29,30,31,33,35,36,37}  # 앞 깃이 목에 걸친 옷: 목선 자르지 않음
-DY={1:-10,4:-10,14:-10,10:-6}   # 옷별 위아래 보정 (출력 px). 후드는 후드가 위로 솟아서 몸통이 내려가 보이니 올림
+DY={}                        # 옷별 위아래 보정 (출력 px)
+# 위쪽만 늘려 올리기 (출력 px): 목선은 올리고 소매 끝·밑단(y=WARPY 아래)은 제자리. 후드는 후드가 솟아 목선이 내려가 보여서
+WARP={1:-10,4:-10,14:-10,10:-6}; WARPY=264
 NECK=dict(ny=207, d=9, nw=19) # 목선: 가운데 y=ny+d, 폭 ±nw (출력 px)
 def ramp(m,s=1.2): return np.clip((ndimage.gaussian_filter(m.astype(float),s)-.5)*3+.5,0,1)
 head=np.array(Image.open(AV+'base-0.png').resize((W,H),Image.NEAREST))[...,3]>128
@@ -50,6 +52,10 @@ def make(k,c):
   sz=(round(im.width*SC),round(im.height*SC)); im=im.resize(sz,Image.LANCZOS); t=t.resize(sz,Image.LANCZOS)
   ox,oy=round(CX-sz[0]/2),round(TOPY+DY.get(k,0)*S)
   cv=np.zeros((H,W,4)); cv[oy:oy+sz[1],ox:ox+sz[0]]=np.array(im); tv=np.zeros((H,W)); tv[oy:oy+sz[1],ox:ox+sz[0]]=np.array(t)
+  if k in WARP:  # 줄 y의 그림을 y-d*w(y)에서 가져옴: 위쪽(w=1)은 d만큼 올라가고 WARPY에서 0
+    y0=TOPY+WARP[k]*S; w=np.clip((WARPY*S-yy)/(WARPY*S-y0),0,1); src=yy-WARP[k]*S*w
+    cv=np.stack([ndimage.map_coordinates(cv[...,i],[src,xx],order=1) for i in range(4)],-1)
+    tv=ndimage.map_coordinates(tv,[src,xx],order=1)
   a=cv[...,3]>128; rgb=cv[...,:3]; tm=tv>128
   a&=~head
   if k in HOLE:  # 목 안쪽 흰 빈 곳(깃 안, 후드 안)도 흰 티로
