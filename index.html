@@ -853,6 +853,7 @@
   .tool-card .rw-tabs button { font-size: 14px; padding: 4px 12px; border-radius: 7px; } .tool-card .rw-tabs button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
   .tool-card .rw-item.worn { border: 2.5px solid var(--accent); background: var(--card); }
   .rw-me b { font-size: 22px; font-weight: normal; } .rw-me .rw-pt { position: static; display: inline-flex; margin-top: 6px; }
+  .tool-card .rw-reset { margin-top: 8px; font-size: 13px; padding: 3px 12px; border-radius: 7px; } .tool-card .rw-reset:disabled { opacity: .45; cursor: default; }
   .rw-pick { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
   .tool-card .rw-pick button { padding: 2px; border-radius: 10px; } .tool-card .rw-pick button.on { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
   .tool-card .rw-pick .sw { width: 22px; height: 22px; padding: 0; border-radius: 50%; }
@@ -4158,7 +4159,8 @@ function rwAvatar(p) {
   const draw = () => {
     const me = h("div", { class: "rw-me" }); me.innerHTML = avPic(d.av, d.wear);
     const sw = (list, key, label) => h("div", { class: "rw-pick" }, h("span", {}, label), ...list.map((c, i) => h("button", { class: "sw" + ((d.av[key] || 0) === i ? " on" : ""), style: `background:${c[0]}`, "aria-label": label, onclick: () => { d.av[key] = i; draw(); } })));
-    me.append(h("div", {}, h("b", {}, seName(p)), h("br"), h("span", { class: "rw-pt" }, `${d.pt} ${unit}`), sw(AV_SKIN, "skin", "피부"), sw(AV_HAIR, "hc", "머리색")));
+    me.append(h("div", {}, h("b", {}, seName(p)), h("br"), h("span", { class: "rw-pt" }, `${d.pt} ${unit}`), sw(AV_SKIN, "skin", "피부"), sw(AV_HAIR, "hc", "머리색"),
+      Object.assign(h("button", { class: "rw-reset", onclick: () => { d.wear.top = AV_REQ.top; d.wear.bottom = AV_REQ.bottom; draw(); } }, "원래대로"), { disabled: d.wear.top === AV_REQ.top && d.wear.bottom === AV_REQ.bottom }))); // 기본 옷(흰 셔츠·카키 반바지)으로, 머리·피부는 그대로
     const tabs = h("div", { class: "rw-tabs" }, AV_TABS.map(([k, t]) => h("button", { class: rwTab === k ? "on" : "", onclick: () => { rwTab = k; draw(); } }, t)));
     const items = AV_ITEMS.filter(it => rwTab === "acc" ? AV_ACC.includes(it.slot) : it.slot === rwTab);
     const shop = h("div", { class: "rw-shop" }, items.map(it => {
