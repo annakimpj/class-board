@@ -793,6 +793,15 @@
   .kid-tb { width: 100%; border-collapse: collapse; font-size: 18px; } .kid-tb th { font-size: 13px; font-weight: normal; color: var(--muted); text-align: left; }
   .kid-tb td, .kid-tb th { border-bottom: 1px solid var(--line); padding: 4px 6px; } .kid-tb .none { color: var(--muted); font-size: 14px; } .kid-status { margin: 0 0 8px; } .kid-code button { font-size: 13px; padding: 2px 10px; border-radius: 8px; }
   .kid-tb .pin { font-weight: 700; font-size: 22px; letter-spacing: .1em; font-variant-numeric: tabular-nums; }
+  .kid-chip { font-size: 13px; padding: 2px 10px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer; margin-left: auto; } .kid-chip b { letter-spacing: .08em; }
+  .hw-head .kid-chip { margin-left: 0; } .rw-tabs .kid-chip { align-self: center; } .hw-tt { margin: 0 0 4px; font-size: 17px; } .hw-new .hw-title { font: inherit; font-size: 16px; font-weight: 600; padding: 6px 8px; border: 1.5px solid var(--line); border-radius: 8px; }
+  .kid-guide { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; margin: 6px 0 10px; } .kid-guide .kid-qr { width: 160px; height: 160px; image-rendering: pixelated; border-radius: 8px; border: 1px solid var(--line); }
+  .kid-guide .kg-c { margin: 0; font-size: 14px; color: var(--muted); } .kid-guide .kg-c b { display: block; font-size: 34px; letter-spacing: .15em; color: var(--ink); } .kid-guide .kg-u { margin: 2px 0 6px; font-size: 12px; color: var(--muted); word-break: break-all; }
+  .kid-guide ol { margin: 0; padding-left: 1.3em; font-size: 15px; line-height: 1.7; }
+  .kid-show { position: fixed; inset: 0; z-index: 9999; background: #fffdf7; display: grid; place-items: center; align-content: center; gap: 2vh; padding: 3vh 4vw; font-family: "Pretendard Variable", "Wanted Sans", "Malgun Gothic", sans-serif; color: #222; }
+  .kid-show h2 { margin: 0; font-size: 5vh; } .kid-show .ks-x { position: absolute; top: 16px; right: 16px; font-size: 18px; padding: 6px 14px; border-radius: 10px; border: 1.5px solid #ddd; background: #fff; cursor: pointer; }
+  .kid-guide.big { gap: 5vw; flex-wrap: nowrap; } .kid-guide.big .kid-qr { width: min(58vh, 42vw); height: min(58vh, 42vw); border: 0; }
+  .kid-guide.big .kg-c { font-size: 3vh; } .kid-guide.big .kg-c b { font-size: 13vh; } .kid-guide.big .kg-u { font-size: 2vh; } .kid-guide.big ol { font-size: 3.6vh; line-height: 1.8; }
   .hw-new { display: grid; gap: 6px; margin-bottom: 12px; } .hw-new[hidden] { display: none; } .hw-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; } .hw-head > b { flex: 1; } .hw-send { justify-content: flex-end; } .hw-send .rw-h { margin-right: auto; } .hw-it p a { word-break: break-all; } .hw-new textarea, .hw-new input:not([type=file]) { font: inherit; font-size: 15px; padding: 6px 8px; border: 1.5px solid var(--line); border-radius: 8px; width: 100%; box-sizing: border-box; }
   .hw-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; } .hw-img { max-width: 160px; max-height: 120px; border-radius: 6px; cursor: zoom-in; display: block; } .hw-img.big { max-width: 100%; max-height: none; cursor: zoom-out; }
   .hw-gal { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin-top: 6px; }
@@ -1505,6 +1514,7 @@
     <button data-tab="time" onclick="openTab('time')">시간표</button>
     <button data-tab="roster" onclick="openTab('roster')">명단</button>
     <button data-tab="history" onclick="openTab('history')">주제 찾기·기록</button>
+    <button data-tab="kids" onclick="openTab('kids')">학생 입장</button>
     <button data-tab="share" onclick="openTab('share')">링크 공유</button>
     <button data-tab="help" onclick="openTab('help')">사용 방법</button>
     <button data-tab="account" onclick="openTab('account')">로그인</button>
@@ -1512,6 +1522,7 @@
     <button data-tab="contact" onclick="openTab('contact')">개발자에게 연락</button>
     <button class="close" onclick="togglePanel(false)" aria-label="닫기" title="닫기 (Esc)">✕</button>
   </nav>
+  <section id="tab-kids" hidden></section>
   <section id="tab-time">
     <h3>1. 연간시간표 가져오기</h3>
     <p class="sum">연간시간표, 주간 시간표, 주간학습안내 모두 돼요. 한글(.hwp·.hwpx), 워드(.docx), PDF 파일을 고르기만 하면 돼요. 다시 넣으면 그 주만 새로 바뀌어요. 날짜가 있는 주간 시간표·주간학습안내를 넣으면 연간시간표의 그 주가 이걸로 바뀌어요.</p>
@@ -1938,6 +1949,7 @@ function openTab(name) {
   if (name === "history") renderHistory();
   if (name === "help") hpDraw(); else $s("hp-body")?.replaceChildren(); // 화면 조각(복사본)은 볼 때만 둠
   if (name === "time") ttEditor();
+  if (name === "kids") kidTab();
   if (name === "account") fbLoad().catch(() => {}); // 로그인 버튼을 누르기 전에 미리 불러 둠 (누른 뒤 불러오면 팝업이 막힐 수 있음)
 }
 function togglePanel(open) { panel.hidden = !open; if (open) openTab("time"); }
@@ -4122,9 +4134,8 @@ function rwSettings() {
   const bulk = h("input", { type: "number", min: "0", max: "999", value: "5", "aria-label": "가격" });
   const SAMPLE = { skin: 0, hair: 1 };
   const draw = () => {
-    const tabs = h("div", { class: "rw-tabs" }, [["reason", "점수 버튼"], ["prize", "점수 약속"], ["shop", "가게 가격"], ["kids", "학생 입장"], ["hw", "과제"]].map(([k, t]) => h("button", { class: rwSetTab === k ? "on" : "", onclick: () => { rwSetTab = k; draw(); } }, t)));
-    if (rwSetTab === "kids") return body.replaceChildren(tabs, kidPanel(rwCard, draw));
-    if (rwSetTab === "hw") return body.replaceChildren(tabs, hwPanel(rwCard));
+    const tabs = h("div", { class: "rw-tabs" }, [["reason", "점수 버튼"], ["prize", "점수 약속"], ["shop", "가게 가격"]].map(([k, t]) => h("button", { class: rwSetTab === k ? "on" : "", onclick: () => { rwSetTab = k; draw(); } }, t)), kidCodeChip());
+    if (rwSetTab === "kids" || rwSetTab === "hw") rwSetTab = "reason"; // 학생 입장은 ⚙ 설정, 과제는 📮 과제함 카드로 옮김
     if (rwSetTab === "prize") return body.replaceChildren(tabs, h("p", { class: "rw-h", style: "white-space:pre-line" }, "학생들이 보는 안내예요. 카드의 📋 점수 약속에 보여요.\n· 점수로 할 수 있는 것은 그냥 숫자 (예: 자리 바꾸기 10)\n· 점수가 빠지는 것은 − (예: 숙제 안 하기 −5)"), pzRows,
       h("button", { class: "rw-add", onclick: () => { prizes.push({ t: "", pt: 10 }); drawPz(); pzRows.querySelectorAll("input")[pzRows.querySelectorAll("input").length - 2]?.focus(); } }, "+ 줄 추가"));
     if (rwSetTab === "reason") {
@@ -6773,8 +6784,8 @@ async function seFormApply() {
 }
 // 전체 화면이 바뀌면 떠 있던 창은 닫고, 선생님 모드 화면은 따라 옮김
 document.addEventListener("fullscreenchange", () => {
-  if ($s("se-form").matches(":popover-open")) $s("se-form").hidePopover();
-  seHost($s("seat-ed"));
+  if ($s("se-form")?.matches(":popover-open")) $s("se-form").hidePopover();
+  if ($s("seat-ed")) seHost($s("seat-ed")); // 자리배치 창을 아직 안 만들었으면 건너뜀
 });
 
 // ── 선생님 모드: 자리 미리 지정(🔒), 두 학생 떨어뜨리기, 분리 그룹, 기록. 학생 화면·출력에는 안 나옴
@@ -7612,15 +7623,47 @@ async function kidSetCode(host, redraw) { // 반 코드 정하기·바꾸기 (4�
   rwStore(); kidListen(); redraw();
 }
 let rwSettingsRedraw = null;
-function kidPanel(host, redraw) { // 점수 설정 → 학생 입장
+// ⚙ 설정 → 학생 입장 (반 코드·비밀번호 관리, 들어오는 방법 안내)
+function kidTab() {
+  const sec = document.getElementById("tab-kids"); if (sec.hidden) return;
+  sec.replaceChildren(h("h3", {}, "학생 입장"), kidPanel(sec, kidTab));
+}
+// 반 코드 칩 (우리반 점수 설정·과제함에 보임). 누르면 ⚙ 설정 → 학생 입장
+function kidCodeChip() {
+  const c = kidOn() ? reward.cls.code : "";
+  return h("button", { class: "kid-chip", title: "학생 입장 설정 열기", onclick: () => { togglePanel(true); openTab("kids"); } }, c ? ["반 코드 ", h("b", {}, c)] : "학생 입장 설정");
+}
+const kidQrUrl = () => kidUrl() + "?c=" + encodeURIComponent(reward.cls.code); // QR로 들어오면 반 코드가 채워짐
+function kidQr(size) { // 학생 주소 QR (canvas)
+  const M = qrMake(kidQrUrl()), cv = h("canvas", { class: "kid-qr" }); if (!M) return cv;
+  const n = M.length + 8, u = Math.max(2, Math.floor(size / n)), g = cv.getContext("2d"); cv.width = cv.height = n * u;
+  g.fillStyle = "#fff"; g.fillRect(0, 0, n * u, n * u); g.fillStyle = "#000"; M.forEach((r, y) => r.forEach((v, x) => v && g.fillRect((x + 4) * u, (y + 4) * u, u, u)));
+  return cv;
+}
+const KID_STEPS = ["QR을 찍거나 주소로 들어가요.", "반 코드와 내 번호를 써요.", "처음이면 비밀번호 숫자 4자리를 정해요. 꼭 기억해요!", "다음부터는 그 비밀번호로 들어와요."];
+function kidGuide(big) { // 들어오는 방법: QR + 반 코드 + 차례
+  return h("div", { class: "kid-guide" + (big ? " big" : "") }, kidQr(big ? 900 : 360),
+    h("div", {}, ...(big ? [h("p", { class: "kg-c" }, "반 코드", h("b", {}, reward.cls.code)), h("p", { class: "kg-u" }, kidUrl())] : []),
+      h("ol", {}, ...KID_STEPS.map(t => h("li", {}, t)))));
+}
+function kidShow() { // 📺 크게 띄우기: 칠판에 전체 화면으로
+  const v = h("div", { class: "kid-show", tabindex: "-1" }), close = () => { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); v.remove(); removeEventListener("keydown", key, true); };
+  function key(e) { if (e.key === "Escape") { if (!document.fullscreenElement) close(); e.stopImmediatePropagation(); } }
+  addEventListener("keydown", key, true);
+  v.append(h("button", { class: "ks-x", onclick: close }, "✕ 닫기"), h("h2", {}, "🏅 우리반 학생 화면 들어가기"), kidGuide(true));
+  v.onfullscreenchange = () => { if (!document.fullscreenElement) close(); }; // Esc로 전체 화면을 나가면 같이 닫음
+  document.body.append(v); v.requestFullscreen?.().catch(() => {}); v.focus();
+}
+function kidPanel(host, redraw) { // ⚙ 설정 → 학생 입장
   rwSettingsRedraw = redraw;
-  if (!fbUser) return h("p", { class: "rw-h" }, "학생 화면은 로그인해야 쓸 수 있어요. ⚙ 설정 → 계정에서 구글로 로그인해 주세요.");
+  if (!fbUser) return h("p", { class: "rw-h" }, "학생 화면은 로그인해야 쓸 수 있어요. 이 설정의 '로그인' 탭에서 구글로 로그인해 주세요.");
   if (!reward.cls?.code) return h("div", {}, h("p", { class: "rw-h" }, "학생이 태블릿·노트북에서 반 코드 + 번호 + 비밀번호(4자리)로 들어와 자기 아바타를 꾸미고, 모은 점수로 물건을 사요. 비밀번호는 학생이 처음 들어올 때 직접 정하고, 여기서 보고 지울 수 있어요."),
     h("button", { class: "main", onclick: () => kidSetCode(host, redraw) }, "반 코드 정하고 시작하기"));
   const pins = reward.cls.pins ||= {}, url = kidUrl(), copy = h("button", { onclick: () => { navigator.clipboard?.writeText(url); copy.textContent = "복사했어요"; setTimeout(() => copy.textContent = "주소 복사", 1500); } }, "주소 복사");
   return h("div", {}, h("div", { class: "kid-code" }, "반 코드", h("b", {}, reward.cls.code), h("button", { onclick: () => kidSetCode(host, redraw) }, "바꾸기")),
     h("div", { class: "kid-url" }, "학생 주소", h("code", {}, url), copy), h("p", { class: "kid-status rw-h" }, kidStatus),
-    h("div", { class: "kid-acts" }, h("button", { onclick: kidPrint }, "🖨︎ 입장 안내 출력"), h("button", { class: "danger", onclick: async () => {
+    h("p", { class: "sum" }, "학생 들어오는 방법"), kidGuide(false),
+    h("div", { class: "kid-acts" }, h("button", { class: "main", onclick: kidShow }, "📺 칠판에 크게 띄우기"), h("button", { onclick: kidPrint }, "🖨︎ 입장 안내 출력"), h("button", { class: "danger", onclick: async () => {
       if (!await seConfirm(host, "학생 입장을 끌까요?\n학생 화면에서 더 들어갈 수 없어요. (점수·아바타·비밀번호는 그대로)", "끄기")) return;
       await kidClear(reward.cls.code); reward.cls.code = ""; rwStore(); redraw();
     } }, "학생 입장 끄기")),
@@ -7640,7 +7683,8 @@ function kidPrint() { // A4 한 장: 학생 주소 + 반 코드 + 들어오는 �
     h1 { font-size: 30pt; margin: 10mm 0 6mm; } .u { font-size: 15pt; word-break: break-all; border: 2px solid #333; border-radius: 4mm; padding: 4mm; margin: 0 0 8mm; }
     .c { font-size: 16pt; color: #555; } .c b { display: block; font-size: 60pt; letter-spacing: .15em; color: #222; margin: 2mm 0 10mm; }
     ol { text-align: left; font-size: 17pt; line-height: 1.8; margin: 0 auto; max-width: 150mm; }
-  </style></head><body><h1>🏅 내 아바타 꾸미기</h1><div class="u">${esc(url)}</div><div class="c">반 코드<b>${esc(reward.cls.code)}</b></div>
+    .q { width: 70mm; height: 70mm; image-rendering: pixelated; margin: 0 auto 4mm; display: block; }
+  </style></head><body><h1>🏅 우리반 학생 화면</h1><img class="q" src="${kidQr(600).toDataURL()}" alt="QR"><div class="u">${esc(url)}</div><div class="c">반 코드<b>${esc(reward.cls.code)}</b></div>
   <ol><li>위 주소로 들어가요.</li><li>반 코드와 내 번호를 써요.</li><li>처음이면 비밀번호 숫자 4자리를 직접 정해요. <b>꼭 기억해요!</b></li><li>다음부터는 정한 비밀번호로 들어와요. 잊어버리면 선생님께 말해요.</li></ol></body></html>`);
   w.document.close(); w.focus(); w.print();
 }
@@ -7676,8 +7720,9 @@ async function hwClear(code) { // 과제와 학생이 낸 것 모두 지우기
   }
 }
 function hwPanel(host) { // 점수 설정 → 과제
-  if (!kidOn()) return h("p", { class: "rw-h" }, "과제는 학생 화면으로 내요. 먼저 🏅 우리반 점수 카드의 설정 → '학생 입장' 탭에서 로그인하고 반 코드를 정해 주세요.");
+  if (!kidOn()) return h("div", {}, h("p", { class: "rw-h" }, "과제는 학생 화면으로 내요. 먼저 ⚙ 설정 → '학생 입장'에서 반 코드를 정해 주세요."), kidCodeChip());
   const code = reward.cls.code, list = h("div", {}, h("p", { class: "rw-h" }, "불러오는 중…"));
+  const title = h("input", { class: "hw-title", placeholder: "제목 (학생 목록에 보여요. 예: 수학 익힘 32쪽)", maxlength: "60" });
   const t = h("textarea", { rows: "4", placeholder: "과제 내용 (예: 수학 익힘 32쪽을 풀고 사진을 찍어 내요)\n링크는 https://… 로 붙여 넣으면 저절로 걸려요" });
   // 🔗 링크 달기: 고른 글(없으면 주소)에 링크를 걸어 [글](주소)로 넣음. 저절로 안 걸리는 주소(naver.com 같은)도 이걸로
   const lkIn = h("input", { placeholder: "주소 (예: naver.com 또는 https://…)", "aria-label": "링크 주소" }), lkRow = h("div", { class: "hw-row", hidden: "" });
@@ -7694,10 +7739,10 @@ function hwPanel(host) { // 점수 설정 → 과제
   const setImg = v => { img = v; prev.replaceChildren(...(v ? [hwImg(v), h("button", { onclick: () => setImg("") }, "사진 빼기")] : [])); };
   file.onchange = async () => { const f = file.files[0]; file.value = ""; if (!f) return; msg.textContent = "사진 줄이는 중…"; try { setImg(await hwPhoto(f)); msg.textContent = ""; } catch (e) { msg.textContent = "⚠︎ 이 사진은 열 수 없어요."; } };
   const go = h("button", { class: "main", onclick: async () => {
-    const v = { t: t.value.trim(), img, at: Date.now() };
-    if (!v.t && !img) return msg.textContent = "⚠︎ 내용이나 사진 중 하나는 있어야 해요.";
+    const v = { title: title.value.trim(), t: t.value.trim(), img, at: Date.now() };
+    if (!v.title) { title.focus(); return msg.textContent = "⚠︎ 제목을 써 주세요."; }
     go.disabled = true; msg.textContent = "올리는 중…";
-    try { await fb.addDoc(hwCol(code), v); t.value = ""; setImg(""); msg.textContent = ""; form.hidden = true; addB.hidden = false; note.textContent = "✅ 과제를 냈어요. 학생 화면에 보여요."; load(); }
+    try { await fb.addDoc(hwCol(code), v); t.value = title.value = ""; setImg(""); msg.textContent = ""; form.hidden = true; addB.hidden = false; note.textContent = "✅ 과제를 냈어요. 학생 화면에 보여요."; load(); }
     catch (e) { msg.textContent = "⚠︎ 올리지 못했어요. 인터넷 연결이나 Firestore 규칙을 확인해 주세요."; } finally { go.disabled = false; }
   } }, "과제 내기");
   // 낸 것 크게 보기: 화살표·←→로 넘기고, Esc로 닫고, ⛶로 전체 화면
@@ -7745,7 +7790,7 @@ function hwPanel(host) { // 점수 설정 → 과제
   };
   const item = d => {
     const v = d.data(), u = hwLink(v.link), box = h("div");
-    return h("div", { class: "hw-it" }, v.t ? h("p", {}, ...hwText(v.t)) : null, u ? h("p", {}, "🔗 ", h("a", { href: u, target: "_blank", rel: "noopener noreferrer" }, u)) : null, hwImg(v.img),
+    return h("div", { class: "hw-it" }, v.title ? h("h4", { class: "hw-tt" }, v.title) : null, v.t ? h("p", {}, ...hwText(v.t)) : null, u ? h("p", {}, "🔗 ", h("a", { href: u, target: "_blank", rel: "noopener noreferrer" }, u)) : null, hwImg(v.img),
       h("div", { class: "hw-row", style: "margin-top:6px" }, h("small", { class: "rw-h" }, new Date(v.at).toLocaleDateString("ko-KR")),
         h("button", { onclick: () => subs(d, box).catch(() => box.replaceChildren(h("p", { class: "rw-h" }, "⚠︎ 불러오지 못했어요."))) }, "낸 것 보기"),
         h("button", { class: "danger", onclick: async () => {
@@ -7760,11 +7805,11 @@ function hwPanel(host) { // 점수 설정 → 과제
   load();
   // 첫 화면은 낸 과제 목록. 오른쪽 위 '+ 과제 추가'로 쓰는 칸을 열고, '과제 내기'는 오른쪽 아래
   const note = h("span", { class: "rw-h" });
-  const form = h("div", { class: "hw-new", hidden: "" }, t,
+  const form = h("div", { class: "hw-new", hidden: "" }, title, t,
     h("div", { class: "hw-row" }, h("button", { onclick: () => file.click() }, "📷 사진 넣기"), h("button", { onclick: () => { lkRow.hidden = false; lkIn.focus(); } }, "🔗 링크 달기"), file, prev), lkRow,
     h("div", { class: "hw-row hw-send" }, msg, h("button", { onclick: () => { form.hidden = true; addB.hidden = false; msg.textContent = ""; } }, "취소"), go));
-  const addB = h("button", { class: "main", onclick: () => { form.hidden = false; addB.hidden = true; note.textContent = ""; t.focus(); } }, "+ 과제 추가");
-  return h("div", {}, h("div", { class: "hw-head" }, h("b", {}, "낸 과제"), note, addB), form, list);
+  const addB = h("button", { class: "main", onclick: () => { form.hidden = false; addB.hidden = true; note.textContent = ""; title.focus(); } }, "+ 과제 추가");
+  return h("div", {}, h("div", { class: "hw-head" }, h("b", {}, "낸 과제"), kidCodeChip(), note, addB), form, list);
 }
 // 메인 보드 📮 과제함 카드: 점수 설정 → 과제 탭과 같은 화면. 로그인·반 코드가 바뀌면 새로 그림
 let hwCardKey = null;
