@@ -67,10 +67,14 @@
   .hw-it { background: #fff; border-radius: 22px; padding: 18px 20px; box-shadow: 0 2px 10px rgba(60, 40, 20, .06); }
   .hw-it > p { margin: 0 0 10px; font-size: 21px; white-space: pre-line; } .hw-it .when { font-size: 15px; color: var(--muted); }
   .hw-it img { display: block; max-width: 100%; max-height: 420px; border-radius: 12px; margin: 0 0 10px; }
-  .hw-list { display: grid; gap: 10px; }
-  .hw-li { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 2px 12px; text-align: left; background: #fff; border: 2px solid transparent; border-radius: 18px; padding: 14px 18px; box-shadow: 0 2px 10px rgba(60, 40, 20, .06); }
-  .hw-li b { font-size: 21px; } .hw-li small { grid-row: 2; font-size: 14px; color: var(--muted); } .hw-li span { grid-row: 1 / 3; grid-column: 2; font-size: 16px; font-weight: 600; color: var(--warn); }
-  .hw-li.done span { color: #2f9e44; } .hw-li:hover { border-color: var(--line); }
+  .nt { position: sticky; top: 8px; z-index: 5; background: #fff4e6; border: 3px solid #ff922b; border-radius: 18px; padding: 14px 18px; margin-bottom: 14px; display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: center; box-shadow: 0 6px 20px rgba(232, 89, 12, .2); }
+  .nt b { font-size: 16px; color: #d9480f; } .nt p { grid-column: 1; margin: 0; font-size: 24px; font-weight: 600; white-space: pre-line; } .nt button { grid-row: 1 / 3; grid-column: 2; }
+  .hw-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+  .hw-card { display: flex; flex-direction: column; gap: 4px; text-align: left; min-height: 130px; background: #fff; border: 2px solid transparent; border-radius: 18px; padding: 16px 18px; box-shadow: 0 2px 10px rgba(60, 40, 20, .06); }
+  .hw-card b { font-size: 21px; } .hw-card span { font-size: 15px; color: var(--muted); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .hw-card small { margin-top: auto; font-size: 14px; color: var(--muted); } .hw-card em { font-style: normal; font-size: 16px; font-weight: 600; color: var(--warn); }
+  .hw-card.done em { color: #2f9e44; } .hw-card:hover { border-color: var(--line); }
+  .hw-me textarea { font: inherit; font-size: 18px; padding: 8px 12px; border: 2px solid var(--line); border-radius: 12px; width: 100%; resize: vertical; } .hw-me .mine { margin: 0; font-size: 18px; white-space: pre-line; }
   .hw-back { justify-self: start; font-size: 16px; padding: 6px 14px; } .hw-it h2 { margin: 0 0 8px; font-size: 24px; }
   .hw-it > p a { color: var(--accent); word-break: break-all; }
   .hw-it a.go { display: inline-block; margin: 0 0 10px; padding: 8px 18px; border-radius: 12px; background: var(--card); border: 1.5px solid var(--line); color: var(--ink); font-size: 19px; text-decoration: none; }
@@ -104,7 +108,8 @@
   </form>
 </div>
 <div class="app" id="app" hidden>
-  <div class="top"><h1 id="me-name"></h1><span class="pt" id="me-pt"></span><button class="hw-btn" id="hw-btn">🧑 꾸미기</button><button class="out" id="out">나가기</button></div>
+  <div class="top"><h1 id="me-name"></h1><span class="pt" id="me-pt"></span><button class="hw-btn" id="nt-on" hidden>🔔 알림 켜기</button><button class="hw-btn" id="hw-btn">🧑 꾸미기</button><button class="out" id="out">나가기</button></div>
+  <div class="nt" id="nt" hidden><b>📢 선생님 공지</b><p id="nt-t"></p><button class="main" id="nt-ok">확인</button></div>
   <div class="hw" id="hw"><p class="hw-none">불러오는 중…</p></div>
   <div class="main-grid" id="dress" hidden>
     <div class="stage">
@@ -190,8 +195,9 @@ async function save() { // 입어 본 가게 물건은 이때 삼. 점수가 모
     else { toast("저장했어요!"); [659, 988].forEach((f, i) => tone(f, i * .08, .15)); }
   } catch (e) { toast("저장하지 못했어요. 인터넷 연결을 확인해 주세요."); }
 }
-// ───── 과제: 선생님이 낸 과제를 보고 링크나 사진으로 냄
-// 서버: classes/{반 코드}/hw/{id} = { t, link, img, at } · classes/{반 코드}/hw/{id}/sub/{번호}-{비밀번호} = { link, img, at } (내 것만 쓸 수 있음)
+// ───── 과제: 선생님이 낸 과제를 카드로 보고, 눌러서 글·파일로 냄
+// 서버: classes/{반 코드}/hw/{id} = { title, t, file, fname, at } · …/sub/{번호}-{비밀번호} = { text, file, fname, at, seen } (내 것만 씀)
+//       열어 보기만 하면 { seen } 만 있음 → 선생님 화면에 노란 네모
 let hws = [], mine = {}, hwDraft = {}, hwOpen = true, hwL = null, hwSel = null; // 과제가 첫 화면(제목 목록, hwSel = 펼친 과제), 꾸미기는 오른쪽 위 작은 버튼
 // 과제 글 속 링크: [글](https://…) 와 https://… · www.… 를 눌러지는 링크로 (교사 보드 hwText와 같음)
 const hwText = t => {
@@ -207,7 +213,16 @@ const hwText = t => {
 };
 const okLink = u => /^https?:\/\/\S+$/i.test(u || "") ? u : ""; // javascript: 같은 주소는 안 씀
 const subRef = id => fs.doc(db, "classes", hwL.code, "hw", id, "sub", hwL.key);
-const pic = src => src?.startsWith("data:image/") ? el("img", { src, alt: "사진" }) : null;
+const attView = v => { // 첨부 보이기: 사진은 그림, 나머지는 내려받기 (예전 img도)
+  const src = v?.file || v?.img; if (!src?.startsWith("data:")) return null;
+  return src.startsWith("data:image/") ? el("img", { src, alt: "사진" }) : el("a", { class: "go", href: src, download: v.fname || "파일" }, "📎 " + (v.fname || "파일"));
+};
+const sent = v => !!(v && (v.text || v.file || v.img || v.link)); // 냈음 (seen만 있으면 열어 본 것)
+async function attach(f) { // 사진은 줄이고, 다른 파일은 600KB까지 그대로 (문서 하나 1MB 제한)
+  if (/^image\/(jpeg|png|webp|bmp)$/.test(f.type)) return { file: await shrink(f), fname: f.name };
+  if (f.size > 600000) throw new Error("big");
+  return { file: await new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = no; r.readAsDataURL(f); }), fname: f.name };
+}
 async function shrink(file) { // 사진을 긴 쪽 1280px JPEG로 줄임 (문서 하나 1MB 제한 안에, 보통 100~250KB)
   const im = await createImageBitmap(file);
   for (let side = 1280, q = .8; ; side *= .8, q = .7) {
@@ -220,43 +235,61 @@ async function shrink(file) { // 사진을 긴 쪽 1280px JPEG로 줄임 (문서
   }
 }
 function hwDraw() {
-  const todo = hws.filter(x => !mine[x.id]).length;
+  const todo = hws.filter(x => !sent(mine[x.id])).length;
   $("hw-btn").replaceChildren(hwOpen ? "🧑 꾸미기" : "📚 과제", ...(todo && !hwOpen ? [el("b", {}, String(todo))] : []));
   $("hw").hidden = !hwOpen; $("dress").hidden = hwOpen;
   if (!hwOpen) return;
   if (!hws.length) return $("hw").replaceChildren(el("p", { class: "hw-none" }, "아직 과제가 없어요."));
   const name = x => x.title || (x.t || "").split("\n")[0].slice(0, 40) || "과제";
   const sel = hws.find(x => x.id === hwSel);
-  if (!sel) return $("hw").replaceChildren(el("div", { class: "hw-list" }, ...hws.map(x => el("button", { class: "hw-li" + (mine[x.id] ? " done" : ""), onclick: () => { hwSel = x.id; hwDraw(); scrollTo(0, 0); } },
-    el("b", {}, name(x)), el("small", {}, new Date(x.at).toLocaleDateString("ko-KR", { month: "numeric", day: "numeric" })), el("span", {}, mine[x.id] ? "✅ 냈어요" : "아직 안 냄")))));
-  $("hw").replaceChildren(el("button", { class: "hw-back", onclick: () => { hwSel = null; hwDraw(); } }, "← 과제 목록"), ...[sel].map(x => {
-    const u = okLink(x.link), s = mine[x.id], dr = hwDraft[x.id] ||= { link: s?.link || "", img: s?.img || "", edit: !s };
-    let me;
-    if (s && !dr.edit) {
-      const su = okLink(s.link);
-      me = [el("p", { class: "done" }, "✅ 냈어요!"), su ? el("a", { href: su, target: "_blank", rel: "noopener noreferrer" }, su) : null, pic(s.img),
-        el("div", { class: "row" }, el("button", { onclick: () => { dr.edit = true; hwDraw(); } }, "다시 내기"))];
-    } else {
-      const link = el("input", { placeholder: "링크를 붙여 넣어요 (https://…)", value: dr.link, inputmode: "url" }), file = el("input", { type: "file", accept: "image/*", hidden: "" });
-      link.oninput = () => dr.link = link.value;
-      file.onchange = async () => { const f = file.files[0]; if (!f) return; toast("사진 줄이는 중…"); try { dr.img = await shrink(f); hwDraw(); } catch (e) { toast("이 사진은 열 수 없어요."); } };
-      const go = el("button", { class: "main", onclick: () => hwSend(x.id, go) }, "선생님께 내기");
-      me = [link, el("div", { class: "row" }, el("button", { onclick: () => file.click() }, dr.img ? "📷 사진 바꾸기" : "📷 사진 넣기"), file,
-        dr.img ? el("button", { onclick: () => { dr.img = ""; hwDraw(); } }, "사진 빼기") : null), pic(dr.img),
-        el("div", { class: "row" }, go, s ? el("button", { onclick: () => { hwDraft[x.id] = { link: s.link || "", img: s.img || "", edit: false }; hwDraw(); } }, "취소") : null)];
-    }
-    return el("div", { class: "hw-it" }, el("h2", {}, name(x)), x.t ? el("p", {}, ...hwText(x.t)) : null, u ? el("a", { class: "go", href: u, target: "_blank", rel: "noopener noreferrer" }, "🔗 링크 열기") : null, pic(x.img),
-      el("div", { class: "hw-me" }, el("span", { class: "when" }, new Date(x.at).toLocaleDateString("ko-KR") + " 과제"), ...me));
-  }));
+  if (!sel) return $("hw").replaceChildren(el("div", { class: "hw-cards" }, ...hws.map(x => el("button", { class: "hw-card" + (sent(mine[x.id]) ? " done" : ""), onclick: () => hwOpenOne(x.id) },
+    el("b", {}, name(x)), x.t ? el("span", {}, x.t.slice(0, 60)) : null, el("small", {}, new Date(x.at).toLocaleDateString("ko-KR", { month: "numeric", day: "numeric" })), el("em", {}, sent(mine[x.id]) ? "✅ 냈어요" : "아직 안 냄")))));
+  const x = sel, s = mine[x.id], dr = hwDraft[x.id] ||= { text: s?.text || "", file: s?.file || "", fname: s?.fname || "", edit: !sent(s) };
+  let me;
+  if (sent(s) && !dr.edit) {
+    me = [el("p", { class: "done" }, "✅ 냈어요!"), s.text ? el("p", { class: "mine" }, ...hwText(s.text)) : null, attView(s), okLink(s.link) ? el("a", { href: s.link, target: "_blank", rel: "noopener noreferrer" }, s.link) : null,
+      el("div", { class: "row" }, el("button", { onclick: () => { dr.edit = true; hwDraw(); } }, "다시 내기"))];
+  } else {
+    const text = el("textarea", { rows: "4", placeholder: "내용을 써요 (링크도 붙여 넣을 수 있어요)" }), file = el("input", { type: "file", hidden: "" });
+    text.value = dr.text; text.oninput = () => dr.text = text.value;
+    file.onchange = async () => { const f = file.files[0]; file.value = ""; if (!f) return; toast("파일 넣는 중…"); try { Object.assign(dr, await attach(f)); hwDraw(); } catch (e) { toast(e.message === "big" ? "파일이 너무 커요. 600KB까지 돼요." : "이 파일은 열 수 없어요."); } };
+    const go = el("button", { class: "main", onclick: () => hwSend(x.id, go) }, "선생님께 내기");
+    me = [text, el("div", { class: "row" }, el("button", { onclick: () => file.click() }, dr.file ? "📎 파일 바꾸기" : "📎 파일 첨부"), file,
+        dr.file ? el("button", { onclick: () => { dr.file = dr.fname = ""; hwDraw(); } }, "파일 빼기") : null), attView(dr),
+      el("div", { class: "row" }, go, sent(s) ? el("button", { onclick: () => { hwDraft[x.id] = null; hwDraw(); } }, "취소") : null)];
+  }
+  $("hw").replaceChildren(el("button", { class: "hw-back", onclick: () => { hwSel = null; hwDraw(); } }, "← 과제 목록"),
+    el("div", { class: "hw-it" }, el("h2", {}, name(x)), x.t ? el("p", {}, ...hwText(x.t)) : null, okLink(x.link) ? el("a", { class: "go", href: x.link, target: "_blank", rel: "noopener noreferrer" }, "🔗 링크 열기") : null, attView(x),
+      el("div", { class: "hw-me" }, el("span", { class: "when" }, new Date(x.at).toLocaleDateString("ko-KR") + " 과제"), ...me)));
+}
+function hwOpenOne(id) { // 카드를 누르면 자세히. 처음 열면 '봤어요' 남김 (선생님 화면 노란 네모)
+  hwSel = id; hwDraw(); scrollTo(0, 0);
+  if (!mine[id]) { const v = { seen: Date.now() }; mine[id] = v; fs.setDoc(subRef(id), v, { merge: true }).catch(() => {}); }
 }
 async function hwSend(id, btn) {
-  const dr = hwDraft[id], link = dr.link.trim();
-  if (link && !okLink(link)) return toast("링크는 https:// 로 시작해요.");
-  if (!link && !dr.img) return toast("링크나 사진을 넣어요.");
-  const v = { link, img: dr.img, at: Date.now() };
+  const dr = hwDraft[id], text = dr.text.trim();
+  if (!text && !dr.file) return toast("내용을 쓰거나 파일을 넣어요.");
+  const v = { text, file: dr.file, fname: dr.fname, at: Date.now(), seen: mine[id]?.seen || Date.now() };
   btn.disabled = true;
   try { await fs.setDoc(subRef(id), v); mine[id] = v; dr.edit = false; hwDraw(); toast("선생님께 냈어요!"); [659, 988].forEach((f, i) => tone(f, i * .08, .15)); }
   catch (e) { btn.disabled = false; toast("내지 못했어요. 인터넷 연결을 확인해 주세요."); }
+}
+// ───── 📢 공지: classes/{반 코드}/notice/now = { t, at }. 새 공지면 위에 띄우고, 알림을 켰으면 다른 탭·창에 있어도 컴퓨터 알림으로
+let ntAt = 0, ntOk = 0; // ntAt: 소리·알림 낸 공지, ntOk: '확인' 누른 공지 (다시 안 띄움)
+try { ntAt = ntOk = +localStorage.getItem("nt-at") || 0; } catch (e) {}
+const ntBtn = () => $("nt-on").hidden = !("Notification" in window) || Notification.permission !== "default";
+$("nt-on").onclick = () => Notification.requestPermission().then(ntBtn, ntBtn);
+$("nt-ok").onclick = () => { $("nt").hidden = true; ntOk = ntAt; try { localStorage.setItem("nt-at", ntOk); } catch (e) {} };
+function ntListen(l) {
+  ntBtn();
+  return fs.onSnapshot(fs.doc(db, "classes", l.code, "notice", "now"), s => {
+    const v = s.data();
+    if (!v?.t || v.at <= ntOk) return $("nt").hidden = true; // 선생님이 내렸거나 이미 확인함
+    $("nt-t").textContent = v.t; $("nt").hidden = false;
+    if (v.at <= ntAt) return; // 이미 본 공지는 소리·알림 없이 띄워만 둠
+    ntAt = v.at; [880, 1175, 880].forEach((f, i) => tone(f, i * .15, .2, "sine", .25));
+    if (document.hidden && "Notification" in window && Notification.permission === "granted") { try { const n = new Notification("📢 선생님 공지", { body: v.t, tag: "notice", requireInteraction: true }); n.onclick = () => { focus(); n.close(); }; } catch (e) {} }
+  }, () => {});
 }
 function hwListen(l) { // 과제 목록을 계속 듣고, 내가 낸 것은 한 번씩 받아 옴
   hwL = l;
@@ -275,7 +308,7 @@ function logout(msg) {
 }
 function enter(l) { // 내 문서와 반 설정을 계속 들음 (점수가 바뀌면 바로 보임)
   unsubs.forEach(u => u()); unsubs = [];
-  unsubs.push(hwListen(l));
+  unsubs.push(hwListen(l), ntListen(l));
   unsubs.push(fs.onSnapshot(fs.doc(db, "classes", l.code), s => { if (!s.exists()) return logout("학생 입장이 꺼졌어요. 선생님께 물어보세요."); cls = s.data(); if (me) draw(); }, () => {}));
   unsubs.push(fs.onSnapshot(kidRef(l), s => {
     if (!s.exists()) return logout("비밀번호가 지워졌어요. 다시 들어와서 새 비밀번호를 정해요.");
