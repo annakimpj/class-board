@@ -26,7 +26,9 @@ const AV_PRICE = { // 0이면 무료 (기본으로 입는 것)
   eye: Array(16).fill(0), mouth: Array(16).fill(0), cheek: Array(8).fill(0), // 눈·입·볼터치는 모두 무료
   bottom: [6, 6, 0, 0, 7, 6, 7, 8, 7, 0, 8, 7, 8, 8, 8, 8, 8, 7, 7, 9, 8, 8, 8, 8, 8, 10, 10, 9, 9, 11, 10, 9, 9, 10, 11, 9, 10, 11, 11, 10, 10, 12, 11, 11, 10, 11, 12, 10],
 };
-const AV_ITEMS = Object.entries(AV_NAMES).flatMap(([slot, names]) => names.map((name, i) => ({ id: `${slot}-${i}`, slot, name, price: AV_PRICE[slot][i], img: `av/${slot}-${i}.png` })));
+// 뺀 물건 (손이 가려지거나 소매가 팔 방향과 안 맞음). 그림 파일도 지움. 다시 그리면 같은 번호로 살림
+const AV_GONE = new Set([17, 18, 19, 20, 21, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 35, 36, 37, 39].map(i => `top-${i}`));
+const AV_ITEMS = Object.entries(AV_NAMES).flatMap(([slot, names]) => names.map((name, i) => ({ id: `${slot}-${i}`, slot, name, price: AV_PRICE[slot][i], img: `av/${slot}-${i}.png` }))).filter(it => !AV_GONE.has(it.id));
 const AV_REQ = { eye: "eye-0", mouth: "mouth-0", cheek: "cheek-1", hair: "hair-0", top: "top-5", bottom: "bottom-9" }; // 기본 옷 (흰 셔츠·카키 반바지). 이 칸들은 벗을 수 없어 늘 입고 있음
 const AV_ACC = []; // 장신구 칸 (아직 없음)
 const AV_TABS = [["eye", "눈"], ["mouth", "입"], ["cheek", "볼터치"], ["hair", "헤어"], ["top", "상의"], ["bottom", "하의"]]; // 신발은 그림이 생기면 추가
