@@ -18,11 +18,20 @@ const AV_ITEMS = Object.entries(AV_NAMES).flatMap(([slot, names]) => names.map((
 const AV_REQ = { hair: "hair-0", top: "top-5", bottom: "bottom-9" }; // 기본 옷 (흰 셔츠·카키 반바지). 이 칸들은 벗을 수 없어 늘 입고 있음
 const AV_ACC = []; // 장신구 칸 (아직 없음)
 const AV_TABS = [["hair", "헤어"], ["top", "상의"], ["bottom", "하의"]]; // 신발은 그림이 생기면 추가
+// 단위에 맞춘 글: "3 으쓱이 모자라요", "3으쓱으로 바꾸기" (이/가, 으로/로)
+const avBat = w => { const c = w.charCodeAt(w.length - 1) - 0xac00; return c >= 0 && c < 11172 ? c % 28 : 0; }; // 받침 (0 없음, 8 ㄹ)
+const avShort = (n, unit) => `${n} ${unit}${avBat(unit) ? "이" : "가"} 모자라요`;
+const avPay = (n, unit) => `${n}${unit}${[0, 8].includes(avBat(unit)) ? "로" : "으로"} 바꾸기`;
 const avItem = id => AV_ITEMS.find(x => x.id === id);
 // 입은 것 중 지금 있는 물건만 (예전 픽셀 그림 물건 id는 버리고 기본으로)
 const avWear = (wear = {}) => ({ ...AV_REQ, ...Object.fromEntries(Object.entries(wear).filter(([sl, id]) => avItem(id)?.slot === sl)) });
 // av = { skin, hc(머리색 번호) }, wear = { hair, top, bottom } → 겹친 그림 (div 하나)
+// 처음 그릴 때 모든 그림을 미리 받아 풀어 둠: 색·옷을 바꿀 때 새 <img>가 잠깐 비었다가 뜨지 않게 (Image를 잡아 둬야 풀린 채로 남음)
+let avPre = null;
+const avPreload = () => avPre ||= [...AV_SKIN.map((_, i) => `av/body-${i}.png`), ...AV_ITEMS.map(it => it.img), ...AV_ITEMS.filter(it => it.slot === "hair").map(it => it.img.replace(".png", "-g.png"))]
+  .map(s => { const im = new Image(); im.src = s; im.decode?.().catch(() => {}); return im; });
 function avPic(av, wear = {}) {
+  avPreload();
   const w = avWear(wear), skin = AV_SKIN[av?.skin] ? av.skin : 0, hc = AV_HAIR[av?.hc] && av.hc;
   const img = s => `<img src="${s}" alt="" draggable="false">`, hair = avItem(w.hair).img;
   const hairL = !hc ? img(hair) : (g => img(g) + `<i style="background:${AV_HAIR[hc][0]};-webkit-mask-image:url(${g});mask-image:url(${g})"></i>`)(hair.replace(".png", "-g.png"));

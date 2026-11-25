@@ -8,8 +8,9 @@ os.makedirs(OUT, exist_ok=True)
 EAR_BOTTOM, EAR_CX = 250, 168.5   # body ear bottom y / ear midpoint x
 HS = 1.32   # hair sheet -> body scale (from buzz cut ear width 265 vs body 325)
 HAIR_FIX = {2: 245, 11: 245}   # no visible ears: assumed ear-bottom y in sprite
-TS, TOP_Y, TOP_DY = 1.08, 285, {}   # tops: scale, neckline y on body
-BS, BOT_Y, BOT_DY = 0.62, 372, {}   # bottoms: scale, waist y on body
+TS, TOP_Y, TOP_DY = 1.12, 282, {}   # tops: scale, neckline y on body
+BS, BOT_Y, BOT_DY = 0.70, 372, {}   # bottoms: scale, waist y on body
+SHORT_STRETCH = 1.3
 def clean(im):
   # white fringe off + smooth outer edge: drop light pixels near the outside, soften alpha, pull edge color from nearest opaque pixel
   a=np.array(im.convert('RGBA')).astype(float); al=a[...,3]>128
@@ -39,12 +40,18 @@ for i in range(12):
   cx = np.mean([(s[1].start+s[1].stop)/2 for s,_ in e]) if len(e)==2 else a.shape[1]/2
   im=scale(clean(Image.fromarray(a)),HS); c=Image.new('RGBA',(W,H))
   put(c, im, PX+EAR_CX-cx*HS, PY+EAR_BOTTOM-eb*HS); save(c, f'hair-{i}')
+BODY_CX = 167   # torso/neck center x on body (measured; ear midpoint is ~1.5px right of it)
+def rows_cx(im, y0, y1):  # center from a band of rows (neck/waist), not bbox: sleeves and pockets skew bbox
+  a=np.array(im)[...,3]>128; xs=[np.where(r)[0] for r in a[y0:y1] if r.any()]
+  return np.mean([(x.min()+x.max())/2 for x in xs])
 for i in range(16):
   im=scale(clean(Image.open(f'raw/top-{i}.png')),TS); c=Image.new('RGBA',(W,H))
-  put(c, im, PX+EAR_CX-im.width/2, PY+TOP_Y+TOP_DY.get(i,0)); save(c, f'top-{i}')
+  put(c, im, PX+BODY_CX-rows_cx(im,30,60), PY+TOP_Y+TOP_DY.get(i,0)); save(c, f'top-{i}')
 for i in range(12):
-  im=scale(clean(Image.open(f'raw/bottom-{i}.png')),BS); c=Image.new('RGBA',(W,H))
-  put(c, im, PX+EAR_CX-im.width/2, PY+BOT_Y+BOT_DY.get(i,0)); save(c, f'bottom-{i}')
+  im=clean(Image.open(f'raw/bottom-{i}.png'))
+  if im.height < 230: im=im.resize((im.width, round(im.height*SHORT_STRETCH)), Image.LANCZOS)  # shorts/skirts: longer so they show under tops
+  im=scale(im,BS); c=Image.new('RGBA',(W,H))
+  put(c, im, PX+BODY_CX-rows_cx(im,0,20), PY+BOT_Y+BOT_DY.get(i,0)); save(c, f'bottom-{i}')
 # preview sheet: each top/bottom/hair on body
 def outfit(b,bo,t,h):
   c=Image.open(f'{OUT}/body-{b}.png').copy()

@@ -31,6 +31,24 @@ service cloud.firestore {
           && request.resource.data.get("buys", []).hasAll(resource.data.get("buys", []))
           && request.resource.data.get("buys", []).size() <= 30;
       }
+      // 과제: 교사만 내고 지움. 반 코드를 아는 학생은 읽기만
+      match /hw/{id} {
+        allow read: if true;
+        allow write: if isOwner();
+        // 학생이 낸 것: 문서 이름이 자기 '번호-비밀번호'(kids 문서가 있어야 함)일 때만 씀. 목록은 교사만
+        match /sub/{key} {
+          allow read, delete: if isOwner();
+          allow get: if true;
+          allow create, update: if exists(/databases/$(database)/documents/classes/$(code)/kids/$(key))
+            && exists(/databases/$(database)/documents/classes/$(code)/hw/$(id))
+            && request.resource.data.keys().hasOnly(["link", "img", "at"])
+            && request.resource.data.link is string && request.resource.data.link.size() <= 500
+            && (request.resource.data.link == "" || request.resource.data.link.matches("^https?://[^ ]+$"))
+            && request.resource.data.img is string && request.resource.data.img.size() <= 900000
+            && (request.resource.data.img == "" || request.resource.data.img.matches("^data:image/(jpeg|png|webp);base64,.*"))
+            && request.resource.data.at is int;
+        }
+      }
     }
   }
 }

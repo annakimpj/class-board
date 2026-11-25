@@ -792,6 +792,10 @@
   .kid-tb { width: 100%; border-collapse: collapse; font-size: 18px; } .kid-tb th { font-size: 13px; font-weight: normal; color: var(--muted); text-align: left; }
   .kid-tb td, .kid-tb th { border-bottom: 1px solid var(--line); padding: 4px 6px; } .kid-tb .none { color: var(--muted); font-size: 14px; } .kid-status { margin: 0 0 8px; } .kid-code button { font-size: 13px; padding: 2px 10px; border-radius: 8px; }
   .kid-tb .pin { font-weight: 700; font-size: 22px; letter-spacing: .1em; font-variant-numeric: tabular-nums; }
+  .hw-new { display: grid; gap: 6px; margin-bottom: 12px; } .hw-new textarea, .hw-new input:not([type=file]) { font: inherit; font-size: 15px; padding: 6px 8px; border: 1.5px solid var(--line); border-radius: 8px; width: 100%; box-sizing: border-box; }
+  .hw-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; } .hw-img { max-width: 160px; max-height: 120px; border-radius: 6px; cursor: zoom-in; display: block; } .hw-img.big { max-width: 100%; max-height: none; cursor: zoom-out; }
+  .hw-it { border: 1.5px solid var(--line); border-radius: 10px; padding: 8px 10px; margin-bottom: 8px; background: #fff; } .hw-it p { margin: 0 0 6px; white-space: pre-line; font-size: 16px; } .hw-it a { word-break: break-all; }
+  .tool-card .hw-it button, .tool-card .hw-new button { font-size: 13px; padding: 2px 10px; border-radius: 8px; } .hw-it .kid-tb { margin-top: 6px; font-size: 15px; }
   .tool-card .kid-tb button, .tool-card .kid-acts button, .tool-card .kid-url button { font-size: 13px; padding: 2px 10px; border-radius: 8px; } .kid-acts { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
   .rw-bar, .rw-foot { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; } .rw-bar .sp, .rw-foot .sp { flex: 1; }
   .tool-card .rw-bar button { font-size: 13px; padding: 3px 10px; border-radius: 8px; }
@@ -808,6 +812,7 @@
   .rw-prices label i { flex: none; width: 36px; height: 47px; background: #f8f9fa; border-radius: 6px; overflow: hidden; } .avp { position: relative; height: 100%; aspect-ratio: 258 / 386; margin: 0 auto; } .avp { isolation: isolate; } .avp img, .avp i { position: absolute; inset: 0; width: 100%; height: 100%; display: block; } .avp i { mix-blend-mode: multiply; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; }
   .rw-tabs.sm { margin: 0 0 8px; } .tool-card .rw-tabs.sm button { font-size: 13px; padding: 2px 10px; }
   .rw-unitrow { display: flex; align-items: center; gap: 8px; } .rw-bulk .sp { flex: 1; } .rw-bulk label { display: flex; gap: 4px; align-items: center; }
+  .rw-code { margin-left: 8px; padding: 1px 8px; border-radius: 6px; background: #eef4ff; color: #3b82f6; font-size: 13px; font-weight: 700; letter-spacing: .5px; }
   .rw-who { width: 300px; } .rw-who .g { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; } .rw-menu.rw-who .g button { justify-content: center; padding: 6px 4px; }
   .rw-prices label { display: flex; align-items: center; gap: 6px; padding: 2px 6px; border-radius: 8px; } .rw-prices label.on { background: #eef4ff; }
   .card-ed-list .rw-prices label > span { flex: 1; width: auto; text-align: left; color: var(--ink); } .rw-prices label input[type=number] { flex: none; width: 52px; }
@@ -851,7 +856,9 @@
   .rw-me .rw-pick { margin-top: 8px; } .rw-pick > span { font-size: 12px; color: var(--muted); width: 38px; }
   .rw-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin: 12px 0 8px; }
   .tool-card .rw-tabs button { font-size: 14px; padding: 4px 12px; border-radius: 7px; } .tool-card .rw-tabs button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .tool-card .rw-item.worn { border: 2.5px solid var(--accent); background: var(--card); }
+  .tool-card .rw-item.worn { border: 2.5px solid var(--accent); background: var(--card); } .tool-card .rw-item.try { border-color: #f59f00; }
+  .rw-short { margin: 6px 0 0; color: #e8590c; font-size: 13px; font-weight: 600; }
+  .tool-card .card-ed-head button.main:disabled { opacity: .45; cursor: default; }
   .rw-me b { font-size: 22px; font-weight: normal; } .rw-me .rw-pt { position: static; display: inline-flex; margin-top: 6px; }
   .tool-card .rw-reset { margin-top: 8px; font-size: 13px; padding: 3px 12px; border-radius: 7px; } .tool-card .rw-reset:disabled { opacity: .45; cursor: default; }
   .rw-pick { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
@@ -4100,8 +4107,9 @@ function rwSettings() {
   const bulk = h("input", { type: "number", min: "0", max: "999", value: "5", "aria-label": "가격" });
   const SAMPLE = { skin: 0, hair: 1 };
   const draw = () => {
-    const tabs = h("div", { class: "rw-tabs" }, [["reason", "점수 버튼"], ["prize", "점수 약속"], ["shop", "가게 가격"], ["kids", "학생 입장"]].map(([k, t]) => h("button", { class: rwSetTab === k ? "on" : "", onclick: () => { rwSetTab = k; draw(); } }, t)));
+    const tabs = h("div", { class: "rw-tabs" }, [["reason", "점수 버튼"], ["prize", "점수 약속"], ["shop", "가게 가격"], ["kids", "학생 입장"], ["hw", "과제"]].map(([k, t]) => h("button", { class: rwSetTab === k ? "on" : "", onclick: () => { rwSetTab = k; draw(); } }, t)));
     if (rwSetTab === "kids") return body.replaceChildren(tabs, kidPanel(rwCard, draw));
+    if (rwSetTab === "hw") return body.replaceChildren(tabs, hwPanel(rwCard));
     if (rwSetTab === "prize") return body.replaceChildren(tabs, h("p", { class: "rw-h", style: "white-space:pre-line" }, "학생들이 보는 안내예요. 카드의 📋 점수 약속에 보여요.\n· 점수로 할 수 있는 것은 그냥 숫자 (예: 자리 바꾸기 10)\n· 점수가 빠지는 것은 − (예: 숙제 안 하기 −5)"), pzRows,
       h("button", { class: "rw-add", onclick: () => { prizes.push({ t: "", pt: 10 }); drawPz(); pzRows.querySelectorAll("input")[pzRows.querySelectorAll("input").length - 2]?.focus(); } }, "+ 줄 추가"));
     if (rwSetTab === "reason") {
@@ -4109,7 +4117,7 @@ function rwSettings() {
         h("button", { class: "rw-add", onclick: () => { list.push({ t: "", pt: 1 }); drawRows(); rows.querySelectorAll("input")[rows.querySelectorAll("input").length - 2]?.focus(); } }, "+ 이유 추가"));
       return;
     }
-    const its = AV_ITEMS.filter(it => it.price && (rwShopTab === "acc" ? AV_ACC.includes(it.slot) : it.slot === rwShopTab));
+    const its = AV_ITEMS.filter(it => it.price && (rwShopTab === "acc" ? AV_ACC.includes(it.slot) : it.slot === rwShopTab)).sort((a, b) => price[a.id] - price[b.id]);
     const cats = h("div", { class: "rw-tabs sm" }, AV_TABS.map(([k, t]) => h("button", { class: rwShopTab === k ? "on" : "", onclick: () => { rwShopTab = k; draw(); } }, t)));
     const all = h("input", { type: "checkbox" }); all.checked = its.length && its.every(it => chosen.has(it.id));
     all.onchange = () => { its.forEach(it => all.checked ? chosen.add(it.id) : chosen.delete(it.id)); draw(); };
@@ -4146,47 +4154,55 @@ function popAt(btn, m, alignRight) { // 버튼 옆에 작은 팝업 (바깥을 �
 function rwDressPick(btn) { // 한 명을 골라 두었으면 바로, 아니면 누구를 꾸밀지 고르기
   if (rwPick.size === 1) return rwAvatar([...rwPick][0]);
   btn.ownerDocument.querySelector(".rw-menu")?.remove();
-  const m = h("div", { class: "rw-menu rw-who", popover: "auto" }, h("h4", {}, "누구를 꾸밀까요?"),
+  const m = h("div", { class: "rw-menu rw-who", popover: "auto" }, h("h4", {}, "누구를 꾸밀까요?", reward.cls?.code ? h("b", { class: "rw-code" }, `반 코드 ${reward.cls.code}`) : null),
     h("div", { class: "g" }, ...people().map(p => h("button", { onclick: () => { m.hidePopover(); rwAvatar(p); } }, seName(p)))));
   popAt(btn, m, true);
 }
-// 아바타 꾸미기: 피부색은 마음대로, 머리 모양·상의·하의는 점수로 사서 입고 벗기
+// 아바타 꾸미기: 피부·머리색은 마음대로. 머리 모양·상의·하의는 입어 볼 수 있고, 안 가진 건 저장할 때 점수로 삼 (학생 화면 student.html과 같은 방식)
 let rwTab = "hair";
 function rwAvatar(p) {
   rwCard.querySelector(".card-ed")?.remove();
   const s = rwSt(p), unit = reward.unit.trim() || "점", body = h("div", { class: "card-ed-list" });
-  const d = { pt: s.pt, av: { ...s.av }, own: [...s.own], wear: rwWear(p, s.wear) }, bought = [], start = JSON.stringify(d); // 저장 전까지는 여기서만 바꿈
+  const was = rwWear(p, s.wear), d = { av: { ...s.av }, wear: { ...was } }, start = JSON.stringify(d); // 저장 전까지는 여기서만 바꿈
+  const owns = it => !avPrice(it) || s.own.includes(it.id);
+  const cart = () => [...new Set(Object.values(d.wear))].map(avItem).filter(it => it && !owns(it)); // 입어 보는 중인 안 가진 물건
+  const saveB = h("button", { class: "main", onclick: () => save() }, "저장");
   const draw = () => {
+    const cost = cart().reduce((a, it) => a + avPrice(it), 0), after = s.pt - cost;
+    saveB.textContent = cost && after >= 0 ? avPay(cost, unit) : "저장"; saveB.disabled = after < 0;
     const me = h("div", { class: "rw-me" }); me.innerHTML = avPic(d.av, d.wear);
     const sw = (list, key, label) => h("div", { class: "rw-pick" }, h("span", {}, label), ...list.map((c, i) => h("button", { class: "sw" + ((d.av[key] || 0) === i ? " on" : ""), style: `background:${c[0]}`, "aria-label": label, onclick: () => { d.av[key] = i; draw(); } })));
-    me.append(h("div", {}, h("b", {}, seName(p)), h("br"), h("span", { class: "rw-pt" }, `${d.pt} ${unit}`), sw(AV_SKIN, "skin", "피부"), sw(AV_HAIR, "hc", "머리색"),
-      Object.assign(h("button", { class: "rw-reset", onclick: () => { d.wear.top = AV_REQ.top; d.wear.bottom = AV_REQ.bottom; draw(); } }, "원래대로"), { disabled: d.wear.top === AV_REQ.top && d.wear.bottom === AV_REQ.bottom }))); // 기본 옷(흰 셔츠·카키 반바지)으로, 머리·피부는 그대로
+    const reset = () => { // 원래대로: 기본 옷(흰 셔츠·카키 반바지)으로. 머리는 그대로, 입어 보던(안 산) 머리는 원래 머리로
+      if (!owns(avItem(d.wear.hair))) d.wear.hair = owns(avItem(was.hair)) ? was.hair : AV_REQ.hair;
+      d.wear.top = AV_REQ.top; d.wear.bottom = AV_REQ.bottom; draw();
+    };
+    me.append(h("div", {}, h("b", {}, seName(p)), h("br"), h("span", { class: "rw-pt" }, `${s.pt} ${unit}`), sw(AV_SKIN, "skin", "피부"), sw(AV_HAIR, "hc", "머리색"),
+      Object.assign(h("button", { class: "rw-reset", onclick: reset }, "원래대로"), { disabled: d.wear.top === AV_REQ.top && d.wear.bottom === AV_REQ.bottom && !cost }),
+      after < 0 ? h("p", { class: "rw-short" }, avShort(-after, unit)) : null));
     const tabs = h("div", { class: "rw-tabs" }, AV_TABS.map(([k, t]) => h("button", { class: rwTab === k ? "on" : "", onclick: () => { rwTab = k; draw(); } }, t)));
-    const items = AV_ITEMS.filter(it => rwTab === "acc" ? AV_ACC.includes(it.slot) : it.slot === rwTab);
+    const items = AV_ITEMS.filter(it => rwTab === "acc" ? AV_ACC.includes(it.slot) : it.slot === rwTab).sort((a, b) => avPrice(a) - avPrice(b)); // 무료부터 비싼 것까지
     const shop = h("div", { class: "rw-shop" }, items.map(it => {
-      const cost = avPrice(it), has = !cost || d.own.includes(it.id), must = it.slot in AV_REQ, worn = (d.wear[it.slot] || AV_REQ[it.slot]) === it.id;
+      const price = avPrice(it), has = owns(it), worn = d.wear[it.slot] === it.id;
       const pic = h("div"); pic.innerHTML = avPic(d.av, { ...d.wear, [it.slot]: it.id });
-      const buy = async () => {
-        if (d.pt < cost) return seConfirm(rwCard, `${it.name}은(는) ${cost} ${unit}예요. ${cost - d.pt} ${unit} 더 모아요!`, "확인", null);
-        if (!await seConfirm(rwCard, `${seName(p)}: ${it.name}을(를) ${cost} ${unit}에 살까요?
-(저장해야 사져요)`, "사기")) return;
-        d.pt -= cost; d.own.push(it.id); d.wear[it.slot] = it.id; bought.push([it.name, cost]);
-        draw(); melody([784, 988, 1319], .07, "square", .15);
-      };
-      // 누르면 입기 (안 가진 건 사기). 아래 칸은 가격만, 무료·가진 건 비워 둠
-      return h("button", { class: "rw-item" + (worn ? " worn" : ""), "aria-label": it.name, onclick: () => { if (!has) return buy(); if (!worn) { d.wear[it.slot] = it.id; draw(); } else if (!must) { delete d.wear[it.slot]; draw(); } } },
-        pic.firstChild, h("small", {}, has ? "" : `${cost} ${unit}`));
+      // 누르면 입기. 안 가진 건 입어 보기, 다시 누르면 원래 것으로. 아래 칸은 가격만, 무료·가진 건 비워 둠
+      return h("button", { class: "rw-item" + (worn ? " worn" : "") + (worn && !has ? " try" : ""), "aria-label": it.name, onclick: () => {
+        if (!worn) d.wear[it.slot] = it.id; else if (!has) d.wear[it.slot] = owns(avItem(was[it.slot])) ? was[it.slot] : AV_REQ[it.slot]; else return;
+        draw();
+      } }, pic.firstChild, h("small", {}, has ? "" : `${price} ${unit}`));
     }));
     body.replaceChildren(me, tabs, shop);
   };
   draw();
   const save = () => {
-    s.pt -= bought.reduce((a, [, c]) => a + c, 0); s.av = d.av; s.own = d.own; s.wear = d.wear; s.saved = 1;
-    bought.forEach(([name, c]) => reward.log = [{ at: Date.now(), who: [p], d: -c, why: `${name} 샀어요` }, ...reward.log].slice(0, 1000));
+    const items = cart(), cost = items.reduce((a, it) => a + avPrice(it), 0);
+    if (s.pt < cost) return;
+    s.pt -= cost; s.own = [...s.own, ...items.map(it => it.id)]; s.av = d.av; s.wear = d.wear; s.saved = 1;
+    items.forEach(it => reward.log = [{ at: Date.now(), who: [p], d: -avPrice(it), why: `${it.name} 샀어요` }, ...reward.log].slice(0, 1000));
+    if (items.length) melody([784, 988, 1319], .07, "square", .15);
     rwStore(); rwDraw(); ed.remove();
   };
-  const close = async () => { if (JSON.stringify(d) === start || await seConfirm(rwCard, "저장하지 않고 닫을까요?\n바꾼 것과 산 것이 모두 취소돼요.", "닫기")) ed.remove(); };
-  const ed = h("div", { class: "card-ed" }, h("div", { class: "card-ed-head" }, h("b", {}, "아바타 꾸미기"), h("button", { onclick: close }, "취소"), h("button", { class: "main", onclick: save }, "저장")), body);
+  const close = async () => { if (JSON.stringify(d) === start || await seConfirm(rwCard, "저장하지 않고 닫을까요?\n바꾼 것과 입어 본 것이 모두 취소돼요.", "닫기")) ed.remove(); };
+  const ed = h("div", { class: "card-ed" }, h("div", { class: "card-ed-head" }, h("b", {}, "아바타 꾸미기"), reward.cls?.code ? h("span", { class: "rw-code" }, `반 코드 ${reward.cls.code}`) : null, h("button", { onclick: close }, "취소"), saveB), body);
   rwCard.append(ed);
 }
 // 점수 기록: 누가, 언제, 몇 점, 왜 (학생별로 골라 보기)
@@ -7558,6 +7574,7 @@ async function kidClear(code) { // 서버에서 이 반 지우기
   const all = [...Object.keys(kidSeen).map(k => ["kids", k]), ...Object.keys(kidClaims).map(n => ["claim", n])];
   kidUnsubs.forEach(u => u()); kidUnsubs = []; clearTimeout(kidRetry);
   await Promise.all(all.map(([c, k]) => fb.deleteDoc(fb.doc(fb.db, "classes", code, c, k)).catch(() => {})));
+  await hwClear(code).catch(() => {}); // 반 문서를 지우기 전에 (지우면 교사인지 확인할 수 없음)
   await fb.deleteDoc(fb.doc(fb.db, "classes", code)).catch(() => {});
   kidSeen = {}; kidClaims = {};
 }
@@ -7608,6 +7625,72 @@ function kidPrint() { // A4 한 장: 학생 주소 + 반 코드 + 들어오는 �
   </style></head><body><h1>🏅 내 아바타 꾸미기</h1><div class="u">${esc(url)}</div><div class="c">반 코드<b>${esc(reward.cls.code)}</b></div>
   <ol><li>위 주소로 들어가요.</li><li>반 코드와 내 번호를 써요.</li><li>처음이면 비밀번호 숫자 4자리를 직접 정해요. <b>꼭 기억해요!</b></li><li>다음부터는 정한 비밀번호로 들어와요. 잊어버리면 선생님께 말해요.</li></ol></body></html>`);
   w.document.close(); w.focus(); w.print();
+}
+// ───── 과제: 교사가 글·링크·사진으로 내고, 학생이 학생 화면에서 링크나 사진으로 냄
+// 서버: classes/{반 코드}/hw/{id} = { t, link, img, at }   ← 사진은 브라우저에서 줄여 data URL로 (Storage 없이, 문서 하나 1MB 제한)
+//       classes/{반 코드}/hw/{id}/sub/{번호}-{비밀번호} = { link, img, at }   ← 학생은 자기 것만 씀(서버 규칙). 이름 없음
+const hwCol = (code, ...p) => fb.collection(fb.db, "classes", code, "hw", ...p);
+const hwLink = u => /^https?:\/\/\S+$/i.test(u || "") ? u : ""; // javascript: 같은 주소는 안 보여 줌
+async function hwPhoto(file) { // 긴 쪽 1280px JPEG로 줄임 (보통 100~250KB)
+  const im = await createImageBitmap(file), k = Math.min(1, 1280 / Math.max(im.width, im.height));
+  const cv = document.createElement("canvas"); cv.width = Math.round(im.width * k); cv.height = Math.round(im.height * k);
+  const g = cv.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, cv.width, cv.height); // 투명한 PNG가 JPEG에서 까매지지 않게
+  g.drawImage(im, 0, 0, cv.width, cv.height);
+  return fitBlob(cv.toDataURL("image/jpeg", .8));
+}
+const hwImg = src => src?.startsWith("data:image/") ? h("img", { class: "hw-img", src, alt: "사진", onclick: e => e.target.classList.toggle("big") }) : null;
+async function hwClear(code) { // 과제와 학생이 낸 것 모두 지우기
+  for (const d of (await fb.getDocs(hwCol(code))).docs) {
+    await Promise.all((await fb.getDocs(hwCol(code, d.id, "sub"))).docs.map(s => fb.deleteDoc(s.ref)));
+    await fb.deleteDoc(d.ref);
+  }
+}
+function hwPanel(host) { // 점수 설정 → 과제
+  if (!kidOn()) return h("p", { class: "rw-h" }, "과제는 학생 화면으로 내요. 먼저 '학생 입장' 탭에서 로그인하고 반 코드를 정해 주세요.");
+  const code = reward.cls.code, list = h("div", {}, h("p", { class: "rw-h" }, "불러오는 중…"));
+  const t = h("textarea", { rows: "3", placeholder: "과제 내용 (예: 수학 익힘 32쪽을 풀고 사진을 찍어 내요)" }), link = h("input", { placeholder: "링크 (없으면 비워요) https://…" });
+  const file = h("input", { type: "file", accept: "image/*", hidden: "" }), prev = h("span", { class: "hw-row" }), msg = h("span", { class: "rw-h" });
+  let img = "";
+  const setImg = v => { img = v; prev.replaceChildren(...(v ? [hwImg(v), h("button", { onclick: () => setImg("") }, "사진 빼기")] : [])); };
+  file.onchange = async () => { const f = file.files[0]; file.value = ""; if (!f) return; msg.textContent = "사진 줄이는 중…"; try { setImg(await hwPhoto(f)); msg.textContent = ""; } catch (e) { msg.textContent = "⚠︎ 이 사진은 열 수 없어요."; } };
+  const go = h("button", { class: "main", onclick: async () => {
+    const v = { t: t.value.trim(), link: link.value.trim(), img, at: Date.now() };
+    if (v.link && !hwLink(v.link)) return msg.textContent = "⚠︎ 링크는 https:// 로 시작해야 해요.";
+    if (!v.t && !v.link && !img) return msg.textContent = "⚠︎ 내용·링크·사진 중 하나는 있어야 해요.";
+    go.disabled = true; msg.textContent = "올리는 중…";
+    try { await fb.addDoc(hwCol(code), v); t.value = link.value = ""; setImg(""); msg.textContent = "✅ 과제를 냈어요. 학생 화면에 보여요."; load(); }
+    catch (e) { msg.textContent = "⚠︎ 올리지 못했어요. 인터넷 연결이나 Firestore 규칙을 확인해 주세요."; } finally { go.disabled = false; }
+  } }, "과제 내기");
+  const subs = async (d, box) => { // 학생별로 낸 것 (번호로 맞춤. 비밀번호를 다시 정했으면 예전 것도 번호로 보임)
+    box.replaceChildren(h("p", { class: "rw-h" }, "불러오는 중…"));
+    const by = {};
+    for (const s of (await fb.getDocs(hwCol(code, d.id, "sub"))).docs) { const n = s.id.split("-")[0], v = s.data(); if (!by[n] || (v.at || 0) > (by[n].at || 0)) by[n] = v; }
+    const kids = people(), done = kids.filter(p => by[kidNum(p)]).length;
+    box.replaceChildren(h("div", { class: "hw-row" }, h("b", {}, `낸 학생 ${done} / ${kids.length}명`), h("button", { onclick: () => subs(d, box) }, "새로 고침")),
+      h("table", { class: "kid-tb" }, h("tr", {}, h("th", {}, "번호"), h("th", {}, "이름"), h("th", {}, "낸 것")),
+        ...kids.map(p => { const v = by[kidNum(p)], u = hwLink(v?.link);
+          return h("tr", {}, h("td", {}, kidNum(p)), h("td", {}, seName(p)), h("td", { class: v ? "" : "none" }, !v ? "아직 안 냄"
+            : h("div", { class: "hw-row" }, u ? h("a", { href: u, target: "_blank", rel: "noopener noreferrer" }, u) : null, hwImg(v.img), h("small", { class: "rw-h" }, new Date(v.at).toLocaleString("ko-KR", { month: "numeric", day: "numeric", hour: "numeric", minute: "2-digit" })))));
+        })));
+  };
+  const item = d => {
+    const v = d.data(), u = hwLink(v.link), box = h("div");
+    return h("div", { class: "hw-it" }, v.t ? h("p", {}, v.t) : null, u ? h("p", {}, "🔗 ", h("a", { href: u, target: "_blank", rel: "noopener noreferrer" }, u)) : null, hwImg(v.img),
+      h("div", { class: "hw-row", style: "margin-top:6px" }, h("small", { class: "rw-h" }, new Date(v.at).toLocaleDateString("ko-KR")),
+        h("button", { onclick: () => subs(d, box).catch(() => box.replaceChildren(h("p", { class: "rw-h" }, "⚠︎ 불러오지 못했어요."))) }, "낸 것 보기"),
+        h("button", { class: "danger", onclick: async () => {
+          if (!await seConfirm(host, "이 과제를 지울까요?\n학생이 낸 것도 모두 지워져요.", "지우기")) return;
+          await Promise.all((await fb.getDocs(hwCol(code, d.id, "sub"))).docs.map(s => fb.deleteDoc(s.ref))); await fb.deleteDoc(d.ref); load();
+        } }, "지우기")), box);
+  };
+  const load = () => fb.getDocs(hwCol(code)).then(s => {
+    const ds = s.docs.sort((a, b) => (b.data().at || 0) - (a.data().at || 0));
+    list.replaceChildren(...(ds.length ? ds.map(item) : [h("p", { class: "rw-h" }, "아직 낸 과제가 없어요.")]));
+  }, () => list.replaceChildren(h("p", { class: "rw-h" }, "⚠︎ 과제를 불러오지 못했어요. Firestore 규칙을 새로 게시했는지 확인해 주세요.")));
+  load();
+  return h("div", {}, h("p", { class: "rw-h" }, "학생 화면(반 코드 + 번호 + 비밀번호)에 과제가 보여요. 학생은 링크나 사진으로 내요."),
+    h("div", { class: "hw-new" }, t, link, h("div", { class: "hw-row" }, h("button", { onclick: () => file.click() }, "📷 사진 넣기"), file, prev), h("div", { class: "hw-row" }, go, msg)),
+    h("b", {}, "낸 과제"), list);
 }
 syncShow();
 if (lsGet("sync-uid")) fbLoad().catch(() => syncShow("서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요.")); // 전에 로그인했으면 이어서

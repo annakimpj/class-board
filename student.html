@@ -61,6 +61,18 @@
   .modal > div { background: #fff; border-radius: 22px; padding: 22px 24px; width: min(380px, 100%); text-align: center; }
   .modal p { font-size: 21px; margin: 0 0 16px; white-space: pre-line; } .modal .btns { display: flex; gap: 8px; justify-content: center; } .modal button { font-size: 19px; }
   .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: #2b1d14; color: #fff; padding: 10px 20px; border-radius: 999px; font-size: 17px; z-index: 11; }
+  /* 과제 */
+  .hw-btn { font-size: 19px; font-weight: 600; } .hw-btn b { display: inline-block; min-width: 24px; margin-left: 4px; padding: 0 6px; border-radius: 999px; background: var(--warn); color: #fff; font-size: 15px; }
+  .hw { display: grid; gap: 14px; }
+  .hw-it { background: #fff; border-radius: 22px; padding: 18px 20px; box-shadow: 0 2px 10px rgba(60, 40, 20, .06); }
+  .hw-it > p { margin: 0 0 10px; font-size: 21px; white-space: pre-line; } .hw-it .when { font-size: 15px; color: var(--muted); }
+  .hw-it img { display: block; max-width: 100%; max-height: 420px; border-radius: 12px; margin: 0 0 10px; }
+  .hw-it a.go { display: inline-block; margin: 0 0 10px; padding: 8px 18px; border-radius: 12px; background: var(--card); border: 1.5px solid var(--line); color: var(--ink); font-size: 19px; text-decoration: none; }
+  .hw-me { border-top: 2px dashed var(--line); padding-top: 12px; display: grid; gap: 8px; }
+  .hw-me .done { margin: 0; font-size: 20px; font-weight: 600; color: #2f9e44; }
+  .hw-me input { font-size: 18px; padding: 8px 12px; border: 2px solid var(--line); border-radius: 12px; width: 100%; }
+  .hw-me .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; } .hw-me img { max-height: 200px; margin: 0; }
+  .hw-none { text-align: center; color: var(--muted); font-size: 20px; padding: 40px 0; }
   .loading { min-height: 100vh; display: grid; place-items: center; font-size: 20px; color: var(--muted); }
 </style>
 </head>
@@ -86,8 +98,9 @@
   </form>
 </div>
 <div class="app" id="app" hidden>
-  <div class="top"><h1 id="me-name"></h1><span class="pt" id="me-pt"></span><button class="out" id="out">나가기</button></div>
-  <div class="main-grid">
+  <div class="top"><h1 id="me-name"></h1><span class="pt" id="me-pt"></span><button class="hw-btn" id="hw-btn">📚 과제</button><button class="out" id="out">나가기</button></div>
+  <div class="hw" id="hw" hidden></div>
+  <div class="main-grid" id="dress">
     <div class="stage">
       <div class="me" id="me-av"></div>
       <div class="sw" id="sw-skin"></div>
@@ -141,11 +154,12 @@ function draw() {
   $("me-av").innerHTML = avPic(d.av, d.wear);
   const sw = (box, list, key, label) => $(box).replaceChildren(el("span", {}, label), ...list.map((c, i) => el("button", { class: (d.av[key] || 0) === i ? "on" : "", style: `background:${c[0]}`, "aria-label": label, onclick: () => { d.av = { ...d.av, [key]: i }; dirty = true; draw(); } })));
   sw("sw-skin", AV_SKIN, "skin", "피부"); sw("sw-hair", AV_HAIR, "hc", "머리색");
-  $("save").disabled = !dirty; $("undo").disabled = d.wear.top === AV_REQ.top && d.wear.bottom === AV_REQ.bottom;
-  $("note").textContent = !dirty ? "" : !cost ? "저장하기를 눌러야 바뀌어요." : after < 0 ? `${-after} ${unit()} 모자라요. 입어 보는 것 중 몇 개를 벗어요.` : `입어 보는 물건은 저장하면 사요 (${cost} ${unit()}).`;
+  // 살 게 있으면 저장 버튼이 "3으쓱으로 바꾸기", 모자라면 아래에 "3 으쓱이 모자라요"
+  $("save").disabled = !dirty || after < 0; $("save").textContent = cost && after >= 0 ? avPay(cost, unit()) : "저장하기"; $("undo").disabled = d.wear.top === AV_REQ.top && d.wear.bottom === AV_REQ.bottom && !cost;
+  $("note").textContent = !dirty ? "" : after < 0 ? avShort(-after, unit()) : !cost ? "저장하기를 눌러야 바뀌어요." : "";
   $("note").classList.toggle("short", !!cost && after < 0);
   $("tabs").replaceChildren(...AV_TABS.map(([k, t]) => el("button", { class: tab === k ? "on" : "", onclick: () => { tab = k; draw(); } }, t)));
-  const items = AV_ITEMS.filter(it => tab === "acc" ? AV_ACC.includes(it.slot) : it.slot === tab);
+  const items = AV_ITEMS.filter(it => tab === "acc" ? AV_ACC.includes(it.slot) : it.slot === tab).sort((a, b) => price(a) - price(b)); // 무료부터 비싼 것까지
   $("shop").replaceChildren(...items.map(it => {
     const has = owns(it), must = it.slot in AV_REQ, worn = (d.wear[it.slot] || AV_REQ[it.slot]) === it.id, cost = price(it);
     const pic = el("div"); pic.innerHTML = avPic(d.av, { ...d.wear, [it.slot]: it.id });
@@ -169,13 +183,76 @@ async function save() { // 입어 본 가게 물건은 이때 삼. 점수가 모
     else { toast("저장했어요!"); [659, 988].forEach((f, i) => tone(f, i * .08, .15)); }
   } catch (e) { toast("저장하지 못했어요. 인터넷 연결을 확인해 주세요."); }
 }
+// ───── 과제: 선생님이 낸 과제를 보고 링크나 사진으로 냄
+// 서버: classes/{반 코드}/hw/{id} = { t, link, img, at } · classes/{반 코드}/hw/{id}/sub/{번호}-{비밀번호} = { link, img, at } (내 것만 쓸 수 있음)
+let hws = [], mine = {}, hwDraft = {}, hwOpen = false, hwL = null;
+const okLink = u => /^https?:\/\/\S+$/i.test(u || "") ? u : ""; // javascript: 같은 주소는 안 씀
+const subRef = id => fs.doc(db, "classes", hwL.code, "hw", id, "sub", hwL.key);
+const pic = src => src?.startsWith("data:image/") ? el("img", { src, alt: "사진" }) : null;
+async function shrink(file) { // 사진을 긴 쪽 1280px JPEG로 줄임 (문서 하나 1MB 제한 안에, 보통 100~250KB)
+  const im = await createImageBitmap(file);
+  for (let side = 1280, q = .8; ; side *= .8, q = .7) {
+    const k = Math.min(1, side / Math.max(im.width, im.height)), cv = document.createElement("canvas");
+    cv.width = Math.round(im.width * k); cv.height = Math.round(im.height * k);
+    const g = cv.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, cv.width, cv.height); // 투명한 PNG가 JPEG에서 까매지지 않게
+    g.drawImage(im, 0, 0, cv.width, cv.height);
+    const url = cv.toDataURL("image/jpeg", q);
+    if (url.length < 700000) return url;
+  }
+}
+function hwDraw() {
+  const todo = hws.filter(x => !mine[x.id]).length;
+  $("hw-btn").replaceChildren(hwOpen ? "🧑 꾸미기" : "📚 과제", ...(todo && !hwOpen ? [el("b", {}, String(todo))] : []));
+  $("hw").hidden = !hwOpen; $("dress").hidden = hwOpen;
+  if (!hwOpen) return;
+  if (!hws.length) return $("hw").replaceChildren(el("p", { class: "hw-none" }, "아직 과제가 없어요."));
+  $("hw").replaceChildren(...hws.map(x => {
+    const u = okLink(x.link), s = mine[x.id], dr = hwDraft[x.id] ||= { link: s?.link || "", img: s?.img || "", edit: !s };
+    let me;
+    if (s && !dr.edit) {
+      const su = okLink(s.link);
+      me = [el("p", { class: "done" }, "✅ 냈어요!"), su ? el("a", { href: su, target: "_blank", rel: "noopener noreferrer" }, su) : null, pic(s.img),
+        el("div", { class: "row" }, el("button", { onclick: () => { dr.edit = true; hwDraw(); } }, "다시 내기"))];
+    } else {
+      const link = el("input", { placeholder: "링크를 붙여 넣어요 (https://…)", value: dr.link, inputmode: "url" }), file = el("input", { type: "file", accept: "image/*", hidden: "" });
+      link.oninput = () => dr.link = link.value;
+      file.onchange = async () => { const f = file.files[0]; if (!f) return; toast("사진 줄이는 중…"); try { dr.img = await shrink(f); hwDraw(); } catch (e) { toast("이 사진은 열 수 없어요."); } };
+      const go = el("button", { class: "main", onclick: () => hwSend(x.id, go) }, "선생님께 내기");
+      me = [link, el("div", { class: "row" }, el("button", { onclick: () => file.click() }, dr.img ? "📷 사진 바꾸기" : "📷 사진 넣기"), file,
+        dr.img ? el("button", { onclick: () => { dr.img = ""; hwDraw(); } }, "사진 빼기") : null), pic(dr.img),
+        el("div", { class: "row" }, go, s ? el("button", { onclick: () => { hwDraft[x.id] = { link: s.link || "", img: s.img || "", edit: false }; hwDraw(); } }, "취소") : null)];
+    }
+    return el("div", { class: "hw-it" }, x.t ? el("p", {}, x.t) : null, u ? el("a", { class: "go", href: u, target: "_blank", rel: "noopener noreferrer" }, "🔗 링크 열기") : null, pic(x.img),
+      el("div", { class: "hw-me" }, el("span", { class: "when" }, new Date(x.at).toLocaleDateString("ko-KR") + " 과제"), ...me));
+  }));
+}
+async function hwSend(id, btn) {
+  const dr = hwDraft[id], link = dr.link.trim();
+  if (link && !okLink(link)) return toast("링크는 https:// 로 시작해요.");
+  if (!link && !dr.img) return toast("링크나 사진을 넣어요.");
+  const v = { link, img: dr.img, at: Date.now() };
+  btn.disabled = true;
+  try { await fs.setDoc(subRef(id), v); mine[id] = v; dr.edit = false; hwDraw(); toast("선생님께 냈어요!"); [659, 988].forEach((f, i) => tone(f, i * .08, .15)); }
+  catch (e) { btn.disabled = false; toast("내지 못했어요. 인터넷 연결을 확인해 주세요."); }
+}
+function hwListen(l) { // 과제 목록을 계속 듣고, 내가 낸 것은 한 번씩 받아 옴
+  hwL = l;
+  return fs.onSnapshot(fs.collection(db, "classes", l.code, "hw"), async s => {
+    hws = s.docs.map(x => ({ id: x.id, ...x.data() })).sort((a, b) => (b.at || 0) - (a.at || 0));
+    await Promise.all(hws.filter(x => !(x.id in mine)).map(async x => { const r = await fs.getDoc(subRef(x.id)).catch(() => null); mine[x.id] = r?.exists() ? r.data() : null; }));
+    if (hwL === l) hwDraw();
+  }, () => {});
+}
+$("hw-btn").onclick = () => { hwOpen = !hwOpen; hwDraw(); scrollTo(0, 0); };
 function logout(msg) {
   unsubs.forEach(u => u()); unsubs = []; me = d = null; dirty = false;
+  hws = []; mine = {}; hwDraft = {}; hwOpen = false; hwL = null; hwDraw();
   try { localStorage.removeItem("kid-login"); } catch (e) {}
   stepTo(1); $("login-err").textContent = msg || ""; show("login");
 }
 function enter(l) { // 내 문서와 반 설정을 계속 들음 (점수가 바뀌면 바로 보임)
   unsubs.forEach(u => u()); unsubs = [];
+  unsubs.push(hwListen(l));
   unsubs.push(fs.onSnapshot(fs.doc(db, "classes", l.code), s => { if (!s.exists()) return logout("학생 입장이 꺼졌어요. 선생님께 물어보세요."); cls = s.data(); if (me) draw(); }, () => {}));
   unsubs.push(fs.onSnapshot(kidRef(l), s => {
     if (!s.exists()) return logout("비밀번호가 지워졌어요. 다시 들어와서 새 비밀번호를 정해요.");
@@ -232,7 +309,10 @@ $("login-form").onsubmit = async e => {
 $("login-back").onclick = () => { err(""); stepTo(1); };
 $("in-code").oninput = e => e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
 $("save").onclick = save;
-$("undo").onclick = () => { d = { ...d, wear: { ...d.wear, top: AV_REQ.top, bottom: AV_REQ.bottom } }; dirty = true; draw(); }; // 원래대로: 기본 옷(흰 셔츠·카키 반바지)으로. 머리·피부는 그대로
+$("undo").onclick = () => { // 원래대로: 기본 옷(흰 셔츠·카키 반바지)으로. 머리는 그대로, 단 입어 보던(안 산) 머리는 원래 머리로 → 살 것이 없음
+  const was = avWear(me.wear).hair, hair = owns(avItem(d.wear.hair)) ? d.wear.hair : owns(avItem(was)) ? was : AV_REQ.hair;
+  d = { ...d, wear: { ...d.wear, hair, top: AV_REQ.top, bottom: AV_REQ.bottom } }; dirty = true; draw();
+};
 $("out").onclick = async () => { if (!dirty || await ask("저장하지 않은 것이 있어요.\n그래도 나갈까요?", "나가기")) logout(); };
 addEventListener("beforeunload", e => { if (dirty) e.preventDefault(); });
 
