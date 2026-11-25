@@ -22,7 +22,7 @@ SC=FIT*S; TOPY=203*S; CX=129*S
 OPEN={2,6,12,26}           # 앞이 열린 자켓: 사이를 흰 티로
 HOLE={17,19,20,21,23}       # 목 안쪽 흰 빈 곳이 있는 옷: 흰 티로
 NOCUT={0,3,5,8,13,15,16,24,28,29,30,31,33,35,36,37}  # 앞 깃이 목에 걸친 옷: 목선 자르지 않음
-DY={}                        # 옷별 위아래 보정 (출력 px)
+DY={1:-10,4:-10,14:-10,10:-6}   # 옷별 위아래 보정 (출력 px). 후드는 후드가 위로 솟아서 몸통이 내려가 보이니 올림
 NECK=dict(ny=207, d=9, nw=19) # 목선: 가운데 y=ny+d, 폭 ±nw (출력 px)
 def ramp(m,s=1.2): return np.clip((ndimage.gaussian_filter(m.astype(float),s)-.5)*3+.5,0,1)
 head=np.array(Image.open(AV+'base-0.png').resize((W,H),Image.NEAREST))[...,3]>128
