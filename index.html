@@ -103,8 +103,8 @@
   /* 화이트보드 1~4: 제목 줄 오른쪽 (⛶ ✕ 왼쪽) */
   .wb-card > .wb-pages { position: absolute; top: 7px; right: 120px; display: flex; gap: 3px; z-index: 1; }
   .wb-pages button { font: 13px "Pretendard Variable", "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; width: 24px; height: 24px; padding: 0; border: 0; border-radius: 6px; cursor: pointer;
-                     background: rgba(255, 255, 255, .18); color: #fff; }
-  .wb-pages button.on { background: #fff; color: var(--accent); }
+                     background: #f1ede6; color: #8a8178; } /* 흰 제목줄에서도 잘 보이게 */
+  .wb-pages button:hover { color: var(--ink); } .wb-pages button.on { background: var(--accent); color: #fff; font-weight: 700; }
   .wb-tools button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
   .pen-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--pen, #2b1d14); box-shadow: 0 0 0 1.5px #fff; }
   /* 펜 색·굵기 팝업 (글상자를 고른 채 T 글상자를 누르면 색만) */
@@ -138,7 +138,7 @@
   .wb-mhead button { border: 1.5px solid #e3ddd3; background: #fff; border-radius: 7px; padding: 5px 12px; font: inherit; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
   .wb-mhead button.main { background: var(--accent); border-color: var(--accent); color: #fff; }
   .wb-mhead .keep.on { background: #2f9e44; border-color: #2f9e44; color: #fff; } .wb-mhead .erase.on { background: #e03131; border-color: #e03131; color: #fff; }
-  .wb-mhead .rng { display: inline-flex; align-items: center; gap: 4px; color: var(--muted); font-size: 12px; } .wb-mhead .rng input { width: 80px; }
+  .wb-mhead .rng { display: inline-flex; align-items: center; gap: 4px; color: var(--muted); font-size: 12px; } .wb-mhead .rng input { width: 80px; } .wb-mhead .rng.wide input { width: 140px; }
   .wb-stage { position: relative; justify-self: center; overflow: hidden; line-height: 0; }
   .wb-stage img, .wb-stage canvas { display: block; max-width: 88vw; max-height: 78vh; user-select: none; }
   .wb-stage.cut canvas { cursor: crosshair; touch-action: none; background: repeating-conic-gradient(#e9e9e9 0 25%, #fff 0 50%) 0 0 / 16px 16px; } /* 체크무늬 = 지운 곳 */
@@ -5795,6 +5795,21 @@ function wbColorMask(org, W, H, tol) { // AI가 안 될 때: 가장자리 색 �
   for (let p = 0; p < N; p++) m[p] = lab[p] === best ? 255 : 0;
   return m;
 }
+function wbBiggest(m, W, H, cut = 128) { // cut보다 진한 곳 중 가장 큰 덩어리만 남기고 나머지는 지움
+  const N = W * H, lab = new Int32Array(N), q = new Int32Array(N); let id = 0, best = 0, bestN = 0;
+  for (let p = 0; p < N; p++) if (m[p] >= cut && !lab[p]) {
+    id++; let hd = 0, tl = 0; lab[p] = id; q[tl++] = p;
+    while (hd < tl) { const c = q[hd++], x = c % W; for (const n of [x ? c - 1 : -1, x < W - 1 ? c + 1 : -1, c - W, c + W]) if (n >= 0 && n < N && !lab[n] && m[n] >= cut) { lab[n] = id; q[tl++] = n; } }
+    if (tl > bestN) { bestN = tl; best = id; }
+  }
+  const keep = new Uint8Array(N); for (let p = 0; p < N; p++) if (lab[p] === best) keep[p] = 1;
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { // 덩어리 바로 옆(경계의 흐린 곳)은 살리고 그 밖은 지움
+    const p = y * W + x; if (keep[p] || !m[p]) continue;
+    let near = false; for (let dy = -4; dy <= 4 && !near; dy++) for (let dx = -4; dx <= 4; dx++) { const yy = y + dy, xx = x + dx; if (yy >= 0 && yy < H && xx >= 0 && xx < W && keep[yy * W + xx]) { near = true; break; } }
+    if (!near) m[p] = 0;
+  }
+  return m;
+}
 function wbSoften(m, W, H, r = 2) { // 가장자리 부드럽게: 상자 흐림 두 번
   const t = new Float32Array(W * H);
   for (let pass = 0; pass < 2; pass++) {
@@ -5807,7 +5822,7 @@ async function wbCutout(o) {
   const im = await wbImg(o), k = Math.min(1, 1000 / Math.max(im.naturalWidth, im.naturalHeight)), W = Math.round(im.naturalWidth * k), H = Math.round(im.naturalHeight * k);
   const base = wbCanvas(W, H), bx = base.getContext("2d", { willReadFrequently: true }); bx.drawImage(im, 0, 0, W, H);
   const org = bx.getImageData(0, 0, W, H).data, cv = wbCanvas(W, H), cx = cv.getContext("2d"), out = cx.createImageData(W, H);
-  const strokes = []; let mode = "erase", size = 24, tol = 40, raf = 0, auto = null, mask = new Uint8ClampedArray(W * H).fill(255);
+  const strokes = []; let mode = "erase", size = 24, tol = 40, cut = 128, raf = 0, auto = null, ai = null, mask = new Uint8ClampedArray(W * H).fill(255);
   const paint = ([md, x, y, r]) => { // 붓 한 점: 둥글게 살리거나 지움 (가장자리 1px 부드럽게)
     for (let yy = Math.max(0, Math.floor(y - r - 1)); yy <= Math.min(H - 1, y + r + 1); yy++) for (let xx = Math.max(0, Math.floor(x - r - 1)); xx <= Math.min(W - 1, x + r + 1); xx++) {
       const d = Math.hypot(xx - x, yy - y), a = wbClamp(r + .5 - d, 0, 1); if (!a) continue;
@@ -5816,7 +5831,13 @@ async function wbCutout(o) {
   };
   const show = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => { const d = out.data; for (let i = 0; i < W * H; i++) { const a = i * 4; d[a] = org[a]; d[a + 1] = org[a + 1]; d[a + 2] = org[a + 2]; d[a + 3] = org[a + 3] * mask[i] / 255; } cx.putImageData(out, 0, 0); }); };
   const redo = () => { if (auto) mask.set(auto); strokes.forEach(g => g.forEach(paint)); show(); }; // 자동 결과 위에 붓질 다시
-  const useColor = () => { auto = wbSoften(wbColorMask(org, W, H, tol), W, H); redo(); };
+  const useColor = () => { auto = wbSoften(wbBiggest(wbColorMask(org, W, H, tol), W, H), W, H); redo(); };
+  const useAi = () => { // 막대가 오른쪽일수록 더 많이 지움 (AI가 덜 확실한 곳부터)
+    const lo = cut - 40, m2 = new Uint8ClampedArray(W * H);
+    for (let i = 0; i < m2.length; i++) m2[i] = (ai[i] - lo) * 255 / 80;
+    auto = wbBiggest(m2, W, H); redo();
+  };
+  let tT = 0; const level = v => { cancelAnimationFrame(tT); tT = requestAnimationFrame(() => { if (ai) { cut = 20 + v * 2.2; useAi(); } else { tol = 5 + (100 - v) * .7; useColor(); } }); }; // 0~100
   const at = ev => { const r = cv.getBoundingClientRect(); return [(ev.clientX - r.left) * W / r.width, (ev.clientY - r.top) * H / r.height]; };
   let cur = null;
   cv.onpointerdown = p => wbDragOn(ev => { cur = []; strokes.push(cur); const [x, y] = at(ev); const s0 = [mode, x, y, size]; cur.push(s0); paint(s0); show(); }, (dx, dy, ev) => {
@@ -5827,17 +5848,17 @@ async function wbCutout(o) {
   const keepB = h("button", { class: "keep", onclick: () => setMode("keep") }, "살리기"), eraseB = h("button", { class: "erase", onclick: () => setMode("erase") }, "지우기");
   const setMode = v => { mode = v; keepB.classList.toggle("on", v === "keep"); eraseB.classList.toggle("on", v === "erase"); };
   const sizeR = h("input", { type: "range", min: "4", max: "80", value: size, title: "붓 굵기", oninput: e => size = +e.target.value });
-  const tolR = h("input", { type: "range", min: "5", max: "120", value: tol, title: "색으로 지우는 정도", onchange: e => { tol = +e.target.value; useColor(); } });
-  const tolL = h("label", { class: "rng", hidden: "" }, "색", tolR), stat = h("span", { class: "tip" }, "피사체를 찾는 중… (처음 한 번은 1분쯤 걸려요)");
+  const tolR = h("input", { type: "range", min: "0", max: "100", value: 50, title: "끌어서 지우는 정도 정하기 (오른쪽일수록 많이 지움)", oninput: e => level(+e.target.value) });
+  const tolL = h("label", { class: "rng wide" }, "덜 지움", tolR, "더 지움"), stat = h("span", { class: "tip" }, "피사체를 찾는 중… (처음 한 번은 1분쯤 걸려요)");
   setMode("erase"); show();
   const m = wbModal("배경 지우기", h("div", { class: "wb-stage cut" }, cv), [keepB, eraseB, h("label", { class: "rng" }, "붓", sizeR), tolL,
     h("button", { title: "붓질 하나 되돌리기", onclick: () => { strokes.pop(); redo(); } }, "↶ 되돌리기"), stat], () => {
     wbImgSet(o, cv.toDataURL("image/png"), o.w, o.h, 0, 0, W / H);
   });
-  try { auto = await wbAiMask(base, W, H); stat.textContent = "피사체를 찾았어요. 붓으로 고쳐요."; }
-  catch (e) { auto = null; stat.textContent = "인식 모델을 못 불러와서 색으로 지웠어요. '색' 막대로 조절해요."; tolL.hidden = false; }
+  try { ai = await wbAiMask(base, W, H); stat.textContent = "피사체를 찾았어요. 막대·붓으로 고쳐요."; }
+  catch (e) { ai = null; stat.textContent = "인식 모델을 못 불러와서 색으로 지웠어요."; }
   if (!m.isConnected) return; // 그새 창을 닫음
-  if (auto) redo(); else useColor();
+  tolR.value = 50; level(50);
 }
 const wbShown = () => wb.offsetParent !== null && panel.hidden && document.getElementById("seat-ed").hidden;
 document.addEventListener("paste", e => {
