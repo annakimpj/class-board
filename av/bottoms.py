@@ -1,12 +1,13 @@
 # 하의 시트(raw/bot7~10.webp, 저장소에 없음)를 잘라 av/bottom-N.png로. av/ 안에서: python3 bottoms.py ./
 # 순서: bot8(예전 하의 12개, 번호 그대로) → bot7 → bot9 → bot10
 from PIL import Image; import numpy as np; from scipy import ndimage
-import sys
+import sys, os
+sys.path.insert(0,os.path.dirname(os.path.abspath(__file__))); from outline import uniform
 OUT=sys.argv[1] if len(sys.argv)>1 else './'
 W,H=516,772; S=2                      # 2배 캔버스에서 작업
 INK=np.array([45,34,38.])
 TOPY=248; CX=129*S                    # 허리 위 끝 (출력 px), 상의 밑에 들어감
-WAIST=70                              # 허리 폭 (출력 px): 몸통 60 + 여유
+WAIST=63                              # 허리 폭 (출력 px): 몸통 60 + 조금
 FOOT=374                              # 긴 바지·치마 끝 (발목). 이보다 길면 세로로 줄임
 SHEETS=['bot8','bot7','bot9','bot10']
 def ramp(m,s=1.2): return np.clip((ndimage.gaussian_filter(m.astype(float),s)-.5)*3+.5,0,1)
@@ -42,11 +43,7 @@ def make(c,name):
   ox,oy=round(CX-cx*k),TOPY*S
   cv=np.zeros((H,W,4)); cv[oy:oy+sh,ox:ox+sw]=np.array(im)
   a=ndimage.binary_opening(cv[...,3]>128,iterations=1); rgb=cv[...,:3]
-  ring=2; body=ramp(ndimage.binary_erosion(a,iterations=ring)); item=ramp(a)
-  outer=ramp(ndimage.distance_transform_edt(~a)<=1)
-  core=ndimage.binary_erosion(a,iterations=ring)
-  _,idx=ndimage.distance_transform_edt(~core,return_indices=True); rgb=rgb[idx[0],idx[1]]
-  out=body[...,None]*rgb+(1-body[...,None])*INK; al=np.maximum(item,outer)
+  out,al=uniform(a,rgb,S)  # 바깥 선 굵기 통일 (outline.py)
   Image.fromarray(np.dstack([out,al*255]).round().clip(0,255).astype(np.uint8)).resize((W//2,H//2),Image.LANCZOS).save(f'{OUT}bottom-{name}.png',optimize=True)
 k=0
 for f in SHEETS:

@@ -13,6 +13,7 @@ def cells():
   return out
 from PIL import Image; import numpy as np; from scipy import ndimage
 import sys, os
+sys.path.insert(0,os.path.dirname(os.path.abspath(__file__))); from outline import uniform
 AV='./'; OUT=sys.argv[1] if len(sys.argv)>1 else './'
 W,H=516,772; S=2   # 2배 캔버스에서 작업
 FIT=0.39            # 시트 → 몸 크기 (몸에 맞게)
@@ -67,13 +68,7 @@ def make(k,c):
     _rgb=rgb.copy(); rgb[rib]=[222,218,214]
   a=ndimage.binary_opening(a,iterations=1)
   # 고른 검정 테두리 + 부드럽게
-  ring=2
-  body=ramp(ndimage.binary_erosion(a,iterations=ring)); item=ramp(a)
-  outer=ramp(ndimage.distance_transform_edt(~a)<=1)
-  core=ndimage.binary_erosion(a,iterations=ring)
-  _,idx=ndimage.distance_transform_edt(~core,return_indices=True); rgb=rgb[idx[0],idx[1]]
-  # 원래 선은 그대로 살리고, 가장자리만 새 선
-  out=body[...,None]*rgb+(1-body[...,None])*INK; al=np.maximum(item,outer)
+  out,al=uniform(a,rgb,S)  # 바깥 선 굵기 통일 (outline.py)
   # 흰 티 안쪽 옷과 닿는 곳에 얇은 선
   if tm.any():
     tl=(tm&a&ndimage.binary_dilation(a&~tm,iterations=2))|(rib&ndimage.binary_dilation(~a|~tm,iterations=1)&(yy>yc-S))|(tm&a&(yy>=yc+3*S)&(yy<yc+4*S)&(np.abs(tx)<1.1))
