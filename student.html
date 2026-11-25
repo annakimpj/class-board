@@ -41,8 +41,8 @@
   @media (max-width: 760px) { .main-grid { grid-template-columns: minmax(0, 1fr); } }
   .stage { background: #fff; border-radius: 22px; padding: 16px; text-align: center; position: sticky; top: 12px; box-shadow: 0 2px 10px rgba(60, 40, 20, .06); }
   @media (max-width: 760px) { .stage { position: static; } }
-  .stage .me .avp { width: min(220px, 60vw); aspect-ratio: 238 / 376; position: relative; margin: 0 auto 10px; border-radius: 16px; background: var(--card); }
-  .avp { position: relative; aspect-ratio: 238 / 376; } .avp img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .stage .me .avp { width: min(220px, 60vw); aspect-ratio: 258 / 386; position: relative; margin: 0 auto 10px; border-radius: 16px; background: var(--card); }
+  .avp { position: relative; aspect-ratio: 258 / 386; } .avp { isolation: isolate; } .avp img, .avp i { position: absolute; inset: 0; width: 100%; height: 100%; display: block; } .avp i { mix-blend-mode: multiply; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; }
   .sw { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: center; margin: 6px 0; font-size: 15px; color: var(--muted); }
   .sw span { width: 46px; text-align: right; }
   .sw button { width: 32px; height: 32px; padding: 0; border-radius: 50%; } .sw button.on { box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--accent); }
@@ -91,6 +91,7 @@
     <div class="stage">
       <div class="me" id="me-av"></div>
       <div class="sw" id="sw-skin"></div>
+      <div class="sw" id="sw-hair"></div>
       <div class="save"><button id="undo">원래대로</button><button class="main" id="save">저장하기</button></div>
       <p class="note" id="note"></p>
     </div>
@@ -138,9 +139,9 @@ function draw() {
   const cost = cartCost(), after = left() - cost;
   $("me-pt").replaceChildren(String(left()), el("small", {}, unit()), ...(cost ? [el("small", { class: after < 0 ? "short" : "" }, ` → 저장하면 ${after}`)] : []));
   $("me-av").innerHTML = avPic(d.av, d.wear);
-  const sw = (box, list, key, label) => $(box).replaceChildren(el("span", {}, label), ...list.map((c, i) => el("button", { class: d.av[key] === i ? "on" : "", style: `background:${c[0]}`, "aria-label": label, onclick: () => { d.av = { ...d.av, [key]: i }; dirty = true; draw(); } })));
-  sw("sw-skin", AV_SKIN, "skin", "피부");
-  $("save").disabled = $("undo").disabled = !dirty;
+  const sw = (box, list, key, label) => $(box).replaceChildren(el("span", {}, label), ...list.map((c, i) => el("button", { class: (d.av[key] || 0) === i ? "on" : "", style: `background:${c[0]}`, "aria-label": label, onclick: () => { d.av = { ...d.av, [key]: i }; dirty = true; draw(); } })));
+  sw("sw-skin", AV_SKIN, "skin", "피부"); sw("sw-hair", AV_HAIR, "hc", "머리색");
+  $("save").disabled = !dirty; $("undo").disabled = d.wear.top === AV_REQ.top && d.wear.bottom === AV_REQ.bottom;
   $("note").textContent = !dirty ? "" : !cost ? "저장하기를 눌러야 바뀌어요." : after < 0 ? `${-after} ${unit()} 모자라요. 입어 보는 것 중 몇 개를 벗어요.` : `입어 보는 물건은 저장하면 사요 (${cost} ${unit()}).`;
   $("note").classList.toggle("short", !!cost && after < 0);
   $("tabs").replaceChildren(...AV_TABS.map(([k, t]) => el("button", { class: tab === k ? "on" : "", onclick: () => { tab = k; draw(); } }, t)));
@@ -231,7 +232,7 @@ $("login-form").onsubmit = async e => {
 $("login-back").onclick = () => { err(""); stepTo(1); };
 $("in-code").oninput = e => e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
 $("save").onclick = save;
-$("undo").onclick = () => { d = { av: { skin: 0, ...me.av }, wear: avWear(me.wear) }; dirty = false; draw(); };
+$("undo").onclick = () => { d = { ...d, wear: { ...d.wear, top: AV_REQ.top, bottom: AV_REQ.bottom } }; dirty = true; draw(); }; // 원래대로: 기본 옷(흰 셔츠·카키 반바지)으로. 머리·피부는 그대로
 $("out").onclick = async () => { if (!dirty || await ask("저장하지 않은 것이 있어요.\n그래도 나갈까요?", "나가기")) logout(); };
 addEventListener("beforeunload", e => { if (dirty) e.preventDefault(); });
 

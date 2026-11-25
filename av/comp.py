@@ -2,11 +2,11 @@ from PIL import Image
 import numpy as np
 from scipy import ndimage
 import sys, os
-PX, PY, W, H = 70, 110, 337+140, 632+120   # body sits at (PX,PY) on canvas
+PX, PY, W, H = 90, 130, 337+180, 632+140   # body sits at (PX,PY) on canvas
 OUT = sys.argv[1] if len(sys.argv) > 1 else 'out'
 os.makedirs(OUT, exist_ok=True)
 EAR_BOTTOM, EAR_CX = 250, 168.5   # body ear bottom y / ear midpoint x
-HS = 1.23   # hair sheet -> body scale (from buzz cut ear width 265 vs body 325)
+HS = 1.32   # hair sheet -> body scale (from buzz cut ear width 265 vs body 325)
 HAIR_FIX = {2: 245, 11: 245}   # no visible ears: assumed ear-bottom y in sprite
 TS, TOP_Y, TOP_DY = 1.08, 285, {}   # tops: scale, neckline y on body
 BS, BOT_Y, BOT_DY = 0.62, 372, {}   # bottoms: scale, waist y on body
