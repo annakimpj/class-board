@@ -2390,6 +2390,7 @@ function showCard(k) { // 아래쪽 바에서 누르면 보드에 바로 맨 앞
   if (pops[k]) return pops[k].w.focus();
   if (MULTI[k] && lay(k).mode === "board") { addCard(k); return; }
   setLayout(k, { mode: "board" }); card(k).style.zIndex = ++zTop;
+  if (k === "whiteboard") setTool("select"); // 화이트보드는 켤 때마다 옮기기로 시작
   if (typeof tourAuto === "function") setTimeout(() => tourAuto(k.split("-")[0]), 400); // 처음 띄우면 안내
 }
 applyLayout();
@@ -5310,7 +5311,7 @@ qrSavedSave();
 // 사진이 여러 장이면 localStorage(약 5MB)를 넘기 쉬워서 IndexedDB에 저장
 const wb = document.getElementById("wb"), wbObjs = document.getElementById("wb-objs"), wbCv = document.getElementById("wb-canvas");
 const WB_COLORS = ["#2b1d14", "#e2643f", "#3a78d4", "#2e9a63", "#c98a00", "#7a5cc7"];
-let wbData = { objs: [], strokes: [] }, wbTool = "pen", wbColor = WB_COLORS[0], wbWidth = .004, wbTextC = WB_COLORS[0], wbTextFs = 7, wbSel = null, wbHist = [], wbSaveT = 0, wbPage = 0;
+let wbData = { objs: [], strokes: [] }, wbTool = "select", wbColor = WB_COLORS[0], wbWidth = .004, wbTextC = WB_COLORS[0], wbTextFs = 7, wbSel = null, wbHist = [], wbSaveT = 0, wbPage = 0;
 try { wbPage = Math.min(3, +localStorage.getItem("wb-page") || 0); } catch (e) {}
 const wbKey = p => p ? "whiteboard-" + (p + 1) : "whiteboard"; // 화이트보드 4개. 1번은 예전 저장 이름 그대로
 function idb(mode, fn) {
@@ -5881,7 +5882,7 @@ document.addEventListener("keydown", e => {
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") { e.preventDefault(); wbUndo(); }
   else if ((e.key === "Delete" || e.key === "Backspace") && wbSet.size) { e.preventDefault(); wbDelete(); }
 });
-setTool("pen");
+setTool("select"); // 켰을 때 기본은 옮기기
 wbLoad(wbPage);
 
 // ───── 미세먼지 ─────
