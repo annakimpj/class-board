@@ -1633,7 +1633,7 @@
     <button class="danger" onclick="resetEverything()">모든 데이터 초기화</button>
   </section>
 </div>
-<script src="avatar.js?v=11"></script><!-- 아바타를 고치면 avatar.js의 AV_V와 같이 숫자를 올림 -->
+<script src="avatar.js?v=12"></script><!-- 아바타를 고치면 avatar.js의 AV_V와 같이 숫자를 올림 -->
 <script>
 setTimeout(() => document.body.classList.add("ready"), 2000); // 혹시 아래에서 오류가 나도 2초 뒤엔 카드를 보여 줌
 // 다른 창(듀얼 모니터)으로 뗀 카드: { 카드: { w: 창, c: 카드, mark: 보드에 돌아올 자리, np: 글자 도구 창 } }
@@ -4128,7 +4128,7 @@ function rwSt(p) { // 처음 보는 학생은 이름으로 피부·머리색을 
   return s;
 }
 // 입은 것 + 기본 머리(명단 성별: 남 짧은 머리, 여 긴 생머리, 모르면 이름으로). 물건은 남녀 없이 모두 고를 수 있음
-const rwWear = (p, wear = {}) => ({ ...avWear(wear), ...(avItem(wear.hair)?.slot === "hair" ? {} : { hair: gender[p] === "M" ? "hair-0" : gender[p] === "F" ? "hair-8" : rwHash(seName(p)) % 5 < 2 ? "hair-0" : "hair-8" }) });
+const rwWear = (p, wear = {}) => ({ ...avWear(wear), ...(avItem(wear.hair)?.slot === "hair" ? {} : { hair: gender[p] === "M" ? "hair-17" : gender[p] === "F" ? "hair-19" : rwHash(seName(p)) % 5 < 2 ? "hair-17" : "hair-19" }) });
 function rwDraw() {
   const ppl = people(), unit = reward.unit.trim() || "점";
   rwPick = new Set([...rwPick].filter(p => ppl.includes(p)));

@@ -1,7 +1,7 @@
 # hair-N.png -> hair-N-g.png: light gray hair (dark outline kept) for CSS color multiply
 from PIL import Image
 import numpy as np
-for i in range(17):  # 12~16: 선생님이 그린 머리 (raw_user/hair-N-2x.png를 절반으로)
+for i in range(12):  # 12~: 선생님이 그린 머리는 hairuser.py
   a = np.array(Image.open(f'hair-{i}.png')).astype(float) / 255
   l = a[..., :3] @ [.299, .587, .114]
   t = np.clip((l - .15) / .4, 0, 1) ** .6
