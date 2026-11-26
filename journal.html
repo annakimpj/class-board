@@ -1160,7 +1160,8 @@ $("att-print").onclick = () => print();
 // 앱으로 설치: 브라우저가 '설치할 수 있어요'를 알려 주면 위에 버튼 (보드를 설치하면 이 탭이 #install로 열림)
 let jInst = null;
 addEventListener("beforeinstallprompt", e => { e.preventDefault(); jInst = e; $("jinst").hidden = false; $("jinst").classList.toggle("hot", location.hash === "#install"); });
-addEventListener("appinstalled", () => $("jinst").hidden = true);
+addEventListener("appinstalled", () => { $("jinst").hidden = true; try { localStorage.setItem("jr-installed", "1"); } catch (e) {} }); // 보드의 '일지 앱 설치' 버튼도 숨김
+if (matchMedia("(display-mode: standalone), (display-mode: window-controls-overlay)").matches) try { localStorage.setItem("jr-installed", "1"); } catch (e) {} // 앱으로 켜졌으면 이미 설치됨
 $("jinst").onclick = () => jInst?.prompt().catch(() => {});
 // 파일 끌어 놓기: 놓은 곳에서 가까운 파일 칸(카드·창·탭 안의 input[type=file])에 넣고 change를 일으킴. 따로 받는 곳(화이트보드 등)은 그쪽이 먼저
 { let box = null; const STOP = ".card, .pop, section, form, .modal, .hw-it, .hw-new, .card-ed, #panel";

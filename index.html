@@ -364,6 +364,8 @@
   .gear:hover { background: var(--line); color: var(--ink); }
   .gear.jr-btn { left: min(calc(env(titlebar-area-x, 0px) + env(titlebar-area-width, 100vw) - 84px), calc(100vw - 84px)); } /* 교사 일지: 설정 왼쪽, 눈에 띄지 않게 */
   .gear:focus-visible { outline: 2px solid var(--accent); }
+  .inst { position: fixed; top: env(titlebar-area-y, 4px); height: env(titlebar-area-height, 34px); left: min(calc(env(titlebar-area-x, 0px) + env(titlebar-area-width, 100vw) - 84px), calc(100vw - 84px)); transform: translateX(calc(-100% - 4px)); display: flex; gap: 4px; align-items: center; z-index: 50; app-region: no-drag; -webkit-app-region: no-drag; }
+  .inst button { font: 12px "Pretendard Variable", "Wanted Sans", "Malgun Gothic", sans-serif; padding: 4px 10px; border-radius: 999px; border: 0; background: #3b82f6; color: #fff; cursor: pointer; white-space: nowrap; } .inst button:hover { background: #2563eb; }
 
   /* ───── 자리배치 ───── 학급 보드와 같은 색·글꼴·버튼 모양을 그대로 씀 */
   .seat-bar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
@@ -1476,6 +1478,7 @@
   <div class="lk-list" id="lk-list"></div><div class="lk-sub" id="lk-sub" hidden></div></div>
 <div id="drawer" class="drawer" popover><div class="drawer-row"><div class="drawer-items" id="drawer-items"></div><button class="drawer-plus" popovertarget="drawer-add" title="서랍에 넣을 버튼 고르기" aria-label="서랍에 넣을 버튼 고르기">＋</button></div>
   <div id="drawer-add" class="drawer-add" popover><p class="drawer-h">서랍에 넣을 버튼을 골라요 (여러 개 골라도 돼요)</p><div class="drawer-pick" id="drawer-pick"></div><div class="drawer-done"><button class="main" popovertarget="drawer-add" popovertargetaction="hide">완료</button></div></div></div>
+<div class="inst" id="inst"><button id="inst-board" hidden title="우리반 보드를 앱으로 설치 (바탕화면·작업 표시줄에서 바로 켜요)">⬇ 보드 앱 설치</button><button id="inst-jr" hidden title="교사 일지를 따로 앱으로 설치 (새 탭에서 한 번 더 눌러요)">⬇ 일지 앱 설치</button></div>
 <button class="gear jr-btn" onclick="journalOpen()" title="일지" aria-label="일지"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5zM5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3M9 7h6"/></svg></button>
 <button class="gear" onclick="togglePanel(true)" title="설정" aria-label="설정">
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true">
@@ -7041,7 +7044,13 @@ seClean(); seRedraw();
 // 처음 켤 때 맨 먼저: 앱으로 설치 (엣지·크롬에 맞춰). 이미 앱으로 열었으면 건너뜀
 const isApp = () => !matchMedia("(display-mode: browser)").matches, isEdge = /Edg\//.test(navigator.userAgent), isChrome = !isEdge && /Chrome\//.test(navigator.userAgent);
 let installEvt = null; // 브라우저가 '설치할 수 있어요'를 알려 주면 그 자리에서 바로 설치 버튼을 띄움
-addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; });
+addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; instDraw(); });
+// 오른쪽 위 설치 버튼 둘: 보드는 여기서 바로, 교사 일지는 새 탭을 열어 거기서 한 번 더 (웹 앱은 페이지마다 따로 설치돼서). 설치하면 사라짐
+const instDraw = () => { $s("inst-board").hidden = !installEvt; $s("inst-jr").hidden = !!lsGet("jr-installed"); };
+addEventListener("appinstalled", () => { installEvt = null; instDraw(); });
+document.getElementById("inst-board").onclick = () => installEvt?.prompt().catch(() => {});
+document.getElementById("inst-jr").onclick = () => open("journal.html#install", "_blank", "noopener");
+setTimeout(instDraw, 0);
 const INSTALL_STEPS = [
   { text: "먼저 앱으로 설치해 주세요. 바탕화면·작업 표시줄에서 바로 켜고, 주소창 없이 넓게 써요.", btn: ["지금 설치하기", () => { installEvt?.prompt().catch(() => {}); installEvt?.userChoice.then(c => c.outcome === "accepted" && open("journal.html#install", "_blank")); }] }, // 보드를 설치하면 교사 일지 탭을 열어 바로 이어서 설치 (웹 앱은 한 번에 하나만 설치돼서)
   ...(isEdge ? [
