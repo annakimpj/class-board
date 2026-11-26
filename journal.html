@@ -95,8 +95,9 @@
   :is(.pop, .pop-in) .modes { gap: 6px; } :is(.pop, .pop-in) .mode { flex: none; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; font-size: 13px; padding: 4px 10px; } :is(.pop, .pop-in) .mode.on { background: var(--soft); border-color: var(--accent); color: var(--accent); }
   :is(.pop, .pop-in) .moderow { gap: 6px; font-size: 13px; color: var(--muted); } :is(.pop, .pop-in) .moderow .dbox { width: 140px; flex: none; }
   .day .ev:hover { background: #d3e2f3; } .day .ev.done { text-decoration: line-through; opacity: .5; } .day .more { font-size: 11px; color: var(--muted); }
-  .side { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 12px; min-height: 0; }
-  .duo .scroll { flex: 1 1 0; } .duo .h2b { margin-top: 12px; padding-top: 12px; border-top: 1px solid #efe9e1; }
+  .side { display: grid; grid-template-rows: minmax(0, 1fr); gap: 12px; min-height: 0; }
+  .duo .scroll { flex: 1 1 0; } .duo .h2b { margin-top: 12px; padding-top: 12px; border-top: 2px solid #e2d6c6; } /* 기능(날짜·일정·기록) 사이는 굵은 선, 일정끼리는 가는 선 */
+  .duo .dayh { margin: 0 0 10px; padding-bottom: 10px; border-bottom: 2px solid #e2d6c6; font-size: 16px; }
   .ghost { position: fixed; z-index: 50; pointer-events: none; background: var(--accent); color: #fff; font-size: 13px; padding: 3px 10px; border-radius: 8px; box-shadow: 0 6px 18px rgba(0, 0, 0, .2); max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .day.drop { background: #dbe7f5; } .ev.moving { opacity: .4; } .day .ev { cursor: grab; touch-action: none; }
   .minpop { position: fixed; z-index: 40; display: flex; align-items: center; gap: 6px; background: #fff; border-radius: 10px; padding: 6px 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, .18); font-size: 14px; }
@@ -110,8 +111,8 @@
   :is(.pop, .pop-in) .bell { padding: 4px; } :is(.pop, .pop-in) .addrow .bell .i { width: 18px; height: 18px; }
   .evquick { margin-top: 6px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; } .evquick .addrow { margin-top: 0; } .evquick .row { flex-wrap: wrap; } .evquick .addrow { flex-wrap: nowrap; } .evquick .inbox { min-width: 0; } .evquick .modes .chips { flex-basis: 100%; } .evquick .dbox { flex: 1 1 120px !important; width: auto !important; } /* 오른쪽 일정 칸: 팝업과 같은 입력 줄 */
   .addseg { display: flex; margin-top: 8px; border: 1.5px solid var(--line); border-radius: 8px; overflow: hidden; background: #fff; } /* 한 버튼을 셋으로 나눔 */
-  .addseg button { flex: 1; border: 0; border-radius: 0; background: none; padding: 7px 4px; font-size: 13.5px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; color: var(--ink); }
-  .addseg button + button { border-left: 1.5px solid var(--line); } .addseg button:hover { background: var(--soft); color: var(--accent); } .addseg .i { width: 15px; height: 15px; }
+  .addseg button { flex: 2; border: 0; border-radius: 0; background: none; padding: 7px 4px; font-size: 13.5px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; color: var(--ink); }
+  .addseg button:first-child { flex: 3; } .addseg button + button { border-left: 1.5px solid var(--line); } .addseg button:hover { background: var(--soft); color: var(--accent); } .addseg .i { width: 15px; height: 15px; }
   .item { display: flex; align-items: flex-start; gap: 6px; padding: 5px 2px; border-bottom: 1px solid #f1ece5; font-size: 14px; }
   .item .t { font-variant-numeric: tabular-nums; color: var(--accent); font-size: 12.5px; padding-top: 1px; flex: none; }
   .item .cdot { flex: none; width: 7px; height: 7px; border-radius: 50%; margin-top: 7px; }
@@ -239,8 +240,7 @@
       <div class="cal" id="cal"></div>
     </div>
     <div class="side">
-      <div class="box"><h2 id="day-title"></h2></div>
-      <div class="box duo"><h2 data-i="cal">일정</h2><div class="scroll" id="day-evs"></div>
+      <div class="box duo"><h2 id="day-title" class="dayh"></h2><h2 data-i="cal">일정</h2><div class="scroll" id="day-evs"></div>
         <form class="evquick pop-in" id="ev-quick"></form>
         <h2 data-i="pen" class="h2b">학생 기록 · 상담 · 일지</h2><div class="scroll" id="day-list"></div>
         <div class="addseg"><button data-add="rec" data-i="plus">학생 기록</button><button data-add="cs" data-i="plus">상담</button><button data-add="note" data-i="plus">일지</button></div></div>
