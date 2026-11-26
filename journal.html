@@ -1268,7 +1268,7 @@ function boxFolderForm(f, anchor) { // 폴더 만들기 / 이름 바꾸기
 }
 function boxRow(x) {
   const del = el("button", { class: "x", title: "지우기", onclick: ev => boxDel(x, ev.currentTarget) }, "✕");
-  if (x.type === "folder") return el("div", { class: "brow folder", "data-id": x.id, "data-into": x.id, oncontextmenu: ev => boxCtx(ev, x), title: "열기 · 다른 줄을 끌어 여기에 놓으면 이 폴더 안으로", onclick: ev => { if (boxDragged || ev.target.closest("button")) return; boxIn = x.id; boxDraw(); } },
+  if (x.type === "folder") return el("div", { class: "brow folder", "data-id": x.id, "data-into": x.id, oncontextmenu: ev => boxCtx(ev, x), title: "누르면 열기 · 더블클릭: 이름 바꾸기 · 다른 줄을 끌어 여기에 놓으면 이 폴더 안으로", onclick: (h => ev => { if (!boxDragged) h(ev); })(tap(() => { boxIn = x.id; boxDraw(); }, a => boxFolderForm(x, a))) },
     ico("folder"), el("div", { class: "bmain" }, el("span", { class: "btitle" }, x.title), el("small", {}, String(boxCount(x.id)))), !boxTag && x.tag ? el("span", { class: "btag" }, x.tag) : null, del);
   const copy = el("button", { class: "x", title: x.type === "link" ? "주소 복사" : "메모 복사", onclick: async () => { try { await navigator.clipboard.writeText(x.type === "link" ? x.url : x.text); copy.textContent = "✓"; setTimeout(() => copy.textContent = "⧉", 1200); } catch (e) {} } }, "⧉");
   const title = x.type === "link" ? el("a", { href: x.url, target: "_blank", rel: "noopener", class: "btitle", draggable: "false", title: "새 창으로 열기", onclick: e => { if (boxDragged) e.preventDefault(); } }, x.title || x.url) : el("b", { class: "btitle" }, x.title || (x.text || "").split("\n")[0]);
