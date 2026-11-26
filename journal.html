@@ -37,6 +37,11 @@
   header .dday .dd-note { font-size: 11px; color: #b5aaa0; }
   header .dday:hover .dd { box-shadow: inset 0 0 0 1.5px var(--accent); } header .dday:empty::after, header .dday .dd-empty { padding: 4px 10px; }
   header .today { margin-left: 8px; padding-left: 12px; border-left: 1px solid var(--line); font-size: 13px; }
+  /* 파일 넣는 칸: 점선 상자 + 구름 화살표 (끌어다 놓아도 된다는 표시) */
+  .dz { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; box-sizing: border-box; padding: 18px 16px; border: 2px dashed #c9c2b8 !important; border-radius: 14px !important; background: #fcfaf7 !important; font: inherit; color: #333; cursor: pointer; }
+  .dz:hover, .dz.drop-on, .drop-on > .dz { border-color: #3b82f6 !important; background: #f0f6ff !important; } .dz svg { width: 36px; height: 36px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .dz b { font-weight: 500; font-size: 15px; } .dz u { color: #2f6fd6; text-decoration: none; font-weight: 600; font-size: 15px; } .dz small { color: #868e96; font-size: 12px; }
+  .dzw { margin-top: 8px; }
   .ddl { display: grid; gap: 6px; } .ddl .row { display: flex; gap: 6px; align-items: center; } .ddl .row > * { min-width: 0; } .ddl .row .dbox { flex: none; width: 140px; } .ddl .dtext.bad { border-color: #e03131; color: #e03131; }
   .pop .tip { margin: 0 0 4px; font-size: 12px; color: var(--muted); line-height: 1.5; } .ddl .grow { flex: 1; width: 0; } .ddl .row .x { flex: none; }
   header .jset { border: 0; background: none; padding: 5px; border-radius: 8px; color: var(--muted); display: grid; place-items: center; margin-left: 4px; } header .jset:hover { background: var(--soft); color: var(--accent); }
@@ -342,6 +347,7 @@ function load() {
   try { const old = JSON.parse(localStorage.getItem("local-journal")); if (old) { J.info = { ...old.info, ...J.info }; J.att = { ...old.att, ...J.att }; localStorage.setItem("journal", JSON.stringify(J)); localStorage.removeItem("local-journal"); } } catch (e) {} // 예전: 이 컴퓨터에만 두던 학생 정보·출결 → 일지로
   J.recs.forEach(r => { if (!r.ps) { r.ps = r.p ? [r.p] : []; delete r.p; } }); // 예전: 학생 한 명
 }
+function dzBtn(go, kinds) { const b = el("button", { type: "button", class: "dz", onclick: go }, el("b", {}, "여기로 파일을 끌어다 놓거나"), el("u", {}, "눌러서 파일 고르기"), el("small", {}, kinds)); b.insertAdjacentHTML("afterbegin", '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a4.5 4.5 0 0 1-.6-9A6 6 0 0 1 18 8a4.5 4.5 0 0 1-.5 10"/><path d="M12 20v-9M8.5 14 12 10.5l3.5 3.5"/></svg>'); return b; } // 파일 넣는 점선 상자
 function store() { try { localStorage.setItem("journal", JSON.stringify(J)); localStorage.setItem("sync-dirty", "1"); } catch (e) { ask("저장할 자리가 모자라요.", "확인", null); } }
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 function ask(text, ok = "확인", cancel = "취소", near = null) { // 창 안 팝업. near(누른 버튼)가 있으면 그 옆에 작게
@@ -783,7 +789,7 @@ function jrSettings(anchor) {
       grp("상담 방법", words(ways, L => J.ways = L, "대면, 전화, 문자"))],
     doc: [grp("출결 필요 서류", el("p", { class: "tip" }, "출결을 적을 때 종류 + 분류에 맞는 서류가 '필요'로 채워져요. 서류는 쉼표(,)로 나눠요. 비워 두면 필요 서류 없음."), docRules)],
     bak: [grp("백업", el("p", { class: "tip" }, "일지 전체를 파일로 내보내 보관하거나 다른 컴퓨터에서 불러와요. 읽거나 인쇄하려면 각 탭의 '출력'에서 PDF로 저장해요."),
-      el("div", { class: "row" }, el("button", { type: "button", onclick: backup }, "파일로 내보내기"), el("button", { type: "button", onclick: () => file.click() }, "파일에서 불러오기"), file))],
+      el("div", { class: "row" }, el("button", { type: "button", onclick: backup }, "파일로 내보내기")), el("div", { class: "dzw" }, dzBtn(() => file.click(), "교사 일지 백업 파일 (.json)"), file))],
   };
   const body = el("div", { class: "spane" }), tabs = el("div", { class: "stabs" });
   const show = k => { setTab = k; tabs.querySelectorAll("button").forEach(x => x.classList.toggle("on", x.dataset.k === k)); body.replaceChildren(...panes[k]); };
