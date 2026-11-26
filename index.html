@@ -793,6 +793,7 @@
   .kid-tb { width: 100%; border-collapse: collapse; font-size: 18px; } .kid-tb th { font-size: 13px; font-weight: normal; color: var(--muted); text-align: left; }
   .kid-tb td, .kid-tb th { border-bottom: 1px solid var(--line); padding: 4px 6px; } .kid-tb .none { color: var(--muted); font-size: 14px; } .kid-status { margin: 0 0 8px; } .kid-code button { font-size: 13px; padding: 2px 10px; border-radius: 8px; }
   .kid-tb .pin { font-weight: 700; font-size: 22px; letter-spacing: .1em; font-variant-numeric: tabular-nums; }
+  .drop-on { outline: 3px dashed #3b82f6 !important; outline-offset: -3px; }
   .kid-chip { font-size: 13px; padding: 2px 10px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer; margin-left: auto; } .kid-chip b { letter-spacing: .08em; }
   .hw-head .kid-chip { margin-left: 0; } .rw-tabs .kid-chip { align-self: center; } .hw-tt { margin: 0 0 4px; font-size: 17px; } .hw-new .hw-title { font: inherit; font-size: 16px; font-weight: 600; padding: 6px 8px; border: 1.5px solid var(--line); border-radius: 8px; }
   .kid-guide { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; margin: 6px 0 10px; } .kid-guide .kid-qr { width: 160px; height: 160px; image-rendering: pixelated; border-radius: 8px; border: 1px solid var(--line); }
@@ -7829,7 +7830,7 @@ function hwPanel(host) { // 📮 과제함: 첫 화면은 낸 과제 카드, 누
       } }, "✕"));
   };
   const load = () => fb.getDocs(hwCol(code)).then(s => {
-    const ds = s.docs.sort((a, b) => (b.data().at || 0) - (a.data().at || 0));
+    const ds = s.docs.sort((a, b) => (a.data().at || 0) - (b.data().at || 0)); // 나중에 낸 과제가 오른쪽(뒤)
     body.replaceChildren(ds.length ? h("div", { class: "hw-tcs" }, ...ds.map(card)) : h("p", { class: "rw-h" }, "아직 낸 과제가 없어요. '+ 과제 추가'로 내요."));
   }, () => body.replaceChildren(h("p", { class: "rw-h" }, "⚠︎ 과제를 불러오지 못했어요. Firestore 규칙을 새로 게시했는지 확인해 주세요.")));
   load();
@@ -7845,6 +7846,15 @@ function hwCardDraw() {
   host.replaceChildren(hwPanel(host.closest(".card")));
 }
 setInterval(hwCardDraw, 2000); setTimeout(hwCardDraw, 0);
+// 파일 끌어 놓기: 놓은 곳에서 가까운 파일 칸(카드·창·탭 안의 input[type=file])에 넣고 change를 일으킴. 따로 받는 곳(화이트보드 등)은 그쪽이 먼저
+{ let box = null; const STOP = ".card, .pop, section, form, .modal, .hw-it, .hw-new, .card-ed, #panel";
+  const find = t => { for (let e = t; e && e !== document.body; e = e.parentElement) { const f = e.querySelector?.("input[type=file]"); if (f) return [e, f]; if (e.matches?.(STOP)) break; } return []; };
+  const mark = b => { box?.classList.remove("drop-on"); box = b; box?.classList.add("drop-on"); };
+  addEventListener("dragover", e => { if (e.defaultPrevented || !e.dataTransfer?.types.includes("Files")) return; const [b] = find(e.target); mark(b || null); if (b) { e.preventDefault(); e.dataTransfer.dropEffect = "copy"; } });
+  addEventListener("dragleave", e => { if (!e.relatedTarget) mark(null); });
+  addEventListener("drop", e => { mark(null); if (e.defaultPrevented || !e.dataTransfer?.files.length) return; const [, f] = find(e.target); if (!f) return; e.preventDefault();
+    const dt = new DataTransfer(); [...e.dataTransfer.files].slice(0, f.multiple ? 99 : 1).forEach(x => dt.items.add(x)); f.files = dt.files; f.dispatchEvent(new Event("change", { bubbles: true })); });
+}
 syncShow();
 if (lsGet("sync-uid")) fbLoad().catch(() => syncShow("서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요.")); // 전에 로그인했으면 이어서
 // ───── 실물화상기: USB 실물화상기는 컴퓨터가 카메라로 알아봄 → 회사 프로그램 없이 카드에서 바로 봄

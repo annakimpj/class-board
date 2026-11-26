@@ -69,6 +69,7 @@
   .hw-it img { display: block; max-width: 100%; max-height: 420px; border-radius: 12px; margin: 0 0 10px; }
   .nt { position: sticky; top: 8px; z-index: 5; background: #fff4e6; border: 3px solid #ff922b; border-radius: 18px; padding: 14px 18px; margin-bottom: 14px; display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: center; box-shadow: 0 6px 20px rgba(232, 89, 12, .2); }
   .nt b { font-size: 16px; color: #d9480f; } .nt p { grid-column: 1; margin: 0; font-size: 24px; font-weight: 600; white-space: pre-line; } .nt button { grid-row: 1 / 3; grid-column: 2; }
+  .drop-on { outline: 3px dashed #3b82f6 !important; outline-offset: -3px; }
   .hw-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
   .hw-card { display: flex; flex-direction: column; gap: 4px; text-align: left; min-height: 130px; background: #fff; border: 2px solid transparent; border-radius: 18px; padding: 16px 18px; box-shadow: 0 2px 10px rgba(60, 40, 20, .06); }
   .hw-card b { font-size: 21px; } .hw-card span { font-size: 15px; color: var(--muted); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
@@ -108,7 +109,7 @@
   </form>
 </div>
 <div class="app" id="app" hidden>
-  <div class="top"><h1 id="me-name"></h1><span class="pt" id="me-pt"></span><button class="hw-btn" id="nt-on" hidden>🔔 알림 켜기</button><button class="hw-btn" id="hw-btn">🧑 꾸미기</button><button class="out" id="out">나가기</button></div>
+  <div class="top"><button class="hw-btn" id="hw-btn">🧑 꾸미기</button><h1 id="me-name"></h1><span class="pt" id="me-pt"></span><button class="hw-btn" id="nt-on" hidden>🔔 알림 켜기</button><button class="out" id="out">나가기</button></div>
   <div class="nt" id="nt" hidden><b>📢 선생님 공지</b><p id="nt-t"></p><button class="main" id="nt-ok">확인</button></div>
   <div class="hw" id="hw"><p class="hw-none">불러오는 중…</p></div>
   <div class="main-grid" id="dress" hidden>
@@ -294,12 +295,21 @@ function ntListen(l) {
 function hwListen(l) { // 과제 목록을 계속 듣고, 내가 낸 것은 한 번씩 받아 옴
   hwL = l;
   return fs.onSnapshot(fs.collection(db, "classes", l.code, "hw"), async s => {
-    hws = s.docs.map(x => ({ id: x.id, ...x.data() })).sort((a, b) => (b.at || 0) - (a.at || 0));
+    hws = s.docs.map(x => ({ id: x.id, ...x.data() })).sort((a, b) => (a.at || 0) - (b.at || 0)); // 나중에 낸 과제가 오른쪽(뒤)
     await Promise.all(hws.filter(x => !(x.id in mine)).map(async x => { const r = await fs.getDoc(subRef(x.id)).catch(() => null); mine[x.id] = r?.exists() ? r.data() : null; }));
     if (hwL === l) hwDraw();
   }, () => {});
 }
 $("hw-btn").onclick = () => { hwOpen = !hwOpen; hwDraw(); scrollTo(0, 0); };
+// 파일 끌어 놓기: 놓은 곳에서 가까운 파일 칸(카드·창·탭 안의 input[type=file])에 넣고 change를 일으킴. 따로 받는 곳(화이트보드 등)은 그쪽이 먼저
+{ let box = null; const STOP = ".card, .pop, section, form, .modal, .hw-it, .hw-new, .card-ed, #panel";
+  const find = t => { for (let e = t; e && e !== document.body; e = e.parentElement) { const f = e.querySelector?.("input[type=file]"); if (f) return [e, f]; if (e.matches?.(STOP)) break; } return []; };
+  const mark = b => { box?.classList.remove("drop-on"); box = b; box?.classList.add("drop-on"); };
+  addEventListener("dragover", e => { if (e.defaultPrevented || !e.dataTransfer?.types.includes("Files")) return; const [b] = find(e.target); mark(b || null); if (b) { e.preventDefault(); e.dataTransfer.dropEffect = "copy"; } });
+  addEventListener("dragleave", e => { if (!e.relatedTarget) mark(null); });
+  addEventListener("drop", e => { mark(null); if (e.defaultPrevented || !e.dataTransfer?.files.length) return; const [, f] = find(e.target); if (!f) return; e.preventDefault();
+    const dt = new DataTransfer(); [...e.dataTransfer.files].slice(0, f.multiple ? 99 : 1).forEach(x => dt.items.add(x)); f.files = dt.files; f.dispatchEvent(new Event("change", { bubbles: true })); });
+}
 function logout(msg) {
   unsubs.forEach(u => u()); unsubs = []; me = d = null; dirty = false;
   hws = []; mine = {}; hwDraft = {}; hwOpen = true; hwL = null; hwSel = null; hwDraw();
@@ -370,7 +380,7 @@ $("undo").onclick = () => { // 원래대로: 기본 옷(흰 셔츠·카키 반�
   const was = avWear(me.wear).hair, hair = owns(avItem(d.wear.hair)) ? d.wear.hair : owns(avItem(was)) ? was : AV_REQ.hair;
   d = { ...d, wear: { ...d.wear, hair, top: AV_REQ.top, bottom: AV_REQ.bottom } }; dirty = true; draw();
 };
-$("out").onclick = async () => { if (!dirty || await ask("저장하지 않은 것이 있어요.\n그래도 나갈까요?", "나가기")) logout(); };
+$("out").onclick = async () => { if (await ask(dirty ? "저장하지 않은 것이 있어요.\n그래도 나갈까요?" : "정말 나갈까요?\n다시 들어오려면 번호와 비밀번호를 써야 해요.", "나가기")) logout(); }; // 과제·꾸미기 버튼과 헷갈려 잘못 누를 수 있어서 늘 물어봄
 addEventListener("beforeunload", e => { if (dirty) e.preventDefault(); });
 
 try {
