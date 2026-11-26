@@ -182,6 +182,10 @@
   .att th.n, .att th.nm { background: #faf8f5; z-index: 3; }
   .att td.c { cursor: pointer; font-weight: 700; } .att td.c:hover { background: var(--soft); } .att td.c.on { background: #fbf7f1; } .att .today { background: #fff8e1; }
   .att .sum { background: #faf8f5; } .att td.sum { font-weight: 600; color: #5e554e; }
+  .att td.c { position: relative; } .att i.doc, .att-legend i.doc, .att-key i.doc { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #fd7e14; vertical-align: middle; }
+  .att td.c i.doc { position: absolute; top: 3px; right: 3px; }
+  .att-key { display: none; border-collapse: collapse; margin: 0 0 4mm; font-size: 9pt; } .att-key th, .att-key td { border: 1px solid #ccc; padding: 2px 10px; text-align: center; } .att-key th { background: #f1f3f5; } .att-key td.kd { text-align: left; color: #666; }
+  .pop .docs button.need { border-color: #fd7e14; color: #d9480f; background: #fff4e6; } .pop .docs button.got { border-color: #2f9e44; color: #2b8a3e; background: #ebfbee; } .pop .docs button { font-size: 12px; }
   .att-legend { font-size: 12px; color: var(--muted); display: flex; gap: 6px; align-items: center; flex-wrap: wrap; } .att-legend i { font-style: normal; font-weight: 700; color: var(--ink); }
   #box-tags { display: flex; align-items: center; flex-wrap: wrap; gap: 2px; margin-bottom: 6px; } #box-tags button { padding: 4px 10px; font-size: 14px; color: var(--muted); }
   #box-tags button.on { color: var(--accent); background: var(--soft); font-weight: 600; } #box-tags button.all { color: var(--ink); font-size: 15px; font-weight: 700; } #box-tags button.all.on { color: var(--accent); }
@@ -205,7 +209,7 @@
     .pane[hidden], .box:has(> .kids) { display: none !important; } /* 다른 탭과 학생 목록은 출력하지 않음 */
     .print-title { display: block !important; font-size: 17pt; margin: 0 0 6mm; }
     .rec { grid-template-columns: 24mm 34mm 1fr; break-inside: avoid; font-size: 10.5pt; }
-    .att th, .att td { min-width: 0; height: 18px; font-size: 8pt; } .att th small { font-size: 6pt; } .itable { font-size: 9pt; } .itable td { white-space: normal; }
+    .att-key { display: table !important; } .att th, .att td { min-width: 0; height: 18px; font-size: 8pt; } .att th small { font-size: 6pt; } .itable { font-size: 9pt; } .itable td { white-space: normal; }
   }
 </style>
 </head>
@@ -271,8 +275,9 @@
   <section class="pane" id="p-att" hidden>
     <div class="box">
       <p class="print-title" id="att-ptitle"></p>
+      <table class="att-key" id="att-key"></table>
       <div class="bar"><button id="att-prev" aria-label="지난달">◀</button><b id="att-title"></b><button id="att-next" aria-label="다음 달">▶</button><button id="att-now">이번 달</button><span class="sp"></span>
-        <span class="att-legend"><i>결</i>결석 <i>지</i>지각 <i>조</i>조퇴 <i>과</i>결과 · <i style="color:#1c7ed6">질병</i><i style="color:#e03131">미인정</i><i style="color:#868e96">기타</i></span>
+        <span class="att-legend"><i>결</i>결석 <i>지</i>지각 <i>조</i>조퇴 <i>과</i>결과 · <i style="color:#1c7ed6">질병</i><i style="color:#e03131">미인정</i><i style="color:#868e96">기타</i><i style="color:#2f9e44">출석인정</i> · <i class="doc"></i>서류 아직</span>
         <button id="att-copy" title="이달 출결을 엑셀에 붙여 넣을 수 있게 복사">복사</button><button id="att-print">출력</button></div>
       <div class="scroll" id="att-wrap"><table class="att" id="att"></table></div>
     </div>
@@ -754,6 +759,12 @@ function jrSettings(anchor) {
     document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
   };
   const grp = (title, ...kids) => el("div", { class: "sgroup" }, el("h4", {}, title), ...kids);
+  const docRules = el("div", { class: "ddl" }), drawDocs = () => { const L = J.attDocs ||= ATT_DOCS.map(x => ({ ...x })), sv = () => store(); // 조건 + 필요 서류 (고치면 바로 저장)
+    docRules.replaceChildren(...L.map(x => el("div", { class: "row" }, el("input", { type: "text", value: x.c, placeholder: "조건 (예: 질병 결석)", style: "width:130px", oninput: e => { x.c = e.target.value; sv(); } }),
+      el("input", { type: "text", class: "grow", value: x.d, placeholder: "필요 서류 (예: 결석계, 진료확인서)", oninput: e => { x.d = e.target.value; sv(); } }),
+      el("button", { type: "button", class: "x", title: "지우기", onclick: () => { L.splice(L.indexOf(x), 1); sv(); drawDocs(); } }, "✕"))),
+      el("div", { class: "row" }, el("button", { type: "button", onclick: () => { L.push({ c: "", d: "" }); drawDocs(); docRules.querySelector(".row:nth-last-child(2) input")?.focus(); } }, "+ 조건 추가"), el("button", { type: "button", onclick: () => { J.attDocs = undefined; store(); drawDocs(); } }, "처음대로"))); };
+  drawDocs();
   const panes = {
     gen: [grp("달력", chk("mon", "월요일부터 보기"), el("label", { class: "chk" }, el("input", { type: "checkbox", ...(st.hideBd ? {} : { checked: "" }), onchange: ev => { st.hideBd = !ev.target.checked; store(); draw(); } }), "학생 생일 보기 (학생 정보의 생년월일)")),
       grp("알람", el("div", { class: "row" }, el("span", {}, "미리 알림"), amin, el("span", {}, "분 전"), el("span", { class: "sp" }), chk("mute", "소리 끄기"))),
@@ -761,12 +772,13 @@ function jrSettings(anchor) {
     kind: [grp("일정 종류 (달력 색)", cats), grp("학생 기록 종류", kds)],
     cs: [grp("상담 대상", words(targets, L => J.targets = L, "학생, 학부모, 기타"), el("p", { class: "tip" }, "쉼표(,)로 나눠 써요.")),
       grp("상담 방법", words(ways, L => J.ways = L, "대면, 전화, 문자"))],
+    doc: [grp("출결 필요 서류", el("p", { class: "tip" }, "조건의 낱말이 출결의 분류(질병·미인정·기타·출석인정)·종류(결석·지각·조퇴·결과)·사유에 모두 들어 있으면 그 서류가 '필요'로 채워져요. 서류는 쉼표(,)로 나눠요."), docRules)],
     bak: [grp("백업", el("p", { class: "tip" }, "일지 전체를 파일로 내보내 보관하거나 다른 컴퓨터에서 불러와요. 읽거나 인쇄하려면 각 탭의 '출력'에서 PDF로 저장해요."),
       el("div", { class: "row" }, el("button", { type: "button", onclick: backup }, "파일로 내보내기"), el("button", { type: "button", onclick: () => file.click() }, "파일에서 불러오기"), file))],
   };
   const body = el("div", { class: "spane" }), tabs = el("div", { class: "stabs" });
   const show = k => { setTab = k; tabs.querySelectorAll("button").forEach(x => x.classList.toggle("on", x.dataset.k === k)); body.replaceChildren(...panes[k]); };
-  tabs.append(...[["gen", "일반"], ["kind", "종류 · 색"], ["cs", "상담"], ["bak", "백업"]].map(([k, t]) => el("button", { type: "button", "data-k": k, onclick: () => show(k) }, t)));
+  tabs.append(...[["gen", "일반"], ["kind", "종류 · 색"], ["cs", "상담"], ["doc", "출결 서류"], ["bak", "백업"]].map(([k, t]) => el("button", { type: "button", "data-k": k, onclick: () => show(k) }, t)));
   show(setTab);
   const close = pop(anchor, "설정", "gear", [tabs, body], () => {}, { noSave: true });
   tabs.closest(".pop").classList.add("setpop");
@@ -1070,7 +1082,13 @@ $("info-print").onclick = () => { if (!infoAll) { infoAll = true; infoDraw(); } 
 
 // ── 출결: 달마다 표 (평일만, 공휴일·재량휴업일 빼고). 칸을 누르면 결석·지각·조퇴·결과 + 질병·미인정·기타
 const ATT_T = ["결석", "지각", "조퇴", "결과"], ATT_SYM = { 결석: "결", 지각: "지", 조퇴: "조", 결과: "과" };
-const ATT_R = [["질병", "#1c7ed6"], ["미인정", "#e03131"], ["기타", "#868e96"]], attColor = r => (ATT_R.find(x => x[0] === r) || ATT_R[2])[1];
+const ATT_R = [["질병", "#1c7ed6"], ["미인정", "#e03131"], ["기타", "#868e96"], ["출석인정", "#2f9e44"]], attColor = r => (ATT_R.find(x => x[0] === r) || ATT_R[2])[1];
+// 필요 서류: 조건의 낱말이 모두 '분류 종류 사유'에 들어 있으면 그 서류가 필요 (⚙ 설정 → 출결 서류에서 고침). 칸마다 a.d = { 서류: 0 아직 | 1 받음 }
+const ATT_DOCS = [{ c: "질병 결석", d: "결석계(질병결석 포함), 진료확인서(3일 이상 연속 결석 시)" }, { c: "미인정 결석", d: "결석계" }, { c: "기타 결석", d: "결석계" },
+  { c: "체험학습", d: "체험학습 신청서, 체험학습 보고서" }, { c: "경조사", d: "사망진단서(경조사)" }];
+const attDocRules = () => J.attDocs || ATT_DOCS, docList = t => t.split(/[,，]/).map(v => v.trim()).filter(Boolean);
+const attNeed = (t, r, m) => { const hay = `${r} ${t} ${m}`; return [...new Set(attDocRules().filter(x => x.c.trim() && x.c.trim().split(/\s+/).every(w => hay.includes(w))).flatMap(x => docList(x.d)))]; };
+const attDocLeft = a => Object.entries(a?.d || {}).filter(([, v]) => !v).map(([k]) => k); // 아직 안 낸 서류
 let attMonth = new Date(); attMonth.setDate(1);
 function attDays() {
   const y = attMonth.getFullYear(), m = attMonth.getMonth(), n = new Date(y, m + 1, 0).getDate(), out = [];
@@ -1080,19 +1098,21 @@ function attDays() {
 function attRows() { // [학생, {결석: n…}, [자세히]]
   const A = J.att || {}, days = attDays();
   return people().map(p => { const cnt = Object.fromEntries(ATT_T.map(k => [k, 0])), det = [];
-    days.forEach(s => { const a = A[s]?.[p]; if (a) { cnt[a.t]++; det.push(`${+s.slice(5, 7)}/${+s.slice(8)} ${a.r}${a.t}${a.m ? `(${a.m})` : ""}`); } });
+    days.forEach(s => { const a = A[s]?.[p]; if (a) { cnt[a.t]++; det.push(`${+s.slice(5, 7)}/${+s.slice(8)} ${a.r}${a.t}${a.m ? `(${a.m})` : ""}${attDocLeft(a).length ? ` [서류 아직: ${attDocLeft(a).join(", ")}]` : ""}`); } });
     return [p, cnt, det]; });
 }
 function attDraw() {
   const days = attDays(), t = today(), A = J.att || {};
   $("att-title").textContent = `${attMonth.getFullYear()}년 ${attMonth.getMonth() + 1}월 출결`;
   $("att-ptitle").textContent = $("att-title").textContent;
+  $("att-key").replaceChildren(...ATT_T.map(t => el("tr", {}, el("th", {}, t), ...ATT_R.map(([r, c]) => el("td", {}, r, " ", el("b", { style: `color:${c}` }, ATT_SYM[t]))))),
+    el("tr", {}, el("td", { colspan: ATT_R.length + 1, class: "kd" }, el("i", { class: "doc" }), " 서류를 아직 안 냄")));
   if (!people().length) return $("att").replaceChildren(el("tr", {}, el("td", { class: "empty" }, "보드 ⚙ 설정 → 명단에 학생을 넣어 주세요.")));
   const cols = el("colgroup", {}, el("col", { class: "n" }), el("col", { class: "nm" }), ...days.map(() => el("col")), ...ATT_T.map(() => el("col", { class: "sum" })));
   const head = el("tr", {}, el("th", { class: "n" }, "번호"), el("th", { class: "nm" }, "이름"),
     ...days.map(s => el("th", { class: s === t ? "today" : "" }, String(+s.slice(8)), el("small", {}, "일월화수목금토"[new Date(s + "T12:00").getDay()]))), ...ATT_T.map(k => el("th", { class: "sum" }, k)));
   $("att").replaceChildren(cols, head, ...attRows().map(([p, cnt]) => el("tr", {}, el("td", { class: "n" }, numOf(p)), el("td", { class: "nm" }, nameOf(p)),
-    ...days.map(s => { const a = A[s]?.[p]; return el("td", { class: "c" + (s === t ? " today" : "") + (a ? " on" : ""), title: a ? `${dayName(s)} ${a.r}${a.t}${a.m ? " · " + a.m : ""}` : `${dayName(s)} 출석 (누르면 결석·지각…)`, style: a ? `color:${attColor(a.r)}` : "", onclick: ev => attForm(s, p, ev.currentTarget) }, a ? ATT_SYM[a.t] : ""); }),
+    ...days.map(s => { const a = A[s]?.[p]; return el("td", { class: "c" + (s === t ? " today" : "") + (a ? " on" : ""), title: a ? `${dayName(s)} ${a.r}${a.t}${a.m ? " · " + a.m : ""}${a.d ? "\n서류: " + Object.entries(a.d).map(([k, v]) => `${k} ${v ? "✓" : "아직"}`).join(", ") : ""}` : `${dayName(s)} 출석 (누르면 결석·지각…)`, style: a ? `color:${attColor(a.r)}` : "", onclick: ev => attForm(s, p, ev.currentTarget) }, a ? ATT_SYM[a.t] : "", attDocLeft(a).length ? el("i", { class: "doc" }) : null); }),
     ...ATT_T.map(k => el("td", { class: "sum" }, cnt[k] ? String(cnt[k]) : "")))));
   attFit();
 }
@@ -1115,8 +1135,18 @@ function attForm(s, p, anchor) { // 하루 또는 여러 날 (~까지)
   const tc = chips(ATT_T, cur?.t || "결석"), rc = chips(ATT_R.map(x => x[0]), cur?.r || "질병", attColor), memo = el("input", { type: "text", value: cur?.m || "", placeholder: "사유 (예: 감기, 체험학습)" });
   const until = el("input", { type: "date", value: s, min: s, title: "여러 날이면 끝나는 날" });
   const span = () => attSpan(s, until.value > s ? until.value : s);
-  const close = pop(anchor, `${nameOf(p)} · ${dayName(s)}`, "att", [tc.box, rc.box, memo, el("div", { class: "row" }, el("span", { class: "tip" }, "여러 날이면"), until, el("span", { class: "tip" }, "까지 (주말·공휴일 빼고)"))], () => {
-    for (const d of span()) (A[d] ||= {})[p] = { t: tc.get(), r: rc.get(), m: memo.value.trim() };
+  // 필요 서류: 누를 때마다 필요 → 받음 → 빼기. 처음 쓰는 칸은 분류·종류·사유에 맞춰 저절로 채움 (손댄 뒤로는 그대로)
+  let docs = cur?.d ? { ...cur.d } : null, touched = !!cur?.d;
+  const docBox = el("div", { class: "chips docs" }), docIn = el("input", { type: "text", placeholder: "서류 직접 쓰기 (Enter)", class: "grow" });
+  const docDraw = () => { if (!touched) docs = Object.fromEntries(attNeed(tc.get(), rc.get(), memo.value).map(k => [k, 0]));
+    const all = [...new Set([...Object.keys(docs), ...attDocRules().flatMap(x => docList(x.d))])];
+    docBox.replaceChildren(...all.map(k => el("button", { type: "button", class: k in docs ? docs[k] ? "got" : "need" : "", title: k in docs ? docs[k] ? "받음 (누르면 빼기)" : "필요 (누르면 받음)" : "누르면 필요",
+      onclick: () => { touched = true; if (!(k in docs)) docs[k] = 0; else if (!docs[k]) docs[k] = 1; else delete docs[k]; docDraw(); } }, k in docs ? (docs[k] ? "✓ " : "□ ") + k : k))); };
+  docIn.onkeydown = e => { if (e.key === "Enter" && docIn.value.trim()) { e.preventDefault(); touched = true; docs[docIn.value.trim()] = 0; docIn.value = ""; docDraw(); } };
+  [tc.box, rc.box].forEach(b => b.addEventListener("click", docDraw)); memo.addEventListener("input", docDraw); docDraw();
+  const close = pop(anchor, `${nameOf(p)} · ${dayName(s)}`, "att", [tc.box, rc.box, memo, el("div", { class: "row" }, el("span", { class: "tip" }, "여러 날이면"), until, el("span", { class: "tip" }, "까지 (주말·공휴일 빼고)")),
+    el("p", { class: "sub" }, "필요 서류 (□ 아직 · ✓ 받음)"), docBox, el("div", { class: "row" }, docIn)], () => {
+    for (const d of span()) (A[d] ||= {})[p] = { t: tc.get(), r: rc.get(), m: memo.value.trim(), ...(Object.keys(docs).length ? { d: { ...docs } } : {}) };
     store();
   }, { cancel: "취소", foot: cur ? el("button", { type: "button", class: "danger", onclick: () => { for (const d of span()) if (A[d]) { delete A[d][p]; if (!Object.keys(A[d]).length) delete A[d]; } store(); close(); } }, "출석으로") : null });
 }
