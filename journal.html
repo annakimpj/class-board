@@ -43,7 +43,7 @@
   .dz b { font-weight: 500; font-size: 15px; } .dz u { color: #2f6fd6; text-decoration: none; font-weight: 600; font-size: 15px; } .dz small { color: #868e96; font-size: 12px; }
   .dzw { margin-top: 8px; }
   .ddl { display: grid; gap: 6px; } .ddl .row { display: flex; gap: 6px; align-items: center; } .ddl .row > * { min-width: 0; } .ddl .row .dbox { flex: none; width: 140px; } .ddl .dtext.bad { border-color: #e03131; color: #e03131; }
-  .pop .tip { margin: 0 0 4px; font-size: 12px; color: var(--muted); line-height: 1.5; } .ddl .grow { flex: 1; width: 0; } .ddl .row .x { flex: none; }
+  :is(.pop, .pop-in) .tip { margin: 0 0 4px; font-size: 12px; color: var(--muted); line-height: 1.5; } .ddl .grow { flex: 1; width: 0; } .ddl .row .x { flex: none; }
   header .jset { border: 0; background: none; padding: 5px; border-radius: 8px; color: var(--muted); display: grid; place-items: center; margin-left: 4px; } header .jset:hover { background: var(--soft); color: var(--accent); }
   .setpop { width: 400px; } .stabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
   .stabs button { border: 0; background: none; padding: 5px 12px; border-radius: 999px; font-size: 14px; color: var(--muted); } .stabs button.on { background: var(--soft); color: var(--accent); font-weight: 600; }
@@ -52,13 +52,13 @@
   .sgroup .tip { margin: 0; }
   .ctx { position: fixed; z-index: 60; display: grid; min-width: 150px; padding: 4px; background: #fff; border-radius: 10px; box-shadow: 0 8px 26px rgba(40, 30, 20, .22); }
   .ctx button { justify-content: flex-start; padding: 6px 12px; font-size: 14px; border-radius: 6px; } .ctx button:hover { background: var(--soft); } .ctx .danger { color: var(--warn); } .ctx hr { border: 0; border-top: 1px solid #efe9e1; margin: 4px 2px; }
-  .pop .chk { display: flex; align-items: center; gap: 6px; font-size: 14px; } .pop .num { width: 64px; } .pop .row .sp { flex: 1; }
+  :is(.pop, .pop-in) .chk { display: flex; align-items: center; gap: 6px; font-size: 14px; } :is(.pop, .pop-in) .num { width: 64px; } :is(.pop, .pop-in) .row .sp { flex: 1; }
   .ddl .grab { cursor: grab; color: #c9beb3; padding: 0 2px; user-select: none; touch-action: none; } .ddl .grab.off { visibility: hidden; } .ddl .row.moving { opacity: .5; }
   .ddl .fixtag { flex: none; width: 26px; font-size: 11px; color: var(--muted); text-align: center; }
   .ddl .sw { width: 30px; height: 28px; padding: 0; border: 0; background: none; flex: none; cursor: pointer; }
   .ring .btns.col { flex-direction: column; align-items: stretch; } .ring .btns .danger { color: #e03131; }
-  .pop .wdays { display: flex; gap: 2px; } .pop .wdays button { width: 28px; height: 26px; padding: 0; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; } .pop .wdays button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .pop .moderow.col { display: grid; gap: 6px; } .pop .modes .chips { flex: 1; min-width: 0; flex-wrap: wrap; } /* 종류는 왼쪽, 연속·반복은 오른쪽 */
+  :is(.pop, .pop-in) .wdays { display: flex; gap: 2px; } :is(.pop, .pop-in) .wdays button { width: 28px; height: 26px; padding: 0; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; } :is(.pop, .pop-in) .wdays button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  :is(.pop, .pop-in) .moderow.col { display: grid; gap: 6px; } :is(.pop, .pop-in) .modes .chips { flex: 1; min-width: 0; flex-wrap: wrap; } /* 종류는 왼쪽, 연속·반복은 오른쪽 */
   header .sp { flex: 1; } header .hright { margin-left: auto; display: flex; align-items: center; gap: 4px; } header .today { color: var(--muted); font-size: 14px; white-space: nowrap; margin: 0 4px 0 8px; }
   main { min-height: 0; overflow: hidden; padding: 12px 14px; }
   .pane { height: 100%; display: grid; gap: 12px; min-height: 0; }
@@ -81,7 +81,7 @@
   .day.today .n { display: inline-grid; place-items: center; min-width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: #fff; }
   .day .marks { display: flex; align-items: center; gap: 3px; flex-wrap: wrap; margin-left: 2px; }
   .day .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; cursor: pointer; } .day .marks > * { cursor: pointer; } .day .dot:hover { transform: scale(1.4); }
-  .pop .daylist { max-height: 50vh; } .pop .daylist .meta { margin-left: auto; font-weight: 400; color: var(--muted); font-size: 12px; }
+  :is(.pop, .pop-in) .daylist { max-height: 50vh; } :is(.pop, .pop-in) .daylist .meta { margin-left: auto; font-weight: 400; color: var(--muted); font-size: 12px; }
   .day .mk { width: 14px; height: 14px; } .day .mk.cs { color: #7048e8; } .day .mk.nt { color: #d8cfc5; } .day .mk.nt.on { color: #e8a317; }
   .day .plus { position: absolute; right: 4px; bottom: 4px; width: 24px; height: 24px; padding: 0; justify-content: center; border-radius: 50%; opacity: 0; background: #fff; }
   .day:hover .plus, .day.sel .plus { opacity: 1; }
@@ -92,8 +92,8 @@
            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: grab; touch-action: none; user-select: none; }
   .spbar .i { width: 12px; height: 12px; vertical-align: -1px; margin-right: 3px; } .spbar:hover { background: #bdd4ec; } .spbar.done { text-decoration: line-through; opacity: .5; }
   .spbar.cl { margin-left: 0; border-top-left-radius: 0; border-bottom-left-radius: 0; } .spbar.cr { margin-right: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; } /* 지난주·다음 주로 이어짐 */
-  .pop .modes { gap: 6px; } .pop .mode { flex: none; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; font-size: 13px; padding: 4px 10px; } .pop .mode.on { background: var(--soft); border-color: var(--accent); color: var(--accent); }
-  .pop .moderow { gap: 6px; font-size: 13px; color: var(--muted); } .pop .moderow .dbox { width: 140px; flex: none; }
+  :is(.pop, .pop-in) .modes { gap: 6px; } :is(.pop, .pop-in) .mode { flex: none; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; font-size: 13px; padding: 4px 10px; } :is(.pop, .pop-in) .mode.on { background: var(--soft); border-color: var(--accent); color: var(--accent); }
+  :is(.pop, .pop-in) .moderow { gap: 6px; font-size: 13px; color: var(--muted); } :is(.pop, .pop-in) .moderow .dbox { width: 140px; flex: none; }
   .day .ev:hover { background: #d3e2f3; } .day .ev.done { text-decoration: line-through; opacity: .5; } .day .more { font-size: 11px; color: var(--muted); }
   .side { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 12px; min-height: 0; }
   .duo .scroll { flex: 1 1 0; } .duo .h2b { margin-top: 12px; padding-top: 12px; border-top: 1px solid #efe9e1; }
@@ -103,13 +103,12 @@
   .minpop input { width: 64px; }
   .grab { cursor: grab; color: #c9beb3; user-select: none; touch-action: none; padding: 0 2px; } .item[data-id] { cursor: grab; user-select: none; } .item.moving { background: var(--soft); border-radius: 6px; }
   .bell { display: inline-flex; align-items: center; gap: 1px; font-size: 11px; } .bell .i { width: 15px; height: 15px; } .bell.on { color: var(--warn); }
-  .pop .addrow { margin-top: 2px; padding-top: 8px; border-top: 1px solid #f1ece5; }
+  :is(.pop, .pop-in) .addrow { margin-top: 2px; padding-top: 8px; border-top: 1px solid #f1ece5; }
   .inbox { position: relative; flex: 1; min-width: 0; display: flex; } .inbox input[type=text] { flex: 1; min-width: 0; padding-right: 34px; }
   .inbox .clock { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); border: 0; background: none; padding: 3px; color: var(--muted); }
   .inbox .clock:hover { color: var(--accent); } .inbox .tpick { position: absolute; right: 0; bottom: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; border: 0; padding: 0; }
-  .pop .bell { padding: 4px; } .pop .addrow .bell .i { width: 18px; height: 18px; }
-  .evquick { margin-top: 6px; } .evquick input { width: 100%; box-sizing: border-box; font: inherit; font-size: 14px; border: 1.5px solid var(--line); border-radius: 8px; padding: 6px 10px; background: #fff; }
-  .evquick input { cursor: pointer; } .evquick input:focus { outline: none; border-color: var(--accent); }
+  :is(.pop, .pop-in) .bell { padding: 4px; } :is(.pop, .pop-in) .addrow .bell .i { width: 18px; height: 18px; }
+  .evquick { margin-top: 6px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; } .evquick .addrow { margin-top: 0; } .evquick .row { flex-wrap: wrap; } .evquick .addrow { flex-wrap: nowrap; } .evquick .inbox { min-width: 0; } .evquick .modes .chips { flex-basis: 100%; } .evquick .dbox { flex: 1 1 120px !important; width: auto !important; } /* 오른쪽 일정 칸: 팝업과 같은 입력 줄 */
   .addseg { display: flex; margin-top: 8px; border: 1.5px solid var(--line); border-radius: 8px; overflow: hidden; background: #fff; } /* 한 버튼을 셋으로 나눔 */
   .addseg button { flex: 1; border: 0; border-radius: 0; background: none; padding: 7px 4px; font-size: 13.5px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; color: var(--ink); }
   .addseg button + button { border-left: 1.5px solid var(--line); } .addseg button:hover { background: var(--soft); color: var(--accent); } .addseg .i { width: 15px; height: 15px; }
@@ -127,16 +126,16 @@
   /* 작은 팝업: 누른 곳 바로 옆에 (일정·학생 기록·상담·일지) */
   .pop-wrap { position: fixed; inset: 0; z-index: 20; }
   .pop { position: fixed; width: 380px; max-width: calc(100vw - 16px); max-height: calc(100vh - 16px); overflow-y: auto; background: #fff; border-radius: 14px; padding: 12px 14px; display: grid; gap: 8px; box-shadow: 0 12px 36px rgba(40, 30, 20, .22); }
-  .pop h3 { margin: 0; font-size: 15px; display: flex; align-items: center; gap: 6px; } .pop h3 input[type=date] { margin-left: auto; font-size: 13px; padding: 2px 6px; }
-  .pop .row { display: flex; gap: 6px; align-items: center; } .pop .grow { flex: 1; min-width: 0; }
-  .pop textarea { width: 100%; resize: vertical; } .pop.rs { display: flex; flex-direction: column; max-width: none; } .pop.rs textarea { flex: 1; resize: none; min-height: 120px; }
-  .pop .grip { position: absolute; right: 3px; bottom: 3px; width: 16px; height: 16px; cursor: nwse-resize; touch-action: none;
+  :is(.pop, .pop-in) h3 { margin: 0; font-size: 15px; display: flex; align-items: center; gap: 6px; } :is(.pop, .pop-in) h3 input[type=date] { margin-left: auto; font-size: 13px; padding: 2px 6px; }
+  :is(.pop, .pop-in) .row { display: flex; gap: 6px; align-items: center; } :is(.pop, .pop-in) .grow { flex: 1; min-width: 0; }
+  :is(.pop, .pop-in) textarea { width: 100%; resize: vertical; } .pop.rs { display: flex; flex-direction: column; max-width: none; } .pop.rs textarea { flex: 1; resize: none; min-height: 120px; }
+  :is(.pop, .pop-in) .grip { position: absolute; right: 3px; bottom: 3px; width: 16px; height: 16px; cursor: nwse-resize; touch-action: none;
     background: linear-gradient(135deg, transparent 50%, #c9beb3 50%, #c9beb3 58%, transparent 58%, transparent 70%, #c9beb3 70%, #c9beb3 78%, transparent 78%); }
-  .pop h3 .tt { margin-left: auto; padding: 2px 8px; color: var(--muted); font-size: 13px; font-weight: 600; align-items: baseline; gap: 0; } .pop h3 .tt b { font-size: 17px; } .pop h3 .tt:hover { color: var(--accent); } .pop select { padding: 4px 6px; }
-  .pop .btns { display: flex; justify-content: flex-end; gap: 6px; align-items: center; } .pop .btns .saved { margin-right: auto; }
-  .pop .plist { max-height: 140px; overflow-y: auto; } .pop .plist .item { font-size: 13px; padding: 3px 2px; }
-  .pop .kidpick { max-height: 120px; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); } .pop .kidpick button { font-size: 13px; padding: 3px 6px; }
-  .pop .chips button { font-size: 13px; padding: 2px 9px; }
+  :is(.pop, .pop-in) h3 .tt { margin-left: auto; padding: 2px 8px; color: var(--muted); font-size: 13px; font-weight: 600; align-items: baseline; gap: 0; } :is(.pop, .pop-in) h3 .tt b { font-size: 17px; } :is(.pop, .pop-in) h3 .tt:hover { color: var(--accent); } :is(.pop, .pop-in) select { padding: 4px 6px; }
+  :is(.pop, .pop-in) .btns { display: flex; justify-content: flex-end; gap: 6px; align-items: center; } :is(.pop, .pop-in) .btns .saved { margin-right: auto; }
+  :is(.pop, .pop-in) .plist { max-height: 140px; overflow-y: auto; } :is(.pop, .pop-in) .plist .item { font-size: 13px; padding: 3px 2px; }
+  :is(.pop, .pop-in) .kidpick { max-height: 120px; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); } :is(.pop, .pop-in) .kidpick button { font-size: 13px; padding: 3px 6px; }
+  :is(.pop, .pop-in) .chips button { font-size: 13px; padding: 2px 9px; }
   .chips { display: flex; flex-wrap: wrap; gap: 4px; } .chips button { border-radius: 999px; padding: 3px 11px; font-size: 14px; color: var(--muted); }
   .chips button.on { background: var(--accent); color: #fff; }
   .kidpick { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 4px; max-height: 150px; overflow-y: auto; padding: 2px; }
@@ -166,7 +165,7 @@
   .ring > div { background: #fff; border-radius: 20px; padding: 24px 36px; text-align: center; box-shadow: 0 20px 50px rgba(0, 0, 0, .3); }
   .ring.near { background: none; display: block; } .ring.near > div { position: fixed; max-width: 300px; padding: 12px 16px; border-radius: 12px; box-shadow: 0 8px 28px rgba(0, 0, 0, .22); }
   .ring.near p { font-size: 15px; margin: 0 0 10px; }
-  .pop .btns .danger { color: #e03131; margin-right: auto; } .pop .btns .nfoot { margin-right: auto; display: flex; align-items: center; gap: 8px; } .pop .nfoot .danger { margin: 0; }
+  :is(.pop, .pop-in) .btns .danger { color: #e03131; margin-right: auto; } :is(.pop, .pop-in) .btns .nfoot { margin-right: auto; display: flex; align-items: center; gap: 8px; } :is(.pop, .pop-in) .nfoot .danger { margin: 0; }
   .ring b { display: block; font-size: 28px; color: var(--accent); } .ring p { font-size: 20px; margin: 6px 0 16px; white-space: pre-line; } .ring .btns { display: flex; gap: 8px; justify-content: center; }
   .cover { position: fixed; inset: 0; z-index: 40; background: #fbf3e4; display: grid; place-content: center; text-align: center; gap: 6px; user-select: none; }
   .cover-bar { position: fixed; left: 0; right: 0; top: 0; height: max(44px, env(titlebar-area-height, 0px)); display: flex; align-items: center; gap: 8px; padding: 0 16px;
@@ -192,9 +191,9 @@
   .att td.c { position: relative; } .att i.doc, .att-legend i.doc, .att-key i.doc { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #fd7e14; vertical-align: middle; } .att i.doc.ok, .att-legend i.doc.ok, .att-key i.doc.ok { background: #2f9e44; }
   .att td.c i.doc { position: absolute; top: 3px; right: 3px; }
   .att-key { display: none; border-collapse: collapse; margin: 0 0 4mm; font-size: 9pt; } .att-key th, .att-key td { border: 1px solid #ccc; padding: 2px 10px; text-align: center; } .att-key th { background: #f1f3f5; } .att-key td.kd { text-align: left; color: #666; }
-  .pop .docs button.need { border-color: #fd7e14; color: #d9480f; background: #fff4e6; } .pop .docs button.got { border-color: #2f9e44; color: #2b8a3e; background: #ebfbee; } .pop .docs button { font-size: 13px; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px 4px 6px; }
-  .pop .docs .bx { width: 20px; height: 20px; border: 2px solid #ced4da; border-radius: 5px; background: #fff; font-style: normal; font-weight: 900; font-size: 14px; line-height: 16px; text-align: center; flex: none; }
-  .pop .docs .need .bx { border-color: #fd7e14; } .pop .docs .got .bx { border-color: #2f9e44; background: #2f9e44; color: #fff; }
+  :is(.pop, .pop-in) .docs button.need { border-color: #fd7e14; color: #d9480f; background: #fff4e6; } :is(.pop, .pop-in) .docs button.got { border-color: #2f9e44; color: #2b8a3e; background: #ebfbee; } :is(.pop, .pop-in) .docs button { font-size: 13px; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px 4px 6px; }
+  :is(.pop, .pop-in) .docs .bx { width: 20px; height: 20px; border: 2px solid #ced4da; border-radius: 5px; background: #fff; font-style: normal; font-weight: 900; font-size: 14px; line-height: 16px; text-align: center; flex: none; }
+  :is(.pop, .pop-in) .docs .need .bx { border-color: #fd7e14; } :is(.pop, .pop-in) .docs .got .bx { border-color: #2f9e44; background: #2f9e44; color: #fff; }
   .ddl .dk { flex: none; width: 110px; font-size: 13px; } .ddl .dtabs { margin-bottom: 4px; } .ddl .dtabs button { font-size: 14px; padding: 4px 16px; } .ddl .dtabs .dn { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #2f9e44; margin-left: 5px; vertical-align: middle; } /* 점: 서류가 정해진 탭 */
   .drop-on { outline: 3px dashed #3b82f6 !important; outline-offset: -3px; }
   header .jinst { font-size: 13px; padding: 4px 12px; border-radius: 999px; background: #3b82f6; color: #fff; border: 0; cursor: pointer; } header .jinst.hot { animation: jpulse 1s 6 alternate; } @keyframes jpulse { to { box-shadow: 0 0 0 6px rgba(59, 130, 246, .35); } }
@@ -242,7 +241,7 @@
     <div class="side">
       <div class="box"><h2 id="day-title"></h2></div>
       <div class="box duo"><h2 data-i="cal">일정</h2><div class="scroll" id="day-evs"></div>
-        <form class="evquick" id="ev-quick"><input type="text" id="ev-q" placeholder="+ 일정 쓰기 (시간·종류·연속·반복)" readonly aria-label="일정 쓰기"></form>
+        <form class="evquick pop-in" id="ev-quick"></form>
         <h2 data-i="pen" class="h2b">학생 기록 · 상담 · 일지</h2><div class="scroll" id="day-list"></div>
         <div class="addseg"><button data-add="rec" data-i="plus">학생 기록</button><button data-add="cs" data-i="plus">상담</button><button data-add="note" data-i="plus">일지</button></div></div>
     </div>
@@ -457,7 +456,7 @@ function minAsk(btn, done) { // ( )분 전: 종 옆 작은 칸
   document.body.append(m); n.select();
   setTimeout(() => addEventListener("mousedown", function off(e) { if (!m.contains(e.target)) { removeEventListener("mousedown", off); if (m.isConnected) { m.remove(); done(0); } } }));
 }
-function evForm(date, e, anchor) { // 일정: 위에 그날 일정, 아래 [입력칸 + 🕒] [🔔] [추가]. Enter로 이어서 씀
+function evForm(date, e, anchor, host) { // host: 팝업 대신 그 form 안에 같은 입력 칸을 (오른쪽 일정 칸) // 일정: 위에 그날 일정, 아래 [입력칸 + 🕒] [🔔] [추가]. Enter로 이어서 씀
   const x = el("input", { type: "text", class: "grow", value: e ? (e.time ? e.time + " " : "") + e.text : "", placeholder: e ? "" : "일정 쓰고 Enter", autocomplete: "off" });
   const tp = el("input", { type: "time", class: "tpick", tabindex: "-1", "aria-hidden": "true" });
   const clock = el("button", { type: "button", class: "clock", title: "시간 고르기", "aria-label": "시간 고르기", onclick: () => { try { tp.showPicker(); } catch (er) { tp.focus(); } } }, ico("clock"));
@@ -498,10 +497,9 @@ function evForm(date, e, anchor) { // 일정: 위에 그날 일정, 아래 [입�
   const drawList = () => { list.replaceChildren(...evOf(date).map(v => itemEv(v, redraw, date, true))); sortable(list, redraw); };
   if (!e) drawList();
   const saveB = el("button", { class: "main" }, e ? "저장" : "추가");
-  const close = pop(anchor, e ? "일정 고치기" : `${dayName(date)} 일정`, "cal", [e ? null : list,
-    el("div", { class: "row addrow" }, el("span", { class: "inbox" }, x, clock, tp), bell, saveB),
-    el("div", { class: "row modes" }, catC.box, spanB, repB), spanRow, repRow,
-    e ? el("div", { class: "btns" }, el("button", { type: "button", class: "danger", onclick: async ev => { if (await evDel(e, date, ev.currentTarget)) close(); } }, "지우기")) : null], () => {
+  const addRow = el("div", { class: "row addrow" }, el("span", { class: "inbox" }, x, clock, tp), bell, saveB), modeRow = el("div", { class: "row modes" }, catC.box, spanB, repB);
+  let close = () => {};
+  const saveFn = () => {
     const v = x.value.trim(); if (!v) return false;
     const { time, text } = parseTime(v);
     const clean = o => { for (const k in o) if (o[k] === undefined) delete o[k]; return o; };
@@ -524,7 +522,10 @@ function evForm(date, e, anchor) { // 일정: 위에 그날 일정, 아래 [입�
     }
     J.events.push(clean({ id: uid(), date, time, text, done: false, alarm: time ? alarm : "", ord: evOf(date).length, ...modeOf(date) })); store();
     x.value = ""; alarm = ""; bell.show(); upd(); setMode(""); redraw(); x.focus(); return false; // 닫지 않고 이어서 (종·연속·반복은 다시 꺼짐)
-  }, { head: d, noFoot: true, opened: () => { // 처음 한 번 사용법
+  };
+  if (host) { host.dataset.date = date; host.replaceChildren(addRow, modeRow, spanRow, repRow); host.onsubmit = ev => { ev.preventDefault(); saveFn(); }; return; }
+  close = pop(anchor, e ? "일정 고치기" : `${dayName(date)} 일정`, "cal", [e ? null : list, addRow, modeRow, spanRow, repRow,
+    e ? el("div", { class: "btns" }, el("button", { type: "button", class: "danger", onclick: async ev => { if (await evDel(e, date, ev.currentTarget)) close(); } }, "지우기")) : null], saveFn, { head: d, noFoot: true, opened: () => { // 처음 한 번 사용법
     if (localStorage.getItem("journal-tip-ev")) return;
     try { localStorage.setItem("journal-tip-ev", "1"); } catch (er) {}
     ask("일정을 쓰고 Enter를 누르면 이어서 계속 써요.\n\n시간을 넣고 싶으면 앞에 14:00처럼 써요.\n(오후 2시, 2시 반도 알아봐요)\n입력칸의 🕒를 눌러 골라도 돼요.\n\n시간이 있는 일정은 🔔를 누르면 알람이 켜져요.\n(한 번 더: 10분 전 · 한 번 더: 원하는 분 전 · 한 번 더: 꺼짐)\n\n일정은 끌어서 달력의 다른 날로 옮길 수 있어요.", "알겠어요", null);
@@ -887,6 +888,7 @@ function sideDraw() {
   const evs = evOf(pick), recs = recOf(pick), cs = csOf(pick), nt = J.notes[pick]?.trim();
   $("day-evs").replaceChildren(...(evs.length ? evs.map(e => itemEv(e, calDraw, pick)) : [el("p", { class: "empty" }, "일정이 없어요.")]));
   sortable($("day-evs"), calDraw);
+  if ($("ev-quick").dataset.date !== pick) evForm(pick, null, null, $("ev-quick")); // 고른 날이 바뀌면 오른쪽 입력 칸을 그날 것으로 (같은 날이면 쓰던 글 그대로)
   const bdn = jset().hideBd ? null : bdays()[pick.slice(5)];
   $("day-list").replaceChildren(...[bdn ? el("p", { class: "sub bdline" }, ico("cake"), `생일: ${bdn.join(", ")}`) : null, ...(recs.length || cs.length || nt ? [] : [el("p", { class: "empty" }, "기록이 없어요.")]),
     recs.length ? el("p", { class: "sub" }, "학생 기록") : null, ...recs.map(r => el("div", { "data-rid": r.id, class: "item stack", title: "더블클릭으로 수정", ondblclick: ev => recForm(r.date, r, ev.currentTarget), oncontextmenu: ev => recCtx(ev, r) }, el("div", { class: "ihead" }, el("span", { class: "k", style: `background:${kindColor(r.kind)}` }, r.kind), names(r.ps)), el("div", { class: "ibody" }, r.text))),
@@ -922,9 +924,6 @@ $("cal-prev").onclick = () => { calBase(); month.setMonth(month.getMonth() - 1);
 $("cal-next").onclick = () => { calBase(); month.setMonth(month.getMonth() + 1); calDraw(); };
 $("cal-today").onclick = () => { month = new Date(); month.setDate(1); calWk = 0; pick = today(); calDraw(); };
 document.querySelectorAll("[data-add]").forEach(b => b.onclick = () => add(b.dataset.add, pick, b));
-$("ev-quick").onsubmit = e => e.preventDefault();
-$("ev-q").onclick = () => evForm(pick, null, $("ev-q")); // 오른쪽 일정 칸도 달력 + 와 같은 일정 쓰기 창
-$("ev-q").onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); $("ev-q").click(); } };
 // 알람: 알람을 켠 일정만 (정시 / 10분 전). 이 창에서만 울림 (학생 화면에는 안 나옴)
 const rung = new Set();
 setInterval(() => {
