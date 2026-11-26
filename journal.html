@@ -109,7 +109,9 @@
   .inbox .clock { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); border: 0; background: none; padding: 3px; color: var(--muted); }
   .inbox .clock:hover { color: var(--accent); } .inbox .tpick { position: absolute; right: 0; bottom: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; border: 0; padding: 0; }
   :is(.pop, .pop-in) .bell { padding: 4px; } :is(.pop, .pop-in) .addrow .bell .i { width: 18px; height: 18px; }
-  .evquick { margin-top: 6px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; } .evquick .addrow { margin-top: 0; } .evquick .row { flex-wrap: wrap; } .evquick .addrow { flex-wrap: nowrap; } .evquick .inbox { min-width: 0; } .evquick .modes { flex-wrap: nowrap; align-items: center; gap: 2px; } .evquick .modes .chips { flex: 0 1 auto; } :is(.evquick, .pop) .modes .chips { gap: 0; }
+  .tbox { gap: 4px; align-items: center; } .tbox .tnum { width: 36px; flex: none; text-align: center; font: inherit; font-size: 15px; padding: 5px 4px; border: 1.5px solid var(--line); border-radius: 8px; } .tbox .tnum:focus { outline: none; border-color: var(--accent); }
+  .tbox .ampm { display: inline-flex; border: 1.5px solid var(--line); border-radius: 8px; overflow: hidden; } .tbox .ampm button { border: 0; border-radius: 0; background: #fff; font-size: 12.5px; padding: 5px 6px; white-space: nowrap; color: var(--muted); } .tbox .ampm button.on { background: var(--accent); color: #fff; } .tbox b { color: var(--muted); } .tbox .main { margin-left: auto; font-size: 13px; padding: 5px 9px; white-space: nowrap; flex: none; } .tbox .ampm { flex: none; } /* 🕒 누르면: 오전/오후 · 시 : 분 · 넣기 */
+  .evquick { margin-top: 6px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; } .evquick .addrow { margin-top: 0; } .evquick .row { flex-wrap: wrap; } .evquick .addrow, .evquick .tbox { flex-wrap: nowrap; } .evquick .inbox { min-width: 0; } .evquick .modes { flex-wrap: nowrap; align-items: center; gap: 2px; } .evquick .modes .chips { flex: 0 1 auto; } :is(.evquick, .pop) .modes .chips { gap: 0; }
   :is(.evquick, .pop) .modes .chips button { border: 0; border-radius: 4px; padding: 2px 4px; font-size: 12.5px; white-space: nowrap; background: none; position: relative; } :is(.evquick, .pop) .modes .chips button + button::before { content: ""; position: absolute; left: 0; top: 25%; bottom: 25%; border-left: 1px solid var(--line); } /* 기본ㅣ학교 행사ㅣ… */
   :is(.evquick, .pop) .modes .chips button.on { background: var(--accent); color: #fff; } :is(.evquick, .pop) .modes .chips button.on::before, :is(.evquick, .pop) .modes .chips button.on + button::before { display: none; }
   .evquick .mode { font-size: 0 !important; padding: 4px 3px !important; gap: 0 !important; } .evquick .mode .i { width: 18px; height: 18px; } .evquick .modes .mode:nth-last-child(2) { margin-left: auto; } /* 연속·반복: 아이콘만, 오른쪽 끝 */ .evquick .dbox { flex: 1 1 120px !important; width: auto !important; } /* 오른쪽 일정 칸: 팝업과 같은 입력 줄 */
@@ -461,12 +463,23 @@ function minAsk(btn, done) { // ( )분 전: 종 옆 작은 칸
 }
 function evForm(date, e, anchor, host) { // host: 팝업 대신 그 form 안에 같은 입력 칸을 (오른쪽 일정 칸) // 일정: 위에 그날 일정, 아래 [입력칸 + 🕒] [🔔] [추가]. Enter로 이어서 씀
   const x = el("input", { type: "text", class: "grow", value: e ? (e.time ? e.time + " " : "") + e.text : "", placeholder: e ? "" : "일정 쓰고 Enter", autocomplete: "off" });
-  const tp = el("input", { type: "time", class: "tpick", tabindex: "-1", "aria-hidden": "true" });
-  const clock = el("button", { type: "button", class: "clock", title: "시간 고르기", "aria-label": "시간 고르기", onclick: () => { try { tp.showPicker(); } catch (er) { tp.focus(); } } }, ico("clock"));
+  // 🕒: 오전/오후 + 시 : 분을 타이핑해서 넣는 작은 칸 (끌어서 고르면 1분 단위가 어려워서)
+  let pm = false; const amB = el("button", { type: "button", onclick: () => setPm(false) }, "오전"), pmB = el("button", { type: "button", onclick: () => setPm(true) }, "오후");
+  const setPm = v => { pm = v; amB.classList.toggle("on", !v); pmB.classList.toggle("on", v); hh.focus(); }, ampm = el("span", { class: "ampm" }, amB, pmB);
+  const hh = el("input", { type: "text", inputmode: "numeric", maxlength: "2", class: "tnum", placeholder: "시", "aria-label": "시" }), mm = el("input", { type: "text", inputmode: "numeric", maxlength: "2", class: "tnum", placeholder: "분", "aria-label": "분" });
+  const tput = () => { let h = parseInt(hh.value, 10), m = parseInt(mm.value || "0", 10); if (!(h >= 0 && h <= 23) || !(m >= 0 && m <= 59)) { hh.focus(); return; }
+    if (h <= 12) h = pm ? (h % 12) + 12 : h % 12; // 오후 3 → 15, 오전 12 → 0
+    const t = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`, p = parseTime(x.value); x.value = `${t} ${p.time ? p.text : x.value.trim()}`.trim(); tbox.hidden = true; upd(); x.focus(); };
+  const tbox = el("div", { class: "row tbox", hidden: "" }, ampm, hh, el("b", {}, ":"), mm, el("button", { type: "button", class: "main", onclick: tput }, "넣기"));
+  [hh, mm].forEach(i => i.onkeydown = ev => { if (ev.key === "Enter") { ev.preventDefault(); ev.stopPropagation(); tput(); } else if (ev.key === "Escape") { ev.stopPropagation(); tbox.hidden = true; x.focus(); } });
+  hh.oninput = () => { hh.value = hh.value.replace(/\D/g, ""); if (hh.value.length === 2 || +hh.value > 2) mm.focus(); }; mm.oninput = () => { mm.value = mm.value.replace(/\D/g, ""); };
+  const clock = el("button", { type: "button", class: "clock", title: "시간 넣기", "aria-label": "시간 넣기", onclick: () => {
+    if (!tbox.hidden) { tbox.hidden = true; return; }
+    const t = parseTime(x.value).time; if (t) { const [H, M] = t.split(":").map(Number); setPm(H >= 12); hh.value = String(H % 12 || 12); mm.value = String(M).padStart(2, "0"); } else { hh.value = mm.value = ""; setPm(new Date().getHours() >= 12); }
+    tbox.hidden = false; hh.focus(); hh.select(); } }, ico("clock"));
   let alarm = e?.alarm || "";
   const bell = bellBtn(() => alarm, v => alarm = v);
   const upd = () => bell.hidden = !parseTime(x.value).time; // 시간이 있을 때만 종
-  tp.onchange = () => { if (!tp.value) return; const p = parseTime(x.value); x.value = `${tp.value} ${p.time ? p.text : x.value.trim()}`.trim(); upd(); x.focus(); };
   x.oninput = upd; upd();
   const d = e ? dateIn(e.date) : null, list = el("div", { class: "plist" });
   let mode = e?.end ? "span" : e?.rep ? "rep" : "", endV = e?.end || "", untilV = e?.until || "";
@@ -500,7 +513,7 @@ function evForm(date, e, anchor, host) { // host: 팝업 대신 그 form 안에 
   const drawList = () => { list.replaceChildren(...evOf(date).map(v => itemEv(v, redraw, date, true))); sortable(list, redraw); };
   if (!e) drawList();
   const saveB = el("button", { class: "main" }, e ? "저장" : "추가");
-  const addRow = el("div", { class: "row addrow" }, el("span", { class: "inbox" }, x, clock, tp), bell, saveB), modeRow = el("div", { class: "row modes" }, catC.box, spanB, repB);
+  const addRow = el("div", { class: "row addrow" }, el("span", { class: "inbox" }, x, clock), bell, saveB), modeRow = el("div", { class: "row modes" }, catC.box, spanB, repB);
   let close = () => {};
   const saveFn = () => {
     const v = x.value.trim(); if (!v) return false;
@@ -526,8 +539,8 @@ function evForm(date, e, anchor, host) { // host: 팝업 대신 그 form 안에 
     J.events.push(clean({ id: uid(), date, time, text, done: false, alarm: time ? alarm : "", ord: evOf(date).length, ...modeOf(date) })); store();
     x.value = ""; alarm = ""; bell.show(); upd(); setMode(""); redraw(); x.focus(); return false; // 닫지 않고 이어서 (종·연속·반복은 다시 꺼짐)
   };
-  if (host) { host.dataset.date = date; host.replaceChildren(addRow, modeRow, spanRow, repRow); host.onsubmit = ev => { ev.preventDefault(); saveFn(); }; return; }
-  close = pop(anchor, e ? "일정 고치기" : `${dayName(date)} 일정`, "cal", [e ? null : list, addRow, modeRow, spanRow, repRow,
+  if (host) { host.dataset.date = date; host.replaceChildren(addRow, tbox, modeRow, spanRow, repRow); host.onsubmit = ev => { ev.preventDefault(); saveFn(); }; return; }
+  close = pop(anchor, e ? "일정 고치기" : `${dayName(date)} 일정`, "cal", [e ? null : list, addRow, tbox, modeRow, spanRow, repRow,
     e ? el("div", { class: "btns" }, el("button", { type: "button", class: "danger", onclick: async ev => { if (await evDel(e, date, ev.currentTarget)) close(); } }, "지우기")) : null], saveFn, { head: d, noFoot: true, opened: () => { // 처음 한 번 사용법
     if (localStorage.getItem("journal-tip-ev")) return;
     try { localStorage.setItem("journal-tip-ev", "1"); } catch (er) {}
