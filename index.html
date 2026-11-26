@@ -810,7 +810,9 @@
   .tpv-head { display: flex; align-items: center; padding: 12px 16px; border-bottom: 1.5px solid #f3d6c2; background: #fff5f0; } .tpv-head b { flex: 1; font-size: 18px; color: #e2643f; }
   .tpv-head button, .tpv-in button, .tpv-more { font: inherit; font-size: 14px; border: 1.5px solid #f3d6c2; background: #fff; border-radius: 8px; padding: 4px 12px; cursor: pointer; }
   .tpv-list { flex: 1; overflow: auto; padding: 8px 16px 16px; } .tpv-more { margin: 8px auto 12px; }
-  .tpv-day h4 { margin: 14px 0 6px; font-size: 16px; position: sticky; top: -8px; background: #fff; padding: 6px 0; border-bottom: 2px solid #f3d6c2; } .tpv-day h4 span { font-weight: normal; color: #6b5e55; margin-left: 8px; }
+  .tpv-day summary { margin: 10px 0 6px; font-size: 16px; font-weight: bold; position: sticky; top: -8px; background: #fff; padding: 8px 4px; border-bottom: 2px solid #f3d6c2; cursor: pointer; list-style: none; display: flex; align-items: baseline; gap: 8px; }
+  .tpv-day summary::-webkit-details-marker { display: none; } .tpv-day summary::before { content: "📁"; } .tpv-day[open] summary::before { content: "📂"; }
+  .tpv-day summary span { font-weight: normal; color: #6b5e55; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .tpv-day summary em { font-style: normal; font-size: 13px; color: #6b5e55; font-weight: normal; }
   .tpv-it { padding: 8px 0 10px; border-bottom: 1px solid #eee; } .tpv-it p { margin: 2px 0; white-space: pre-line; font-size: 15px; line-height: 1.5; } .tpv-me b { color: #e2643f; margin-right: 4px; } .tpv-it .tpv-me { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; cursor: pointer; } .tpv-it .tpv-me.open { display: block; } /* 긴 글은 네 줄까지, 누르면 다 */
   .tpv-it .tpv-t, .tpv-it .tpv-k { margin-left: 18px; padding: 3px 10px; border-left: 3px solid #74c0fc; background: #f1f8ff; border-radius: 0 8px 8px 0; font-size: 14px; } .tpv-it .tpv-k { border-left-color: #ced4da; background: #f8f9fa; }
   .tpv-it small { font-weight: 600; color: #1971c2; } .tpv-k small { color: #868e96; }
@@ -3386,9 +3388,10 @@ function pickRace(all) {
 }
 // 선택 뽑기 위의 필터: 누르면 그 학생들로 고름 (여자만·남자만·자리배치의 모둠만). 모두·해제
 function pickGroups() { // 자리배치에서 앉은 모둠: { "1모둠": [학생…] }
-  const c = sc(), out = {};
-  for (const d of c.desks || []) if (d.g !== undefined && c.seats?.[d.id]) (out[seBoxLabel(d.g)] ||= []).push(c.seats[d.id]);
-  return Object.keys(out).length > 1 ? out : {};
+  const c = sc(), by = {};
+  for (const d of c.desks || []) if (d.g !== undefined && c.seats?.[d.id]) (by[d.g] ||= []).push(c.seats[d.id]);
+  const gs = Object.keys(by).sort((a, b) => a - b); // 1모둠부터
+  return gs.length > 1 ? Object.fromEntries(gs.map(g => [seBoxLabel(+g), by[g]])) : {};
 }
 function pickFilters() {
   const ps = people(), k = pkKey(), ch = candidates(), set = L => { pk[k] = ps.filter(p => L.includes(p)); pkWin = null; pkSave(); pickInfo(); }, same = L => L.length === ch.length && L.every(p => ch.includes(p));
@@ -7838,8 +7841,10 @@ async function tpView() {
         box.replaceChildren(h("p", { class: "tpv-me", title: "누르면 펼치기·접기", onclick: e => e.target.closest("a") || e.currentTarget.classList.toggle("open") }, h("b", {}, `${x.n} ${nameOf(x.n)}`), " ", ...hwText(x.text || "")), hwFileView(x) || "",
           ...hwThread(x.msgs, rep[x.key]?.msgs).map(m => h("p", { class: m.me ? "tpv-k" : "tpv-t" }, h("small", {}, m.me ? nameOf(x.n) : "선생님"), " ", ...hwText(m.t))), h("div", { class: "tpv-in" }, inp, h("button", { onclick: send }, "남기기")));
       }; draw(); return box; };
-    return h("section", { class: "tpv-day" }, h("h4", {}, new Date(t.at).toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "short" }), h("span", {}, (t.t || "").split("\n")[0])),
+    const box = h("details", { class: "tpv-day" }, h("summary", {}, new Date(t.at).toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "short" }), h("span", {}, (t.t || "").split("\n")[0]), h("em", {}, `${subs.length}명`)),
       ...(subs.length ? subs.map(row) : [h("p", { class: "rw-h" }, "아직 쓴 학생이 없어요.")]));
+    if (!list.children.length) box.open = true; // 날짜 줄을 누르면 접기·펼치기. 맨 위(오늘)만 펼침
+    return box;
   };
   const next = async () => { more.disabled = true; for (const d of ds.slice(shown, shown + 3)) list.append(await day(d)); shown += 3; more.hidden = shown >= ds.length; more.disabled = false; };
   more.onclick = next;
