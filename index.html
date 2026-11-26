@@ -7370,10 +7370,13 @@ Storage.prototype.removeItem = function (k) { const had = this.getItem(k) !== nu
 function syncMark(k) {
   if (k.startsWith("sync-")) return;
   lsSet("sync-dirty", "1");
+  try { const ks = new Set(JSON.parse(lsGet("sync-keys") || "[]")); if (!ks.has(k)) { ks.add(k); lsSet("sync-keys", JSON.stringify([...ks])); } } catch (e) {} // 아직 안 올린 칸 (서버 것을 받을 때 이 칸은 이 컴퓨터 것을 남김)
   if (PHOTO_KEY.test(k) || k.startsWith("wb:")) syncBlobs.add(k);
   if (fbUser) { clearTimeout(syncT); syncT = setTimeout(() => syncPush(false), 3000); }
 }
-addEventListener("storage", e => { if (e.storageArea === localStorage && e.key) syncMark(e.key); }); // 교사 일지 창에서 바꾼 것도 서버에 올림
+addEventListener("storage", e => { if (e.storageArea === localStorage && e.key) syncMark(e.key); });
+const syncFlush = () => { if (fbUser && syncT) { clearTimeout(syncT); syncT = 0; syncPush(false); } }; // 3초 기다리는 중에 창을 내리거나 닫으면 바로 올림
+addEventListener("visibilitychange", () => { if (document.hidden) syncFlush(); }); addEventListener("pagehide", syncFlush); // 교사 일지 창에서 바꾼 것도 서버에 올림
 async function fbLoad() { // 필요할 때만 불러옴 (로그인 안 하면 인터넷 없이도 그대로 씀)
   if (fb) return fb;
   const [app, auth, fs] = await Promise.all(["firebase-app.js", "firebase-auth.js", "firebase-firestore.js"].map(f => import(FB + f)));
@@ -7525,6 +7528,7 @@ async function syncStart(first) {
     const how = await seChoose(document.body, "서버에 저장된 보드와 이 컴퓨터의 보드가 달라요. 어느 쪽으로 맞출까요?\n\n· 서버 보드로 바꾸기: 이 컴퓨터 내용은 지워져요\n· 이 컴퓨터 보드 올리기: 서버 내용이 바뀌어요", [["이 컴퓨터 보드 올리기", "push"], ["서버 보드로 바꾸기", "pull"]]);
     if (how === "push") return syncPush(true);
     if (!how) return syncShow();
+    return syncPull(d, false); // 서버 보드로 바꾸기: 이 컴퓨터 것은 남기지 않음
   }
   await syncPull(d);
 }
@@ -7580,7 +7584,7 @@ async function syncPush(all) {
     for (const k of Object.keys(localStorage)) if (!k.startsWith("sync-")) PHOTO_KEY.test(k) ? photos.push(k) : ls[k] = lsGet(k);
     const at = Date.now(); syncMine = at; // 내가 올린 것: 서버 지켜보기에서 다시 받지 않게
     await fb.setDoc(boardRef(), { lock: syncLock, box: await seal(JSON.stringify({ ls, photos })), updatedAt: at }); // 예전 ls(잠그지 않은 것)는 이때 지워짐
-    lsSet("sync-at", String(at)); lsDel("sync-dirty"); syncShow();
+    lsSet("sync-at", String(at)); lsDel("sync-dirty"); lsDel("sync-keys"); syncShow();
   } catch (e) {
     todo.forEach(b => syncBlobs.add(b)); // 다음에 다시 올림
     syncShow("저장하지 못했어요. 인터넷 연결을 확인해 주세요. 고친 내용은 이 컴퓨터에 남아 있어요.");
@@ -7590,9 +7594,11 @@ async function syncPush(all) {
   }
 }
 // 서버 보드로 이 컴퓨터를 바꾸고 다시 불러옴
-async function syncPull(d) {
+async function syncPull(d, keepMine = true) {
   syncShow("서버 보드를 받는 중…");
   if (d.box) d = { ...d, ...JSON.parse(await unseal(d.box)) }; // 잠근 것 풀기 (예전 자료는 ls 그대로)
+  let keys = []; try { keys = keepMine && lsGet("sync-dirty") ? JSON.parse(lsGet("sync-keys") || "[]") : []; } catch (e) {}
+  const mine = keys.map(k => [k, lsGet(k)]); // 아직 안 올린 이 컴퓨터의 바뀐 칸 (예: 방금 한 사용 체크) → 서버 것 위에 다시 얹고 올림
   for (const k of Object.keys(localStorage)) if (!k.startsWith("sync-") && !(k in d.ls) && !d.photos.includes(k)) lsDel(k);
   for (const k in d.ls) lsSet(k, d.ls[k]);
   for (const k of d.photos) { const b = await fb.getDoc(blobRef(k)); if (b.exists()) lsSet(k, await unseal(b.data().data)); }
@@ -7603,7 +7609,9 @@ async function syncPull(d) {
     await idb("readwrite", s => s.put({ objs, strokes, hist: [], srcs: {} }, pg.id)); have.add(pg.id);
   }
   for (const k of WB_KEYS) if (!have.has(k)) await idb("readwrite", s => s.delete(k));
-  lsSet("sync-at", String(d.updatedAt)); lsDel("sync-dirty");
+  for (const [k, v] of mine) v === null ? lsDel(k) : lsSet(k, v);
+  lsSet("sync-at", String(d.updatedAt));
+  if (mine.length) lsSet("sync-dirty", "1"); else { lsDel("sync-dirty"); lsDel("sync-keys"); } // 남긴 칸이 있으면 다시 켤 때 서버에 올림
   location.reload();
 }
 // ───── 학생 화면(student.html): 반 코드 + 번호 + 비밀번호 4자리. 반 코드는 교사가, 비밀번호는 학생이 처음 들어올 때 직접 정함
