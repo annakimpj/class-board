@@ -204,7 +204,7 @@ function draw() {
   $("note").textContent = !dirty ? "" : after < 0 ? avShort(-after, unit()) : !cost ? "저장하기를 눌러야 바뀌어요." : "";
   $("note").classList.toggle("short", !!cost && after < 0);
   $("tabs").replaceChildren(...AV_TABS.map(([k, t]) => el("button", { class: tab === k ? "on" : "", onclick: () => { tab = k; draw(); } }, t)));
-  const items = AV_ITEMS.filter(it => tab === "acc" ? AV_ACC.includes(it.slot) : it.slot === tab).sort((a, b) => price(a) - price(b)); // 무료부터 비싼 것까지
+  const items = AV_ITEMS.filter(it => avInTab(it, tab)).sort((a, b) => price(a) - price(b)); // 무료부터 비싼 것까지
   $("shop").replaceChildren(...items.map(it => {
     const has = owns(it), must = it.slot in AV_REQ, worn = (d.wear[it.slot] || AV_REQ[it.slot]) === it.id, cost = price(it);
     const pic = el("div"); pic.innerHTML = avPic(d.av, { ...d.wear, [it.slot]: it.id });

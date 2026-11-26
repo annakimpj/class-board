@@ -4236,8 +4236,8 @@ function rwSettings() {
         h("button", { class: "rw-add", onclick: () => { list.push({ t: "", pt: 1 }); drawRows(); rows.querySelectorAll("input")[rows.querySelectorAll("input").length - 2]?.focus(); } }, "+ 이유 추가"));
       return;
     }
-    const its = AV_ITEMS.filter(it => it.price && (rwShopTab === "acc" ? AV_ACC.includes(it.slot) : it.slot === rwShopTab)).sort((a, b) => price[a.id] - price[b.id]);
-    const cats = h("div", { class: "rw-tabs sm" }, AV_TABS.filter(([k]) => AV_ITEMS.some(it => it.slot === k && it.price)).map(([k, t]) => h("button", { class: rwShopTab === k ? "on" : "", onclick: () => { rwShopTab = k; draw(); } }, t)));
+    const its = AV_ITEMS.filter(it => it.price && avInTab(it, rwShopTab)).sort((a, b) => price[a.id] - price[b.id]);
+    const cats = h("div", { class: "rw-tabs sm" }, AV_TABS.filter(([k]) => AV_ITEMS.some(it => avInTab(it, k) && it.price)).map(([k, t]) => h("button", { class: rwShopTab === k ? "on" : "", onclick: () => { rwShopTab = k; draw(); } }, t)));
     const all = h("input", { type: "checkbox" }); all.checked = its.length && its.every(it => chosen.has(it.id));
     all.onchange = () => { its.forEach(it => all.checked ? chosen.add(it.id) : chosen.delete(it.id)); draw(); };
     const grid = h("div", { class: "rw-prices" }, ...its.map(it => {
@@ -4299,7 +4299,7 @@ function rwAvatar(p) {
       Object.assign(h("button", { class: "rw-reset", onclick: reset }, "원래대로"), { disabled: d.wear.top === AV_REQ.top && d.wear.bottom === AV_REQ.bottom && !cost }),
       after < 0 ? h("p", { class: "rw-short" }, avShort(-after, unit)) : null));
     const tabs = h("div", { class: "rw-tabs" }, AV_TABS.map(([k, t]) => h("button", { class: rwTab === k ? "on" : "", onclick: () => { rwTab = k; draw(); } }, t)));
-    const items = AV_ITEMS.filter(it => rwTab === "acc" ? AV_ACC.includes(it.slot) : it.slot === rwTab).sort((a, b) => avPrice(a) - avPrice(b)); // 무료부터 비싼 것까지
+    const items = AV_ITEMS.filter(it => avInTab(it, rwTab)).sort((a, b) => avPrice(a) - avPrice(b)); // 무료부터 비싼 것까지
     const shop = h("div", { class: "rw-shop" }, items.map(it => {
       const price = avPrice(it), has = owns(it), worn = d.wear[it.slot] === it.id;
       const pic = h("div"); pic.innerHTML = avPic(d.av, { ...d.wear, [it.slot]: it.id });
