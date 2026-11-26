@@ -1,6 +1,6 @@
 # 눈 흰자: 눈마다(왼·오) 가장 큰 덩어리(속눈썹+눈동자) 아래, 양 눈꼬리에서 둥글게 내려가 눈동자 밑까지를 흰색으로 (눈썹은 따로 떨어져 있어서 빠짐)
 import sys, numpy as np; from PIL import Image; from scipy import ndimage
-SRC = sys.argv[1] if len(sys.argv) > 1 else './'; OUT = sys.argv[2] if len(sys.argv) > 2 else './'  # SRC: 흰자 없는 원본 눈 그림 폴더
+SRC = sys.argv[1] if len(sys.argv) > 1 else './'; OUT = sys.argv[2] if len(sys.argv) > 2 else './'  # SRC: 흰자 없는 원본 눈 그림 폴더. eye-8(옆 보는 눈)은 원본 왼쪽 눈이 찌그러져서 오른쪽 눈(속눈썹+눈동자)을 왼쪽으로 옮겨 붙인 것을 씀
 for k in [k for k in range(16) if k not in (3, 15)]:  # 감은 눈(^^)·점 눈은 흰자 없음
   im = np.array(Image.open(f'{SRC}eye-{k}.png').convert('RGBA')).astype(float); a = im[..., 3] > 90
   white = np.zeros(a.shape, bool)

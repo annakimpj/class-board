@@ -35,12 +35,12 @@ const AV_PRICE = {
   bottom: [6, 6, 0, 0, 7, 6, 7, 8, 7, 0, 8, 7, 6, 7, 6, 7, 6, 6, 6, 6, 6, 8, 7, 7, 7, 8, 6, 6, 8, 6, 9, 7, 7, 7, 7, 7, 7, 7, 8, 7],
 };
 const AV_ITEMS = Object.entries(AV_NAMES).flatMap(([slot, names]) => names.map((name, i) => ({ id: `${slot}-${i}`, slot, name, price: AV_PRICE[slot][i], img: `av/${slot}-${i}.png` })));
-const AV_REQ = { pet: "pet-0", shoes: "shoes-0", eye: "eye-0", mouth: "mouth-0", cheek: "cheek-1", hair: "hair-0", top: "top-5", bottom: "bottom-9" }; // 기본 옷 (흰 셔츠·카키 반바지). 이 칸들은 벗을 수 없어 늘 입고 있음
+const AV_REQ = { pet: "pet-0", shoes: "shoes-1", eye: "eye-0", mouth: "mouth-0", cheek: "cheek-1", hair: "hair-0", top: "top-5", bottom: "bottom-9" }; // 기본 옷 (흰 셔츠·카키 반바지·민트 운동화). 이 칸들은 벗을 수 없어 늘 입고 있음
 const AV_ACC = []; // 장신구 칸 (아직 없음)
 const AV_TABS = [["eye", "눈"], ["mouth", "입"], ["cheek", "볼터치"], ["hair", "헤어"], ["top", "상의"], ["bottom", "하의"], ["full", "한벌"], ["shoes", "신발"], ["pet", "펫"]];
 const AV_FULL = new Set(["top-47", "top-48", "top-49", "top-50", "top-51", "top-52", "top-53", "top-54"]); // 위아래 한 벌 옷: 입으면 하의를 안 그림. 가게에서는 '한벌' 칸
 // 가게에서 뺀 옷: 몸에 꼭 맞지 않는 상의·하의 (이미 산 학생은 그대로 입고 있음. 번호는 그대로 둬야 산 기록이 안 꼬임)
-const AV_V = "?v=8"; // 그림을 고치면 숫자를 올림 (브라우저에 남은 옛 그림 대신 새로 받게)
+const AV_V = "?v=9"; // 그림을 고치면 숫자를 올림 (브라우저에 남은 옛 그림 대신 새로 받게)
 const AV_HIDE = new Set([...[6, 16, 17, 18, 19, 20, 21, 22, 23, 26, 39, 40, 41, 42, 43, 24, 25, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 44, 45, 46].map(i => "top-" + i),
   ...[7, 13, 14, 15, 17, 19, 20, 21, 22, 23, 27, 29, 32, 33, 34, 35, 36, 37, 38, 39].map(i => "bottom-" + i)]); // 하의: 긴 바지·롱스커트(안 맞음)와 비슷한 것 중 덜 맞는 쪽
 const avInTab = (it, k) => !AV_HIDE.has(it.id) && (k === "acc" ? AV_ACC.includes(it.slot) : k === "full" ? AV_FULL.has(it.id) : k === "top" ? it.slot === "top" && !AV_FULL.has(it.id) : it.slot === k); // 가게 칸에 보일 물건
