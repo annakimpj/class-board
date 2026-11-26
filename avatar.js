@@ -40,9 +40,9 @@ const AV_ACC = []; // 장신구 칸 (아직 없음)
 const AV_TABS = [["eye", "눈"], ["mouth", "입"], ["cheek", "볼터치"], ["hair", "헤어"], ["top", "상의"], ["bottom", "하의"], ["full", "한벌"], ["shoes", "신발"], ["pet", "펫"]];
 const AV_FULL = new Set(["top-47", "top-48", "top-49", "top-50", "top-51", "top-52", "top-53", "top-54"]); // 위아래 한 벌 옷: 입으면 하의를 안 그림. 가게에서는 '한벌' 칸
 // 가게에서 뺀 옷: 몸에 꼭 맞지 않는 상의·하의 (이미 산 학생은 그대로 입고 있음. 번호는 그대로 둬야 산 기록이 안 꼬임)
-const AV_V = "?v=3"; // 그림을 고치면 숫자를 올림 (브라우저에 남은 옛 그림 대신 새로 받게)
+const AV_V = "?v=4"; // 그림을 고치면 숫자를 올림 (브라우저에 남은 옛 그림 대신 새로 받게)
 const AV_HIDE = new Set([...[6, 16, 17, 18, 19, 20, 21, 22, 23, 26, 39, 40, 41, 42, 43, 24, 25, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 44, 45, 46].map(i => "top-" + i),
-  ...[13, 14, 15, 17, 19, 20, 21, 22, 23, 27, 29, 32, 33, 34, 35, 36, 37, 38, 39].map(i => "bottom-" + i)]); // 하의: 긴 바지·롱스커트(안 맞음)와 비슷한 것 중 덜 맞는 쪽
+  ...[7, 13, 14, 15, 17, 19, 20, 21, 22, 23, 27, 29, 32, 33, 34, 35, 36, 37, 38, 39].map(i => "bottom-" + i)]); // 하의: 긴 바지·롱스커트(안 맞음)와 비슷한 것 중 덜 맞는 쪽
 const avInTab = (it, k) => !AV_HIDE.has(it.id) && (k === "acc" ? AV_ACC.includes(it.slot) : k === "full" ? AV_FULL.has(it.id) : k === "top" ? it.slot === "top" && !AV_FULL.has(it.id) : it.slot === k); // 가게 칸에 보일 물건
 // 단위에 맞춘 글: "3 으쓱이 모자라요", "3으쓱으로 바꾸기" (이/가, 으로/로)
 const avBat = w => { const c = w.charCodeAt(w.length - 1) - 0xac00; return c >= 0 && c < 11172 ? c % 28 : 0; }; // 받침 (0 없음, 8 ㄹ)
@@ -64,5 +64,5 @@ function avPic(av, wear = {}) {
   const ck = avItem(w.cheek).img, cn = +w.cheek.split("-")[1];
   const cheekL = !cn ? "" : `<i style="background:${AV_CHEEK[cc][0]};-webkit-mask-image:url(${ck}${AV_V});mask-image:url(${ck}${AV_V})"></i>` + (AV_FRECK.includes(cn) ? img(ck.replace(".png", "-f.png")) : "");
   // .avp = 펫 칸(378×426), 그 안의 .avb = 아바타 칸(258×386, 위 40·왼쪽 60 띄움). 펫 그림은 펫 칸 크기
-  return `<div class="avp" aria-hidden="true"><div class="avb">${w.shoes !== "shoes-0" ? img(`av/base-${skin}.png`).replace("<img", '<img style="clip-path:inset(0 0 2.6% 0)"') : img(`av/base-${skin}.png`)}${cheekL}${[avItem(w.eye).img, avItem(w.mouth).img, w.shoes !== "shoes-0" && avItem(w.shoes).img, !AV_FULL.has(w.top) && avItem(w.bottom).img, avItem(w.top).img].filter(Boolean).map(img).join("")}${hairL}${AV_EAR.has(+w.hair.split("-")[1]) ? img(`av/ear-${skin}.png`) : ""}</div>${w.pet !== "pet-0" ? img(avItem(w.pet).img) : ""}</div>`;
+  return `<div class="avp" aria-hidden="true"><div class="avb">${w.shoes !== "shoes-0" ? img(`av/base-${skin}.png`).replace("<img", '<img style="clip-path:inset(0 0 2.6% 0)"') : img(`av/base-${skin}.png`)}${cheekL}${w.shoes !== "shoes-0" ? img(avItem(w.shoes).img).replace("<img", '<img style="transform:translateY(1.2%)"') : ""}${[avItem(w.eye).img, avItem(w.mouth).img, !AV_FULL.has(w.top) && avItem(w.bottom).img, avItem(w.top).img].filter(Boolean).map(img).join("")}${hairL}${AV_EAR.has(+w.hair.split("-")[1]) ? img(`av/ear-${skin}.png`) : ""}</div>${w.pet !== "pet-0" ? img(avItem(w.pet).img) : ""}</div>`;
 }
