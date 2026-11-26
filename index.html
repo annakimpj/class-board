@@ -3931,7 +3931,19 @@ thTicks(); thShow(thShown); thText(); thCard.classList.toggle("full", thermo.t >
 const ntEl = document.querySelector('.note[data-key="notice"]');
 let ntHist = {}, ntDay = localStorage.getItem("notice-day") || iso(new Date());
 const ntLabel = d => new Date(d + "T00:00").toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "long" });
+// 학생 화면 알림장: 칠판 글을 classes/{반 코드}/notice/board = { day, lines, at } 로 (쓰다 멈추면 1.5초 뒤, 바뀐 것만)
+let ntPubT = 0, ntPubLast = "";
+function ntPublish() {
+  clearTimeout(ntPubT);
+  ntPubT = setTimeout(() => {
+    if (!kidOn()) return;
+    const v = { day: ntDay, lines: ntShown([...ntEl.querySelectorAll("li")]) }, j = reward.cls.code + JSON.stringify(v);
+    if (j !== ntPubLast) fb.setDoc(fb.doc(fb.db, "classes", reward.cls.code, "notice", "board"), { ...v, at: Date.now() }).then(() => ntPubLast = j, () => {});
+  }, 1500);
+}
+ntEl.addEventListener("input", ntPublish);
 function ntDraw() {
+  ntPublish();
   $s("nt-date").textContent = ntLabel(ntDay) + " 알림장";
   if (ntEl.closest(".card").querySelector(".nt-menu")) ntList(true); // 열려 있으면 다시 그림
 }
@@ -7840,7 +7852,7 @@ let hwCardKey = null;
 function hwCardDraw() {
   const host = document.getElementById("hw-host"), k = kidOn() ? reward.cls.code : "";
   if (!host || k === hwCardKey) return;
-  hwCardKey = k;
+  hwCardKey = k; ntPublish(); // 반 코드가 생기거나 바뀌면 알림장도 보냄
   document.getElementById("kidin-host")?.replaceChildren(k ? kidGuide(true) : h("p", { class: "sub" }, "⚙ 설정 → 학생 입장에서 반 코드를 정하면 여기에 들어오는 방법이 보여요.")); // 🚪 우리반 입장 카드
   host.replaceChildren(hwPanel(host.closest(".card")));
 }

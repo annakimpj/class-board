@@ -70,6 +70,8 @@
   .nt { position: sticky; top: 8px; z-index: 5; background: #fff4e6; border: 3px solid #ff922b; border-radius: 18px; padding: 14px 18px; margin-bottom: 14px; display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: center; box-shadow: 0 6px 20px rgba(232, 89, 12, .2); }
   .nt b { font-size: 16px; color: #d9480f; } .nt p { grid-column: 1; margin: 0; font-size: 24px; font-weight: 600; white-space: pre-line; } .nt button { grid-row: 1 / 3; grid-column: 2; }
   .drop-on { outline: 3px dashed #3b82f6 !important; outline-offset: -3px; }
+  .nb { background: #2f4a3a; color: #f8f9f0; border: 6px solid #8a6a4a; border-radius: 16px; padding: 14px 20px 16px; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(60, 40, 20, .1); }
+  .nb b { display: block; font-size: 17px; color: #ffe066; margin-bottom: 6px; } .nb a { color: #a5d8ff; } .nb #nb-l p { margin: 2px 0; font-size: 21px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
   .hw-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
   .hw-card { display: flex; flex-direction: column; gap: 4px; text-align: left; min-height: 130px; background: #fff; border: 2px solid transparent; border-radius: 18px; padding: 16px 18px; box-shadow: 0 2px 10px rgba(60, 40, 20, .06); }
   .hw-card b { font-size: 21px; } .hw-card span { font-size: 15px; color: var(--muted); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
@@ -111,6 +113,7 @@
 <div class="app" id="app" hidden>
   <div class="top"><button class="hw-btn" id="hw-btn">🧑 꾸미기</button><h1 id="me-name"></h1><span class="pt" id="me-pt"></span><button class="hw-btn" id="nt-on" hidden>🔔 알림 켜기</button><button class="out" id="out">나가기</button></div>
   <div class="nt" id="nt" hidden><b>📢 선생님 공지</b><p id="nt-t"></p><button class="main" id="nt-ok">확인</button></div>
+  <div class="nb" id="nb" hidden><b id="nb-d"></b><div id="nb-l"></div></div>
   <div class="hw" id="hw"><p class="hw-none">불러오는 중…</p></div>
   <div class="main-grid" id="dress" hidden>
     <div class="stage">
@@ -238,7 +241,7 @@ async function shrink(file) { // 사진을 긴 쪽 1280px JPEG로 줄임 (문서
 function hwDraw() {
   const todo = hws.filter(x => !sent(mine[x.id])).length;
   $("hw-btn").replaceChildren(hwOpen ? "🧑 꾸미기" : "📚 과제", ...(todo && !hwOpen ? [el("b", {}, String(todo))] : []));
-  $("hw").hidden = !hwOpen; $("dress").hidden = hwOpen;
+  $("hw").hidden = !hwOpen; $("dress").hidden = hwOpen; nbDraw();
   if (!hwOpen) return;
   if (!hws.length) return $("hw").replaceChildren(el("p", { class: "hw-none" }, "아직 과제가 없어요."));
   const name = x => x.title || (x.t || "").split("\n")[0].slice(0, 40) || "과제";
@@ -292,6 +295,13 @@ function ntListen(l) {
     if (document.hidden && "Notification" in window && Notification.permission === "granted") { try { const n = new Notification("📢 선생님 공지", { body: v.t, tag: "notice", requireInteraction: true }); n.onclick = () => { focus(); n.close(); }; } catch (e) {} }
   }, () => {});
 }
+// ───── 📋 알림장: 선생님 칠판 알림장 (classes/{반 코드}/notice/board = { day, lines }). 과제 화면 맨 위에
+let nbV = null;
+function nbDraw() { $("nb").hidden = !hwOpen || !nbV?.lines?.length; if ($("nb").hidden) return;
+  $("nb-d").textContent = "📋 " + new Date(nbV.day + "T00:00").toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "long" }) + " 알림장";
+  $("nb-l").replaceChildren(...nbV.lines.map(t => el("p", {}, ...hwText(t))));
+}
+const nbListen = l => fs.onSnapshot(fs.doc(db, "classes", l.code, "notice", "board"), s => { nbV = s.data() || null; nbDraw(); }, () => {});
 function hwListen(l) { // 과제 목록을 계속 듣고, 내가 낸 것은 한 번씩 받아 옴
   hwL = l;
   return fs.onSnapshot(fs.collection(db, "classes", l.code, "hw"), async s => {
@@ -312,13 +322,13 @@ $("hw-btn").onclick = () => { hwOpen = !hwOpen; hwDraw(); scrollTo(0, 0); };
 }
 function logout(msg) {
   unsubs.forEach(u => u()); unsubs = []; me = d = null; dirty = false;
-  hws = []; mine = {}; hwDraft = {}; hwOpen = true; hwL = null; hwSel = null; hwDraw();
+  hws = []; mine = {}; hwDraft = {}; hwOpen = true; hwL = null; hwSel = null; nbV = null; hwDraw();
   try { localStorage.removeItem("kid-login"); } catch (e) {}
   stepTo(1); $("login-err").textContent = msg || ""; show("login");
 }
 function enter(l) { // 내 문서와 반 설정을 계속 들음 (점수가 바뀌면 바로 보임)
   unsubs.forEach(u => u()); unsubs = [];
-  unsubs.push(hwListen(l), ntListen(l));
+  unsubs.push(hwListen(l), ntListen(l), nbListen(l));
   unsubs.push(fs.onSnapshot(fs.doc(db, "classes", l.code), s => { if (!s.exists()) return logout("학생 입장이 꺼졌어요. 선생님께 물어보세요."); cls = s.data(); if (me) draw(); }, () => {}));
   unsubs.push(fs.onSnapshot(kidRef(l), s => {
     if (!s.exists()) return logout("비밀번호가 지워졌어요. 다시 들어와서 새 비밀번호를 정해요.");
