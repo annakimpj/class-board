@@ -242,7 +242,7 @@
   <section class="pane" id="p-cal" hidden>
     <div class="box">
       <div class="cal-head"><button id="cal-prev" aria-label="지난달">◀</button><b id="cal-title"></b><button id="cal-next" aria-label="다음 달">▶</button><button id="cal-today">오늘</button>
-        <span class="sp"></span><span class="hint" tabindex="0" data-i="bulb" aria-label="도움말"><span class="tipbox">빈 칸 더블클릭: 일정 등록<br>일정 클릭: 완료<br>더블클릭: 수정 · 끌어서 옮기기<br>스크롤해서 넘기기</span></span></div>
+        <span class="sp"></span><span class="hint" tabindex="0" data-i="bulb" aria-label="도움말"><span class="tipbox">빈 칸 더블클릭: 일정 등록<br>일정 클릭: 완료<br>더블클릭: 수정<br>드래그: 옮기기<br>스크롤해서 넘기기</span></span></div>
       <div class="cal" id="cal"></div>
     </div>
     <div class="side">
@@ -876,13 +876,14 @@ function calDraw() {
   sideDraw();
 }
 function recSortable(box) { // 오른쪽 목록의 학생 기록: 위아래로 끌면 순서, 달력 날짜에 놓으면 그날로
-  box.querySelectorAll("[data-rid]").forEach(row => row.onpointerdown = p => {
+  box.querySelectorAll("[data-rid]").forEach(row => row.onpointerdown = p => { // 끌고 놓은 직후의 클릭은 수정 창을 안 엶 (dragJust)
     if (p.button) return;
     const sx = p.clientX, sy = p.clientY, r0 = J.recs.find(r => r.id === row.dataset.rid), gh = el("div", { class: "ghost", hidden: "" }, r0?.text || "");
     let on = false, to = null;
     const mv = ev => {
       if (!on && Math.hypot(ev.clientX - sx, ev.clientY - sy) < 6) return;
       if (!on) { on = true; row.classList.add("moving"); document.body.append(gh); getSelection().removeAllRanges(); }
+      dragAt = Date.now();
       const b = box.getBoundingClientRect(), inside = ev.clientX >= b.left && ev.clientX <= b.right && ev.clientY >= b.top - 10 && ev.clientY <= b.bottom + 10;
       to = inside ? null : dayAt(ev.clientX, ev.clientY); dropMark(to);
       gh.hidden = inside; gh.style.left = ev.clientX + 12 + "px"; gh.style.top = ev.clientY + 8 + "px";
@@ -910,12 +911,13 @@ function sideDraw() {
   if ($("ev-quick").dataset.date !== pick) evForm(pick, null, null, $("ev-quick")); // 고른 날이 바뀌면 오른쪽 입력 칸을 그날 것으로 (같은 날이면 쓰던 글 그대로)
   const bdn = jset().hideBd ? null : bdays()[pick.slice(5)];
   $("day-list").replaceChildren(...[bdn ? el("p", { class: "sub bdline" }, ico("cake"), `생일: ${bdn.join(", ")}`) : null, ...(recs.length || cs.length || nt ? [] : [el("p", { class: "empty" }, "기록이 없어요.")]),
-    recs.length ? el("p", { class: "sub" }, "학생 기록") : null, ...recs.map(r => el("div", { "data-rid": r.id, class: "item stack", title: "더블클릭으로 수정", ondblclick: ev => recForm(r.date, r, ev.currentTarget), oncontextmenu: ev => recCtx(ev, r) }, el("div", { class: "ihead" }, el("span", { class: "k", style: `background:${kindColor(r.kind)}` }, r.kind), names(r.ps)), el("div", { class: "ibody" }, r.text))),
-    cs.length ? el("p", { class: "sub" }, "상담") : null, ...cs.map(c => el("div", { class: "item stack", title: "더블클릭으로 수정", ondblclick: ev => csForm(c.date, c, ev.currentTarget), oncontextmenu: ev => csCtx(ev, c) }, el("div", { class: "ihead" }, el("span", { class: "k", style: "background:#7048e8" }, c.way), names(c.ps) || c.target), el("div", { class: "ibody" }, [c.topic, c.text].filter(Boolean).join("\n")))),
-    nt ? el("p", { class: "sub" }, "일지") : null, nt ? el("div", { class: "item stack", title: "더블클릭으로 수정", ondblclick: ev => noteForm(pick, ev.currentTarget), oncontextmenu: ev => ctx(ev, [["고치기", a => noteForm(pick, a)]]) }, el("div", { class: "ibody" }, nt)) : null].filter(Boolean));
+    recs.length ? el("p", { class: "sub" }, "학생 기록") : null, ...recs.map(r => el("div", { "data-rid": r.id, class: "item stack", title: "누르면 수정 · 끌어서 다른 날로", onclick: ev => { if (!dragJust()) recForm(r.date, r, ev.currentTarget); }, oncontextmenu: ev => recCtx(ev, r) }, el("div", { class: "ihead" }, el("span", { class: "k", style: `background:${kindColor(r.kind)}` }, r.kind), names(r.ps)), el("div", { class: "ibody" }, r.text))),
+    cs.length ? el("p", { class: "sub" }, "상담") : null, ...cs.map(c => el("div", { class: "item stack", title: "누르면 수정", onclick: ev => csForm(c.date, c, ev.currentTarget), oncontextmenu: ev => csCtx(ev, c) }, el("div", { class: "ihead" }, el("span", { class: "k", style: "background:#7048e8" }, c.way), names(c.ps) || c.target), el("div", { class: "ibody" }, [c.topic, c.text].filter(Boolean).join("\n")))),
+    nt ? el("p", { class: "sub" }, "일지") : null, nt ? el("div", { class: "item stack", title: "누르면 수정", onclick: ev => noteForm(pick, ev.currentTarget), oncontextmenu: ev => ctx(ev, [["고치기", a => noteForm(pick, a)]]) }, el("div", { class: "ibody" }, nt)) : null].filter(Boolean));
   recSortable($("day-list"));
   sideFit();
 }
+let dragAt = 0; const dragJust = () => Date.now() - dragAt < 400; // 학생 기록 줄을 끌던 중이면 클릭으로 안 봄
 function sideFit() { // 일정·학생 기록 칸: 기본 반반, 한쪽이 적으면 그만큼만 주고 나머지를 다른 쪽에
   const a = $("day-evs"), b = $("day-list"); if (!a.isConnected || !a.offsetParent) return;
   a.style.flex = b.style.flex = "1 1 0"; const H = a.clientHeight + b.clientHeight;
@@ -984,7 +986,7 @@ function recDraw() {
   $("rec-title").textContent = who ? `${numOf(who)}번 ${nameOf(who)}` : "전체 학생 기록";
   $("rec-ptitle").textContent = `학생 기록 · ${who ? nameOf(who) : "전체"} (${new Date().toLocaleDateString("ko-KR")})`;
   const rows = recRows();
-  $("rec-list").replaceChildren(...(rows.length ? rows.map(r => el("div", { class: "rec" + (r.score ? " score" : ""), title: r.score ? "" : "더블클릭으로 수정", ondblclick: ev => { if (!r.score && !ev.target.closest("button")) recForm(r.date, r, ev.currentTarget); }, oncontextmenu: ev => { if (!r.score) recCtx(ev, r); } }, el("span", { class: "d" }, short(r.date)), el("span", { class: "who" }, names(r.ps)),
+  $("rec-list").replaceChildren(...(rows.length ? rows.map(r => el("div", { class: "rec" + (r.score ? " score" : ""), title: r.score ? "" : "누르면 수정", onclick: ev => { if (!r.score && !ev.target.closest("button")) recForm(r.date, r, ev.currentTarget); }, oncontextmenu: ev => { if (!r.score) recCtx(ev, r); } }, el("span", { class: "d" }, short(r.date)), el("span", { class: "who" }, names(r.ps)),
     el("span", { class: "txt" }, el("span", { class: "k", style: r.score ? "" : `background:${kindColor(r.kind)}` }, r.kind), r.text),
     r.score ? el("span") : el("span", { class: "acts" }, el("button", { class: "x", title: "지우기", onclick: ev => recDel(r, ev.currentTarget) }, "✕"))))
     : [el("p", { class: "empty" }, "아직 기록이 없어요. '+ 기록'이나 달력에서 써요.")]));
@@ -1011,7 +1013,7 @@ function csDraw() {
   $("cs-title").textContent = csWho ? `${numOf(csWho)}번 ${nameOf(csWho)} 상담` : "전체 상담 일지";
   $("cs-ptitle").textContent = `상담 일지 · ${csWho ? nameOf(csWho) : "전체"} (${new Date().toLocaleDateString("ko-KR")})`;
   const rows = csRows();
-  $("cs-list").replaceChildren(...(rows.length ? rows.map(c => el("div", { class: "rec", title: "더블클릭으로 수정", ondblclick: ev => { if (!ev.target.closest("button")) csForm(c.date, c, ev.currentTarget); }, oncontextmenu: ev => csCtx(ev, c) }, el("span", { class: "d" }, short(c.date), c.time ? el("span", { class: "meta" }, c.time) : null),
+  $("cs-list").replaceChildren(...(rows.length ? rows.map(c => el("div", { class: "rec", title: "누르면 수정", onclick: ev => { if (!ev.target.closest("button")) csForm(c.date, c, ev.currentTarget); }, oncontextmenu: ev => csCtx(ev, c) }, el("span", { class: "d" }, short(c.date), c.time ? el("span", { class: "meta" }, c.time) : null),
     el("span", { class: "who" }, names(c.ps) || "-", el("span", { class: "meta" }, `${c.target} · ${c.way}`)),
     el("span", { class: "txt" }, c.topic ? el("b", {}, c.topic + (c.text ? "\n" : "")) : null, c.text, c.next ? el("span", { class: "next" }, "→ " + c.next) : null),
     el("span", { class: "acts" }, el("button", { class: "x", title: "지우기", onclick: ev => csDel(c, ev.currentTarget) }, "✕"))))
