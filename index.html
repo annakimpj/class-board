@@ -791,6 +791,10 @@
   .kid-tb { width: 100%; border-collapse: collapse; font-size: 18px; } .kid-tb th { font-size: 13px; font-weight: normal; color: var(--muted); text-align: left; }
   .kid-tb td, .kid-tb th { border-bottom: 1px solid var(--line); padding: 4px 6px; } .kid-tb .none { color: var(--muted); font-size: 14px; } .kid-status { margin: 0 0 8px; } .kid-code button { font-size: 13px; padding: 2px 10px; border-radius: 8px; }
   .kid-tb .pin { font-weight: 700; font-size: 22px; letter-spacing: .1em; font-variant-numeric: tabular-nums; }
+  /* 파일 넣는 칸: 점선 상자 + 구름 화살표 (끌어다 놓아도 된다는 표시) */
+  .dz { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; box-sizing: border-box; padding: 22px 16px; border: 2px dashed #c9c2b8 !important; border-radius: 14px !important; background: #fcfaf7 !important; font: inherit; color: var(--ink, #333); cursor: pointer; }
+  .dz:hover, .dz.drop-on, .drop-on > .dz { border-color: #3b82f6 !important; background: #f0f6ff !important; } .dz svg { width: 40px; height: 40px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .dz b { font-weight: 500; font-size: 15px; } .dz u { color: #2f6fd6; text-decoration: none; font-weight: 600; font-size: 15px; } .dz small { color: var(--muted); font-size: 12px; }
   .drop-on { outline: 3px dashed #3b82f6 !important; outline-offset: -3px; }
   .kid-chip { font-size: 13px; padding: 2px 10px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer; margin-left: auto; } .kid-chip b { letter-spacing: .08em; }
   .hw-head .kid-chip { margin-left: 0; } .rw-tabs .kid-chip { align-self: center; } .hw-tt { margin: 0 0 4px; font-size: 17px; } .hw-new .hw-title { font: inherit; font-size: 16px; font-weight: 600; padding: 6px 8px; border: 1.5px solid var(--line); border-radius: 8px; }
@@ -1565,7 +1569,7 @@
     <h3>1. 연간시간표 가져오기</h3>
     <p class="sum">연간시간표, 주간 시간표, 주간학습안내 모두 돼요. 한글(.hwp·.hwpx), 워드(.docx), PDF 파일을 고르기만 하면 돼요. 다시 넣으면 그 주만 새로 바뀌어요. 날짜가 있는 주간 시간표·주간학습안내를 넣으면 연간시간표의 그 주가 이걸로 바뀌어요.</p>
     <div class="row">
-      <button onclick="document.getElementById('tt-file').click()">파일 고르기 (한글 · 워드 · PDF)</button>
+      <button class="dz" onclick="document.getElementById('tt-file').click()"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a4.5 4.5 0 0 1-.6-9A6 6 0 0 1 18 8a4.5 4.5 0 0 1-.5 10"/><path d="M12 20v-9M8.5 14 12 10.5l3.5 3.5"/></svg><b>여기로 파일을 끌어다 놓거나</b><u>눌러서 파일 고르기</u><small>한글 · 워드 · PDF</small></button>
       <input type="file" id="tt-file" accept=".hwp,.hwpx,.doc,.docx,.pdf" hidden>
     </div>
     <p class="sum" id="tt-msg"></p>
@@ -1580,7 +1584,7 @@
   <section id="tab-roster" hidden>
     <p class="sum">뽑기와 자리배치에 쓰는 우리 반 명단이에요. 성별(남·여)은 자리배치의 짝꿍 조건에 써요. 한글·PDF 명렬표 파일에서 가져오거나, 아래 표에 번호와 이름을 직접 쓰세요. 가져온 뒤에도 표에서 바로 고칠 수 있어요. 이름 없이 번호만 써도 번호로 뽑아요. 쓰는 대로 저장돼요.</p>
     <div class="row">
-      <button onclick="document.getElementById('roster-file').click()">파일에서 가져오기 (한글 · 워드 · PDF · 사진)</button>
+      <button class="dz" onclick="document.getElementById('roster-file').click()"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a4.5 4.5 0 0 1-.6-9A6 6 0 0 1 18 8a4.5 4.5 0 0 1-.5 10"/><path d="M12 20v-9M8.5 14 12 10.5l3.5 3.5"/></svg><b>여기로 파일을 끌어다 놓거나</b><u>눌러서 파일 고르기</u><small>한글 · 워드 · PDF · 사진</small></button>
       <input type="file" id="roster-file" accept=".hwp,.hwpx,.doc,.docx,.pdf,.png,.jpg,.jpeg" hidden>
     </div>
     <p class="sum" id="roster-msg"></p>
@@ -4989,7 +4993,7 @@ function dcFiles() { // 급수표 넣기: 파일(.hwp·.pdf) 또는 글 붙여�
     h("div", { class: "card-ed-head" }, h("b", {}, "📄 급수표"), h("button", { onclick: () => ed.remove() }, "닫기")),
     h("div", { class: "card-ed-list" },
       h("p", { class: "sc-prev" }, "받아쓰기 급수표(.hwp · .pdf)를 고르면 급별로 정리해요. 1학기·2학기가 같이 있으면 학기별로 나눠요."),
-      h("button", { onclick: () => file.click() }, "📄 급수표 파일 고르기"), file, msg, area, prev),
+      dzBtn(() => file.click(), "급수표 파일 (한글 · 워드 · PDF)"), file, msg, area, prev),
     h("div", { class: "card-ed-foot" }, add));
   dcCard.append(ed);
 }
@@ -6236,6 +6240,7 @@ try {
 //  gender = {학생: "M"|"F"}
 const DW = 1, DH = .7;
 const jget = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) || d; } catch (e) { return d; } };
+const dzBtn = (go, kinds) => { const b = h("button", { class: "dz", onclick: go }, h("b", {}, "여기로 파일을 끌어다 놓거나"), h("u", {}, "눌러서 파일 고르기"), h("small", {}, kinds)); b.insertAdjacentHTML("afterbegin", '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a4.5 4.5 0 0 1-.6-9A6 6 0 0 1 18 8a4.5 4.5 0 0 1-.5 10"/><path d="M12 20v-9M8.5 14 12 10.5l3.5 3.5"/></svg>'); return b; };
 const jset = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
 let seat = jget("seat", { cur: { name: "", desks: [], seats: {} }, hist: [] });
 let seatSec = jget("seat-secret", { fixed: {}, histFixed: {}, groups: [] });
