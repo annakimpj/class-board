@@ -3392,7 +3392,8 @@ function pickRace(all) {
 }
 // 선택 뽑기 위의 필터: 누르면 그 학생들로 고름 (여자만·남자만·자리배치의 모둠만). 모두·해제
 function pickGroups() { // 자리배치에서 앉은 모둠: { "1모둠": [학생…] }
-  const c = sc(), by = {};
+  let c; try { c = sc(); } catch (e) { return {}; } // 처음 불러올 때는 자리배치(sc)가 아직 없음 → 모둠 버튼 없이 (나중에 다시 그림)
+  const by = {};
   for (const d of c.desks || []) if (d.g !== undefined && c.seats?.[d.id]) (by[d.g] ||= []).push(c.seats[d.id]);
   const gs = Object.keys(by).sort((a, b) => a - b); // 1모둠부터
   return gs.length > 1 ? Object.fromEntries(gs.map(g => [seBoxLabel(+g), by[g]])) : {};
