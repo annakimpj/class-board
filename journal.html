@@ -190,7 +190,7 @@
   .pop .docs button.need { border-color: #fd7e14; color: #d9480f; background: #fff4e6; } .pop .docs button.got { border-color: #2f9e44; color: #2b8a3e; background: #ebfbee; } .pop .docs button { font-size: 13px; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px 4px 6px; }
   .pop .docs .bx { width: 20px; height: 20px; border: 2px solid #ced4da; border-radius: 5px; background: #fff; font-style: normal; font-weight: 900; font-size: 14px; line-height: 16px; text-align: center; flex: none; }
   .pop .docs .need .bx { border-color: #fd7e14; } .pop .docs .got .bx { border-color: #2f9e44; background: #2f9e44; color: #fff; }
-  .ddl .dk { flex: none; width: 110px; font-size: 13px; }
+  .ddl .dk { flex: none; width: 110px; font-size: 13px; } .ddl .dtabs { margin-bottom: 4px; } .ddl .dtabs button { font-size: 14px; padding: 4px 16px; } .ddl .dtabs .dn { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #2f9e44; margin-left: 5px; vertical-align: middle; } /* 점: 서류가 정해진 탭 */
   .drop-on { outline: 3px dashed #3b82f6 !important; outline-offset: -3px; }
   header .jinst { font-size: 13px; padding: 4px 12px; border-radius: 999px; background: #3b82f6; color: #fff; border: 0; cursor: pointer; } header .jinst.hot { animation: jpulse 1s 6 alternate; } @keyframes jpulse { to { box-shadow: 0 0 0 6px rgba(59, 130, 246, .35); } }
   .att-legend { font-size: 12px; color: var(--muted); display: flex; gap: 6px; align-items: center; flex-wrap: wrap; } .att-legend i { font-style: normal; font-weight: 700; color: var(--ink); }
@@ -766,8 +766,11 @@ function jrSettings(anchor) {
     document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
   };
   const grp = (title, ...kids) => el("div", { class: "sgroup" }, el("h4", {}, title), ...kids);
+  let docT = "결석";
   const docRules = el("div", { class: "ddl" }), drawDocs = () => { const M = J.attDoc ||= { ...attDocMap() }; // 종류+분류마다 필요 서류 (고치면 바로 저장)
-    docRules.replaceChildren(...ATT_T.flatMap(t => ATT_R.map(([r, c]) => el("div", { class: "row" }, el("b", { class: "dk", style: `color:${c}` }, `${t} + ${r} :`),
+    const t = docT; // 결석 / 지각 / 조퇴 / 결과 탭
+    docRules.replaceChildren(el("div", { class: "chips dtabs" }, ...ATT_T.map(k => el("button", { type: "button", class: k === t ? "on" : "", onclick: () => { docT = k; drawDocs(); } }, k, ATT_R.some(([r]) => docList(M[`${k}+${r}`]).length) ? el("i", { class: "dn" }) : null))),
+      ...[t].flatMap(t => ATT_R.map(([r, c]) => el("div", { class: "row" }, el("b", { class: "dk", style: `color:${c}` }, `${t} + ${r} :`),
       el("input", { type: "text", class: "grow", value: M[`${t}+${r}`] || "", placeholder: "없음", oninput: e => { M[`${t}+${r}`] = e.target.value; store(); } })))),
       el("div", { class: "row" }, el("button", { type: "button", onclick: () => { J.attDoc = { ...ATT_DOC0 }; store(); drawDocs(); } }, "처음대로"))); };
   drawDocs();

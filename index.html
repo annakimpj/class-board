@@ -3985,7 +3985,22 @@ function ntPublish() {
     if (j !== ntPubLast) fb.setDoc(fb.doc(fb.db, "classes", reward.cls.code, "notice", "board"), { ...v, at: Date.now() }).then(() => ntPubLast = j, () => {});
   }, 1500);
 }
-ntEl.addEventListener("input", ntPublish);
+ntEl.addEventListener("input", () => { ntPublish(); clearTimeout(ntAutoT); ntAutoT = setTimeout(ntAuto, 800); });
+// 저장을 안 눌러도 칠판 글을 그 날짜로 저장 (비우면 그날 것을 지움). 학생 화면 '지난 알림장'(notice/log)도 같이
+let ntAutoT = 0, ntLogLast = "";
+function ntAuto() {
+  clearTimeout(ntAutoT);
+  if (ntLines([...ntEl.querySelectorAll("li")]).length) ntHist[ntDay] = ntEl.innerHTML; else delete ntHist[ntDay];
+  jset("notice-hist", ntHist); ntLogPublish();
+}
+function ntLogPublish() { // 오늘까지 최근 30일 것만, 줄 글로
+  if (!kidOn()) return;
+  const td = iso(new Date()), box = document.createElement("div"), days = {};
+  for (const d of Object.keys(ntHist).filter(d => d <= td).sort().slice(-30)) { box.innerHTML = ntHist[d]; const lis = [...box.querySelectorAll("li")], L = ntLines(lis).map((t, i) => i === 0 && lis[0] === box.firstElementChild ? "1. " + t : t); if (L.length) days[d] = L; }
+  const j = reward.cls.code + JSON.stringify(days);
+  if (j !== ntLogLast) fb.setDoc(fb.doc(fb.db, "classes", reward.cls.code, "notice", "log"), { days, at: Date.now() }).then(() => ntLogLast = j, () => {});
+}
+addEventListener("pagehide", () => { if (ntAutoT) ntAuto(); });
 function ntDraw() {
   ntPublish();
   $s("nt-date").textContent = ntLabel(ntDay) + " 알림장";
@@ -4012,7 +4027,7 @@ ntEl.addEventListener("copy", e => {
   e.preventDefault(); ntCopyTo(e.clipboardData, lis, lis.length === all.length);
 });
 function ntSave() {
-  ntHist[ntDay] = ntEl.innerHTML; jset("notice-hist", ntHist); ntDraw();
+  ntAuto(); ntDraw();
   const b = $s("nt-save"); b.textContent = "저장했어요"; setTimeout(() => b.textContent = "💾 저장", 1500);
 }
 // 지난 알림장 목록: 날짜를 누르면 불러오고, ✕로 저장한 것을 지움 (칠판 글은 그대로). 바깥을 누르면 닫힘
@@ -4035,16 +4050,17 @@ function ntList(redraw) {
 async function ntDel(d) { // 칠판에 그날 알림장이 떠 있으면 칠판 글도 지움. 다른 날 것을 지우면 칠판은 그대로
   const onBoard = d === ntDay;
   if (!ntHist[d] || !await seConfirm(card("notice"), `저장한 ${ntLabel(d)} 알림장을 지울까요?\n${onBoard ? "칠판에 떠 있는 글도 함께 지워져요." : "칠판에 쓴 글은 그대로 있어요."}`, "지우기")) return;
-  delete ntHist[d]; jset("notice-hist", ntHist);
+  delete ntHist[d]; jset("notice-hist", ntHist); ntLogPublish();
   if (onBoard) { ntDay = iso(new Date()); localStorage.removeItem("notice-day"); ntEl.innerHTML = ""; ntEl.dispatchEvent(new Event("input")); }
   ntDraw();
 }
 async function ntPick(v) {
   if (!v || v === ntDay) return;
-  const dirty = ntLines([...ntEl.querySelectorAll("li")]).length && ntEl.innerHTML !== ntHist[ntDay];
-  if (dirty && !await seConfirm(card("notice"), "지금 알림장은 저장하지 않았어요. 그래도 바꿀까요?", "바꾸기")) return;
-  ntDay = v === "new" ? iso(new Date()) : v;
-  ntEl.innerHTML = v === "new" ? "" : ntHist[v];
+  if (ntAutoT) ntAuto(); // 쓰던 것은 이미 그 날짜로 저장됨
+  const td = iso(new Date());
+  if (v === "new" && ntDay === td && ntLines([...ntEl.querySelectorAll("li")]).length && !await seConfirm(card("notice"), "오늘 알림장을 지우고 새로 쓸까요?", "새로 쓰기")) return;
+  const was = ntDay; ntDay = v === "new" ? td : v;
+  ntEl.innerHTML = v === "new" ? (was === td ? "" : ntHist[td] || "") : ntHist[v]; // +: 오늘 것이 저장돼 있으면 그걸 불러옴 (칠판이 오늘이면 비움)
   if (ntDay === iso(new Date())) localStorage.removeItem("notice-day"); else localStorage.setItem("notice-day", ntDay);
   ntEl.dispatchEvent(new Event("input")); ntDraw();
 }
@@ -4053,8 +4069,9 @@ function ntDatePick() { const i = $s("nt-dpick"); i.value = ntDay; try { i.showP
 document.getElementById("nt-dpick").onchange = async e => { // ($s는 아래에서 만들어져서 여기선 못 씀)
   const v = e.target.value;
   if (!v || v === ntDay) return;
-  if (ntHist[v] && ntHist[v] !== ntEl.innerHTML && !await seConfirm(card("notice"), `${ntLabel(v)}에 저장한 알림장이 있어요. 저장하면 지금 글로 바뀌어요. 날짜를 바꿀까요?`, "바꾸기")) return;
-  ntDay = v;
+  if (ntHist[v] && ntHist[v] !== ntEl.innerHTML && !await seConfirm(card("notice"), `${ntLabel(v)}에 저장한 알림장이 있어요. 지금 글로 바뀌어요. 날짜를 바꿀까요?`, "바꾸기")) return;
+  if (ntHist[ntDay] === ntEl.innerHTML) delete ntHist[ntDay]; // 날짜만 옮김: 이 글은 바꾼 날짜 것
+  ntDay = v; ntAuto();
   if (ntDay === iso(new Date())) localStorage.removeItem("notice-day"); else localStorage.setItem("notice-day", ntDay);
   ntDraw();
 };
