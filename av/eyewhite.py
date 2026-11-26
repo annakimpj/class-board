@@ -1,6 +1,6 @@
 # 눈 흰자: 눈마다(왼·오) 가장 큰 덩어리(속눈썹+눈동자) 아래, 양 눈꼬리에서 둥글게 내려가 눈동자 밑까지를 흰색으로 (눈썹은 따로 떨어져 있어서 빠짐)
 import sys, numpy as np; from PIL import Image; from scipy import ndimage
-SRC = sys.argv[1] if len(sys.argv) > 1 else './'; OUT = sys.argv[2] if len(sys.argv) > 2 else './'  # SRC: 흰자 없는 원본 눈 그림 폴더. eye-8(옆 보는 눈)은 원본 왼쪽 눈이 찌그러져서 오른쪽 눈(속눈썹+눈동자)을 왼쪽으로 옮겨 붙인 것을 씀
+SRC = sys.argv[1] if len(sys.argv) > 1 else './'; OUT = sys.argv[2] if len(sys.argv) > 2 else './'  # SRC: 흰자 없는 원본 눈 그림 폴더.
 for k in [k for k in range(16) if k not in (3, 15)]:  # 감은 눈(^^)·점 눈은 흰자 없음
   im = np.array(Image.open(f'{SRC}eye-{k}.png').convert('RGBA')).astype(float); a = im[..., 3] > 90
   white = np.zeros(a.shape, bool)
@@ -20,7 +20,7 @@ for k in [k for k in range(16) if k not in (3, 15)]:  # 감은 눈(^^)·점 눈�
       yc = int(np.median(bot)); c = cols[np.argmin(np.abs(bot - yc) + (0 if lo == x0 else -1) * cols * 1e-3)]  # 한 줄만 길게 늘어진 속눈썹은 무시 (가운데 값)
       cor.append((lo + (cols[bot == yc].min() if lo == x0 else cols[bot == yc].max()) if (bot == yc).any() else lo + c, yc))
     (xl, yl), (xr, yr) = cor; t = np.clip((X - xl) / max(1, xr - xl), 0, 1)
-    low = yl + (yr - yl) * t + (y1 + .5 - (yl + yr) / 2) * np.sin(np.pi * t)  # 아랫선: 눈꼬리에서 둥글게 내려가 눈동자 밑까지
+    low = yl + (yr - yl) * t + (y1 + .5 - (yl + yr) / 2) * np.sin(np.pi * t) ** (.4 if k == 8 else 1)  # 아랫선 (옆 보는 눈은 눈꼬리가 높아서 더 통통하게): 눈꼬리에서 둥글게 내려가 눈동자 밑까지
     white |= ndimage.binary_erosion((Y > top[None, :]) & (Y <= low) & (X >= xl) & (X <= xr), iterations=1)
   al = im[..., 3:] / 255; w = white[..., None]
   rgb = np.where(w, im[..., :3] * al + 255 * (1 - al), im[..., :3]); A = np.where(white, 255, im[..., 3])
