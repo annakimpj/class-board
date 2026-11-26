@@ -193,6 +193,7 @@
   .att .nm { position: sticky; left: var(--nw, 36px); text-align: left; padding: 0 10px; white-space: nowrap; background: #fff; z-index: 1; }
   .att th.n, .att th.nm { background: #faf8f5; z-index: 3; }
   .att td.c { cursor: pointer; font-weight: 700; } .att td.c:hover { background: var(--soft); } .att td.c.on { background: #fbf7f1; } .att .today { background: #fff8e1; }
+  .att tr:hover > td, .att .hc { box-shadow: inset 0 0 0 999px rgba(59, 130, 246, .08); } .att tr:hover > td.hc { box-shadow: inset 0 0 0 999px rgba(59, 130, 246, .2); } /* 마우스 댄 학생 줄·날짜 열 */
   .att .sum { background: #faf8f5; } .att td.sum { font-weight: 600; color: #5e554e; }
   .att td.c { position: relative; } .att i.doc, .att-legend i.doc, .att-key i.doc { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #fd7e14; vertical-align: middle; } .att i.doc.ok, .att-legend i.doc.ok, .att-key i.doc.ok { background: #2f9e44; }
   .att td.c i.doc { position: absolute; top: 3px; right: 3px; }
@@ -217,7 +218,8 @@
   .brow { display: flex; align-items: flex-start; gap: 10px; padding: 9px 4px; border-bottom: 1px solid #f1ece5; } .brow > .i { margin-top: 3px; color: var(--accent); }
   .bmain { flex: 1; min-width: 0; } .btitle { font-weight: 600; color: var(--ink); text-decoration: none; } a.btitle:hover { text-decoration: underline; color: var(--accent); }
   .bmain small { display: block; color: var(--muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .btext { white-space: pre-wrap; font-size: 14px; color: #5e554e; margin-top: 2px; max-height: 6.4em; overflow: hidden; }
+  .btext { white-space: nowrap; text-overflow: ellipsis; font-size: 14px; color: #5e554e; margin-top: 2px; overflow: hidden; } /* 메모는 한 줄 미리보기 */
+  .brow.memo { cursor: pointer; } .bview { white-space: pre-wrap; word-break: break-word; font-size: 15px; line-height: 1.6; max-height: 60vh; overflow: auto; cursor: text; }
   .btag { font-size: 12px; padding: 1px 8px; border-radius: 999px; background: #eee7dd; color: #6d6259; white-space: nowrap; margin-top: 2px; }
   .day .mk.bd { color: #e64980; width: 18px; height: 18px; } .bdline { display: flex; align-items: center; gap: 4px; color: #e64980 !important; } .bdline .i { width: 18px; height: 18px; }
   .print-title { display: none; }
@@ -1164,6 +1166,11 @@ function attFit() { // 창 크기에 맞춰 줄 높이·글씨 크기
   tb.style.setProperty("--nw", Math.round(f * 2.2) + "px"); tb.style.setProperty("--mw", Math.round(f * 5.5 + 20) + "px"); tb.style.setProperty("--sw", Math.round(f * 2.6) + "px");
 }
 new ResizeObserver(() => { if (tab === "att") attFit(); }).observe($("att-wrap"));
+{ // 마우스를 댄 칸의 줄(학생)과 열(날짜)을 옅게 칠함
+  let col = -1; const mark = i => { if (i === col) return; $("att").querySelectorAll(".hc").forEach(c => c.classList.remove("hc")); col = i; if (i > 1) $("att").querySelectorAll("tr").forEach(tr => tr.children[i]?.classList.add("hc")); };
+  $("att").addEventListener("mouseover", e => { const c = e.target.closest("td, th"); mark(c && c.closest("#att") ? c.cellIndex : -1); });
+  $("att").addEventListener("mouseleave", () => mark(-1));
+}
 function attSpan(a, b) { // a~b 사이 학교 가는 날 (주말·공휴일·재량휴업일 빼고)
   const out = []; for (let d = a; d <= b; d = addDays(d, 1)) { const wd = new Date(d + "T12:00").getDay(); if (wd > 0 && wd < 6 && !holiName(d) && !offOf(d)) out.push(d); if (out.length > 120) break; }
   return out;
@@ -1272,8 +1279,15 @@ function boxRow(x) {
     ico("folder"), el("div", { class: "bmain" }, el("span", { class: "btitle" }, x.title), el("small", {}, String(boxCount(x.id)))), !boxTag && x.tag ? el("span", { class: "btag" }, x.tag) : null, del);
   const copy = el("button", { class: "x", title: x.type === "link" ? "주소 복사" : "메모 복사", onclick: async () => { try { await navigator.clipboard.writeText(x.type === "link" ? x.url : x.text); copy.textContent = "✓"; setTimeout(() => copy.textContent = "⧉", 1200); } catch (e) {} } }, "⧉");
   const title = x.type === "link" ? el("a", { href: x.url, target: "_blank", rel: "noopener", class: "btitle", draggable: "false", title: "새 창으로 열기", onclick: e => { if (boxDragged) e.preventDefault(); } }, x.title || x.url) : el("b", { class: "btitle" }, x.title || (x.text || "").split("\n")[0]);
-  return el("div", { class: "brow", "data-id": x.id, title: "끌어서 순서 바꾸기 · 폴더나 위의 분류에 놓으면 옮겨져요 · 더블클릭: 고치기 · 오른쪽 버튼: 메뉴", oncontextmenu: ev => boxCtx(ev, x) }, ico(x.type === "link" ? "link" : "memo"), el("div", { class: "bmain", ondblclick: ev => { if (!ev.target.closest("a")) boxForm(x.type, x, ev.currentTarget); } }, title, x.type === "link" ? el("small", {}, x.url) : x.text && x.title ? el("div", { class: "btext", style: x.fs ? `font-size:${x.fs}px` : "" }, x.text) : null),
+  const memo = x.type !== "link";
+  return el("div", { class: "brow" + (memo ? " memo" : ""), "data-id": x.id, title: memo ? "누르면 보기 (보기 창에서 더블클릭: 고치기) · 끌어서 순서 바꾸기 · 오른쪽 버튼: 메뉴" : "끌어서 순서 바꾸기 · 폴더나 위의 분류에 놓으면 옮겨져요 · 더블클릭: 고치기 · 오른쪽 버튼: 메뉴", oncontextmenu: ev => boxCtx(ev, x),
+    onclick: ev => { if (memo && !boxDragged && !ev.target.closest("button")) boxView(x, ev.currentTarget); } }, ico(memo ? "memo" : "link"), el("div", { class: "bmain", ondblclick: ev => { if (!memo && !ev.target.closest("a")) boxForm(x.type, x, ev.currentTarget); } }, title, x.type === "link" ? el("small", {}, x.url) : x.text && x.title ? el("div", { class: "btext", style: x.fs ? `font-size:${x.fs}px` : "" }, x.text) : null),
     !boxTag && x.tag ? el("span", { class: "btag" }, x.tag) : null, copy, del);
+}
+function boxView(x, anchor) { // 메모 보기 창: 내용을 더블클릭하면 고치기
+  const body = el("div", { class: "bview", title: "더블클릭: 고치기", style: x.fs ? `font-size:${x.fs}px` : "", ondblclick: () => { close(); boxForm("memo", x, anchor); } }, x.text || "");
+  const close = pop(anchor, x.title || "메모", "memo", [body], () => true, { noSave: true });
+  const f = body.closest(".pop"); if (f) { f.style.width = "min(560px, calc(100vw - 16px))"; const r = f.getBoundingClientRect(); if (r.right > innerWidth - 8) f.style.left = Math.max(8, innerWidth - 8 - r.width) + "px"; } // 보기 창은 조금 넓게
 }
 async function boxDel(x, near) { // 폴더를 지우면 안의 것은 한 칸 위로
   const n = x.type === "folder" ? boxCount(x.id) : 0;
