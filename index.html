@@ -261,13 +261,6 @@
   .tool-card .modes button.on { background: var(--ink); border-color: var(--ink); color: #fff; }
   .pick-edit { flex: 1; min-height: 0; display: flex; flex-direction: column; }
   .pick-edit > [data-edit] { flex: 1; min-height: 0; }
-  .pick-edit .check-acts { flex-basis: 100%; display: flex; gap: 4px; }
-  .tool-card .check-acts button { font-size: 12px; padding: 2px 8px; border-radius: 6px; }
-  .pick-edit .checks { overflow-y: auto; font: 14px "Pretendard Variable", "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; display: flex; flex-wrap: wrap; align-content: flex-start; gap: 4px; }
-  .pick-edit .checks label { border: 1.5px solid var(--line); border-radius: 7px; padding: 1px 8px; background: #fff; cursor: pointer; }
-  .pick-edit .checks label:has(:checked) { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .pick-edit .checks input { position: absolute; opacity: 0; width: 0; height: 0; }
-  .pick-edit .checks label:has(:focus-visible) { outline: 2px solid var(--accent); outline-offset: 1px; }
   /* 방법마다 정할 것: 알약 버튼과 다르게 밑줄 글자 버튼·숫자 칸 */
   /* 뽑기 아래 줄: 가운데 뽑기·처음부터, 오른쪽 끝에 방법마다 정할 것(작은 네모 버튼) */
   .pick-bottom { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 6px; }
@@ -351,6 +344,9 @@
   .pick-card b { display: block; font-weight: normal; font-size: 1.15em; text-align: center; }
   .pick-card { padding: .3em .6em; border-radius: .4em; background: #fff; border: 2px solid var(--line); color: var(--ink); white-space: nowrap;
                transition: transform .08s, background .08s; }
+  #pick-name.choose .pick-card { cursor: pointer; } .pick-card.off { opacity: .35; border-style: dashed; } .pick-card.sel:not(.done):not(.win) { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+  .pick-filter { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; } .tool-card .pick-filter button { font-size: 12px; padding: 2px 9px; border-radius: 999px; } .tool-card .pick-filter button.on { background: var(--accent); border-color: var(--accent); color: #fff; } .tool-card .pick-filter .clear { color: var(--muted); }
+  #pick-direct { font-size: clamp(20px, 7cqh, 34px); line-height: 1.45; } /* 직접 쓰기: 한 줄에 한 사람, 멀리서도 보이게 */
   .pick-card.done { background: #eceff3; border-color: #eceff3; color: #b4bac4; text-decoration: line-through; } /* 이미 뽑힘 */
   .pick-card.hot { background: #ffd43b; border-color: #f59f00; color: #2b1d14; transform: scale(1.15); box-shadow: 0 0 14px #ffd43b; }
   .pick-card.win { background: var(--accent); border-color: var(--accent); color: #fff; transform: scale(1.25); z-index: 1; }
@@ -368,6 +364,8 @@
   .gear:hover { background: var(--line); color: var(--ink); }
   .gear.jr-btn { left: min(calc(env(titlebar-area-x, 0px) + env(titlebar-area-width, 100vw) - 84px), calc(100vw - 84px)); } /* 교사 일지: 설정 왼쪽, 눈에 띄지 않게 */
   .gear:focus-visible { outline: 2px solid var(--accent); }
+  .inst { position: fixed; top: env(titlebar-area-y, 4px); height: env(titlebar-area-height, 34px); left: min(calc(env(titlebar-area-x, 0px) + env(titlebar-area-width, 100vw) - 84px), calc(100vw - 84px)); transform: translateX(calc(-100% - 4px)); display: flex; gap: 4px; align-items: center; z-index: 50; app-region: no-drag; -webkit-app-region: no-drag; }
+  .inst button { font: 12px "Pretendard Variable", "Wanted Sans", "Malgun Gothic", sans-serif; padding: 4px 10px; border-radius: 999px; border: 0; background: #3b82f6; color: #fff; cursor: pointer; white-space: nowrap; } .inst button:hover { background: #2563eb; }
 
   /* ───── 자리배치 ───── 학급 보드와 같은 색·글꼴·버튼 모양을 그대로 씀 */
   .seat-bar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
@@ -793,18 +791,49 @@
   .kid-tb { width: 100%; border-collapse: collapse; font-size: 18px; } .kid-tb th { font-size: 13px; font-weight: normal; color: var(--muted); text-align: left; }
   .kid-tb td, .kid-tb th { border-bottom: 1px solid var(--line); padding: 4px 6px; } .kid-tb .none { color: var(--muted); font-size: 14px; } .kid-status { margin: 0 0 8px; } .kid-code button { font-size: 13px; padding: 2px 10px; border-radius: 8px; }
   .kid-tb .pin { font-weight: 700; font-size: 22px; letter-spacing: .1em; font-variant-numeric: tabular-nums; }
+  .drop-on { outline: 3px dashed #3b82f6 !important; outline-offset: -3px; }
+  .kid-chip { font-size: 13px; padding: 2px 10px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer; margin-left: auto; } .kid-chip b { letter-spacing: .08em; }
+  .hw-head .kid-chip { margin-left: 0; } .rw-tabs .kid-chip { align-self: center; } .hw-tt { margin: 0 0 4px; font-size: 17px; } .hw-new .hw-title { font: inherit; font-size: 16px; font-weight: 600; padding: 6px 8px; border: 1.5px solid var(--line); border-radius: 8px; }
+  .kid-guide { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; margin: 6px 0 10px; } .kid-guide .kid-qr { width: 160px; height: 160px; image-rendering: pixelated; border-radius: 8px; border: 1px solid var(--line); }
+  .kid-guide .kg-c { margin: 0; font-size: 14px; color: var(--muted); } .kid-guide .kg-c b { display: block; font-size: 34px; letter-spacing: .15em; color: var(--ink); } .kid-guide .kg-u { margin: 2px 0 6px; font-size: 12px; color: var(--muted); word-break: break-all; }
+  .kid-guide ol { margin: 0; padding-left: 1.3em; font-size: 15px; line-height: 1.7; text-align: left; } .kid-guide > div { text-align: left; }
+  .kidin-host { flex: 1; min-height: 0; display: grid; place-items: center; overflow: hidden; }
+  .kid-guide.kg-big { gap: 5cqw; flex-wrap: nowrap; margin: 0; } .kid-guide.kg-big .kid-qr { width: min(62cqh, 40cqw); height: min(62cqh, 40cqw); border: 0; }
+  .kid-guide.kg-big .kg-c { font-size: min(4cqh, 2.6cqw); } .kid-guide.kg-big .kg-c b { font-size: min(15cqh, 9cqw); } .kid-guide.kg-big .kg-u { font-size: min(5cqh, 3.2cqw); color: var(--ink); font-weight: 600; } .kid-guide.kg-big ol { font-size: min(4.6cqh, 2.9cqw); line-height: 1.7; }
+  .hw-tcs { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; } .hw-tc { position: relative; }
+  .hw-tc-b { width: 100%; height: 100%; min-height: 84px; display: flex; flex-direction: column; gap: 2px; text-align: left; align-items: flex-start; padding: 10px 28px 10px 12px !important; border-radius: 12px !important; background: #fff !important; }
+  .hw-tc-b b { font-size: 16px; } .hw-tc-b small { color: var(--muted); font-size: 12px; } .hw-tc-b span { font-size: 13px; color: var(--muted); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .hw-tc .x { position: absolute; top: 4px; right: 4px; border: 0 !important; background: none !important; color: var(--muted); padding: 2px 6px !important; } .hw-tc .x:hover { color: #e03131; }
+  .hw-back { margin-bottom: 8px; } .hw-fl { display: inline-block; margin: 4px 0; word-break: break-all; }
+  .hw-big { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; margin: 6px 0; }
+  .hw-bc { position: relative; aspect-ratio: 4 / 3; padding: 0 !important; border-radius: 12px !important; overflow: hidden; background: #f1f3f5 !important; border: 2px solid #dee2e6 !important; cursor: default; display: block; }
+  .hw-bc.ok { background: #fff !important; border-color: #51cf66 !important; cursor: zoom-in; } .hw-bc.seen { background: #fff9db !important; border-color: #fcc419 !important; }
+  .hw-bc img { width: 100%; height: 100%; object-fit: cover; display: block; } .hw-bc .tx { position: absolute; inset: 30px 10px 8px; text-align: left; font-size: 14px; line-height: 1.45; white-space: pre-wrap; overflow: hidden; color: var(--ink); }
+  .hw-bc .st { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: 13px; }
+  .hw-bc .who { position: absolute; top: 6px; left: 6px; background: rgba(255, 255, 255, .92); border-radius: 8px; padding: 2px 8px; font-size: 13px; color: var(--ink); box-shadow: 0 1px 3px rgba(0, 0, 0, .15); } .hw-bc .who b { margin-right: 4px; }
+  .hw-bc .nr { position: absolute; bottom: 6px; right: 6px; background: rgba(255, 255, 255, .92); border-radius: 8px; padding: 1px 6px; font-size: 12px; }
+  .hw-files { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0; align-items: flex-start; } .hw-fl { display: inline-flex; align-items: center; gap: 4px; }
+  .hw-att { display: flex; flex-wrap: wrap; gap: 6px; } .hw-att:not(:has(.hw-th)) { display: none; }
+  .hw-th { position: relative; width: 84px; height: 84px; border: 1.5px solid var(--line); border-radius: 8px; overflow: hidden; background: #fff; display: grid; place-items: center; }
+  .hw-th img { width: 100%; height: 100%; object-fit: cover; } .hw-th span { font-size: 11px; padding: 4px; word-break: break-all; text-align: center; display: grid; justify-items: center; gap: 2px; }
+  .hw-th .x { position: absolute; top: 2px; right: 2px; width: 22px; height: 22px; padding: 0 !important; border-radius: 50% !important; background: rgba(0, 0, 0, .55) !important; color: #fff !important; border: 0 !important; font-size: 12px !important; line-height: 22px; }
+  .hw-tc.topic .hw-tc-b { background: #fff5f0 !important; }
+  .hw-view .vb { max-width: 100%; max-height: 100%; overflow: auto; display: grid; gap: 12px; justify-items: center; } .hw-view .vb img { max-width: 100%; max-height: 70vh; object-fit: contain; border-radius: 6px; }
+  .hw-view .vb .txt { margin: 0; font-size: 22px; line-height: 1.6; white-space: pre-line; max-width: 900px; } .hw-view .vb a { color: #9cc5ff; font-size: 18px; }
+  .hw-view .rep { max-width: 900px; width: calc(100% - 32px); margin: 0 auto 10px; background: rgba(0, 0, 0, .45); border-radius: 14px; padding: 8px; } .hw-view .thr { max-height: 24vh; overflow: auto; display: grid; align-content: start; gap: 4px; margin-bottom: 6px; } .hw-view .thr:empty { display: none; }
+  .hw-view .thr p { margin: 0; padding: 6px 10px; border-radius: 10px; max-width: 80%; font-size: 15px; white-space: pre-line; } .hw-view .thr small { display: block; font-size: 11px; opacity: .7; }
+  .hw-view .thr .kid { background: rgba(255, 255, 255, .14); justify-self: start; } .hw-view .thr .tch { background: #1971c2; justify-self: end; }
+  .hw-view .rep textarea { flex: 1; font: inherit; font-size: 15px; border-radius: 10px; border: 0; padding: 6px 10px; resize: none; }
+  .hw-legend { font-size: 12px; color: var(--muted); margin: 0 0 6px; } .hw-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: #f1f3f5; border: 1px solid #dee2e6; margin: 0 3px 0 8px; vertical-align: -1px; }
+  .hw-legend i.ok { background: #d3f9d8; border-color: #51cf66; } .hw-legend i.seen { background: #fff3bf; border-color: #fcc419; }
+  .hw-nt { margin-bottom: 8px; } .hw-nt input { flex: 1; min-width: 160px; font: inherit; font-size: 15px; padding: 5px 8px; border: 1.5px solid var(--line); border-radius: 8px; }
   .hw-new { display: grid; gap: 6px; margin-bottom: 12px; } .hw-new[hidden] { display: none; } .hw-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; } .hw-head > b { flex: 1; } .hw-send { justify-content: flex-end; } .hw-send .rw-h { margin-right: auto; } .hw-it p a { word-break: break-all; } .hw-new textarea, .hw-new input:not([type=file]) { font: inherit; font-size: 15px; padding: 6px 8px; border: 1.5px solid var(--line); border-radius: 8px; width: 100%; box-sizing: border-box; }
   .hw-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; } .hw-img { max-width: 160px; max-height: 120px; border-radius: 6px; cursor: zoom-in; display: block; } .hw-img.big { max-width: 100%; max-height: none; cursor: zoom-out; }
-  .hw-gal { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin-top: 6px; }
-  .hw-card { border: 1.5px solid var(--line); border-radius: 10px; background: #fff; overflow: hidden; cursor: zoom-in; display: flex; flex-direction: column; font: inherit; color: inherit; padding: 0; text-align: left; }
-  .hw-card .pic { aspect-ratio: 4 / 3; background: #f1f3f5; display: grid; place-items: center; overflow: hidden; } .hw-card .pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .hw-card .pic span { font-size: 13px; color: var(--muted); padding: 6px; word-break: break-all; text-align: center; } .hw-card b { font-size: 14px; padding: 4px 8px; } .hw-card.none { opacity: .45; cursor: default; }
   .hw-view { position: fixed; inset: 0; z-index: 9999; background: rgba(15, 12, 10, .92); display: grid; grid-template-rows: auto 1fr auto; color: #fff; }
   .hw-view .bar { display: flex; gap: 8px; align-items: center; padding: 10px 14px; font-size: 18px; } .hw-view .bar b { flex: 1; }
   .hw-view button { font: inherit; font-size: 16px; background: rgba(255, 255, 255, .15); color: #fff; border: 0; border-radius: 10px; padding: 6px 14px; cursor: pointer; }
   .hw-view .stage { display: grid; place-items: center; min-height: 0; padding: 0 56px; position: relative; } .hw-view .stage img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 6px; }
   .hw-view .stage a { color: #9cc5ff; font-size: 22px; word-break: break-all; } .hw-view .nav { position: absolute; top: 50%; transform: translateY(-50%); font-size: 30px; padding: 10px 14px; } .hw-view .nav.l { left: 8px; } .hw-view .nav.r { right: 8px; }
-  .hw-view .foot { text-align: center; padding: 8px; font-size: 14px; opacity: .8; }
   .hw-it { border: 1.5px solid var(--line); border-radius: 10px; padding: 8px 10px; margin-bottom: 8px; background: #fff; } .hw-it p { margin: 0 0 6px; white-space: pre-line; font-size: 16px; } .hw-it a { word-break: break-all; }
   .tool-card .hw-it button, .tool-card .hw-new button { font-size: 13px; padding: 2px 10px; border-radius: 8px; } .hw-it .kid-tb { margin-top: 6px; font-size: 15px; }
   .tool-card .kid-tb button, .tool-card .kid-acts button, .tool-card .kid-url button { font-size: 13px; padding: 2px 10px; border-radius: 8px; } .kid-acts { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
@@ -1263,9 +1292,9 @@
     <div class="modes" role="group" aria-label="뽑기 방법">
       <button data-mode="all" title="명단 전체에서 뽑기">전체</button><button data-mode="select" title="명단에서 고른 사람만">선택</button><button data-mode="group" title="모둠 뽑기">모둠</button><button data-mode="order" title="명단 전체가 핀볼처럼 굴러떨어져 빠진 순서대로 순서 정하기">순서</button><button data-mode="direct" title="그때그때 직접 입력한 것 중에서">직접입력</button>
     </div>
+    <div class="pick-filter" id="pick-filter" hidden></div>
     <div class="big" id="pick-name" aria-live="polite">?</div>
     <div class="pick-edit" id="pick-edit" hidden>
-      <div data-edit="select" class="checks" id="pick-checks"></div>
       <textarea data-edit="direct" id="pick-direct" spellcheck="false" aria-label="직접입력"></textarea>
     </div>
     <p class="sub" id="pick-left"></p>
@@ -1314,6 +1343,10 @@
         <p class="th-goal"><span id="th-next"></span></p></div>
     </div>
     <div class="acts"><button class="main" onclick="thAdd(1)">+1°</button><button onclick="thAdd(5)">+5°</button><button onclick="thAdd(-1)">−1°</button><button onclick="thReset()" title="0°로 되돌리기">↻</button><button class="th-pen" onclick="thEdit()" title="보상 정하기" aria-label="보상 정하기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1-5L15.5 4.5a2.1 2.1 0 0 1 3 0l1 1a2.1 2.1 0 0 1 0 3L9 19zM13.5 6.5l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+  </section>
+  <section class="card tool-card" data-card="kidin" id="kidin-card">
+    <p class="label">🚪 우리반 입장</p>
+    <div class="kidin-host" id="kidin-host"></div>
   </section>
   <section class="card tool-card" data-card="hw" id="hw-card">
     <p class="label">📮 과제함</p>
@@ -1445,6 +1478,7 @@
   <div class="lk-list" id="lk-list"></div><div class="lk-sub" id="lk-sub" hidden></div></div>
 <div id="drawer" class="drawer" popover><div class="drawer-row"><div class="drawer-items" id="drawer-items"></div><button class="drawer-plus" popovertarget="drawer-add" title="서랍에 넣을 버튼 고르기" aria-label="서랍에 넣을 버튼 고르기">＋</button></div>
   <div id="drawer-add" class="drawer-add" popover><p class="drawer-h">서랍에 넣을 버튼을 골라요 (여러 개 골라도 돼요)</p><div class="drawer-pick" id="drawer-pick"></div><div class="drawer-done"><button class="main" popovertarget="drawer-add" popovertargetaction="hide">완료</button></div></div></div>
+<div class="inst" id="inst"><button id="inst-board" hidden title="우리반 보드를 앱으로 설치 (바탕화면·작업 표시줄에서 바로 켜요)">⬇ 보드 앱 설치</button><button id="inst-jr" hidden title="교사 일지를 따로 앱으로 설치 (새 탭에서 한 번 더 눌러요)">⬇ 일지 앱 설치</button></div>
 <button class="gear jr-btn" onclick="journalOpen()" title="일지" aria-label="일지"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5zM5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3M9 7h6"/></svg></button>
 <button class="gear" onclick="togglePanel(true)" title="설정" aria-label="설정">
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true">
@@ -1505,6 +1539,7 @@
     <button data-tab="time" onclick="openTab('time')">시간표</button>
     <button data-tab="roster" onclick="openTab('roster')">명단</button>
     <button data-tab="history" onclick="openTab('history')">주제 찾기·기록</button>
+    <button data-tab="kids" onclick="openTab('kids')">학생 입장</button>
     <button data-tab="share" onclick="openTab('share')">링크 공유</button>
     <button data-tab="help" onclick="openTab('help')">사용 방법</button>
     <button data-tab="account" onclick="openTab('account')">로그인</button>
@@ -1512,6 +1547,7 @@
     <button data-tab="contact" onclick="openTab('contact')">개발자에게 연락</button>
     <button class="close" onclick="togglePanel(false)" aria-label="닫기" title="닫기 (Esc)">✕</button>
   </nav>
+  <section id="tab-kids" hidden></section>
   <section id="tab-time">
     <h3>1. 연간시간표 가져오기</h3>
     <p class="sum">연간시간표, 주간 시간표, 주간학습안내 모두 돼요. 한글(.hwp·.hwpx), 워드(.docx), PDF 파일을 고르기만 하면 돼요. 다시 넣으면 그 주만 새로 바뀌어요. 날짜가 있는 주간 시간표·주간학습안내를 넣으면 연간시간표의 그 주가 이걸로 바뀌어요.</p>
@@ -1938,6 +1974,7 @@ function openTab(name) {
   if (name === "history") renderHistory();
   if (name === "help") hpDraw(); else $s("hp-body")?.replaceChildren(); // 화면 조각(복사본)은 볼 때만 둠
   if (name === "time") ttEditor();
+  if (name === "kids") kidTab();
   if (name === "account") fbLoad().catch(() => {}); // 로그인 버튼을 누르기 전에 미리 불러 둠 (누른 뒤 불러오면 팝업이 막힐 수 있음)
 }
 function togglePanel(open) { panel.hidden = !open; if (open) openTab("time"); }
@@ -2061,7 +2098,7 @@ const CARDS = [["topic", "✏︎ 오늘의 주제", "board", "2", [340, 200]], [
   ["photo", "🖼︎ 사진", "popup", "1", [200, 170]], ["timer", "⏱︎ 타이머", "popup", "1", [240, 260]], ["clock", "🕰︎ 시계", "popup", "1", [200, 200]], ["picker", "🎲 뽑기", "popup", "1", [300, 260]],
   ["whiteboard", "🖍︎ 화이트보드", "popup", "4", [420, 320]], ["dust", "😷 미세먼지·날씨", "board", "1", [190, 190]], ["noise", "🔉 소음 측정", "popup", "1", [240, 270]],
   ["thermo", "🌡︎ 학급 온도계", "popup", "1", [240, 260]], ["qr", "🔳 QR 만들기", "popup", "1", [240, 280]],
-  ["notice", "📋 알림장", "popup", "2", [340, 320]], ["hw", "📮 과제함", "popup", "4", [420, 380]],
+  ["notice", "📋 알림장", "popup", "2", [340, 320]], ["hw", "📮 과제함", "popup", "4", [420, 380]], ["kidin", "🚪 우리반 입장", "popup", "4", [420, 280]],
   ["scores", "📊 성적 알리미", "popup", "2", [320, 280]], ["roles", "🧹 1인 1역", "popup", "2", [360, 360]], ["reward", "🏅 우리반 점수", "popup", "4", [470, 440]],
   ["check", "✅ 체크표", "popup", "2", [340, 300]], ["bracket", "🏆 토너먼트", "popup", "4", [420, 320]], ["dict", "🗣︎ 받아쓰기", "popup", "4", [420, 340]],
   ["youtube", "📺 유튜브", "popup", "4", [420, 320]], ["doccam", "📷︎ 실물화상기", "popup", "4", [380, 300]]];
@@ -2431,8 +2468,8 @@ function showCard(k) { // 아래쪽 바에서 누르면 보드에 바로 맨 앞
 }
 applyLayout();
 // 이모지 → 같은 굵기 선 아이콘 (Tabler Icons, MIT). 화면에 새로 그려지는 글도 바로 바꿈
-const ICON_SVG = {"mailbox": "<path d=\"M10 21v-6.5a3.5 3.5 0 0 0 -7 0v6.5h18v-6a4 4 0 0 0 -4 -4h-10.5\"/><path d=\"M12 11v-8h4l2 2l-2 2h-4\"/><path d=\"M6 15h1\"/>", "camera": "<path d=\"M5 7h1a2 2 0 0 0 2 -2a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v9a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2\" /> <path d=\"M9 13a3 3 0 1 0 6 0a3 3 0 0 0 -6 0\" /> <circle cx=\"17\" cy=\"10\" r=\".6\" />", "backpack": "<path d=\"M5 18v-6a6 6 0 0 1 6 -6h2a6 6 0 0 1 6 6v6a3 3 0 0 1 -3 3h-8a3 3 0 0 1 -3 -3z\" /> <path d=\"M10 6v-1a2 2 0 1 1 4 0v1\" /> <path d=\"M9 21v-4a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v4\" /> <path d=\"M11 10h2\" />", "clock-digital": "<rect x=\"2.5\" y=\"6\" width=\"19\" height=\"12\" rx=\"2\" /> <path d=\"M7 9.5v5\" /> <path d=\"M12 10.5v.01\" /> <path d=\"M12 13.5v.01\" /> <path d=\"M15 9.5h3v5h-3z\" />", "brand-youtube": "<path d=\"M2 8a4 4 0 0 1 4 -4h12a4 4 0 0 1 4 4v8a4 4 0 0 1 -4 4h-12a4 4 0 0 1 -4 -4v-8z\" /> <path d=\"M10 9l5 3l-5 3z\" />", "history": "<path d=\"M12 8l0 4l2 2\" /> <path d=\"M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5\" />", "folders": "<path d=\"M9 4h3l2 2h5a2 2 0 0 1 2 2v7a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2\" /> <path d=\"M17 17v2a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2h2\" />", "file-text": "<path d=\"M14 3v4a1 1 0 0 0 1 1h4\" /> <path d=\"M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z\" /> <path d=\"M9 9l1 0\" /> <path d=\"M9 13l6 0\" /> <path d=\"M9 17l6 0\" />", "dice-5": "<path d=\"M3 3m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z\" /> <circle cx=\"8.5\" cy=\"8.5\" r=\".5\" fill=\"currentColor\" /> <circle cx=\"15.5\" cy=\"8.5\" r=\".5\" fill=\"currentColor\" /> <circle cx=\"15.5\" cy=\"15.5\" r=\".5\" fill=\"currentColor\" /> <circle cx=\"8.5\" cy=\"15.5\" r=\".5\" fill=\"currentColor\" /> <circle cx=\"12\" cy=\"12\" r=\".5\" fill=\"currentColor\" />", "clipboard-list": "<path d=\"M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2\" /> <path d=\"M9 3m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z\" /> <path d=\"M9 12l.01 0\" /> <path d=\"M13 12l2 0\" /> <path d=\"M9 16l.01 0\" /> <path d=\"M13 16l2 0\" />", "medal": "<path d=\"M12 4v3m-4 -3v6m8 -6v6\" /> <path d=\"M12 18.5l-3 1.5l.5 -3.5l-2 -2l3 -.5l1.5 -3l1.5 3l3 .5l-2 2l.5 3.5z\" />", "device-floppy": "<path d=\"M6 4h10l4 4v10a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2\" /> <path d=\"M12 14m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\" /> <path d=\"M14 4l0 4l-6 0l0 -4\" />", "pin": "<path d=\"M15 4.5l-4 4l-4 1.5l-1.5 1.5l7 7l1.5 -1.5l1.5 -4l4 -4\" /> <path d=\"M9 15l-4.5 4.5\" /> <path d=\"M14.5 4l5.5 5.5\" />", "alarm": "<path d=\"M12 13m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0\" /> <path d=\"M12 10l0 3l2 0\" /> <path d=\"M7 4l-2.75 2\" /> <path d=\"M17 4l2.75 2\" />", "printer": "<path d=\"M17 17h2a2 2 0 0 0 2 -2v-4a2 2 0 0 0 -2 -2h-14a2 2 0 0 0 -2 2v4a2 2 0 0 0 2 2h2\" /> <path d=\"M17 9v-4a2 2 0 0 0 -2 -2h-6a2 2 0 0 0 -2 2v4\" /> <path d=\"M7 13m0 2a2 2 0 0 1 2 -2h6a2 2 0 0 1 2 2v4a2 2 0 0 1 -2 2h-6a2 2 0 0 1 -2 -2z\" />", "square-check": "<path d=\"M3 3m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z\" /> <path d=\"M9 12l2 2l4 -4\" />", "cloud": "<path d=\"M6.657 18c-2.572 0 -4.657 -2.007 -4.657 -4.483c0 -2.475 2.085 -4.482 4.657 -4.482c.393 -1.762 1.794 -3.2 3.675 -3.773c1.88 -.572 3.956 -.193 5.444 1c1.488 1.19 2.162 3.007 1.77 4.769h.99c1.913 0 3.464 1.56 3.464 3.486c0 1.927 -1.551 3.487 -3.465 3.487h-11.878\" />", "trophy": "<path d=\"M8 21l8 0\" /> <path d=\"M12 17l0 4\" /> <path d=\"M7 4l10 0\" /> <path d=\"M17 4v8a5 5 0 0 1 -10 0v-8\" /> <path d=\"M5 9m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\" /> <path d=\"M19 9m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\" />", "world": "<path d=\"M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0\" /> <path d=\"M3.6 9h16.8\" /> <path d=\"M3.6 15h16.8\" /> <path d=\"M11.5 3a17 17 0 0 0 0 18\" /> <path d=\"M12.5 3a17 17 0 0 1 0 18\" />", "lock": "<path d=\"M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6z\" /> <path d=\"M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0\" /> <path d=\"M8 11v-4a4 4 0 1 1 8 0v4\" />", "gift": "<path d=\"M3 8m0 1a1 1 0 0 1 1 -1h16a1 1 0 0 1 1 1v2a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1 -1z\" /> <path d=\"M12 8l0 13\" /> <path d=\"M19 12v7a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-7\" /> <path d=\"M7.5 8a2.5 2.5 0 0 1 0 -5a4.8 8 0 0 1 4.5 5a4.8 8 0 0 1 4.5 -5a2.5 2.5 0 0 1 0 5\" />", "search": "<path d=\"M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0\" /> <path d=\"M21 21l-6 -6\" />", "note": "<path d=\"M13 20l7 -7\" /> <path d=\"M13 20v-6a1 1 0 0 1 1 -1h6v-7a2 2 0 0 0 -2 -2h-12a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7\" />", "armchair": "<path d=\"M5 11a2 2 0 0 1 2 2v2h10v-2a2 2 0 1 1 4 0v4a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-4a2 2 0 0 1 2 -2z\" /> <path d=\"M5 11v-5a3 3 0 0 1 3 -3h8a3 3 0 0 1 3 3v5\" /> <path d=\"M6 19v2\" /> <path d=\"M18 19v2\" />", "photo": "<path d=\"M15 8h.01\" /> <path d=\"M3 6a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v12a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3v-12z\" /> <path d=\"M3 16l5 -5c.928 -.893 2.072 -.893 3 0l5 5\" /> <path d=\"M14 14l1 -1c.928 -.893 2.072 -.893 3 0l3 3\" />", "hourglass": "<path d=\"M6.5 7h11\" /> <path d=\"M6.5 17h11\" /> <path d=\"M6 20v-2a6 6 0 1 1 12 0v2a1 1 0 0 1 -1 1h-10a1 1 0 0 1 -1 -1z\" /> <path d=\"M6 4v2a6 6 0 1 0 12 0v-2a1 1 0 0 0 -1 -1h-10a1 1 0 0 0 -1 1z\" />", "clock-hour-4": "<path d=\"M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0\" /> <path d=\"M12 12l3 2\" /> <path d=\"M12 7v5\" />", "map-pin": "<path d=\"M9 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0\" /> <path d=\"M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0z\" />", "volume": "<path d=\"M15 8a5 5 0 0 1 0 8\" /> <path d=\"M17.7 5a9 9 0 0 1 0 14\" /> <path d=\"M6 15h-2a1 1 0 0 1 -1 -1v-4a1 1 0 0 1 1 -1h2l3.5 -4.5a.8 .8 0 0 1 1.5 .5v14a.8 .8 0 0 1 -1.5 .5l-3.5 -4.5\" />", "temperature": "<path d=\"M10 13.5a4 4 0 1 0 4 0v-8.5a2 2 0 0 0 -4 0v8.5\" /> <path d=\"M10 9l4 0\" />", "qrcode": "<path d=\"M4 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z\" /> <path d=\"M7 17l0 .01\" /> <path d=\"M14 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z\" /> <path d=\"M7 7l0 .01\" /> <path d=\"M4 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z\" /> <path d=\"M17 7l0 .01\" /> <path d=\"M14 14l3 0\" /> <path d=\"M20 14l0 .01\" /> <path d=\"M14 14l0 3\" /> <path d=\"M14 20l3 0\" /> <path d=\"M17 17l3 0\" /> <path d=\"M20 17l0 3\" />", "chart-bar": "<path d=\"M3 13a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z\" /> <path d=\"M15 9a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z\" /> <path d=\"M9 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z\" /> <path d=\"M4 20h14\" />", "heart-handshake": "<path d=\"M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572\" /> <path d=\"M12 6l-3.293 3.293a1 1 0 0 0 0 1.414l.543 .543c.69 .69 1.81 .69 2.5 0l1 -1a3.182 3.182 0 0 1 4.5 0l2.25 2.25\" /> <path d=\"M12.5 15.5l2 2\" /> <path d=\"M15 13l2 2\" />", "users": "<path d=\"M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0\" /> <path d=\"M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2\" /> <path d=\"M16 3.13a4 4 0 0 1 0 7.75\" /> <path d=\"M21 21v-2a4 4 0 0 0 -3 -3.85\" />", "chalkboard": "<path d=\"M8 19h-3a2 2 0 0 1 -2 -2v-10a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v11a1 1 0 0 1 -1 1\" /> <path d=\"M11 16m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v1a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z\" />", "pencil": "<path d=\"M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4\" /> <path d=\"M13.5 6.5l4 4\" />", "clock": "<path d=\"M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0\" /> <path d=\"M12 7v5l3 3\" />", "folder": "<path d=\"M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2\" />", "users-group": "<path d=\"M10 13a2 2 0 1 0 4 0a2 2 0 0 0 -4 0\" /> <path d=\"M8 21v-1a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v1\" /> <path d=\"M15 5a2 2 0 1 0 4 0a2 2 0 0 0 -4 0\" /> <path d=\"M17 10h2a2 2 0 0 1 2 2v1\" /> <path d=\"M5 5a2 2 0 1 0 4 0a2 2 0 0 0 -4 0\" /> <path d=\"M3 13v-1a2 2 0 0 1 2 -2h2\" />", "school": "<path d=\"M22 9l-10 -4l-10 4l10 4l10 -4v6\" /> <path d=\"M6 10.6v5.4a6 3 0 0 0 12 0v-5.4\" />", "mist": "<path d=\"M5 5h3m4 0h9\" /> <path d=\"M3 10h11m4 0h1\" /> <path d=\"M5 15h5m4 0h7\" /> <path d=\"M3 20h9m4 0h3\" />", "bell": "<path d=\"M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6\" /> <path d=\"M9 17v1a3 3 0 0 0 6 0v-1\" />", "ear": "<path d=\"M6 10a7 7 0 1 1 13 3.6a10 10 0 0 1 -2 2a8 8 0 0 0 -2 3a4.5 4.5 0 0 1 -6.8 1.4\" /> <path d=\"M10 10a3 3 0 1 1 5 2.2\" />", "shirt": "<path d=\"M15 4l6 2v5h-3v8a1 1 0 0 1 -1 1h-10a1 1 0 0 1 -1 -1v-8h-3v-5l6 -2a3 3 0 0 0 6 0\" />", "settings": "<path d=\"M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z\" /> <path d=\"M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0\" />", "arrow-back-up": "<path d=\"M9 14l-4 -4l4 -4\" /> <path d=\"M5 10h11a4 4 0 1 1 0 8h-1\" />", "trash": "<path d=\"M4 7l16 0\" /> <path d=\"M10 11l0 6\" /> <path d=\"M14 11l0 6\" /> <path d=\"M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12\" /> <path d=\"M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3\" />", "books": "<path d=\"M5 4m0 1a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z\" /> <path d=\"M9 4m0 1a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z\" /> <path d=\"M5 8h4\" /> <path d=\"M9 16h4\" /> <path d=\"M13.803 4.56l2.184 -.53c.562 -.135 1.133 .19 1.282 .732l3.695 13.418a1.02 1.02 0 0 1 -.634 1.219l-.133 .041l-2.184 .53c-.562 .135 -1.133 -.19 -1.282 -.732l-3.695 -13.418a1.02 1.02 0 0 1 .634 -1.219l.133 -.041z\" /> <path d=\"M14 9l4 -1\" /> <path d=\"M16 16l3.923 -.98\" />", "cloud-rain": "<path d=\"M7 18a4.6 4.4 0 0 1 0 -9a5 4.5 0 0 1 11 2h1a3.5 3.5 0 0 1 0 7\" /> <path d=\"M11 13v2m0 3v2m4 -5v2m0 3v2\" />", "cloud-snow": "<path d=\"M7 18a4.6 4.4 0 0 1 0 -9a5 4.5 0 0 1 11 2h1a3.5 3.5 0 0 1 0 7\" /> <path d=\"M11 15v.01m0 3v.01m0 3v.01m4 -4v.01m0 3v.01\" />", "sun": "<path d=\"M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0\" /> <path d=\"M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7\" />", "sun-low": "<path d=\"M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0\" /> <path d=\"M4 12h.01\" /> <path d=\"M12 4v.01\" /> <path d=\"M20 12h.01\" /> <path d=\"M12 20v.01\" /> <path d=\"M6.31 6.31l-.01 -.01\" /> <path d=\"M17.71 6.31l-.01 -.01\" /> <path d=\"M17.7 17.7l.01 .01\" /> <path d=\"M6.3 17.7l.01 .01\" />", "cloud-storm": "<path d=\"M7 18a4.6 4.4 0 0 1 0 -9a5 4.5 0 0 1 11 2h1a3.5 3.5 0 0 1 0 7h-1\" /> <path d=\"M13 14l-2 4l3 0l-2 4\" />", "alert-triangle": "<path d=\"M12 9v4\" /> <path d=\"M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0z\" /> <path d=\"M12 16h.01\" />", "arrows-shuffle": "<path d=\"M18 4l3 3l-3 3\" /> <path d=\"M18 20l3 -3l-3 -3\" /> <path d=\"M3 7h3a5 5 0 0 1 5 5a5 5 0 0 0 5 5h5\" /> <path d=\"M21 7h-5a4.978 4.978 0 0 0 -3 1m-4 8a4.984 4.984 0 0 1 -3 1h-3\" />", "archive": "<path d=\"M3 4m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z\" /> <path d=\"M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10\" /> <path d=\"M10 12l4 0\" />", "mail": "<path d=\"M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z\" /> <path d=\"M3 7l9 6l9 -6\" />", "calendar": "<path d=\"M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z\" /> <path d=\"M16 3v4\" /> <path d=\"M8 3v4\" /> <path d=\"M4 11h16\" /> <path d=\"M11 15h1\" /> <path d=\"M12 15v3\" />", "compass": "<path d=\"M8 16l2 -6l6 -2l-2 6l-6 2\" /> <path d=\"M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0\" /> <path d=\"M12 3l0 2\" /> <path d=\"M12 19l0 2\" /> <path d=\"M3 12l2 0\" /> <path d=\"M19 12l2 0\" />", "device-mobile": "<path d=\"M6 5a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2v-14z\" /> <path d=\"M11 4h2\" /> <path d=\"M12 17v.01\" />", "x": "<path d=\"M18 6l-12 12\" /> <path d=\"M6 6l12 12\" />", "check": "<path d=\"M5 12l5 5l10 -10\" />", "refresh": "<path d=\"M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4\" /> <path d=\"M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4\" />", "rotate": "<path d=\"M19.95 11a8 8 0 1 0 -.5 4m.5 5v-5h-5\" />", "maximize": "<path d=\"M4 8v-2a2 2 0 0 1 2 -2h2\" /> <path d=\"M4 16v2a2 2 0 0 0 2 2h2\" /> <path d=\"M16 4h2a2 2 0 0 1 2 2v2\" /> <path d=\"M16 20h2a2 2 0 0 0 2 -2v-2\" />", "star": "<path d=\"M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z\" />", "volume-off": "<path d=\"M15 8a5 5 0 0 1 1.912 4.934m-1.377 2.602a5 5 0 0 1 -.535 .464\" /> <path d=\"M17.7 5a9 9 0 0 1 2.362 11.086m-1.676 2.299a9 9 0 0 1 -.686 .615\" /> <path d=\"M9.069 5.054l.431 -.554a.8 .8 0 0 1 1.5 .5v2m0 4v8a.8 .8 0 0 1 -1.5 .5l-3.5 -4.5h-2a1 1 0 0 1 -1 -1v-4a1 1 0 0 1 1 -1h2l1.294 -1.664\" /> <path d=\"M3 3l18 18\" />"};
-const ICON_OF = {"📮": "mailbox", "📷": "camera", "🎒": "backpack", "📺": "brand-youtube", "📜": "history", "🗂": "folders", "📄": "file-text", "🎲": "dice-5", "📋": "clipboard-list", "🏅": "medal", "💾": "device-floppy", "📌": "pin", "⏰": "alarm", "🖨": "printer", "✅": "square-check", "😷": "cloud", "🏆": "trophy", "🌐": "world", "🔒": "lock", "🎁": "gift", "🔍": "search", "📝": "note", "🪑": "armchair", "🖼": "photo", "⏱": "hourglass", "🕰": "clock-digital", "📍": "map-pin", "🔉": "volume", "🌡": "temperature", "🔳": "qrcode", "📊": "chart-bar", "🤝": "heart-handshake", "🧹": "users", "🖍": "chalkboard", "✏": "pencil", "🕘": "clock", "📁": "folder", "👥": "users-group", "🏫": "school", "🌫": "mist", "🔔": "bell", "🗣": "ear", "👕": "shirt", "⚙": "settings", "↶": "arrow-back-up", "🗑": "trash", "📚": "books", "🔊": "volume", "🌧": "cloud-rain", "🌨": "cloud-snow", "☀": "sun", "🌤": "sun-low", "☁": "cloud", "🌦": "cloud-rain", "⛈": "cloud-storm", "⚠": "alert-triangle", "🔀": "arrows-shuffle", "🗄": "archive", "✉": "mail", "📅": "calendar", "🧭": "compass", "📲": "device-mobile", "✕": "x", "✎": "pencil", "✓": "check", "↻": "refresh", "↺": "rotate", "⛶": "maximize", "☆": "star", "★": "star", "🔇": "volume-off"};
+const ICON_SVG = {"door-enter": "<path d=\"M13 12v.01\"/><path d=\"M3 21h18\"/><path d=\"M5 21v-16a2 2 0 0 1 2 -2h6m4 10.5v7.5\"/><path d=\"M21 7h-7m3 -3l-3 3l3 3\"/>", "mailbox": "<path d=\"M10 21v-6.5a3.5 3.5 0 0 0 -7 0v6.5h18v-6a4 4 0 0 0 -4 -4h-10.5\"/><path d=\"M12 11v-8h4l2 2l-2 2h-4\"/><path d=\"M6 15h1\"/>", "camera": "<path d=\"M5 7h1a2 2 0 0 0 2 -2a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v9a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2\" /> <path d=\"M9 13a3 3 0 1 0 6 0a3 3 0 0 0 -6 0\" /> <circle cx=\"17\" cy=\"10\" r=\".6\" />", "backpack": "<path d=\"M5 18v-6a6 6 0 0 1 6 -6h2a6 6 0 0 1 6 6v6a3 3 0 0 1 -3 3h-8a3 3 0 0 1 -3 -3z\" /> <path d=\"M10 6v-1a2 2 0 1 1 4 0v1\" /> <path d=\"M9 21v-4a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v4\" /> <path d=\"M11 10h2\" />", "clock-digital": "<rect x=\"2.5\" y=\"6\" width=\"19\" height=\"12\" rx=\"2\" /> <path d=\"M7 9.5v5\" /> <path d=\"M12 10.5v.01\" /> <path d=\"M12 13.5v.01\" /> <path d=\"M15 9.5h3v5h-3z\" />", "brand-youtube": "<path d=\"M2 8a4 4 0 0 1 4 -4h12a4 4 0 0 1 4 4v8a4 4 0 0 1 -4 4h-12a4 4 0 0 1 -4 -4v-8z\" /> <path d=\"M10 9l5 3l-5 3z\" />", "history": "<path d=\"M12 8l0 4l2 2\" /> <path d=\"M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5\" />", "folders": "<path d=\"M9 4h3l2 2h5a2 2 0 0 1 2 2v7a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2\" /> <path d=\"M17 17v2a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2h2\" />", "file-text": "<path d=\"M14 3v4a1 1 0 0 0 1 1h4\" /> <path d=\"M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z\" /> <path d=\"M9 9l1 0\" /> <path d=\"M9 13l6 0\" /> <path d=\"M9 17l6 0\" />", "dice-5": "<path d=\"M3 3m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z\" /> <circle cx=\"8.5\" cy=\"8.5\" r=\".5\" fill=\"currentColor\" /> <circle cx=\"15.5\" cy=\"8.5\" r=\".5\" fill=\"currentColor\" /> <circle cx=\"15.5\" cy=\"15.5\" r=\".5\" fill=\"currentColor\" /> <circle cx=\"8.5\" cy=\"15.5\" r=\".5\" fill=\"currentColor\" /> <circle cx=\"12\" cy=\"12\" r=\".5\" fill=\"currentColor\" />", "clipboard-list": "<path d=\"M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2\" /> <path d=\"M9 3m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z\" /> <path d=\"M9 12l.01 0\" /> <path d=\"M13 12l2 0\" /> <path d=\"M9 16l.01 0\" /> <path d=\"M13 16l2 0\" />", "medal": "<path d=\"M12 4v3m-4 -3v6m8 -6v6\" /> <path d=\"M12 18.5l-3 1.5l.5 -3.5l-2 -2l3 -.5l1.5 -3l1.5 3l3 .5l-2 2l.5 3.5z\" />", "device-floppy": "<path d=\"M6 4h10l4 4v10a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2\" /> <path d=\"M12 14m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\" /> <path d=\"M14 4l0 4l-6 0l0 -4\" />", "pin": "<path d=\"M15 4.5l-4 4l-4 1.5l-1.5 1.5l7 7l1.5 -1.5l1.5 -4l4 -4\" /> <path d=\"M9 15l-4.5 4.5\" /> <path d=\"M14.5 4l5.5 5.5\" />", "alarm": "<path d=\"M12 13m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0\" /> <path d=\"M12 10l0 3l2 0\" /> <path d=\"M7 4l-2.75 2\" /> <path d=\"M17 4l2.75 2\" />", "printer": "<path d=\"M17 17h2a2 2 0 0 0 2 -2v-4a2 2 0 0 0 -2 -2h-14a2 2 0 0 0 -2 2v4a2 2 0 0 0 2 2h2\" /> <path d=\"M17 9v-4a2 2 0 0 0 -2 -2h-6a2 2 0 0 0 -2 2v4\" /> <path d=\"M7 13m0 2a2 2 0 0 1 2 -2h6a2 2 0 0 1 2 2v4a2 2 0 0 1 -2 2h-6a2 2 0 0 1 -2 -2z\" />", "square-check": "<path d=\"M3 3m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z\" /> <path d=\"M9 12l2 2l4 -4\" />", "cloud": "<path d=\"M6.657 18c-2.572 0 -4.657 -2.007 -4.657 -4.483c0 -2.475 2.085 -4.482 4.657 -4.482c.393 -1.762 1.794 -3.2 3.675 -3.773c1.88 -.572 3.956 -.193 5.444 1c1.488 1.19 2.162 3.007 1.77 4.769h.99c1.913 0 3.464 1.56 3.464 3.486c0 1.927 -1.551 3.487 -3.465 3.487h-11.878\" />", "trophy": "<path d=\"M8 21l8 0\" /> <path d=\"M12 17l0 4\" /> <path d=\"M7 4l10 0\" /> <path d=\"M17 4v8a5 5 0 0 1 -10 0v-8\" /> <path d=\"M5 9m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\" /> <path d=\"M19 9m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\" />", "world": "<path d=\"M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0\" /> <path d=\"M3.6 9h16.8\" /> <path d=\"M3.6 15h16.8\" /> <path d=\"M11.5 3a17 17 0 0 0 0 18\" /> <path d=\"M12.5 3a17 17 0 0 1 0 18\" />", "lock": "<path d=\"M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6z\" /> <path d=\"M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0\" /> <path d=\"M8 11v-4a4 4 0 1 1 8 0v4\" />", "gift": "<path d=\"M3 8m0 1a1 1 0 0 1 1 -1h16a1 1 0 0 1 1 1v2a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1 -1z\" /> <path d=\"M12 8l0 13\" /> <path d=\"M19 12v7a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-7\" /> <path d=\"M7.5 8a2.5 2.5 0 0 1 0 -5a4.8 8 0 0 1 4.5 5a4.8 8 0 0 1 4.5 -5a2.5 2.5 0 0 1 0 5\" />", "search": "<path d=\"M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0\" /> <path d=\"M21 21l-6 -6\" />", "note": "<path d=\"M13 20l7 -7\" /> <path d=\"M13 20v-6a1 1 0 0 1 1 -1h6v-7a2 2 0 0 0 -2 -2h-12a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7\" />", "armchair": "<path d=\"M5 11a2 2 0 0 1 2 2v2h10v-2a2 2 0 1 1 4 0v4a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-4a2 2 0 0 1 2 -2z\" /> <path d=\"M5 11v-5a3 3 0 0 1 3 -3h8a3 3 0 0 1 3 3v5\" /> <path d=\"M6 19v2\" /> <path d=\"M18 19v2\" />", "photo": "<path d=\"M15 8h.01\" /> <path d=\"M3 6a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v12a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3v-12z\" /> <path d=\"M3 16l5 -5c.928 -.893 2.072 -.893 3 0l5 5\" /> <path d=\"M14 14l1 -1c.928 -.893 2.072 -.893 3 0l3 3\" />", "hourglass": "<path d=\"M6.5 7h11\" /> <path d=\"M6.5 17h11\" /> <path d=\"M6 20v-2a6 6 0 1 1 12 0v2a1 1 0 0 1 -1 1h-10a1 1 0 0 1 -1 -1z\" /> <path d=\"M6 4v2a6 6 0 1 0 12 0v-2a1 1 0 0 0 -1 -1h-10a1 1 0 0 0 -1 1z\" />", "clock-hour-4": "<path d=\"M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0\" /> <path d=\"M12 12l3 2\" /> <path d=\"M12 7v5\" />", "map-pin": "<path d=\"M9 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0\" /> <path d=\"M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0z\" />", "volume": "<path d=\"M15 8a5 5 0 0 1 0 8\" /> <path d=\"M17.7 5a9 9 0 0 1 0 14\" /> <path d=\"M6 15h-2a1 1 0 0 1 -1 -1v-4a1 1 0 0 1 1 -1h2l3.5 -4.5a.8 .8 0 0 1 1.5 .5v14a.8 .8 0 0 1 -1.5 .5l-3.5 -4.5\" />", "temperature": "<path d=\"M10 13.5a4 4 0 1 0 4 0v-8.5a2 2 0 0 0 -4 0v8.5\" /> <path d=\"M10 9l4 0\" />", "qrcode": "<path d=\"M4 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z\" /> <path d=\"M7 17l0 .01\" /> <path d=\"M14 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z\" /> <path d=\"M7 7l0 .01\" /> <path d=\"M4 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z\" /> <path d=\"M17 7l0 .01\" /> <path d=\"M14 14l3 0\" /> <path d=\"M20 14l0 .01\" /> <path d=\"M14 14l0 3\" /> <path d=\"M14 20l3 0\" /> <path d=\"M17 17l3 0\" /> <path d=\"M20 17l0 3\" />", "chart-bar": "<path d=\"M3 13a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z\" /> <path d=\"M15 9a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z\" /> <path d=\"M9 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z\" /> <path d=\"M4 20h14\" />", "heart-handshake": "<path d=\"M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572\" /> <path d=\"M12 6l-3.293 3.293a1 1 0 0 0 0 1.414l.543 .543c.69 .69 1.81 .69 2.5 0l1 -1a3.182 3.182 0 0 1 4.5 0l2.25 2.25\" /> <path d=\"M12.5 15.5l2 2\" /> <path d=\"M15 13l2 2\" />", "users": "<path d=\"M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0\" /> <path d=\"M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2\" /> <path d=\"M16 3.13a4 4 0 0 1 0 7.75\" /> <path d=\"M21 21v-2a4 4 0 0 0 -3 -3.85\" />", "chalkboard": "<path d=\"M8 19h-3a2 2 0 0 1 -2 -2v-10a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v11a1 1 0 0 1 -1 1\" /> <path d=\"M11 16m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v1a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z\" />", "pencil": "<path d=\"M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4\" /> <path d=\"M13.5 6.5l4 4\" />", "clock": "<path d=\"M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0\" /> <path d=\"M12 7v5l3 3\" />", "folder": "<path d=\"M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2\" />", "users-group": "<path d=\"M10 13a2 2 0 1 0 4 0a2 2 0 0 0 -4 0\" /> <path d=\"M8 21v-1a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v1\" /> <path d=\"M15 5a2 2 0 1 0 4 0a2 2 0 0 0 -4 0\" /> <path d=\"M17 10h2a2 2 0 0 1 2 2v1\" /> <path d=\"M5 5a2 2 0 1 0 4 0a2 2 0 0 0 -4 0\" /> <path d=\"M3 13v-1a2 2 0 0 1 2 -2h2\" />", "school": "<path d=\"M22 9l-10 -4l-10 4l10 4l10 -4v6\" /> <path d=\"M6 10.6v5.4a6 3 0 0 0 12 0v-5.4\" />", "mist": "<path d=\"M5 5h3m4 0h9\" /> <path d=\"M3 10h11m4 0h1\" /> <path d=\"M5 15h5m4 0h7\" /> <path d=\"M3 20h9m4 0h3\" />", "bell": "<path d=\"M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6\" /> <path d=\"M9 17v1a3 3 0 0 0 6 0v-1\" />", "ear": "<path d=\"M6 10a7 7 0 1 1 13 3.6a10 10 0 0 1 -2 2a8 8 0 0 0 -2 3a4.5 4.5 0 0 1 -6.8 1.4\" /> <path d=\"M10 10a3 3 0 1 1 5 2.2\" />", "shirt": "<path d=\"M15 4l6 2v5h-3v8a1 1 0 0 1 -1 1h-10a1 1 0 0 1 -1 -1v-8h-3v-5l6 -2a3 3 0 0 0 6 0\" />", "settings": "<path d=\"M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z\" /> <path d=\"M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0\" />", "arrow-back-up": "<path d=\"M9 14l-4 -4l4 -4\" /> <path d=\"M5 10h11a4 4 0 1 1 0 8h-1\" />", "trash": "<path d=\"M4 7l16 0\" /> <path d=\"M10 11l0 6\" /> <path d=\"M14 11l0 6\" /> <path d=\"M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12\" /> <path d=\"M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3\" />", "books": "<path d=\"M5 4m0 1a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z\" /> <path d=\"M9 4m0 1a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z\" /> <path d=\"M5 8h4\" /> <path d=\"M9 16h4\" /> <path d=\"M13.803 4.56l2.184 -.53c.562 -.135 1.133 .19 1.282 .732l3.695 13.418a1.02 1.02 0 0 1 -.634 1.219l-.133 .041l-2.184 .53c-.562 .135 -1.133 -.19 -1.282 -.732l-3.695 -13.418a1.02 1.02 0 0 1 .634 -1.219l.133 -.041z\" /> <path d=\"M14 9l4 -1\" /> <path d=\"M16 16l3.923 -.98\" />", "cloud-rain": "<path d=\"M7 18a4.6 4.4 0 0 1 0 -9a5 4.5 0 0 1 11 2h1a3.5 3.5 0 0 1 0 7\" /> <path d=\"M11 13v2m0 3v2m4 -5v2m0 3v2\" />", "cloud-snow": "<path d=\"M7 18a4.6 4.4 0 0 1 0 -9a5 4.5 0 0 1 11 2h1a3.5 3.5 0 0 1 0 7\" /> <path d=\"M11 15v.01m0 3v.01m0 3v.01m4 -4v.01m0 3v.01\" />", "sun": "<path d=\"M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0\" /> <path d=\"M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7\" />", "sun-low": "<path d=\"M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0\" /> <path d=\"M4 12h.01\" /> <path d=\"M12 4v.01\" /> <path d=\"M20 12h.01\" /> <path d=\"M12 20v.01\" /> <path d=\"M6.31 6.31l-.01 -.01\" /> <path d=\"M17.71 6.31l-.01 -.01\" /> <path d=\"M17.7 17.7l.01 .01\" /> <path d=\"M6.3 17.7l.01 .01\" />", "cloud-storm": "<path d=\"M7 18a4.6 4.4 0 0 1 0 -9a5 4.5 0 0 1 11 2h1a3.5 3.5 0 0 1 0 7h-1\" /> <path d=\"M13 14l-2 4l3 0l-2 4\" />", "alert-triangle": "<path d=\"M12 9v4\" /> <path d=\"M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0z\" /> <path d=\"M12 16h.01\" />", "arrows-shuffle": "<path d=\"M18 4l3 3l-3 3\" /> <path d=\"M18 20l3 -3l-3 -3\" /> <path d=\"M3 7h3a5 5 0 0 1 5 5a5 5 0 0 0 5 5h5\" /> <path d=\"M21 7h-5a4.978 4.978 0 0 0 -3 1m-4 8a4.984 4.984 0 0 1 -3 1h-3\" />", "archive": "<path d=\"M3 4m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z\" /> <path d=\"M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10\" /> <path d=\"M10 12l4 0\" />", "mail": "<path d=\"M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z\" /> <path d=\"M3 7l9 6l9 -6\" />", "calendar": "<path d=\"M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z\" /> <path d=\"M16 3v4\" /> <path d=\"M8 3v4\" /> <path d=\"M4 11h16\" /> <path d=\"M11 15h1\" /> <path d=\"M12 15v3\" />", "compass": "<path d=\"M8 16l2 -6l6 -2l-2 6l-6 2\" /> <path d=\"M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0\" /> <path d=\"M12 3l0 2\" /> <path d=\"M12 19l0 2\" /> <path d=\"M3 12l2 0\" /> <path d=\"M19 12l2 0\" />", "device-mobile": "<path d=\"M6 5a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2v-14z\" /> <path d=\"M11 4h2\" /> <path d=\"M12 17v.01\" />", "x": "<path d=\"M18 6l-12 12\" /> <path d=\"M6 6l12 12\" />", "check": "<path d=\"M5 12l5 5l10 -10\" />", "refresh": "<path d=\"M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4\" /> <path d=\"M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4\" />", "rotate": "<path d=\"M19.95 11a8 8 0 1 0 -.5 4m.5 5v-5h-5\" />", "maximize": "<path d=\"M4 8v-2a2 2 0 0 1 2 -2h2\" /> <path d=\"M4 16v2a2 2 0 0 0 2 2h2\" /> <path d=\"M16 4h2a2 2 0 0 1 2 2v2\" /> <path d=\"M16 20h2a2 2 0 0 0 2 -2v-2\" />", "star": "<path d=\"M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z\" />", "volume-off": "<path d=\"M15 8a5 5 0 0 1 1.912 4.934m-1.377 2.602a5 5 0 0 1 -.535 .464\" /> <path d=\"M17.7 5a9 9 0 0 1 2.362 11.086m-1.676 2.299a9 9 0 0 1 -.686 .615\" /> <path d=\"M9.069 5.054l.431 -.554a.8 .8 0 0 1 1.5 .5v2m0 4v8a.8 .8 0 0 1 -1.5 .5l-3.5 -4.5h-2a1 1 0 0 1 -1 -1v-4a1 1 0 0 1 1 -1h2l1.294 -1.664\" /> <path d=\"M3 3l18 18\" />"};
+const ICON_OF = {"🚪": "door-enter", "📮": "mailbox", "📷": "camera", "🎒": "backpack", "📺": "brand-youtube", "📜": "history", "🗂": "folders", "📄": "file-text", "🎲": "dice-5", "📋": "clipboard-list", "🏅": "medal", "💾": "device-floppy", "📌": "pin", "⏰": "alarm", "🖨": "printer", "✅": "square-check", "😷": "cloud", "🏆": "trophy", "🌐": "world", "🔒": "lock", "🎁": "gift", "🔍": "search", "📝": "note", "🪑": "armchair", "🖼": "photo", "⏱": "hourglass", "🕰": "clock-digital", "📍": "map-pin", "🔉": "volume", "🌡": "temperature", "🔳": "qrcode", "📊": "chart-bar", "🤝": "heart-handshake", "🧹": "users", "🖍": "chalkboard", "✏": "pencil", "🕘": "clock", "📁": "folder", "👥": "users-group", "🏫": "school", "🌫": "mist", "🔔": "bell", "🗣": "ear", "👕": "shirt", "⚙": "settings", "↶": "arrow-back-up", "🗑": "trash", "📚": "books", "🔊": "volume", "🌧": "cloud-rain", "🌨": "cloud-snow", "☀": "sun", "🌤": "sun-low", "☁": "cloud", "🌦": "cloud-rain", "⛈": "cloud-storm", "⚠": "alert-triangle", "🔀": "arrows-shuffle", "🗄": "archive", "✉": "mail", "📅": "calendar", "🧭": "compass", "📲": "device-mobile", "✕": "x", "✎": "pencil", "✓": "check", "↻": "refresh", "↺": "rotate", "⛶": "maximize", "☆": "star", "★": "star", "🔇": "volume-off"};
 const ICON_RE = /^(\s*)([\u2190-\u2BFF\u{1F000}-\u{1FAFF}])[\uFE0E\uFE0F]?\s?/u;
 const ICON_SKIP = "[contenteditable], textarea, input, select, option, .note, .face, .rw-cheer, #topic, script, style, svg"; // 쓰는 곳·표정·주제 글은 그대로
 function iconEl(name) {
@@ -2813,11 +2850,11 @@ timerDraw();
 // 뽑기: 전체(명단) · 선택(명단 중 고른 사람) · 모둠 · 직접(그때그때 입력)
 // 방법마다 뽑힌 기록을 따로 두고, 모두 뽑힐 때까지 같은 것이 다시 나오지 않음. 모두 이 컴퓨터에만 저장
 const roster = document.getElementById("roster"), direct = document.getElementById("pick-direct");
-const groupsInp = document.getElementById("pick-groups"), checks = document.getElementById("pick-checks");
+const groupsInp = document.getElementById("pick-groups"), pickFilter = document.getElementById("pick-filter");
 const pickName = document.getElementById("pick-name"), pickEdit = document.getElementById("pick-edit");
 const pickLeft = document.getElementById("pick-left"), pickGo = document.getElementById("pick-go"), editBtn = document.getElementById("edit-btn");
 const groupsRow = document.getElementById("pick-groups-row");
-const EDIT_LABEL = { all: "✎ 명단", select: "✎ 고르기", direct: "✎ 쓰기", order: "✎ 명단" }; // 모둠은 버튼 대신 모둠 수 칸
+const EDIT_LABEL = { all: "✎ 명단", direct: "✎ 쓰기", order: "✎ 명단" }; // 모둠은 버튼 대신 모둠 수 칸, 선택은 카드를 눌러 고름
 let pk = { mode: "all", picked: {}, chosen: [] };
 try {
   pk = Object.assign(pk, JSON.parse(localStorage.getItem("pick")) || {});
@@ -2952,28 +2989,29 @@ function candidates(mode = pk.mode) {
 }
 function pickInfo() {
   const all = candidates(), done = pk.picked[pk.mode] || [], left = all.filter(p => !done.includes(p));
-  const empty = { all: "설정 → 명단을 넣어 주세요", order: "설정 → 명단을 넣어 주세요", select: people().length ? "'✎ 고르기'로 골라 주세요" : "설정 → 명단을 넣어 주세요",
+  const empty = { all: "설정 → 명단을 넣어 주세요", order: "설정 → 명단을 넣어 주세요", select: people().length ? "카드를 눌러 뽑을 사람을 골라요 (위 버튼으로 한꺼번에)" : "설정 → 명단을 넣어 주세요",
     direct: "'✎ 쓰기'로 써 주세요" };
   pickLeft.textContent = !all.length ? empty[pk.mode] : pk.mode !== "order" ? `남은 ${left.length} / ${all.length}`
     : pk.order ? "빠진 순서예요" : `${all.length}명 · '뽑기'를 누르면 구슬이 떨어져요`;
   document.querySelectorAll(".modes [data-mode]").forEach(b => b.classList.toggle("on", b.dataset.mode === pk.mode));
-  editBtn.hidden = pk.mode === "group"; groupsRow.hidden = pk.mode !== "group"; document.getElementById("pick-hist").hidden = pk.mode !== "order";
+  editBtn.hidden = pk.mode === "group" || pk.mode === "select"; pickFilter.hidden = pk.mode !== "select" || !people().length; if (!pickFilter.hidden) pickFilters(); groupsRow.hidden = pk.mode !== "group"; document.getElementById("pick-hist").hidden = pk.mode !== "order";
   editBtn.textContent = pickEdit.hidden ? EDIT_LABEL[pk.mode] : "✓ 완료";
   if (pickGo.disabled) return left; // 뽑는 중에는 카드를 다시 그리지 않음
   // 이름 카드: 뽑힌 건 회색 줄긋기, 방금 뽑힌 건 강조. 다 보이도록 글씨를 줄여 맞춤
   const ranked = pk.mode === "order" && pk.order; // 순서: 다 들어왔으면 "1등 김하늘 (5번)" 줄을 세로로
-  pickName.classList.toggle("cards", !!all.length && !ranked); pickName.classList.toggle("ranks", !!ranked);
+  const shown = pk.mode === "select" ? people() : all; // 선택: 전체 학생 카드를 보이고 눌러서 고름 (안 고른 건 흐리게)
+  pickName.classList.toggle("cards", !!shown.length && !ranked); pickName.classList.toggle("choose", pk.mode === "select"); pickName.classList.toggle("ranks", !!ranked);
   pickName.style.fontSize = "";
-  if (!all.length) { pickName.textContent = "?"; return left; }
+  if (!shown.length) { pickName.textContent = "?"; return left; }
   if (ranked) pickName.replaceChildren(...ranked.map((p, i) => {
     const r = document.createElement("div"), n = document.createElement("span"), m = p.match(/^(\d+번) (.+)$/);
     r.className = "rank-row"; n.textContent = `${i + 1}등`; r.append(n, m ? m[2] : p);
     if (m) { const sm = document.createElement("small"); sm.textContent = m[1]; r.append(sm); }
     return r;
   }));
-  else pickName.replaceChildren(...all.map(p => {
+  else pickName.replaceChildren(...shown.map(p => {
     const c = document.createElement("span");
-    c.className = "pick-card" + (p === pkWin ? " win" : done.includes(p) ? " done" : ""); c.dataset.p = p;
+    c.className = "pick-card" + (p === pkWin ? " win" : done.includes(p) ? " done" : "") + (pk.mode === "select" ? all.includes(p) ? " sel" : " off" : ""); c.dataset.p = p;
     const m = p.match(/^(\d+번) (.+)$/); // "1번 김하늘": 번호는 윗줄에 작게, 이름은 아랫줄에 크게
     if (m) { const n = document.createElement("small"), b = document.createElement("b"); n.textContent = m[1]; b.textContent = m[2]; c.append(n, b); }
     else c.textContent = p;
@@ -2989,7 +3027,11 @@ function setMode(mode) {
   if (!pickEdit.hidden) toggleEdit(false);
   pk.mode = mode; pkWin = null; pkSave(); pickInfo();
 }
-new ResizeObserver(() => pickInfo()).observe(pickName); // 카드를 띄우거나 크기를 바꾸면 이름 카드 글씨 크기 다시 맞춤
+new ResizeObserver(() => pickInfo()).observe(pickName);
+pickName.addEventListener("click", e => { // 선택 뽑기: 카드를 누르면 고르기·빼기
+  const c = e.target.closest(".pick-card"); if (pk.mode !== "select" || !c || pickGo.disabled) return;
+  const p = c.dataset.p; pk.chosen = pk.chosen.includes(p) ? pk.chosen.filter(x => x !== p) : [...pk.chosen, p]; pkWin = null; pkSave(); pickInfo();
+}); // 카드를 띄우거나 크기를 바꾸면 이름 카드 글씨 크기 다시 맞춤
 document.querySelectorAll(".modes [data-mode]").forEach(b => b.onclick = () => setMode(b.dataset.mode));
 let pkRun = 0; // 뽑기·순서 뽑기를 시작할 때마다 하나씩. 바뀌면 돌던 것은 멈춤
 function pickStop() {
@@ -3027,7 +3069,7 @@ function pickOne() {
   };
   step();
 }
-// 처음부터: 뽑힌 기록을 비움. 선택은 고른 사람도 비움
+// 처음부터: 뽑힌 기록을 비움 (선택은 고른 사람은 그대로, 위의 '해제'로 비움)
 // 순서 뽑기 기록: 끝날 때마다 저장(최근 30번). 누르면 그 결과를 다시 띄움
 function pickHist() {
   const c = card("picker"); c.querySelector(".card-ed")?.remove();
@@ -3040,7 +3082,7 @@ function pickHist() {
     : [h("p", { class: "none" }, "아직 기록이 없어요. 순서 뽑기를 끝까지 하면 저절로 남아요.")]));
   draw(); c.append(ed); close.focus();
 }
-function pickReset() { pk.picked[pk.mode] = []; if (pk.mode === "select") pk.chosen = []; pkWin = null; if (pk.mode === "order") delete pk.order; pkSave(); pickInfo(); }
+function pickReset() { pk.picked[pk.mode] = []; pkWin = null; if (pk.mode === "order") delete pk.order; pkSave(); pickInfo(); }
 // 순서 뽑기 (핀볼): 이름 구슬이 긴 코스를 굴러 내려가고, 맨 아래 깔때기 구멍으로 빠진 순서가 곧 순서
 // 코스는 화면 높이의 몇 배로 길고, 화면은 맨 앞 구슬을 따라 아래로 내려감. 진짜로 굴려서 정함 (미리 정해 두지 않음)
 // 장애물: 못밭 → 지그재그 경사로 → 범퍼 → 도는 막대 → 세모 쐐기 → 못밭 → 깔때기
@@ -3315,18 +3357,17 @@ function pickRace(all) {
   [0, .5, 1].forEach(at => tone(440, at, .15, "square", .1)); tone(880, 1.5, .35, "square", .12); // 삐 삐 삐 빠앙!
   setTimeout(() => { clearInterval(intro); if (run === pkRun) { last = performance.now(); requestAnimationFrame(frame); } }, 1500);
 }
-function renderChecks() {
-  const ps = people();
-  if (!ps.length) { checks.textContent = "먼저 설정 → 명단에 이름을 넣어 주세요."; return; }
-  const acts = document.createElement("div"), act = (t, fn) => { const b = document.createElement("button"); b.textContent = t; b.onclick = () => { fn(); pkSave(); renderChecks(); }; return b; };
-  acts.className = "check-acts"; // 반전: 몇 명만 빼고 나머지에서 뽑을 때
-  acts.append(act("선택 반전", () => pk.chosen = ps.filter(p => !pk.chosen.includes(p))), act("선택 초기화", () => pk.chosen = []));
-  checks.replaceChildren(acts, ...ps.map(p => {
-    const l = document.createElement("label"), c = document.createElement("input");
-    c.type = "checkbox"; c.checked = pk.chosen.includes(p);
-    c.onchange = () => { pk.chosen = c.checked ? [...pk.chosen, p] : pk.chosen.filter(x => x !== p); pkSave(); };
-    l.append(c, p); return l;
-  }));
+// 선택 뽑기 위의 필터: 누르면 그 학생들로 고름 (여자만·남자만·자리배치의 모둠만). 모두·해제
+function pickGroups() { // 자리배치에서 앉은 모둠: { "1모둠": [학생…] }
+  const c = sc(), out = {};
+  for (const d of c.desks || []) if (d.g !== undefined && c.seats?.[d.id]) (out[seBoxLabel(d.g)] ||= []).push(c.seats[d.id]);
+  return Object.keys(out).length > 1 ? out : {};
+}
+function pickFilters() {
+  const ps = people(), set = L => { pk.chosen = ps.filter(p => L.includes(p)); pkWin = null; pkSave(); pickInfo(); }, same = L => L.length === pk.chosen.length && L.every(p => pk.chosen.includes(p));
+  const F = [["모두", ps], ["여자만", ps.filter(p => gender[p] === "F")], ["남자만", ps.filter(p => gender[p] === "M")], ...Object.entries(pickGroups()).map(([g, L]) => [g + "만", L])].filter(([, L]) => L.length);
+  pickFilter.replaceChildren(...F.map(([t, L]) => { const b = document.createElement("button"); b.textContent = t; b.classList.toggle("on", same(L)); b.onclick = () => set(L); return b; }),
+    ...(pk.chosen.length ? [Object.assign(document.createElement("button"), { textContent: "해제", className: "clear", onclick: () => set([]) })] : []));
 }
 function toggleEdit(open = pickEdit.hidden) {
   if (pk.mode === "all" || pk.mode === "order") { if (open) { togglePanel(true); openTab("roster"); rosterRows.querySelector(".nm")?.focus(); } return; } // 명단은 설정에서
@@ -3334,7 +3375,6 @@ function toggleEdit(open = pickEdit.hidden) {
   document.querySelector(".pick-bottom .acts").style.visibility = open ? "hidden" : ""; // 고르는 동안 뽑기·처음부터 숨김
   pickEdit.querySelectorAll("[data-edit]").forEach(el => el.hidden = el.dataset.edit !== pk.mode);
   if (open) {
-    if (pk.mode === "select") renderChecks();
     const f = pickEdit.querySelector(`[data-edit="${pk.mode}"]`); (f.querySelector("input") || f).focus();
   } else {
     try { localStorage.setItem("pick-direct", direct.value); } catch (e) {}
@@ -3903,7 +3943,19 @@ thTicks(); thShow(thShown); thText(); thCard.classList.toggle("full", thermo.t >
 const ntEl = document.querySelector('.note[data-key="notice"]');
 let ntHist = {}, ntDay = localStorage.getItem("notice-day") || iso(new Date());
 const ntLabel = d => new Date(d + "T00:00").toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "long" });
+// 학생 화면 알림장: 칠판 글을 classes/{반 코드}/notice/board = { day, lines, at } 로 (쓰다 멈추면 1.5초 뒤, 바뀐 것만)
+let ntPubT = 0, ntPubLast = "";
+function ntPublish() {
+  clearTimeout(ntPubT);
+  ntPubT = setTimeout(() => {
+    if (!kidOn() || ntDay !== iso(new Date())) return; // 미리 쓴 내일 것·지난 것은 안 올림 (학생은 오늘 것만)
+    const v = { day: ntDay, lines: ntShown([...ntEl.querySelectorAll("li")]) }, j = reward.cls.code + JSON.stringify(v);
+    if (j !== ntPubLast) fb.setDoc(fb.doc(fb.db, "classes", reward.cls.code, "notice", "board"), { ...v, at: Date.now() }).then(() => ntPubLast = j, () => {});
+  }, 1500);
+}
+ntEl.addEventListener("input", ntPublish);
 function ntDraw() {
+  ntPublish();
   $s("nt-date").textContent = ntLabel(ntDay) + " 알림장";
   if (ntEl.closest(".card").querySelector(".nt-menu")) ntList(true); // 열려 있으면 다시 그림
 }
@@ -4122,9 +4174,8 @@ function rwSettings() {
   const bulk = h("input", { type: "number", min: "0", max: "999", value: "5", "aria-label": "가격" });
   const SAMPLE = { skin: 0, hair: 1 };
   const draw = () => {
-    const tabs = h("div", { class: "rw-tabs" }, [["reason", "점수 버튼"], ["prize", "점수 약속"], ["shop", "가게 가격"], ["kids", "학생 입장"], ["hw", "과제"]].map(([k, t]) => h("button", { class: rwSetTab === k ? "on" : "", onclick: () => { rwSetTab = k; draw(); } }, t)));
-    if (rwSetTab === "kids") return body.replaceChildren(tabs, kidPanel(rwCard, draw));
-    if (rwSetTab === "hw") return body.replaceChildren(tabs, hwPanel(rwCard));
+    const tabs = h("div", { class: "rw-tabs" }, [["reason", "점수 버튼"], ["prize", "점수 약속"], ["shop", "가게 가격"]].map(([k, t]) => h("button", { class: rwSetTab === k ? "on" : "", onclick: () => { rwSetTab = k; draw(); } }, t)), kidCodeChip());
+    if (rwSetTab === "kids" || rwSetTab === "hw") rwSetTab = "reason"; // 학생 입장은 ⚙ 설정, 과제는 📮 과제함 카드로 옮김
     if (rwSetTab === "prize") return body.replaceChildren(tabs, h("p", { class: "rw-h", style: "white-space:pre-line" }, "학생들이 보는 안내예요. 카드의 📋 점수 약속에 보여요.\n· 점수로 할 수 있는 것은 그냥 숫자 (예: 자리 바꾸기 10)\n· 점수가 빠지는 것은 − (예: 숙제 안 하기 −5)"), pzRows,
       h("button", { class: "rw-add", onclick: () => { prizes.push({ t: "", pt: 10 }); drawPz(); pzRows.querySelectorAll("input")[pzRows.querySelectorAll("input").length - 2]?.focus(); } }, "+ 줄 추가"));
     if (rwSetTab === "reason") {
@@ -6773,8 +6824,8 @@ async function seFormApply() {
 }
 // 전체 화면이 바뀌면 떠 있던 창은 닫고, 선생님 모드 화면은 따라 옮김
 document.addEventListener("fullscreenchange", () => {
-  if ($s("se-form").matches(":popover-open")) $s("se-form").hidePopover();
-  seHost($s("seat-ed"));
+  if ($s("se-form")?.matches(":popover-open")) $s("se-form").hidePopover();
+  if ($s("seat-ed")) seHost($s("seat-ed")); // 자리배치 창을 아직 안 만들었으면 건너뜀
 });
 
 // ── 선생님 모드: 자리 미리 지정(🔒), 두 학생 떨어뜨리기, 분리 그룹, 기록. 학생 화면·출력에는 안 나옴
@@ -6993,9 +7044,15 @@ seClean(); seRedraw();
 // 처음 켤 때 맨 먼저: 앱으로 설치 (엣지·크롬에 맞춰). 이미 앱으로 열었으면 건너뜀
 const isApp = () => !matchMedia("(display-mode: browser)").matches, isEdge = /Edg\//.test(navigator.userAgent), isChrome = !isEdge && /Chrome\//.test(navigator.userAgent);
 let installEvt = null; // 브라우저가 '설치할 수 있어요'를 알려 주면 그 자리에서 바로 설치 버튼을 띄움
-addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; });
+addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; instDraw(); });
+// 오른쪽 위 설치 버튼 둘: 보드는 여기서 바로, 교사 일지는 새 탭을 열어 거기서 한 번 더 (웹 앱은 페이지마다 따로 설치돼서). 설치하면 사라짐
+const instDraw = () => { $s("inst-board").hidden = !installEvt; $s("inst-jr").hidden = !!lsGet("jr-installed"); };
+addEventListener("appinstalled", () => { installEvt = null; instDraw(); });
+document.getElementById("inst-board").onclick = () => installEvt?.prompt().catch(() => {});
+document.getElementById("inst-jr").onclick = () => open("journal.html#install", "_blank", "noopener");
+setTimeout(instDraw, 0);
 const INSTALL_STEPS = [
-  { text: "먼저 앱으로 설치해 주세요. 바탕화면·작업 표시줄에서 바로 켜고, 주소창 없이 넓게 써요.", btn: ["지금 설치하기", () => installEvt?.prompt().catch(() => {})] },
+  { text: "먼저 앱으로 설치해 주세요. 바탕화면·작업 표시줄에서 바로 켜고, 주소창 없이 넓게 써요.", btn: ["지금 설치하기", () => { installEvt?.prompt().catch(() => {}); installEvt?.userChoice.then(c => c.outcome === "accepted" && open("journal.html#install", "_blank")); }] }, // 보드를 설치하면 교사 일지 탭을 열어 바로 이어서 설치 (웹 앱은 한 번에 하나만 설치돼서)
   ...(isEdge ? [
     { text: "엣지: 주소창 오른쪽 '앱 설치' 아이콘(네모에 +)을 누르고 '설치'. 안 보이면 오른쪽 위 … → 앱 → '이 사이트를 앱으로 설치'" },
     { text: "켤 때 저절로 열리게: 주소창에 edge://apps → 우리반 보드의 … → '장치 로그인 시 시작'" }]
@@ -7051,7 +7108,7 @@ const TOURS = {
     { at: "#timer-time", text: "시간을 눌러 3:30처럼 직접 써도 돼요. + 버튼은 돌아가는 중에도 더해져요." },
     { at: "#timer-sfx", text: "효과음 켜기·끄기 (마지막 3초와 끝나는 소리는 늘 나요)" }] },
   picker: { name: "🎲 뽑기", steps: [
-    { at: ".modes", text: "뽑는 방법: 전체 · 선택 · 모둠 · 순서(핀볼) · 직접입력" },
+    { at: ".modes", text: "뽑는 방법: 전체 · 선택 · 모둠 · 순서(핀볼) · 직접입력. 선택은 카드를 눌러 고르고, 위 버튼(여자만·남자만·모둠만)으로 한꺼번에 골라요." },
     { at: ".pick-bottom .acts button:not(.main)", text: "처음부터: 뽑힌 기록을 비워요." },
     { at: ".pick-opt", text: "방법마다 고르기·쓰기·모둠 수. 순서 뽑기는 '📜 기록'에서 지난 결과를 봐요." }] },
   whiteboard: { name: "🖍︎ 화이트보드", steps: [
@@ -7500,7 +7557,7 @@ async function syncPull(d) {
 //       classes/{반 코드}/kids/{번호}-{비밀번호} = { n, pt, av, wear, own, buys: [{ id, at }], kidAt }  ← 학생 이름은 서버에 두지 않음
 //   점수·이름은 교사 보드만 씀. 학생은 av·wear·own·buys·kidAt만 바꿀 수 있음(서버 규칙). 학생이 산 것(buys)은 교사 보드가 받아서 점수를 빼고 비움
 //   reward.cls = { code, pins: { 학생: "1234" } }  (교사는 비밀번호를 보고 지울 수 있음 → 학생이 다시 정함)
-const kidUrl = () => new URL("student.html", location.href).href;
+const kidUrl = () => new URL("s", location.href).href.replace(/^https?:\/\//, ""); // 짧은 학생 주소 (s/index.html이 student.html로 넘김). 노트북은 이걸 직접 쳐요
 const kidNum = p => String(parseInt(seNum(p), 10) || 0);
 const kidKey = p => `${kidNum(p)}-${reward.cls.pins[p]}`;
 const kidDoc = (...path) => fb.doc(fb.db, "classes", reward.cls.code, ...path);
@@ -7612,15 +7669,39 @@ async function kidSetCode(host, redraw) { // 반 코드 정하기·바꾸기 (4�
   rwStore(); kidListen(); redraw();
 }
 let rwSettingsRedraw = null;
-function kidPanel(host, redraw) { // 점수 설정 → 학생 입장
+// ⚙ 설정 → 학생 입장 (반 코드·비밀번호 관리, 들어오는 방법 안내)
+function kidTab() {
+  const sec = document.getElementById("tab-kids"); if (sec.hidden) return;
+  sec.replaceChildren(h("h3", {}, "학생 입장"), kidPanel(sec, kidTab));
+}
+// 반 코드 칩 (우리반 점수 설정·과제함에 보임). 누르면 🚪 우리반 입장 카드를 보드에 (코드가 없으면 ⚙ 설정 → 학생 입장)
+function kidCodeChip() {
+  const c = kidOn() ? reward.cls.code : "";
+  return h("button", { class: "kid-chip", title: c ? "🚪 우리반 입장 카드 열기" : "학생 입장 설정 열기", onclick: () => { if (c) { setLayout("kidin", { mode: "board" }); card("kidin").style.zIndex = ++zTop; } else { togglePanel(true); openTab("kids"); } } }, c ? ["반 코드 ", h("b", {}, c)] : "학생 입장 설정");
+}
+const kidQrUrl = () => new URL("student.html", location.href).href + "?c=" + encodeURIComponent(reward.cls.code); // QR로 들어오면 반 코드가 채워짐
+function kidQr(size) { // 학생 주소 QR (canvas)
+  const M = qrMake(kidQrUrl()), cv = h("canvas", { class: "kid-qr" }); if (!M) return cv;
+  const n = M.length + 8, u = Math.max(2, Math.floor(size / n)), g = cv.getContext("2d"); cv.width = cv.height = n * u;
+  g.fillStyle = "#fff"; g.fillRect(0, 0, n * u, n * u); g.fillStyle = "#000"; M.forEach((r, y) => r.forEach((v, x) => v && g.fillRect((x + 4) * u, (y + 4) * u, u, u)));
+  return cv;
+}
+const KID_STEPS = ["QR을 찍거나 주소를 쳐서 들어가요.", "반 코드와 내 번호를 써요.", "처음이면 비밀번호 숫자 4자리를 정해요. 꼭 기억해요!", "다음부터는 그 비밀번호로 들어와요."];
+function kidGuide(big) { // 들어오는 방법: QR + 반 코드 + 차례
+  return h("div", { class: "kid-guide" + (big ? " kg-big" : "") }, kidQr(big ? 900 : 360),
+    h("div", {}, ...(big ? [h("p", { class: "kg-c" }, "반 코드", h("b", {}, reward.cls.code)), h("p", { class: "kg-u" }, kidUrl())] : []),
+      h("ol", {}, ...KID_STEPS.map(t => h("li", {}, t)))));
+}
+function kidPanel(host, redraw) { // ⚙ 설정 → 학생 입장
   rwSettingsRedraw = redraw;
-  if (!fbUser) return h("p", { class: "rw-h" }, "학생 화면은 로그인해야 쓸 수 있어요. ⚙ 설정 → 계정에서 구글로 로그인해 주세요.");
+  if (!fbUser) return h("p", { class: "rw-h" }, "학생 화면은 로그인해야 쓸 수 있어요. 이 설정의 '로그인' 탭에서 구글로 로그인해 주세요.");
   if (!reward.cls?.code) return h("div", {}, h("p", { class: "rw-h" }, "학생이 태블릿·노트북에서 반 코드 + 번호 + 비밀번호(4자리)로 들어와 자기 아바타를 꾸미고, 모은 점수로 물건을 사요. 비밀번호는 학생이 처음 들어올 때 직접 정하고, 여기서 보고 지울 수 있어요."),
     h("button", { class: "main", onclick: () => kidSetCode(host, redraw) }, "반 코드 정하고 시작하기"));
   const pins = reward.cls.pins ||= {}, url = kidUrl(), copy = h("button", { onclick: () => { navigator.clipboard?.writeText(url); copy.textContent = "복사했어요"; setTimeout(() => copy.textContent = "주소 복사", 1500); } }, "주소 복사");
   return h("div", {}, h("div", { class: "kid-code" }, "반 코드", h("b", {}, reward.cls.code), h("button", { onclick: () => kidSetCode(host, redraw) }, "바꾸기")),
     h("div", { class: "kid-url" }, "학생 주소", h("code", {}, url), copy), h("p", { class: "kid-status rw-h" }, kidStatus),
-    h("div", { class: "kid-acts" }, h("button", { onclick: kidPrint }, "🖨︎ 입장 안내 출력"), h("button", { class: "danger", onclick: async () => {
+    h("p", { class: "sum" }, "학생 들어오는 방법"), kidGuide(false),
+    h("div", { class: "kid-acts" }, h("button", { class: "main", onclick: () => { setLayout("kidin", { mode: "board" }); togglePanel(false); } }, "📌 보드에 띄우기"), h("button", { onclick: kidPrint }, "🖨︎ 입장 안내 출력"), h("button", { class: "danger", onclick: async () => {
       if (!await seConfirm(host, "학생 입장을 끌까요?\n학생 화면에서 더 들어갈 수 없어요. (점수·아바타·비밀번호는 그대로)", "끄기")) return;
       await kidClear(reward.cls.code); reward.cls.code = ""; rwStore(); redraw();
     } }, "학생 입장 끄기")),
@@ -7640,7 +7721,8 @@ function kidPrint() { // A4 한 장: 학생 주소 + 반 코드 + 들어오는 �
     h1 { font-size: 30pt; margin: 10mm 0 6mm; } .u { font-size: 15pt; word-break: break-all; border: 2px solid #333; border-radius: 4mm; padding: 4mm; margin: 0 0 8mm; }
     .c { font-size: 16pt; color: #555; } .c b { display: block; font-size: 60pt; letter-spacing: .15em; color: #222; margin: 2mm 0 10mm; }
     ol { text-align: left; font-size: 17pt; line-height: 1.8; margin: 0 auto; max-width: 150mm; }
-  </style></head><body><h1>🏅 내 아바타 꾸미기</h1><div class="u">${esc(url)}</div><div class="c">반 코드<b>${esc(reward.cls.code)}</b></div>
+    .q { width: 70mm; height: 70mm; image-rendering: pixelated; margin: 0 auto 4mm; display: block; }
+  </style></head><body><h1>🏅 우리반 학생 화면</h1><img class="q" src="${kidQr(600).toDataURL()}" alt="QR"><div class="u">${esc(url)}</div><div class="c">반 코드<b>${esc(reward.cls.code)}</b></div>
   <ol><li>위 주소로 들어가요.</li><li>반 코드와 내 번호를 써요.</li><li>처음이면 비밀번호 숫자 4자리를 직접 정해요. <b>꼭 기억해요!</b></li><li>다음부터는 정한 비밀번호로 들어와요. 잊어버리면 선생님께 말해요.</li></ol></body></html>`);
   w.document.close(); w.focus(); w.print();
 }
@@ -7668,112 +7750,170 @@ const hwText = t => {
   }
   out.push(t.slice(i)); return out;
 };
-const hwImg = src => src?.startsWith("data:image/") ? h("img", { class: "hw-img", src, alt: "사진", onclick: e => e.target.classList.toggle("big") }) : null;
 async function hwClear(code) { // 과제와 학생이 낸 것 모두 지우기
   for (const d of (await fb.getDocs(hwCol(code))).docs) {
     await Promise.all((await fb.getDocs(hwCol(code, d.id, "sub"))).docs.map(s => fb.deleteDoc(s.ref)));
     await fb.deleteDoc(d.ref);
   }
 }
-function hwPanel(host) { // 점수 설정 → 과제
-  if (!kidOn()) return h("p", { class: "rw-h" }, "과제는 학생 화면으로 내요. 먼저 🏅 우리반 점수 카드의 설정 → '학생 입장' 탭에서 로그인하고 반 코드를 정해 주세요.");
-  const code = reward.cls.code, list = h("div", {}, h("p", { class: "rw-h" }, "불러오는 중…"));
+// 첨부 파일: 사진은 줄여서, 다른 파일(PDF 등)은 그대로 data URL로. 한 과제(문서 하나)에 다 합쳐 약 900KB까지 (Firestore 1MB 제한)
+async function hwAttach(f) {
+  if (/^image\/(jpeg|png|webp|bmp)$/.test(f.type)) return { file: await hwPhoto(f), fname: f.name };
+  if (f.size > 600000) throw new Error("big");
+  return { file: await new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = no; r.readAsDataURL(f); }), fname: f.name };
+}
+const hwFiles = v => v?.files || (v?.file || v?.img ? [{ file: v.file || v.img, fname: v.fname || "" }] : []); // 예전 file·img 하나짜리도
+const hwIsImg = f => f.file?.startsWith("data:image/");
+function hwOpenFile(f) { // PDF 등은 새 탭에서 (data: 주소는 브라우저가 바로 못 열어서 blob으로)
+  const [h0, b64] = f.file.split(","), bin = atob(b64), u = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+  const url = URL.createObjectURL(new Blob([u], { type: h0.slice(5).split(";")[0] }));
+  if (!open(url, "_blank")) h("a", { href: url, download: f.fname || "파일" }).click();
+}
+const hwFileView = v => { const L = hwFiles(v); return L.length ? h("div", { class: "hw-files" }, ...L.map(f => hwIsImg(f) ? h("img", { class: "hw-img", src: f.file, alt: f.fname || "사진", onclick: e => e.target.classList.toggle("big") })
+  : h("button", { class: "hw-fl", onclick: () => hwOpenFile(f) }, iconEl("file-text"), f.fname || "파일"))) : null; };
+function hwAttBox(files, say) { // 첨부 칸: 여러 사진·PDF 한꺼번에, 오른쪽 위 ✕로 빼기 (끌어 놓기도 됨)
+  const inp = h("input", { type: "file", multiple: "", hidden: "" }), box = h("div", { class: "hw-att" });
+  const draw = () => box.replaceChildren(...files.map((f, i) => h("div", { class: "hw-th" }, hwIsImg(f) ? h("img", { src: f.file, alt: "" }) : h("span", {}, iconEl("file-text"), f.fname || "파일"),
+    h("button", { type: "button", class: "x", title: "빼기", "aria-label": "빼기", onclick: () => { files.splice(i, 1); draw(); } }, "✕"))), inp);
+  inp.onchange = async () => { const L = [...inp.files]; inp.value = ""; say("파일 넣는 중…");
+    for (const f of L) { try { const a = await hwAttach(f); if (files.reduce((n, x) => n + x.file.length, a.file.length) > 900000) { say("⚠︎ 용량이 넘쳐요. 사진은 4~5장, PDF는 작은 것만 돼요."); break; } files.push(a); say(""); } catch (e) { say(e.message === "big" ? `⚠︎ ${f.name}: 너무 커요 (600KB까지)` : `⚠︎ ${f.name}: 열 수 없어요`); } }
+    draw(); };
+  draw(); return { box, pick: () => inp.click() };
+}
+const hwSent = v => !!(v && (v.text || hwFiles(v).length || v.link)); // 냈음 (안 냈는데 문서가 있으면 열어 본 것: seen)
+const hwThread = (mine, rep) => [...(mine || []).map(m => ({ ...m, me: 1 })), ...(rep || []).map(m => ({ ...m, me: 0 }))].sort((a, b) => a.at - b.at); // 학생 글·선생님 답장을 시간 순으로
+// 오늘의 주제를 학생 과제 카드로: classes/{코드}/hw/topic-날짜 (학생이 쓰고 내면 과제함에서 보고 답장)
+function topicPublish() {
+  if (!kidOn() || !topic) return Promise.resolve();
+  const day = iso(new Date());
+  return fb.setDoc(fb.doc(fb.db, "classes", reward.cls.code, "hw", "topic-" + day), { title: "✏︎ 오늘의 주제", t: `${topic}\n(${rule.textContent.trim()})`, kind: "topic", at: new Date(day + "T00:00").getTime() }, { merge: true }).catch(() => {});
+}
+function hwPanel(host) { // 📮 과제함: 첫 화면은 낸 과제 카드, 누르면 자세히(학생 카드에 낸 것이 꽉 차게, 눌러서 크게 보고 답장)
+  if (!kidOn()) return h("div", {}, h("p", { class: "rw-h" }, "과제는 학생 화면으로 내요. 먼저 ⚙ 설정 → '학생 입장'에서 반 코드를 정해 주세요."), kidCodeChip());
+  const code = reward.cls.code, body = h("div", {}, h("p", { class: "rw-h" }, "불러오는 중…")), msg = h("span", { class: "rw-h" }), say = t => msg.textContent = t;
+  // ── 과제 추가 칸
+  const title = h("input", { class: "hw-title", placeholder: "제목 (학생 목록에 보여요. 예: 수학 익힘 32쪽)", maxlength: "60" });
   const t = h("textarea", { rows: "4", placeholder: "과제 내용 (예: 수학 익힘 32쪽을 풀고 사진을 찍어 내요)\n링크는 https://… 로 붙여 넣으면 저절로 걸려요" });
-  // 🔗 링크 달기: 고른 글(없으면 주소)에 링크를 걸어 [글](주소)로 넣음. 저절로 안 걸리는 주소(naver.com 같은)도 이걸로
+  // 링크 달기: 고른 글(없으면 주소)에 링크를 걸어 [글](주소)로 넣음. 저절로 안 걸리는 주소(naver.com 같은)도 이걸로
   const lkIn = h("input", { placeholder: "주소 (예: naver.com 또는 https://…)", "aria-label": "링크 주소" }), lkRow = h("div", { class: "hw-row", hidden: "" });
   const lkGo = () => {
     let u = lkIn.value.trim(); if (!u) return; if (!/^https?:\/\//i.test(u)) u = "https://" + u;
-    if (!hwLink(u)) return msg.textContent = "⚠︎ 주소를 확인해 주세요.";
+    if (!hwLink(u)) return say("⚠︎ 주소를 확인해 주세요.");
     const a = t.selectionStart, b = t.selectionEnd, sel = t.value.slice(a, b).trim() || u.replace(/^https?:\/\//, "");
-    t.setRangeText(`[${sel}](${u})`, a, b, "end"); lkIn.value = ""; lkRow.hidden = true; msg.textContent = ""; t.focus();
+    t.setRangeText(`[${sel}](${u})`, a, b, "end"); lkIn.value = ""; lkRow.hidden = true; say(""); t.focus();
   };
   lkIn.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); lkGo(); } };
   lkRow.append(lkIn, h("button", { onclick: lkGo }, "달기"), h("button", { onclick: () => { lkRow.hidden = true; } }, "취소"));
-  const file = h("input", { type: "file", accept: "image/*", hidden: "" }), prev = h("span", { class: "hw-row" }), msg = h("span", { class: "rw-h" });
-  let img = "";
-  const setImg = v => { img = v; prev.replaceChildren(...(v ? [hwImg(v), h("button", { onclick: () => setImg("") }, "사진 빼기")] : [])); };
-  file.onchange = async () => { const f = file.files[0]; file.value = ""; if (!f) return; msg.textContent = "사진 줄이는 중…"; try { setImg(await hwPhoto(f)); msg.textContent = ""; } catch (e) { msg.textContent = "⚠︎ 이 사진은 열 수 없어요."; } };
+  const files = [], att = hwAttBox(files, say);
+  const close = () => { form.hidden = true; addB.hidden = false; say(""); };
   const go = h("button", { class: "main", onclick: async () => {
-    const v = { t: t.value.trim(), img, at: Date.now() };
-    if (!v.t && !img) return msg.textContent = "⚠︎ 내용이나 사진 중 하나는 있어야 해요.";
-    go.disabled = true; msg.textContent = "올리는 중…";
-    try { await fb.addDoc(hwCol(code), v); t.value = ""; setImg(""); msg.textContent = ""; form.hidden = true; addB.hidden = false; note.textContent = "✅ 과제를 냈어요. 학생 화면에 보여요."; load(); }
-    catch (e) { msg.textContent = "⚠︎ 올리지 못했어요. 인터넷 연결이나 Firestore 규칙을 확인해 주세요."; } finally { go.disabled = false; }
+    const v = { title: title.value.trim(), t: t.value.trim(), files: [...files], at: Date.now() };
+    if (!v.title) { title.focus(); return say("⚠︎ 제목을 써 주세요."); }
+    go.disabled = true; say("올리는 중…");
+    try { await fb.addDoc(hwCol(code), v); t.value = title.value = ""; files.length = 0; att.box.replaceChildren(att.box.lastChild); close(); load(); }
+    catch (e) { say("⚠︎ 올리지 못했어요. 인터넷 연결이나 Firestore 규칙을 확인해 주세요."); } finally { go.disabled = false; }
   } }, "과제 내기");
-  // 낸 것 크게 보기: 화살표·←→로 넘기고, Esc로 닫고, ⛶로 전체 화면
-  const hwView = (cards, i) => {
-    const v = h("div", { class: "hw-view", tabindex: "-1" }), close = () => { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); v.remove(); removeEventListener("keydown", key, true); };
+  const form = h("div", { class: "hw-new", hidden: "" }, title, t,
+    h("div", { class: "hw-row" }, h("button", { onclick: att.pick }, iconEl("photo"), "사진·파일 넣기"), h("button", { onclick: () => { lkRow.hidden = false; lkIn.focus(); } }, iconEl("world"), "링크 달기")), att.box, lkRow,
+    h("div", { class: "hw-row hw-send" }, msg, h("button", { onclick: close }, "취소"), go));
+  const addB = h("button", { class: "main", onclick: () => { form.hidden = false; addB.hidden = true; ntRow.hidden = true; title.focus(); } }, "+ 과제 추가");
+  // ── 공지: classes/{코드}/notice/now = { t, at }. 학생 화면이 열려 있으면 (다른 탭에 있어도) 알림으로 뜸
+  const ntIn = h("input", { placeholder: "학생 화면에 띄울 공지 (예: 5분 뒤에 모여요)", maxlength: "200", "aria-label": "공지" }), ntMsg = h("span", { class: "rw-h" });
+  const ntSet = async t => { try { await fb.setDoc(fb.doc(fb.db, "classes", code, "notice", "now"), { t, at: Date.now() }); ntIn.value = ""; ntMsg.textContent = t ? "보냈어요" : "내렸어요"; } catch (e) { ntMsg.textContent = "⚠︎ 보내지 못했어요. Firestore 규칙을 새로 게시했는지 확인해 주세요."; } };
+  ntIn.onkeydown = e => { if (e.key === "Enter" && ntIn.value.trim()) ntSet(ntIn.value.trim()); };
+  const ntRow = h("div", { class: "hw-row hw-nt", hidden: "" }, ntIn, h("button", { class: "main", onclick: () => ntIn.value.trim() && ntSet(ntIn.value.trim()) }, "보내기"), h("button", { onclick: () => ntSet("") }, "공지 내리기"), ntMsg);
+  const ntB = h("button", { onclick: () => { ntRow.hidden = !ntRow.hidden; ntMsg.textContent = ""; if (!ntRow.hidden) ntIn.focus(); } }, iconEl("bell"), "공지");
+  // ── 낸 것 크게 보기 + 답장: ←→로 넘기고, Esc로 닫고, ⛶로 전체 화면. 답장은 쌓이고 학생 화면에도 보임
+  const hwView = (d, cards, i) => {
+    const v = h("div", { class: "hw-view", tabindex: "-1" }), shut = () => { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); v.remove(); removeEventListener("keydown", key, true); };
     const show = () => {
-      const c = cards[i], u = hwLink(c.v.link), img = c.v.img?.startsWith("data:image/") ? h("img", { src: c.v.img, alt: "사진" }) : null;
+      const c = cards[i], L = hwFiles(c.v), imgs = L.filter(hwIsImg), others = L.filter(f => !hwIsImg(f)), u = hwLink(c.v.link);
+      const rIn = h("textarea", { rows: "2", placeholder: `${c.name}에게 답장 (Enter로 보내기, Shift+Enter 줄바꿈)` });
+      const send = async () => { const t = rIn.value.trim(); if (!t) return; const m = { t, at: Date.now() }; rIn.disabled = true;
+        try { await fb.setDoc(fb.doc(fb.db, "classes", code, "hw", d.id, "reply", c.key), { msgs: fb.arrayUnion(m) }, { merge: true }); (c.rep ||= { msgs: [] }).msgs.push(m); show(); v.querySelector(".rep textarea")?.focus(); }
+        catch (e) { rIn.disabled = false; rIn.placeholder = "⚠︎ 보내지 못했어요. Firestore 규칙을 새로 게시했는지 확인해 주세요."; } };
+      rIn.onkeydown = e => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); send(); } };
       v.replaceChildren(h("div", { class: "bar" }, h("b", {}, `${c.n}번 ${c.name}`), h("span", {}, `${i + 1} / ${cards.length}`),
-          h("button", { title: "전체 화면", onclick: () => document.fullscreenElement ? document.exitFullscreen() : v.requestFullscreen?.().catch(() => {}) }, "⛶ 전체 화면"), h("button", { onclick: close }, "✕ 닫기")),
-        h("div", { class: "stage" }, img || (u ? h("a", { href: u, target: "_blank", rel: "noopener noreferrer" }, "🔗 " + u) : h("span", {}, "사진이 없어요")),
+          h("button", { title: "전체 화면", onclick: () => document.fullscreenElement ? document.exitFullscreen() : v.requestFullscreen?.().catch(() => {}) }, "⛶ 전체 화면"), h("button", { onclick: shut }, "✕ 닫기")),
+        h("div", { class: "stage" }, h("div", { class: "vb" }, c.v.text ? h("p", { class: "txt" }, ...hwText(c.v.text)) : null, ...imgs.map(f => h("img", { src: f.file, alt: f.fname || "사진" })),
+            others.length ? h("div", { class: "hw-files" }, ...others.map(f => h("button", { class: "hw-fl", onclick: () => hwOpenFile(f) }, iconEl("file-text"), f.fname || "파일"))) : null,
+            u ? h("a", { href: u, target: "_blank", rel: "noopener noreferrer" }, "🔗 " + u) : null),
           cards.length > 1 ? h("button", { class: "nav l", onclick: () => { i = (i + cards.length - 1) % cards.length; show(); } }, "‹") : null,
           cards.length > 1 ? h("button", { class: "nav r", onclick: () => { i = (i + 1) % cards.length; show(); } }, "›") : null),
-        h("div", { class: "foot" }, img && u ? h("a", { href: u, target: "_blank", rel: "noopener noreferrer", style: "color:#9cc5ff" }, "🔗 " + u) : new Date(c.v.at).toLocaleString("ko-KR", { month: "numeric", day: "numeric", hour: "numeric", minute: "2-digit" })));
+        h("div", { class: "rep" }, h("div", { class: "thr" }, ...hwThread(c.v.msgs, c.rep?.msgs).map(m => h("p", { class: m.me ? "kid" : "tch" }, h("small", {}, (m.me ? c.name : "선생님") + " · " + new Date(m.at).toLocaleString("ko-KR", { month: "numeric", day: "numeric", hour: "numeric", minute: "2-digit" })), ...hwText(m.t)))),
+          h("div", { class: "hw-row" }, rIn, h("button", { onclick: send }, "답장"))));
+      v.querySelector(".thr").scrollTop = 1e9;
     };
-    function key(e) { // 다른 단축키보다 먼저 받음
-      if (e.key === "Escape") { if (!document.fullscreenElement) close(); } else if (e.key === "ArrowRight") { i = (i + 1) % cards.length; show(); } else if (e.key === "ArrowLeft") { i = (i + cards.length - 1) % cards.length; show(); } else return;
+    function key(e) { // 다른 단축키보다 먼저 받음 (답장 쓰는 중이면 Esc만)
+      if (e.target.closest?.("textarea, input") && e.key !== "Escape") return;
+      if (e.key === "Escape") { if (!document.fullscreenElement) shut(); } else if (e.key === "ArrowRight") { i = (i + 1) % cards.length; show(); } else if (e.key === "ArrowLeft") { i = (i + cards.length - 1) % cards.length; show(); } else return;
       e.preventDefault(); e.stopImmediatePropagation();
     }
     addEventListener("keydown", key, true);
-    v.onclick = e => { if (e.target === v || e.target.classList.contains("stage")) close(); };
+    v.onclick = e => { if (e.target === v || e.target.classList.contains("stage")) shut(); };
     show(); document.body.append(v); v.focus();
   };
-  let hwGal = true; // 낸 것: 갤러리(기본) / 표
-  const subs = async (d, box) => { // 학생별로 낸 것 (번호로 맞춤. 비밀번호를 다시 정했으면 예전 것도 번호로 보임)
-    box.replaceChildren(h("p", { class: "rw-h" }, "불러오는 중…"));
-    const by = {};
-    for (const s of (await fb.getDocs(hwCol(code, d.id, "sub"))).docs) { const n = s.id.split("-")[0], v = s.data(); if (!by[n] || (v.at || 0) > (by[n].at || 0)) by[n] = v; }
-    const kids = people(), done = kids.filter(p => by[kidNum(p)]).length;
-    const head = h("div", { class: "hw-row" }, h("b", {}, `낸 학생 ${done} / ${kids.length}명`), h("button", { onclick: () => subs(d, box) }, "새로 고침"),
-      h("button", { onclick: () => { hwGal = !hwGal; subs(d, box); } }, hwGal ? "표로 보기" : "갤러리로 보기"));
-    if (hwGal) {
-      const cards = kids.filter(p => by[kidNum(p)]).map(p => ({ n: kidNum(p), name: seName(p), v: by[kidNum(p)] }));
-      return box.replaceChildren(head, h("div", { class: "hw-gal" }, ...kids.map(p => {
-        const v = by[kidNum(p)], i = cards.findIndex(c => c.v === v);
-        const pic = !v ? h("span", {}, "아직 안 냄") : v.img?.startsWith("data:image/") ? h("img", { src: v.img, alt: "", loading: "lazy" }) : h("span", {}, hwLink(v.link) ? "🔗 " + hwLink(v.link) : "");
-        return h("button", { class: "hw-card" + (v ? "" : " none"), onclick: () => v && hwView(cards, i) }, h("div", { class: "pic" }, pic), h("b", {}, `${kidNum(p)} ${seName(p)}`));
+  // ── 자세히: 학생마다 큰 카드. 내면 낸 것이 카드를 꽉 채우고(왼쪽 위에 번호·이름), 노랑 봤어요 · 회색 아직. 열어 둔 동안 20초마다 새로
+  const subs = async (d, box) => {
+    const by = {}, rep = {}; // 번호로 맞춤 (비밀번호를 다시 정했으면 예전 것도 번호로)
+    const [S, R] = await Promise.all([fb.getDocs(hwCol(code, d.id, "sub")), fb.getDocs(hwCol(code, d.id, "reply")).catch(() => ({ docs: [] }))]);
+    for (const s of S.docs) { const n = s.id.split("-")[0], v = { ...s.data(), key: s.id }; if (!by[n] || hwSent(v) && !hwSent(by[n]) || (v.at || 0) > (by[n].at || 0)) by[n] = v; }
+    for (const r of R.docs) rep[r.id] = r.data();
+    const kids = people(), sent = kids.filter(p => hwSent(by[kidNum(p)]));
+    const cards = sent.map(p => { const v = by[kidNum(p)]; return { n: kidNum(p), name: seName(p).replace(/^\d+번\s*/, "") || seName(p), v, key: v.key, rep: rep[v.key] }; });
+    const seen = kids.filter(p => by[kidNum(p)] && !hwSent(by[kidNum(p)])).length;
+    box.replaceChildren(h("div", { class: "hw-row" }, h("b", {}, `낸 학생 ${sent.length} / ${kids.length}명`), h("span", { class: "rw-h" }, `· 보고 아직 안 낸 학생 ${seen}명`), h("button", { onclick: () => subs(d, box) }, "새로 고침")),
+      h("p", { class: "hw-legend" }, h("i", { class: "ok" }), "냈어요 ", h("i", { class: "seen" }), "봤어요 ", h("i"), "아직"),
+      h("div", { class: "hw-big" }, ...kids.map(p => { const n = kidNum(p), v = by[n], ok = hwSent(v), i = cards.findIndex(c => c.n === n), img = hwFiles(v).find(hwIsImg), nr = (v && rep[v.key]?.msgs?.length) || 0;
+        return h("button", { class: "hw-bc " + (ok ? "ok" : v ? "seen" : ""), title: ok ? "눌러서 크게 보고 답장" : v ? "봤어요" : "아직", onclick: () => ok && hwView(d, cards, i) },
+          ok ? img ? h("img", { src: img.file, alt: "" }) : h("div", { class: "tx" }, v.text ? v.text.slice(0, 300) : hwFiles(v).map(f => "📄 " + (f.fname || "파일")).join("\n") || hwLink(v.link)) : h("div", { class: "st" }, v ? "봤어요" : "아직"),
+          h("span", { class: "who" }, h("b", {}, n), seName(p).replace(/^\d+번\s*/, "")), nr ? h("span", { class: "nr", title: "보낸 답장" }, "💬 " + nr) : null);
       })));
-    }
-    box.replaceChildren(head,
-      h("table", { class: "kid-tb" }, h("tr", {}, h("th", {}, "번호"), h("th", {}, "이름"), h("th", {}, "낸 것")),
-        ...kids.map(p => { const v = by[kidNum(p)], u = hwLink(v?.link);
-          return h("tr", {}, h("td", {}, kidNum(p)), h("td", {}, seName(p)), h("td", { class: v ? "" : "none" }, !v ? "아직 안 냄"
-            : h("div", { class: "hw-row" }, u ? h("a", { href: u, target: "_blank", rel: "noopener noreferrer" }, u) : null, hwImg(v.img), h("small", { class: "rw-h" }, new Date(v.at).toLocaleString("ko-KR", { month: "numeric", day: "numeric", hour: "numeric", minute: "2-digit" })))));
-        })));
   };
-  const item = d => {
-    const v = d.data(), u = hwLink(v.link), box = h("div");
-    return h("div", { class: "hw-it" }, v.t ? h("p", {}, ...hwText(v.t)) : null, u ? h("p", {}, "🔗 ", h("a", { href: u, target: "_blank", rel: "noopener noreferrer" }, u)) : null, hwImg(v.img),
-      h("div", { class: "hw-row", style: "margin-top:6px" }, h("small", { class: "rw-h" }, new Date(v.at).toLocaleDateString("ko-KR")),
-        h("button", { onclick: () => subs(d, box).catch(() => box.replaceChildren(h("p", { class: "rw-h" }, "⚠︎ 불러오지 못했어요."))) }, "낸 것 보기"),
-        h("button", { class: "danger", onclick: async () => {
-          if (!await seConfirm(host, "이 과제를 지울까요?\n학생이 낸 것도 모두 지워져요.", "지우기")) return;
-          await Promise.all((await fb.getDocs(hwCol(code, d.id, "sub"))).docs.map(s => fb.deleteDoc(s.ref))); await fb.deleteDoc(d.ref); load();
-        } }, "지우기")), box);
+  const detail = d => {
+    const v = d.data(), box = h("div", {}, h("p", { class: "rw-h" }, "불러오는 중…"));
+    body.replaceChildren(h("button", { class: "hw-back", onclick: load }, "← 과제 목록"),
+      h("div", { class: "hw-it" }, h("h4", { class: "hw-tt" }, v.title || "과제"), v.t ? h("p", {}, ...hwText(v.t)) : null, hwLink(v.link) ? h("p", {}, "🔗 ", h("a", { href: v.link, target: "_blank", rel: "noopener noreferrer" }, v.link)) : null, hwFileView(v),
+        h("small", { class: "rw-h" }, new Date(v.at).toLocaleDateString("ko-KR"))), box);
+    const run = () => box.querySelector(".hw-view") || document.querySelector(".hw-view") ? 0 : subs(d, box).catch(() => box.replaceChildren(h("p", { class: "rw-h" }, "⚠︎ 불러오지 못했어요.")));
+    run(); const tick = setInterval(() => box.isConnected ? run() : clearInterval(tick), 20000); // 크게 보는 중에는 새로 고치지 않음
+  };
+  // ── 첫 화면: 낸 과제 카드 (누르면 자세히, ✕로 지우기). 나중 것이 오른쪽
+  const card = d => { const v = d.data();
+    return h("div", { class: "hw-tc" + (v.kind === "topic" ? " topic" : "") }, h("button", { class: "hw-tc-b", onclick: () => detail(d) }, h("b", {}, v.title || (v.t || "").split("\n")[0].slice(0, 40) || "과제"),
+        h("small", {}, new Date(v.at).toLocaleDateString("ko-KR", { month: "numeric", day: "numeric" })), v.t ? h("span", {}, v.t.slice(0, 60)) : null),
+      h("button", { class: "x", title: "과제 지우기", "aria-label": "과제 지우기", onclick: async () => {
+        if (!await seConfirm(host, `'${v.title || "과제"}'를 지울까요?\n학생이 낸 것과 답장도 모두 지워져요.`, "지우기")) return;
+        await Promise.all([...(await fb.getDocs(hwCol(code, d.id, "sub"))).docs, ...(await fb.getDocs(hwCol(code, d.id, "reply")).catch(() => ({ docs: [] }))).docs].map(s => fb.deleteDoc(s.ref))); await fb.deleteDoc(d.ref); load();
+      } }, "✕"));
   };
   const load = () => fb.getDocs(hwCol(code)).then(s => {
-    const ds = s.docs.sort((a, b) => (b.data().at || 0) - (a.data().at || 0));
-    list.replaceChildren(...(ds.length ? ds.map(item) : [h("p", { class: "rw-h" }, "아직 낸 과제가 없어요.")]));
-  }, () => list.replaceChildren(h("p", { class: "rw-h" }, "⚠︎ 과제를 불러오지 못했어요. Firestore 규칙을 새로 게시했는지 확인해 주세요.")));
+    const ds = s.docs.sort((a, b) => (a.data().at || 0) - (b.data().at || 0)); // 나중에 낸 과제가 오른쪽(뒤)
+    body.replaceChildren(ds.length ? h("div", { class: "hw-tcs" }, ...ds.map(card)) : h("p", { class: "rw-h" }, "아직 낸 과제가 없어요. '+ 과제 추가'로 내요."));
+  }, () => body.replaceChildren(h("p", { class: "rw-h" }, "⚠︎ 과제를 불러오지 못했어요. Firestore 규칙을 새로 게시했는지 확인해 주세요.")));
   load();
-  // 첫 화면은 낸 과제 목록. 오른쪽 위 '+ 과제 추가'로 쓰는 칸을 열고, '과제 내기'는 오른쪽 아래
-  const note = h("span", { class: "rw-h" });
-  const form = h("div", { class: "hw-new", hidden: "" }, t,
-    h("div", { class: "hw-row" }, h("button", { onclick: () => file.click() }, "📷 사진 넣기"), h("button", { onclick: () => { lkRow.hidden = false; lkIn.focus(); } }, "🔗 링크 달기"), file, prev), lkRow,
-    h("div", { class: "hw-row hw-send" }, msg, h("button", { onclick: () => { form.hidden = true; addB.hidden = false; msg.textContent = ""; } }, "취소"), go));
-  const addB = h("button", { class: "main", onclick: () => { form.hidden = false; addB.hidden = true; note.textContent = ""; t.focus(); } }, "+ 과제 추가");
-  return h("div", {}, h("div", { class: "hw-head" }, h("b", {}, "낸 과제"), note, addB), form, list);
+  return h("div", {}, h("div", { class: "hw-head" }, h("b", {}, "과제"), kidCodeChip(), ntB, addB), ntRow, form, body);
 }
 // 메인 보드 📮 과제함 카드: 점수 설정 → 과제 탭과 같은 화면. 로그인·반 코드가 바뀌면 새로 그림
 let hwCardKey = null;
 function hwCardDraw() {
   const host = document.getElementById("hw-host"), k = kidOn() ? reward.cls.code : "";
   if (!host || k === hwCardKey) return;
-  hwCardKey = k; host.replaceChildren(hwPanel(host.closest(".card")));
+  hwCardKey = k; ntPublish(); // 반 코드가 생기거나 바뀌면 알림장도 보냄
+  document.getElementById("kidin-host")?.replaceChildren(k ? kidGuide(true) : h("p", { class: "sub" }, "⚙ 설정 → 학생 입장에서 반 코드를 정하면 여기에 들어오는 방법이 보여요.")); // 🚪 우리반 입장 카드
+  topicPublish().then(() => hwCardKey === k && host.replaceChildren(hwPanel(host.closest(".card")))); // 오늘의 주제 카드를 먼저 올리고
 }
 setInterval(hwCardDraw, 2000); setTimeout(hwCardDraw, 0);
+// 파일 끌어 놓기: 놓은 곳에서 가까운 파일 칸(카드·창·탭 안의 input[type=file])에 넣고 change를 일으킴. 따로 받는 곳(화이트보드 등)은 그쪽이 먼저
+{ let box = null; const STOP = ".card, .pop, section, form, .modal, .hw-it, .hw-new, .card-ed, #panel";
+  const find = t => { for (let e = t; e && e !== document.body; e = e.parentElement) { const f = e.querySelector?.("input[type=file]"); if (f) return [e, f]; if (e.matches?.(STOP)) break; } return []; };
+  const mark = b => { box?.classList.remove("drop-on"); box = b; box?.classList.add("drop-on"); };
+  addEventListener("dragover", e => { if (e.defaultPrevented || !e.dataTransfer?.types.includes("Files")) return; const [b] = find(e.target); mark(b || null); if (b) { e.preventDefault(); e.dataTransfer.dropEffect = "copy"; } });
+  addEventListener("dragleave", e => { if (!e.relatedTarget) mark(null); });
+  addEventListener("drop", e => { mark(null); if (e.defaultPrevented || !e.dataTransfer?.files.length) return; const [, f] = find(e.target); if (!f) return; e.preventDefault();
+    const dt = new DataTransfer(); [...e.dataTransfer.files].slice(0, f.multiple ? 99 : 1).forEach(x => dt.items.add(x)); f.files = dt.files; f.dispatchEvent(new Event("change", { bubbles: true })); });
+}
 syncShow();
 if (lsGet("sync-uid")) fbLoad().catch(() => syncShow("서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요.")); // 전에 로그인했으면 이어서
 // ───── 실물화상기: USB 실물화상기는 컴퓨터가 카메라로 알아봄 → 회사 프로그램 없이 카드에서 바로 봄

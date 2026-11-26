@@ -31,6 +31,11 @@ service cloud.firestore {
           && request.resource.data.get("buys", []).hasAll(resource.data.get("buys", []))
           && request.resource.data.get("buys", []).size() <= 30;
       }
+      // 📢 공지: 교사만 씀, 반 코드를 아는 학생은 읽기만
+      match /notice/{id} {
+        allow get: if true;
+        allow write: if isOwner();
+      }
       // 과제: 교사만 내고 지움. 반 코드를 아는 학생은 읽기만
       match /hw/{id} {
         allow read: if true;
@@ -39,14 +44,26 @@ service cloud.firestore {
         match /sub/{key} {
           allow read, delete: if isOwner();
           allow get: if true;
+          // 글·파일(files: 여러 사진·PDF)로 냄. 열어 보기만 하면 seen만 (선생님 화면 노란 네모). msgs: 선생님 답장에 이어 쓰는 글. 예전 file·link·img도 받음
           allow create, update: if exists(/databases/$(database)/documents/classes/$(code)/kids/$(key))
             && exists(/databases/$(database)/documents/classes/$(code)/hw/$(id))
-            && request.resource.data.keys().hasOnly(["link", "img", "at"])
-            && request.resource.data.link is string && request.resource.data.link.size() <= 500
-            && (request.resource.data.link == "" || request.resource.data.link.matches("^https?://[^ ]+$"))
-            && request.resource.data.img is string && request.resource.data.img.size() <= 900000
-            && (request.resource.data.img == "" || request.resource.data.img.matches("^data:image/(jpeg|png|webp);base64,.*"))
-            && request.resource.data.at is int;
+            && request.resource.data.keys().hasOnly(["text", "files", "msgs", "file", "fname", "link", "img", "at", "seen"])
+            && request.resource.data.get("text", "") is string && request.resource.data.get("text", "").size() <= 3000
+            && request.resource.data.get("file", "") is string && request.resource.data.get("file", "").size() <= 900000
+            && (request.resource.data.get("file", "") == "" || request.resource.data.get("file", "").matches("^data:[-a-zA-Z0-9.+/]*;base64,.*"))
+            && request.resource.data.get("fname", "") is string && request.resource.data.get("fname", "").size() <= 200
+            && request.resource.data.get("link", "") is string && request.resource.data.get("link", "").size() <= 500
+            && (request.resource.data.get("link", "") == "" || request.resource.data.get("link", "").matches("^https?://[^ ]+$"))
+            && request.resource.data.get("img", "") is string && request.resource.data.get("img", "").size() <= 900000
+            && (request.resource.data.get("img", "") == "" || request.resource.data.get("img", "").matches("^data:image/(jpeg|png|webp);base64,.*"))
+            && request.resource.data.get("files", []) is list && request.resource.data.get("files", []).size() <= 10
+            && request.resource.data.get("msgs", []) is list && request.resource.data.get("msgs", []).size() <= 100
+            && request.resource.data.get("at", 0) is int && request.resource.data.get("seen", 0) is int;
+        }
+        // 선생님 답장 (학생이 낸 것마다 쌓임): 교사만 씀, 학생은 자기 '번호-비밀번호' 문서만 읽음
+        match /reply/{key} {
+          allow get: if true;
+          allow read, write: if isOwner();
         }
       }
     }

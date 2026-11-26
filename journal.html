@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#e9e2d6"><!-- 창 위 버튼 줄과 머리줄을 같은 색으로: 잡고 옮기는 곳이 보이게 -->
 <title>일지 · 우리반 보드</title>
-<link rel="icon" href="icon-192.png">
+<link rel="icon" href="icon-j-192.png">
+<link rel="manifest" href="journal.webmanifest"><!-- 교사 일지는 따로 설치하는 앱 (보드에서 여는 창은 그대로) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
   /* 교사 일지: 보드에서 열면 메인 모니터에 뜨는 선생님 전용 창. 달력에서 일정·학생 기록·상담·일지를 바로 (학생 화면에는 안 나옴) */
@@ -53,7 +54,7 @@
   .ring .btns.col { flex-direction: column; align-items: stretch; } .ring .btns .danger { color: #e03131; }
   .pop .wdays { display: flex; gap: 2px; } .pop .wdays button { width: 28px; height: 26px; padding: 0; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; } .pop .wdays button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
   .pop .moderow.col { display: grid; gap: 6px; } .pop .modes .chips { flex: 1; min-width: 0; flex-wrap: wrap; } /* 종류는 왼쪽, 연속·반복은 오른쪽 */
-  header .sp { flex: 1; } header .hright { margin-left: auto; display: flex; align-items: center; gap: 4px; } header .today { color: var(--muted); font-size: 14px; }
+  header .sp { flex: 1; } header .hright { margin-left: auto; display: flex; align-items: center; gap: 4px; } header .today { color: var(--muted); font-size: 14px; white-space: nowrap; margin: 0 4px 0 8px; }
   main { min-height: 0; overflow: hidden; padding: 12px 14px; }
   .pane { height: 100%; display: grid; gap: 12px; min-height: 0; }
   .box { background: var(--card); border-radius: 14px; padding: 14px 16px; min-height: 0; display: flex; flex-direction: column; }
@@ -63,7 +64,7 @@
   /* 달력 (크게) + 오른쪽 좁게 */
   #p-cal { grid-template-columns: minmax(0, 1fr) 270px; }
   .cal-head { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; } .cal-head b { font-size: 20px; min-width: 130px; text-align: center; }
-  .cal-head .sp { flex: 1; } .cal-head .hint { color: var(--muted); font-size: 12px; }
+  .cal-head .sp { flex: 1; } .cal-head .hint { color: var(--muted); font-size: 12px; flex: 1 1 260px; text-align: right; }
   .cal { user-select: none; -webkit-user-select: none; flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); grid-template-rows: auto repeat(6, minmax(0, 1fr)); gap: 4px; }
   .cal .dw { text-align: center; font-size: 13px; color: var(--muted); } .cal .dw.sun { color: #e03131; } .cal .dw.sat { color: #1c7ed6; }
   .day { position: relative; border-radius: 10px; background: #faf8f5; padding: 4px 6px; cursor: pointer; overflow: hidden; display: flex; flex-direction: column; gap: 2px; min-height: 0; }
@@ -181,6 +182,12 @@
   .att th.n, .att th.nm { background: #faf8f5; z-index: 3; }
   .att td.c { cursor: pointer; font-weight: 700; } .att td.c:hover { background: var(--soft); } .att td.c.on { background: #fbf7f1; } .att .today { background: #fff8e1; }
   .att .sum { background: #faf8f5; } .att td.sum { font-weight: 600; color: #5e554e; }
+  .att td.c { position: relative; } .att i.doc, .att-legend i.doc, .att-key i.doc { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #fd7e14; vertical-align: middle; }
+  .att td.c i.doc { position: absolute; top: 3px; right: 3px; }
+  .att-key { display: none; border-collapse: collapse; margin: 0 0 4mm; font-size: 9pt; } .att-key th, .att-key td { border: 1px solid #ccc; padding: 2px 10px; text-align: center; } .att-key th { background: #f1f3f5; } .att-key td.kd { text-align: left; color: #666; }
+  .pop .docs button.need { border-color: #fd7e14; color: #d9480f; background: #fff4e6; } .pop .docs button.got { border-color: #2f9e44; color: #2b8a3e; background: #ebfbee; } .pop .docs button { font-size: 12px; }
+  .drop-on { outline: 3px dashed #3b82f6 !important; outline-offset: -3px; }
+  header .jinst { font-size: 13px; padding: 4px 12px; border-radius: 999px; background: #3b82f6; color: #fff; border: 0; cursor: pointer; } header .jinst.hot { animation: jpulse 1s 6 alternate; } @keyframes jpulse { to { box-shadow: 0 0 0 6px rgba(59, 130, 246, .35); } }
   .att-legend { font-size: 12px; color: var(--muted); display: flex; gap: 6px; align-items: center; flex-wrap: wrap; } .att-legend i { font-style: normal; font-weight: 700; color: var(--ink); }
   #box-tags { display: flex; align-items: center; flex-wrap: wrap; gap: 2px; margin-bottom: 6px; } #box-tags button { padding: 4px 10px; font-size: 14px; color: var(--muted); }
   #box-tags button.on { color: var(--accent); background: var(--soft); font-weight: 600; } #box-tags button.all { color: var(--ink); font-size: 15px; font-weight: 700; } #box-tags button.all.on { color: var(--accent); }
@@ -204,7 +211,7 @@
     .pane[hidden], .box:has(> .kids) { display: none !important; } /* 다른 탭과 학생 목록은 출력하지 않음 */
     .print-title { display: block !important; font-size: 17pt; margin: 0 0 6mm; }
     .rec { grid-template-columns: 24mm 34mm 1fr; break-inside: avoid; font-size: 10.5pt; }
-    .att th, .att td { min-width: 0; height: 18px; font-size: 8pt; } .att th small { font-size: 6pt; } .itable { font-size: 9pt; } .itable td { white-space: normal; }
+    .att-key { display: table !important; } .att th, .att td { min-width: 0; height: 18px; font-size: 8pt; } .att th small { font-size: 6pt; } .itable { font-size: 9pt; } .itable td { white-space: normal; }
   }
 </style>
 </head>
@@ -213,13 +220,13 @@
 <header>
   <h1 data-i="book">교사 일지</h1>
   <button class="tab" data-tab="cal" data-i="cal">달력</button><button class="tab" data-tab="rec" data-i="pen">학생 기록</button><button class="tab" data-tab="cs" data-i="chat">상담 일지</button><button class="tab" data-tab="note" data-i="note">일지</button><button class="tab" data-tab="info" data-i="info">학생 정보</button><button class="tab" data-tab="att" data-i="att">출결</button><button class="tab" data-tab="box" data-i="box">보관함</button>
-  <div class="hright"><button class="dday" id="dday" title="디데이·재량휴업일 정하기"></button><button class="jset" id="jset" title="설정" aria-label="설정" data-i="gear"></button><span class="today" id="today"></span></div>
+  <div class="hright"><button class="dday" id="dday" title="디데이·재량휴업일 정하기"></button><button class="jinst" id="jinst" hidden>⬇ 교사 일지 앱으로 설치</button><span class="today" id="today"></span><button class="jset" id="jset" title="설정" aria-label="설정" data-i="gear"></button></div>
 </header>
 <main>
   <section class="pane" id="p-cal" hidden>
     <div class="box">
       <div class="cal-head"><button id="cal-prev" aria-label="지난달">◀</button><b id="cal-title"></b><button id="cal-next" aria-label="다음 달">▶</button><button id="cal-today">오늘</button>
-        <span class="sp"></span><span class="hint">+로 쓰기 · 누르면 줄 긋기 · 더블클릭으로 수정 · 끌어서 옮기기</span></div>
+        <span class="sp"></span><span class="hint">빈 칸 더블클릭: 일정 등록 · +: 기록·상담·일지 쓰기 · 일정 누르면 줄 긋기 · 더블클릭: 수정 · 끌어서 옮기기 · 옆으로 밀어 달 넘기기</span></div>
       <div class="cal" id="cal"></div>
     </div>
     <div class="side">
@@ -270,8 +277,9 @@
   <section class="pane" id="p-att" hidden>
     <div class="box">
       <p class="print-title" id="att-ptitle"></p>
+      <table class="att-key" id="att-key"></table>
       <div class="bar"><button id="att-prev" aria-label="지난달">◀</button><b id="att-title"></b><button id="att-next" aria-label="다음 달">▶</button><button id="att-now">이번 달</button><span class="sp"></span>
-        <span class="att-legend"><i>결</i>결석 <i>지</i>지각 <i>조</i>조퇴 <i>과</i>결과 · <i style="color:#1c7ed6">질병</i><i style="color:#e03131">미인정</i><i style="color:#868e96">기타</i></span>
+        <span class="att-legend"><i>결</i>결석 <i>지</i>지각 <i>조</i>조퇴 <i>과</i>결과 · <i style="color:#1c7ed6">질병</i><i style="color:#e03131">미인정</i><i style="color:#868e96">기타</i><i style="color:#2f9e44">출석인정</i> · <i class="doc"></i>서류 아직</span>
         <button id="att-copy" title="이달 출결을 엑셀에 붙여 넣을 수 있게 복사">복사</button><button id="att-print">출력</button></div>
       <div class="scroll" id="att-wrap"><table class="att" id="att"></table></div>
     </div>
@@ -378,7 +386,7 @@ function showTab(t) {
 document.querySelectorAll(".tab").forEach(b => b.onclick = () => showTab(b.dataset.tab));
 $("dday").onclick = e => ddayForm(e.currentTarget);
 $("jset").onclick = e => jrSettings(e.currentTarget);
-function draw() { ddayDraw(); $("today").textContent = new Date().toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric", weekday: "long" }); ({ cal: calDraw, rec: recDraw, cs: csDraw, note: noteDraw, info: infoDraw, att: attDraw, box: boxDraw })[tab](); }
+function draw() { ddayDraw(); $("today").textContent = (d => `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, "0")}/${String(d.getDate()).padStart(2, "0")}(${"일월화수목금토"[d.getDay()]})`)(new Date()); ({ cal: calDraw, rec: recDraw, cs: csDraw, note: noteDraw, info: infoDraw, att: attDraw, box: boxDraw })[tab](); }
 
 // ── 작은 팝업 (누른 곳 바로 옆). 바깥을 누르거나 Esc면 닫힘
 function pop(anchor, title, icon, body, onSave, o = {}) {
@@ -455,7 +463,7 @@ function evForm(date, e, anchor) { // 일정: 위에 그날 일정, 아래 [입�
   const wset = new Set(e?.wdays?.length ? e.wdays : [sday().getDay()]);
   const wdBox = el("div", { class: "wdays" }, ...W7.map((t, i) => { const b = el("button", { type: "button", class: wset.has(i) ? "on" : "", onclick: () => { if (wset.has(i) && wset.size > 1) wset.delete(i); else wset.add(i); b.classList.toggle("on", wset.has(i)); } }, t); return b; }));
   const mbySel = el("select", { "aria-label": "매월 반복 방식" });
-  const mbyDraw = () => { const x = sday(), v = mbySel.value || e?.mby || "date"; mbySel.replaceChildren(el("option", { value: "date" }, `매월 ${x.getDate()}일`), el("option", { value: "nth" }, `매월 ${Math.ceil(x.getDate() / 7)}번째 ${W7[x.getDay()]}요일`)); mbySel.value = v; };
+  const mbyDraw = () => { const x = sday(), v = mbySel.value || e?.mby || "date"; mbySel.replaceChildren(el("option", { value: "date" }, `매월 ${x.getDate()}일`), el("option", { value: "nth" }, `매월 ${Math.ceil(x.getDate() / 7)}번째 ${W7[x.getDay()]}요일`), el("option", { value: "last" }, `매월 마지막 ${W7[x.getDay()]}요일`)); mbySel.value = v; };
   mbyDraw(); d?.addEventListener("change", mbyDraw);
   const repSub = () => { wdBox.hidden = repSel.value !== "week"; mbySel.hidden = repSel.value !== "month"; };
   repSel.onchange = repSub; repSub();
@@ -570,7 +578,7 @@ function occurs(e, d) { // 이 일정이 그날에 있나
   if (d < e.date || (e.until && d > e.until) || e.skip?.includes(d)) return false;
   const a = new Date(e.date + "T00:00"), b = new Date(d + "T00:00"), nth = x => Math.ceil(x.getDate() / 7);
   return { day: true, wday: b.getDay() % 6 !== 0, week: (e.wdays?.length ? e.wdays : [a.getDay()]).includes(b.getDay()),
-    month: e.mby === "nth" ? b.getDay() === a.getDay() && nth(b) === nth(a) : a.getDate() === b.getDate(), year: a.getMonth() === b.getMonth() && a.getDate() === b.getDate() }[e.rep];
+    month: e.mby === "nth" ? b.getDay() === a.getDay() && nth(b) === nth(a) : e.mby === "last" ? b.getDay() === a.getDay() && addDays(d, 7).slice(5, 7) !== d.slice(5, 7) : a.getDate() === b.getDate(), year: a.getMonth() === b.getMonth() && a.getDate() === b.getDate() }[e.rep];
 }
 const isDone = (e, d) => e.rep ? !!e.dones?.[d] : !!e.done;
 function setDone(e, d) { if (e.rep) { e.dones ||= {}; if (e.dones[d]) delete e.dones[d]; else e.dones[d] = 1; } else e.done = !e.done; store(); }
@@ -753,6 +761,12 @@ function jrSettings(anchor) {
     document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
   };
   const grp = (title, ...kids) => el("div", { class: "sgroup" }, el("h4", {}, title), ...kids);
+  const docRules = el("div", { class: "ddl" }), drawDocs = () => { const L = J.attDocs ||= ATT_DOCS.map(x => ({ ...x })), sv = () => store(); // 조건 + 필요 서류 (고치면 바로 저장)
+    docRules.replaceChildren(...L.map(x => el("div", { class: "row" }, el("input", { type: "text", value: x.c, placeholder: "조건 (예: 질병 결석)", style: "width:130px", oninput: e => { x.c = e.target.value; sv(); } }),
+      el("input", { type: "text", class: "grow", value: x.d, placeholder: "필요 서류 (예: 결석계, 진료확인서)", oninput: e => { x.d = e.target.value; sv(); } }),
+      el("button", { type: "button", class: "x", title: "지우기", onclick: () => { L.splice(L.indexOf(x), 1); sv(); drawDocs(); } }, "✕"))),
+      el("div", { class: "row" }, el("button", { type: "button", onclick: () => { L.push({ c: "", d: "" }); drawDocs(); docRules.querySelector(".row:nth-last-child(2) input")?.focus(); } }, "+ 조건 추가"), el("button", { type: "button", onclick: () => { J.attDocs = undefined; store(); drawDocs(); } }, "처음대로"))); };
+  drawDocs();
   const panes = {
     gen: [grp("달력", chk("mon", "월요일부터 보기"), el("label", { class: "chk" }, el("input", { type: "checkbox", ...(st.hideBd ? {} : { checked: "" }), onchange: ev => { st.hideBd = !ev.target.checked; store(); draw(); } }), "학생 생일 보기 (학생 정보의 생년월일)")),
       grp("알람", el("div", { class: "row" }, el("span", {}, "미리 알림"), amin, el("span", {}, "분 전"), el("span", { class: "sp" }), chk("mute", "소리 끄기"))),
@@ -760,12 +774,13 @@ function jrSettings(anchor) {
     kind: [grp("일정 종류 (달력 색)", cats), grp("학생 기록 종류", kds)],
     cs: [grp("상담 대상", words(targets, L => J.targets = L, "학생, 학부모, 기타"), el("p", { class: "tip" }, "쉼표(,)로 나눠 써요.")),
       grp("상담 방법", words(ways, L => J.ways = L, "대면, 전화, 문자"))],
+    doc: [grp("출결 필요 서류", el("p", { class: "tip" }, "조건의 낱말이 출결의 분류(질병·미인정·기타·출석인정)·종류(결석·지각·조퇴·결과)·사유에 모두 들어 있으면 그 서류가 '필요'로 채워져요. 서류는 쉼표(,)로 나눠요."), docRules)],
     bak: [grp("백업", el("p", { class: "tip" }, "일지 전체를 파일로 내보내 보관하거나 다른 컴퓨터에서 불러와요. 읽거나 인쇄하려면 각 탭의 '출력'에서 PDF로 저장해요."),
       el("div", { class: "row" }, el("button", { type: "button", onclick: backup }, "파일로 내보내기"), el("button", { type: "button", onclick: () => file.click() }, "파일에서 불러오기"), file))],
   };
   const body = el("div", { class: "spane" }), tabs = el("div", { class: "stabs" });
   const show = k => { setTab = k; tabs.querySelectorAll("button").forEach(x => x.classList.toggle("on", x.dataset.k === k)); body.replaceChildren(...panes[k]); };
-  tabs.append(...[["gen", "일반"], ["kind", "종류 · 색"], ["cs", "상담"], ["bak", "백업"]].map(([k, t]) => el("button", { type: "button", "data-k": k, onclick: () => show(k) }, t)));
+  tabs.append(...[["gen", "일반"], ["kind", "종류 · 색"], ["cs", "상담"], ["doc", "출결 서류"], ["bak", "백업"]].map(([k, t]) => el("button", { type: "button", "data-k": k, onclick: () => show(k) }, t)));
   show(setTab);
   const close = pop(anchor, "설정", "gear", [tabs, body], () => {}, { noSave: true });
   tabs.closest(".pop").classList.add("setpop");
@@ -883,6 +898,12 @@ function hdrFit() { // 위 바가 두 줄이면 아랫줄의 디데이·설정·
 }
 new ResizeObserver(hdrFit).observe(document.querySelector("header"));
 $("cal-prev").onclick = () => { month.setMonth(month.getMonth() - 1); calDraw(); };
+{ // 달력을 옆으로 밀면 달 넘기기 (터치: 손가락, 노트북: 트랙패드 두 손가락). 일정 끌기는 그대로
+  let sx = null, sy = 0, wx = 0, wt = 0; const cal = $("cal"), go = n => $(n < 0 ? "cal-prev" : "cal-next").click();
+  cal.addEventListener("touchstart", e => { sx = e.touches.length === 1 && !e.target.closest(".ev, .spbar, .item") ? e.touches[0].clientX : null; sy = e.touches[0].clientY; }, { passive: true });
+  cal.addEventListener("touchend", e => { if (sx == null) return; const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy; sx = null; if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) go(dx > 0 ? -1 : 1); });
+  cal.addEventListener("wheel", e => { if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return; e.preventDefault(); if (Date.now() < wt) return; wx += e.deltaX; if (Math.abs(wx) > 80) { go(wx < 0 ? -1 : 1); wx = 0; wt = Date.now() + 600; } }, { passive: false });
+}
 $("cal-next").onclick = () => { month.setMonth(month.getMonth() + 1); calDraw(); };
 $("cal-today").onclick = () => { month = new Date(); month.setDate(1); pick = today(); calDraw(); };
 document.querySelectorAll("[data-add]").forEach(b => b.onclick = () => add(b.dataset.add, pick, b));
@@ -1063,7 +1084,13 @@ $("info-print").onclick = () => { if (!infoAll) { infoAll = true; infoDraw(); } 
 
 // ── 출결: 달마다 표 (평일만, 공휴일·재량휴업일 빼고). 칸을 누르면 결석·지각·조퇴·결과 + 질병·미인정·기타
 const ATT_T = ["결석", "지각", "조퇴", "결과"], ATT_SYM = { 결석: "결", 지각: "지", 조퇴: "조", 결과: "과" };
-const ATT_R = [["질병", "#1c7ed6"], ["미인정", "#e03131"], ["기타", "#868e96"]], attColor = r => (ATT_R.find(x => x[0] === r) || ATT_R[2])[1];
+const ATT_R = [["질병", "#1c7ed6"], ["미인정", "#e03131"], ["기타", "#868e96"], ["출석인정", "#2f9e44"]], attColor = r => (ATT_R.find(x => x[0] === r) || ATT_R[2])[1];
+// 필요 서류: 조건의 낱말이 모두 '분류 종류 사유'에 들어 있으면 그 서류가 필요 (⚙ 설정 → 출결 서류에서 고침). 칸마다 a.d = { 서류: 0 아직 | 1 받음 }
+const ATT_DOCS = [{ c: "질병 결석", d: "결석계(질병결석 포함), 진료확인서(3일 이상 연속 결석 시)" }, { c: "미인정 결석", d: "결석계" }, { c: "기타 결석", d: "결석계" },
+  { c: "체험학습", d: "체험학습 신청서, 체험학습 보고서" }, { c: "경조사", d: "사망진단서(경조사)" }];
+const attDocRules = () => J.attDocs || ATT_DOCS, docList = t => t.split(/[,，]/).map(v => v.trim()).filter(Boolean);
+const attNeed = (t, r, m) => { const hay = `${r} ${t} ${m}`; return [...new Set(attDocRules().filter(x => x.c.trim() && x.c.trim().split(/\s+/).every(w => hay.includes(w))).flatMap(x => docList(x.d)))]; };
+const attDocLeft = a => Object.entries(a?.d || {}).filter(([, v]) => !v).map(([k]) => k); // 아직 안 낸 서류
 let attMonth = new Date(); attMonth.setDate(1);
 function attDays() {
   const y = attMonth.getFullYear(), m = attMonth.getMonth(), n = new Date(y, m + 1, 0).getDate(), out = [];
@@ -1073,19 +1100,21 @@ function attDays() {
 function attRows() { // [학생, {결석: n…}, [자세히]]
   const A = J.att || {}, days = attDays();
   return people().map(p => { const cnt = Object.fromEntries(ATT_T.map(k => [k, 0])), det = [];
-    days.forEach(s => { const a = A[s]?.[p]; if (a) { cnt[a.t]++; det.push(`${+s.slice(5, 7)}/${+s.slice(8)} ${a.r}${a.t}${a.m ? `(${a.m})` : ""}`); } });
+    days.forEach(s => { const a = A[s]?.[p]; if (a) { cnt[a.t]++; det.push(`${+s.slice(5, 7)}/${+s.slice(8)} ${a.r}${a.t}${a.m ? `(${a.m})` : ""}${attDocLeft(a).length ? ` [서류 아직: ${attDocLeft(a).join(", ")}]` : ""}`); } });
     return [p, cnt, det]; });
 }
 function attDraw() {
   const days = attDays(), t = today(), A = J.att || {};
   $("att-title").textContent = `${attMonth.getFullYear()}년 ${attMonth.getMonth() + 1}월 출결`;
   $("att-ptitle").textContent = $("att-title").textContent;
+  $("att-key").replaceChildren(...ATT_T.map(t => el("tr", {}, el("th", {}, t), ...ATT_R.map(([r, c]) => el("td", {}, r, " ", el("b", { style: `color:${c}` }, ATT_SYM[t]))))),
+    el("tr", {}, el("td", { colspan: ATT_R.length + 1, class: "kd" }, el("i", { class: "doc" }), " 서류를 아직 안 냄")));
   if (!people().length) return $("att").replaceChildren(el("tr", {}, el("td", { class: "empty" }, "보드 ⚙ 설정 → 명단에 학생을 넣어 주세요.")));
   const cols = el("colgroup", {}, el("col", { class: "n" }), el("col", { class: "nm" }), ...days.map(() => el("col")), ...ATT_T.map(() => el("col", { class: "sum" })));
   const head = el("tr", {}, el("th", { class: "n" }, "번호"), el("th", { class: "nm" }, "이름"),
     ...days.map(s => el("th", { class: s === t ? "today" : "" }, String(+s.slice(8)), el("small", {}, "일월화수목금토"[new Date(s + "T12:00").getDay()]))), ...ATT_T.map(k => el("th", { class: "sum" }, k)));
   $("att").replaceChildren(cols, head, ...attRows().map(([p, cnt]) => el("tr", {}, el("td", { class: "n" }, numOf(p)), el("td", { class: "nm" }, nameOf(p)),
-    ...days.map(s => { const a = A[s]?.[p]; return el("td", { class: "c" + (s === t ? " today" : "") + (a ? " on" : ""), title: a ? `${dayName(s)} ${a.r}${a.t}${a.m ? " · " + a.m : ""}` : `${dayName(s)} 출석 (누르면 결석·지각…)`, style: a ? `color:${attColor(a.r)}` : "", onclick: ev => attForm(s, p, ev.currentTarget) }, a ? ATT_SYM[a.t] : ""); }),
+    ...days.map(s => { const a = A[s]?.[p]; return el("td", { class: "c" + (s === t ? " today" : "") + (a ? " on" : ""), title: a ? `${dayName(s)} ${a.r}${a.t}${a.m ? " · " + a.m : ""}${a.d ? "\n서류: " + Object.entries(a.d).map(([k, v]) => `${k} ${v ? "✓" : "아직"}`).join(", ") : ""}` : `${dayName(s)} 출석 (누르면 결석·지각…)`, style: a ? `color:${attColor(a.r)}` : "", onclick: ev => attForm(s, p, ev.currentTarget) }, a ? ATT_SYM[a.t] : "", attDocLeft(a).length ? el("i", { class: "doc" }) : null); }),
     ...ATT_T.map(k => el("td", { class: "sum" }, cnt[k] ? String(cnt[k]) : "")))));
   attFit();
 }
@@ -1108,8 +1137,18 @@ function attForm(s, p, anchor) { // 하루 또는 여러 날 (~까지)
   const tc = chips(ATT_T, cur?.t || "결석"), rc = chips(ATT_R.map(x => x[0]), cur?.r || "질병", attColor), memo = el("input", { type: "text", value: cur?.m || "", placeholder: "사유 (예: 감기, 체험학습)" });
   const until = el("input", { type: "date", value: s, min: s, title: "여러 날이면 끝나는 날" });
   const span = () => attSpan(s, until.value > s ? until.value : s);
-  const close = pop(anchor, `${nameOf(p)} · ${dayName(s)}`, "att", [tc.box, rc.box, memo, el("div", { class: "row" }, el("span", { class: "tip" }, "여러 날이면"), until, el("span", { class: "tip" }, "까지 (주말·공휴일 빼고)"))], () => {
-    for (const d of span()) (A[d] ||= {})[p] = { t: tc.get(), r: rc.get(), m: memo.value.trim() };
+  // 필요 서류: 누를 때마다 필요 → 받음 → 빼기. 처음 쓰는 칸은 분류·종류·사유에 맞춰 저절로 채움 (손댄 뒤로는 그대로)
+  let docs = cur?.d ? { ...cur.d } : null, touched = !!cur?.d;
+  const docBox = el("div", { class: "chips docs" }), docIn = el("input", { type: "text", placeholder: "서류 직접 쓰기 (Enter)", class: "grow" });
+  const docDraw = () => { if (!touched) docs = Object.fromEntries(attNeed(tc.get(), rc.get(), memo.value).map(k => [k, 0]));
+    const all = [...new Set([...Object.keys(docs), ...attDocRules().flatMap(x => docList(x.d))])];
+    docBox.replaceChildren(...all.map(k => el("button", { type: "button", class: k in docs ? docs[k] ? "got" : "need" : "", title: k in docs ? docs[k] ? "받음 (누르면 빼기)" : "필요 (누르면 받음)" : "누르면 필요",
+      onclick: () => { touched = true; if (!(k in docs)) docs[k] = 0; else if (!docs[k]) docs[k] = 1; else delete docs[k]; docDraw(); } }, k in docs ? (docs[k] ? "✓ " : "□ ") + k : k))); };
+  docIn.onkeydown = e => { if (e.key === "Enter" && docIn.value.trim()) { e.preventDefault(); touched = true; docs[docIn.value.trim()] = 0; docIn.value = ""; docDraw(); } };
+  [tc.box, rc.box].forEach(b => b.addEventListener("click", docDraw)); memo.addEventListener("input", docDraw); docDraw();
+  const close = pop(anchor, `${nameOf(p)} · ${dayName(s)}`, "att", [tc.box, rc.box, memo, el("div", { class: "row" }, el("span", { class: "tip" }, "여러 날이면"), until, el("span", { class: "tip" }, "까지 (주말·공휴일 빼고)")),
+    el("p", { class: "sub" }, "필요 서류 (□ 아직 · ✓ 받음)"), docBox, el("div", { class: "row" }, docIn)], () => {
+    for (const d of span()) (A[d] ||= {})[p] = { t: tc.get(), r: rc.get(), m: memo.value.trim(), ...(Object.keys(docs).length ? { d: { ...docs } } : {}) };
     store();
   }, { cancel: "취소", foot: cur ? el("button", { type: "button", class: "danger", onclick: () => { for (const d of span()) if (A[d]) { delete A[d][p]; if (!Object.keys(A[d]).length) delete A[d]; } store(); close(); } }, "출석으로") : null });
 }
@@ -1118,6 +1157,21 @@ $("att-next").onclick = () => { attMonth.setMonth(attMonth.getMonth() + 1); attD
 $("att-now").onclick = () => { attMonth = new Date(); attMonth.setDate(1); attDraw(); };
 $("att-copy").onclick = () => copyRows($("att-copy"), [tsv([["번호", "이름", ...ATT_T, "자세히"], ...attRows().map(([p, cnt, det]) => [numOf(p), nameOf(p), ...ATT_T.map(k => cnt[k] || ""), det.join(", ")])])]);
 $("att-print").onclick = () => print();
+// 앱으로 설치: 브라우저가 '설치할 수 있어요'를 알려 주면 위에 버튼 (보드를 설치하면 이 탭이 #install로 열림)
+let jInst = null;
+addEventListener("beforeinstallprompt", e => { e.preventDefault(); jInst = e; $("jinst").hidden = false; $("jinst").classList.toggle("hot", location.hash === "#install"); });
+addEventListener("appinstalled", () => { $("jinst").hidden = true; try { localStorage.setItem("jr-installed", "1"); } catch (e) {} }); // 보드의 '일지 앱 설치' 버튼도 숨김
+if (matchMedia("(display-mode: standalone), (display-mode: window-controls-overlay)").matches) try { localStorage.setItem("jr-installed", "1"); } catch (e) {} // 앱으로 켜졌으면 이미 설치됨
+$("jinst").onclick = () => jInst?.prompt().catch(() => {});
+// 파일 끌어 놓기: 놓은 곳에서 가까운 파일 칸(카드·창·탭 안의 input[type=file])에 넣고 change를 일으킴. 따로 받는 곳(화이트보드 등)은 그쪽이 먼저
+{ let box = null; const STOP = ".card, .pop, section, form, .modal, .hw-it, .hw-new, .card-ed, #panel";
+  const find = t => { for (let e = t; e && e !== document.body; e = e.parentElement) { const f = e.querySelector?.("input[type=file]"); if (f) return [e, f]; if (e.matches?.(STOP)) break; } return []; };
+  const mark = b => { box?.classList.remove("drop-on"); box = b; box?.classList.add("drop-on"); };
+  addEventListener("dragover", e => { if (e.defaultPrevented || !e.dataTransfer?.types.includes("Files")) return; const [b] = find(e.target); mark(b || null); if (b) { e.preventDefault(); e.dataTransfer.dropEffect = "copy"; } });
+  addEventListener("dragleave", e => { if (!e.relatedTarget) mark(null); });
+  addEventListener("drop", e => { mark(null); if (e.defaultPrevented || !e.dataTransfer?.files.length) return; const [, f] = find(e.target); if (!f) return; e.preventDefault();
+    const dt = new DataTransfer(); [...e.dataTransfer.files].slice(0, f.multiple ? 99 : 1).forEach(x => dt.items.add(x)); f.files = dt.files; f.dispatchEvent(new Event("change", { bubbles: true })); });
+}
 
 // ── 보관함: 위의 탭 = 분류(수업자료·생기부…), 안에는 즐겨찾기처럼 폴더(과목별 등, 폴더 안에 폴더도).
 //   J.box: [{ id, type: link·memo·folder, title, url, text, tag(분류), in(들어 있는 폴더 id) }]
