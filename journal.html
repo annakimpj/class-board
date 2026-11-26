@@ -109,7 +109,7 @@
   .inbox .clock { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); border: 0; background: none; padding: 3px; color: var(--muted); }
   .inbox .clock:hover { color: var(--accent); } .inbox .tpick { position: absolute; right: 0; bottom: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; border: 0; padding: 0; }
   :is(.pop, .pop-in) .bell { padding: 4px; } :is(.pop, .pop-in) .addrow .bell .i { width: 18px; height: 18px; }
-  .tbox { gap: 4px; align-items: center; } .tbox .tnum { width: 36px; flex: none; text-align: center; font: inherit; font-size: 15px; padding: 5px 4px; border: 1.5px solid var(--line); border-radius: 8px; } .tbox .tnum:focus { outline: none; border-color: var(--accent); }
+  .tbox { gap: 4px; align-items: center; justify-content: flex-end; } .tbox .treset { flex: none; border: 0; background: none; padding: 4px; color: var(--muted); } .tbox .treset:hover { color: var(--accent); } .tbox .treset .i { width: 18px; height: 18px; } .tbox .tnum { width: 36px; flex: none; text-align: center; font: inherit; font-size: 15px; padding: 5px 4px; border: 1.5px solid var(--line); border-radius: 8px; } .tbox .tnum:focus { outline: none; border-color: var(--accent); }
   .tbox .ampm { display: inline-flex; border: 1.5px solid var(--line); border-radius: 8px; overflow: hidden; } .tbox .ampm button { border: 0; border-radius: 0; background: #fff; font-size: 12.5px; padding: 5px 6px; white-space: nowrap; color: var(--muted); } .tbox .ampm button.on { background: var(--accent); color: #fff; } .tbox b { color: var(--muted); } .tbox .main { margin-left: auto; font-size: 13px; padding: 5px 9px; white-space: nowrap; flex: none; } .tbox .ampm { flex: none; } /* 🕒 누르면: 오전/오후 · 시 : 분 · 넣기 */
   .evquick { margin-top: 6px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; } .evquick .addrow { margin-top: 0; } .evquick .row { flex-wrap: wrap; } .evquick .addrow, .evquick .tbox { flex-wrap: nowrap; } .evquick .inbox { min-width: 0; } .evquick .modes { flex-wrap: nowrap; align-items: center; gap: 2px; } .evquick .modes .chips { flex: 0 1 auto; } :is(.evquick, .pop) .modes .chips { gap: 0; }
   :is(.evquick, .pop) .modes .chips button { border: 0; border-radius: 4px; padding: 2px 4px; font-size: 12.5px; white-space: nowrap; background: none; position: relative; } :is(.evquick, .pop) .modes .chips button + button::before { content: ""; position: absolute; left: 0; top: 25%; bottom: 25%; border-left: 1px solid var(--line); } /* 기본ㅣ학교 행사ㅣ… */
@@ -316,7 +316,7 @@
 const $ = id => document.getElementById(id);
 const el = (tag, attrs = {}, ...kids) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) k.startsWith("on") ? e[k] = v : e.setAttribute(k, v); e.append(...kids.flat().filter(x => x != null && x !== false)); return e; };
 // 선 아이콘 (보드 아이콘과 같은 모양)
-const IC = { bulb: '<path d="M9 18v-1.5c0-1.3-.6-2.2-1.5-3.2A6 6 0 1 1 16.5 13.3c-.9 1-1.5 1.9-1.5 3.2V18M9.5 21h5"/><path d="M10 9.5l1.6 1.6 2.6-2.8M12 1v1.5M4.2 4.2l1 1M19.8 4.2l-1 1M1.5 10H3M21 10h1.5"/>', gear: '<path d="M10.3 4.3c.4-1.8 2.9-1.8 3.4 0a1.7 1.7 0 0 0 2.6 1.1c1.5-.9 3.3.8 2.4 2.4a1.7 1.7 0 0 0 1 2.5c1.8.5 1.8 3 0 3.4a1.7 1.7 0 0 0-1 2.6c.9 1.5-.8 3.3-2.4 2.4a1.7 1.7 0 0 0-2.6 1c-.4 1.8-2.9 1.8-3.3 0a1.7 1.7 0 0 0-2.6-1c-1.5.9-3.3-.8-2.4-2.4a1.7 1.7 0 0 0-1-2.6c-1.8-.4-1.8-2.9 0-3.4a1.7 1.7 0 0 0 1-2.5c-.9-1.6.8-3.3 2.4-2.4 1 .6 2.3.1 2.5-1.1z"/><circle cx="12" cy="12" r="3"/>', span: '<path d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4"/>', rep: '<path d="M12 12c-2-3-3.5-4-5.5-4a4 4 0 0 0 0 8c2 0 3.5-1 5.5-4s3.5-4 5.5-4a4 4 0 0 1 0 8c-2 0-3.5-1-5.5-4z"/>', cal: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>', pen: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13 7l4 4"/>',
+const IC = { reset: '<path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M18.5 2.5 19 7l-4.5.5"/>', bulb: '<path d="M9 18v-1.5c0-1.3-.6-2.2-1.5-3.2A6 6 0 1 1 16.5 13.3c-.9 1-1.5 1.9-1.5 3.2V18M9.5 21h5"/><path d="M10 9.5l1.6 1.6 2.6-2.8M12 1v1.5M4.2 4.2l1 1M19.8 4.2l-1 1M1.5 10H3M21 10h1.5"/>', gear: '<path d="M10.3 4.3c.4-1.8 2.9-1.8 3.4 0a1.7 1.7 0 0 0 2.6 1.1c1.5-.9 3.3.8 2.4 2.4a1.7 1.7 0 0 0 1 2.5c1.8.5 1.8 3 0 3.4a1.7 1.7 0 0 0-1 2.6c.9 1.5-.8 3.3-2.4 2.4a1.7 1.7 0 0 0-2.6 1c-.4 1.8-2.9 1.8-3.3 0a1.7 1.7 0 0 0-2.6-1c-1.5.9-3.3-.8-2.4-2.4a1.7 1.7 0 0 0-1-2.6c-1.8-.4-1.8-2.9 0-3.4a1.7 1.7 0 0 0 1-2.5c-.9-1.6.8-3.3 2.4-2.4 1 .6 2.3.1 2.5-1.1z"/><circle cx="12" cy="12" r="3"/>', span: '<path d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4"/>', rep: '<path d="M12 12c-2-3-3.5-4-5.5-4a4 4 0 0 0 0 8c2 0 3.5-1 5.5-4s3.5-4 5.5-4a4 4 0 0 1 0 8c-2 0-3.5-1-5.5-4z"/>', cal: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>', pen: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13 7l4 4"/>',
   chat: '<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>', note: '<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h7M9 16h7"/>',
   book: '<path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5zM5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3M9 7h6"/>', plus: '<path d="M12 5v14M5 12h14"/>',
   clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
@@ -467,11 +467,12 @@ function evForm(date, e, anchor, host) { // host: 팝업 대신 그 form 안에 
   let pm = false; const amB = el("button", { type: "button", onclick: () => setPm(false) }, "오전"), pmB = el("button", { type: "button", onclick: () => setPm(true) }, "오후");
   const setPm = v => { pm = v; amB.classList.toggle("on", !v); pmB.classList.toggle("on", v); hh.focus(); }, ampm = el("span", { class: "ampm" }, amB, pmB);
   const hh = el("input", { type: "text", inputmode: "numeric", maxlength: "2", class: "tnum", placeholder: "시", "aria-label": "시" }), mm = el("input", { type: "text", inputmode: "numeric", maxlength: "2", class: "tnum", placeholder: "분", "aria-label": "분" });
-  const tput = () => { let h = parseInt(hh.value, 10), m = parseInt(mm.value || "0", 10); if (!(h >= 0 && h <= 23) || !(m >= 0 && m <= 59)) { hh.focus(); return; }
+  const tput = () => { if (tbox.hidden || !hh.value) return true; let h = parseInt(hh.value, 10), m = parseInt(mm.value || "0", 10); if (!(h >= 0 && h <= 23) || !(m >= 0 && m <= 59)) { hh.focus(); return false; }
     if (h <= 12) h = pm ? (h % 12) + 12 : h % 12; // 오후 3 → 15, 오전 12 → 0
-    const t = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`, p = parseTime(x.value); x.value = `${t} ${p.time ? p.text : x.value.trim()}`.trim(); tbox.hidden = true; upd(); x.focus(); };
-  const tbox = el("div", { class: "row tbox", hidden: "" }, ampm, hh, el("b", {}, ":"), mm, el("button", { type: "button", class: "main", onclick: tput }, "넣기"));
-  [hh, mm].forEach(i => i.onkeydown = ev => { if (ev.key === "Enter") { ev.preventDefault(); ev.stopPropagation(); tput(); } else if (ev.key === "Escape") { ev.stopPropagation(); tbox.hidden = true; x.focus(); } });
+    const t = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`, p = parseTime(x.value); x.value = `${t} ${p.time ? p.text : x.value.trim()}`.trim(); return true; }; // 추가를 누를 때 일정 글 앞에 붙임
+  const treset = el("button", { type: "button", class: "treset", title: "시간 지우기", "aria-label": "시간 지우기", onclick: () => { hh.value = mm.value = ""; const p = parseTime(x.value); if (p.time) x.value = p.text; tbox.hidden = true; upd(); x.focus(); } }, ico("reset"));
+  const tbox = el("div", { class: "row tbox", hidden: "" }, ampm, hh, el("b", {}, ":"), mm, treset);
+  [hh, mm].forEach(i => i.onkeydown = ev => { if (ev.key === "Escape") { ev.stopPropagation(); tbox.hidden = true; x.focus(); } }); // Enter는 그대로 추가
   hh.oninput = () => { hh.value = hh.value.replace(/\D/g, ""); if (hh.value.length === 2 || +hh.value > 2) mm.focus(); }; mm.oninput = () => { mm.value = mm.value.replace(/\D/g, ""); };
   const clock = el("button", { type: "button", class: "clock", title: "시간 넣기", "aria-label": "시간 넣기", onclick: () => {
     if (!tbox.hidden) { tbox.hidden = true; return; }
@@ -516,7 +517,8 @@ function evForm(date, e, anchor, host) { // host: 팝업 대신 그 form 안에 
   const addRow = el("div", { class: "row addrow" }, el("span", { class: "inbox" }, x, clock), bell, saveB), modeRow = el("div", { class: "row modes" }, catC.box, spanB, repB);
   let close = () => {};
   const saveFn = () => {
-    const v = x.value.trim(); if (!v) return false;
+    if (!x.value.trim() || !tput()) return false;
+    const v = x.value.trim(); tbox.hidden = true; hh.value = mm.value = "";
     const { time, text } = parseTime(v);
     const clean = o => { for (const k in o) if (o[k] === undefined) delete o[k]; return o; };
     if (e && !e.rep) { const st = d.value || e.date; clean(Object.assign(e, { date: st, time, text, alarm: time ? alarm : "" }, modeOf(st))); store(); return; }
@@ -1172,9 +1174,10 @@ function attForm(s, p, anchor) { // 하루 또는 여러 날 (~까지)
   let docs = cur?.d ? { ...cur.d } : null, touched = !!cur?.d;
   const docBox = el("div", { class: "chips docs" }), docIn = el("input", { type: "text", placeholder: "서류 직접 쓰기 (Enter)", class: "grow" });
   const docDraw = () => { if (!touched) docs = Object.fromEntries(attNeed(tc.get(), rc.get(), memo.value).map(k => [k, 0]));
-    const all = [...new Set([...Object.keys(docs), ...Object.values(attDocMap()).flatMap(docList)])];
-    docBox.replaceChildren(...all.map(k => el("button", { type: "button", class: k in docs ? docs[k] ? "got" : "need" : "", title: k in docs ? docs[k] ? "받음 (누르면 빼기)" : "필요 (누르면 받음)" : "누르면 필요",
-      onclick: () => { touched = true; if (!(k in docs)) docs[k] = 0; else if (!docs[k]) docs[k] = 1; else delete docs[k]; docDraw(); } }, el("i", { class: "bx" }, k in docs && docs[k] ? "✓" : ""), k))); };
+    const all = [...new Set([...Object.values(attDocMap()).flatMap(docList), ...Object.keys(docs)])]; // 순서 고정 (눌러도 자리 안 바뀜)
+    // 네모를 누르면 받음 ✓ ↔ 아직, 글을 누르면 이 서류를 필요로 넣기 ↔ 빼기
+    docBox.replaceChildren(...all.map(k => el("button", { type: "button", class: k in docs ? docs[k] ? "got" : "need" : "", title: k in docs ? "네모: 받음 표시 · 글: 빼기" : "누르면 필요 서류로 넣기",
+      onclick: ev => { touched = true; if (ev.target.closest(".bx")) docs[k] = docs[k] ? 0 : 1; else if (k in docs) delete docs[k]; else docs[k] = 0; docDraw(); } }, el("i", { class: "bx" }, k in docs && docs[k] ? "✓" : ""), k))); };
   docIn.onkeydown = e => { if (e.key === "Enter" && docIn.value.trim()) { e.preventDefault(); touched = true; docs[docIn.value.trim()] = 0; docIn.value = ""; docDraw(); } };
   [tc.box, rc.box].forEach(b => b.addEventListener("click", docDraw)); memo.addEventListener("input", docDraw); docDraw();
   const close = pop(anchor, `${nameOf(p)} · ${dayName(s)}`, "att", [tc.box, rc.box, memo, el("div", { class: "row" }, el("span", { class: "tip" }, "여러 날이면"), until, el("span", { class: "tip" }, "까지 (주말·공휴일 빼고)")),
