@@ -7043,7 +7043,7 @@ const isApp = () => !matchMedia("(display-mode: browser)").matches, isEdge = /Ed
 let installEvt = null; // 브라우저가 '설치할 수 있어요'를 알려 주면 그 자리에서 바로 설치 버튼을 띄움
 addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; });
 const INSTALL_STEPS = [
-  { text: "먼저 앱으로 설치해 주세요. 바탕화면·작업 표시줄에서 바로 켜고, 주소창 없이 넓게 써요.", btn: ["지금 설치하기", () => installEvt?.prompt().catch(() => {})] },
+  { text: "먼저 앱으로 설치해 주세요. 바탕화면·작업 표시줄에서 바로 켜고, 주소창 없이 넓게 써요.", btn: ["지금 설치하기", () => { installEvt?.prompt().catch(() => {}); installEvt?.userChoice.then(c => c.outcome === "accepted" && open("journal.html#install", "_blank")); }] }, // 보드를 설치하면 교사 일지 탭을 열어 바로 이어서 설치 (웹 앱은 한 번에 하나만 설치돼서)
   ...(isEdge ? [
     { text: "엣지: 주소창 오른쪽 '앱 설치' 아이콘(네모에 +)을 누르고 '설치'. 안 보이면 오른쪽 위 … → 앱 → '이 사이트를 앱으로 설치'" },
     { text: "켤 때 저절로 열리게: 주소창에 edge://apps → 우리반 보드의 … → '장치 로그인 시 시작'" }]
