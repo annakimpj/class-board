@@ -70,6 +70,11 @@
   .nt { position: sticky; top: 8px; z-index: 5; background: #fff4e6; border: 3px solid #ff922b; border-radius: 18px; padding: 14px 18px; margin-bottom: 14px; display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: center; box-shadow: 0 6px 20px rgba(232, 89, 12, .2); }
   .nt b { font-size: 16px; color: #d9480f; } .nt p { grid-column: 1; margin: 0; font-size: 24px; font-weight: 600; white-space: pre-line; } .nt button { grid-row: 1 / 3; grid-column: 2; }
   .drop-on { outline: 3px dashed #3b82f6 !important; outline-offset: -3px; }
+  .duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin-bottom: 16px; } .duo > * { margin: 0 !important; min-width: 0; }
+  .tp { background: #fff5f0; border: 3px solid #f3d6c2; border-radius: 16px; padding: 14px 18px 16px; display: grid; gap: 8px; align-content: start; }
+  .tp > b { font-size: 17px; color: #e2643f; } .tp .r { background: #fff; border-radius: 12px; padding: 8px 12px; font-size: 16px; text-align: left; border: 1.5px solid #f3d6c2; display: grid; gap: 2px; }
+  .tp .r small { color: var(--muted); font-size: 13px; } .tp .r .t { color: #1971c2; } .tp .r .t::before { content: "선생님 "; font-weight: 700; }
+  .tp > button.main { justify-self: start; font-size: 19px; } .tp .none { margin: 0; color: var(--muted); }
   .nb { background: #2f4a3a; color: #f8f9f0; border: 6px solid #8a6a4a; border-radius: 16px; padding: 14px 20px 16px; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(60, 40, 20, .1); }
   .nb b { display: block; font-size: 17px; color: #ffe066; margin-bottom: 6px; } .nb a { color: #a5d8ff; } .nb #nb-l p { margin: 2px 0; font-size: 21px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
   .files { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0; } .files img { max-width: min(100%, 360px); max-height: 260px; border-radius: 10px; cursor: zoom-in; } .files img.big { max-width: 100%; max-height: none; cursor: zoom-out; }
@@ -123,7 +128,7 @@
 <div class="app" id="app" hidden>
   <div class="top"><button class="hw-btn" id="hw-btn">🧑 꾸미기</button><h1 id="me-name"></h1><span class="pt" id="me-pt"></span><button class="hw-btn" id="nt-on" hidden>🔔 알림 켜기</button><button class="out" id="out">나가기</button></div>
   <div class="nt" id="nt" hidden><b>📢 선생님 공지</b><p id="nt-t"></p><button class="main" id="nt-ok">확인</button></div>
-  <div class="nb" id="nb" hidden><b id="nb-d"></b><div id="nb-l"></div></div>
+  <div class="duo" id="duo"><div class="nb" id="nb" hidden><b id="nb-d"></b><div id="nb-l"></div></div><div class="tp" id="tp" hidden></div></div>
   <div class="hw" id="hw"><p class="hw-none">불러오는 중…</p></div>
   <div class="main-grid" id="dress" hidden>
     <div class="stage">
@@ -257,14 +262,15 @@ async function shrink(file) { // 사진을 긴 쪽 1280px JPEG로 줄임 (문서
 let reps = {}, repUnsub = null, talk = {}; // reps: 과제마다 선생님 답장 { msgs }, talk: 쓰고 있는 이어 쓰기 글
 const repRef = id => fs.doc(db, "classes", hwL.code, "hw", id, "reply", hwL.key);
 function hwDraw() {
-  const todo = hws.filter(x => !sent(mine[x.id])).length;
+  const todo = hws.filter(x => x.kind !== "topic" && !sent(mine[x.id])).length;
   $("hw-btn").replaceChildren(hwOpen ? "🧑 꾸미기" : "📚 과제", ...(todo && !hwOpen ? [el("b", {}, String(todo))] : []));
-  $("hw").hidden = !hwOpen; $("dress").hidden = hwOpen; nbDraw();
+  $("hw").hidden = !hwOpen; $("dress").hidden = hwOpen; nbDraw(); tpDraw();
   if (!hwOpen) return;
-  if (!hws.length) return $("hw").replaceChildren(el("p", { class: "hw-none" }, "아직 과제가 없어요."));
+  const hw = hws.filter(x => x.kind !== "topic");
+  if (!hwSel && !hw.length) return $("hw").replaceChildren(el("p", { class: "hw-none" }, "아직 과제가 없어요."));
   const name = x => x.title || (x.t || "").split("\n")[0].slice(0, 40) || "과제";
   const sel = hws.find(x => x.id === hwSel);
-  if (!sel) return $("hw").replaceChildren(el("div", { class: "hw-cards" }, ...hws.map(x => el("button", { class: "hw-card" + (sent(mine[x.id]) ? " done" : "") + (x.kind === "topic" ? " topic" : ""), onclick: () => hwOpenOne(x.id) },
+  if (!sel) return $("hw").replaceChildren(el("div", { class: "hw-cards" }, ...hw.map(x => el("button", { class: "hw-card" + (sent(mine[x.id]) ? " done" : "") + (x.kind === "topic" ? " topic" : ""), onclick: () => hwOpenOne(x.id) },
     el("b", {}, name(x)), x.t ? el("span", {}, x.t.slice(0, 60)) : null, el("small", {}, new Date(x.at).toLocaleDateString("ko-KR", { month: "numeric", day: "numeric" })),
     el("em", {}, sent(mine[x.id]) ? "✅ 냈어요" : "아직 안 냄", reps[x.id]?.msgs?.length ? el("i", { class: "rp" }, ` 💬 선생님 답장 ${reps[x.id].msgs.length}`) : null)))));
   const x = sel, s = mine[x.id], dr = hwDraft[x.id] ||= { text: s?.text || "", files: [...filesOf(s)], edit: !sent(s) };
@@ -292,6 +298,17 @@ function hwDraw() {
   $("hw").replaceChildren(el("button", { class: "hw-back", onclick: () => { hwSel = null; repUnsub?.(); repUnsub = null; hwDraw(); } }, "← 과제 목록"),
     el("div", { class: "hw-it" }, el("h2", {}, name(x)), x.t ? el("p", {}, ...hwText(x.t)) : null, okLink(x.link) ? el("a", { class: "go", href: x.link, target: "_blank", rel: "noopener noreferrer" }, "🔗 링크 열기") : null, attView(x),
       el("div", { class: "hw-me" }, el("span", { class: "when" }, new Date(x.at).toLocaleDateString("ko-KR") + (x.kind === "topic" ? " 오늘의 주제" : " 과제")), ...me), talkBox));
+}
+// 과제 화면 위 '오늘의 주제': 지난 주제에 선생님이 단 댓글을 먼저 보이고, 버튼을 누르면 오늘 주제를 보고 씀
+function tpDraw() {
+  const td = new Date().toLocaleDateString("sv-SE"), tid = "topic-" + td, T = hws.find(x => x.id === tid);
+  const past = hws.filter(x => x.kind === "topic" && x.id !== tid && reps[x.id]?.msgs?.length).sort((a, b) => b.at - a.at).slice(0, 3);
+  $("tp").hidden = !hwOpen || !!hwSel || (!T && !past.length); if ($("tp").hidden) return;
+  $("tp").replaceChildren(el("b", {}, "✏︎ 오늘의 주제"),
+    ...(past.length ? [el("small", { class: "when" }, "지난 주제에 선생님이 댓글을 달았어요")] : []),
+    ...past.map(x => el("button", { class: "r", onclick: () => hwOpenOne(x.id) }, el("small", {}, new Date(x.at).toLocaleDateString("ko-KR", { month: "numeric", day: "numeric" }) + " · " + (x.t || "").split("\n")[0]),
+      el("span", {}, "나: " + (mine[x.id]?.text || "").slice(0, 60)), ...reps[x.id].msgs.slice(-2).map(m => el("span", { class: "t" }, m.t)))),
+    T ? el("button", { class: "main", onclick: () => hwOpenOne(tid) }, sent(mine[tid]) ? "✅ 오늘 쓴 글 보기·고치기" : "✏️ 오늘의 주제 글쓰기") : el("p", { class: "none" }, "오늘의 주제가 아직 없어요."));
 }
 function hwOpenOne(id) { // 카드를 누르면 자세히. 처음 열면 '봤어요' 남김 (선생님 화면 노란 네모). 열어 둔 동안 선생님 답장을 바로 받음
   hwSel = id; hwDraw(); scrollTo(0, 0);
