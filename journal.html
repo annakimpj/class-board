@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#e9e2d6"><!-- 창 위 버튼 줄과 머리줄을 같은 색으로: 잡고 옮기는 곳이 보이게 -->
 <title>일지 · 우리반 보드</title>
-<link rel="icon" href="icon-192.png">
+<link rel="icon" href="icon-j-192.png">
+<link rel="manifest" href="journal.webmanifest"><!-- 교사 일지는 따로 설치하는 앱 (보드에서 여는 창은 그대로) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
   /* 교사 일지: 보드에서 열면 메인 모니터에 뜨는 선생님 전용 창. 달력에서 일정·학생 기록·상담·일지를 바로 (학생 화면에는 안 나옴) */
@@ -53,7 +54,7 @@
   .ring .btns.col { flex-direction: column; align-items: stretch; } .ring .btns .danger { color: #e03131; }
   .pop .wdays { display: flex; gap: 2px; } .pop .wdays button { width: 28px; height: 26px; padding: 0; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; } .pop .wdays button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
   .pop .moderow.col { display: grid; gap: 6px; } .pop .modes .chips { flex: 1; min-width: 0; flex-wrap: wrap; } /* 종류는 왼쪽, 연속·반복은 오른쪽 */
-  header .sp { flex: 1; } header .hright { margin-left: auto; display: flex; align-items: center; gap: 4px; } header .today { color: var(--muted); font-size: 14px; }
+  header .sp { flex: 1; } header .hright { margin-left: auto; display: flex; align-items: center; gap: 4px; } header .today { color: var(--muted); font-size: 14px; white-space: nowrap; margin: 0 4px 0 8px; }
   main { min-height: 0; overflow: hidden; padding: 12px 14px; }
   .pane { height: 100%; display: grid; gap: 12px; min-height: 0; }
   .box { background: var(--card); border-radius: 14px; padding: 14px 16px; min-height: 0; display: flex; flex-direction: column; }
@@ -63,7 +64,7 @@
   /* 달력 (크게) + 오른쪽 좁게 */
   #p-cal { grid-template-columns: minmax(0, 1fr) 270px; }
   .cal-head { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; } .cal-head b { font-size: 20px; min-width: 130px; text-align: center; }
-  .cal-head .sp { flex: 1; } .cal-head .hint { color: var(--muted); font-size: 12px; }
+  .cal-head .sp { flex: 1; } .cal-head .hint { color: var(--muted); font-size: 12px; flex: 1 1 260px; text-align: right; }
   .cal { user-select: none; -webkit-user-select: none; flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); grid-template-rows: auto repeat(6, minmax(0, 1fr)); gap: 4px; }
   .cal .dw { text-align: center; font-size: 13px; color: var(--muted); } .cal .dw.sun { color: #e03131; } .cal .dw.sat { color: #1c7ed6; }
   .day { position: relative; border-radius: 10px; background: #faf8f5; padding: 4px 6px; cursor: pointer; overflow: hidden; display: flex; flex-direction: column; gap: 2px; min-height: 0; }
@@ -213,13 +214,13 @@
 <header>
   <h1 data-i="book">교사 일지</h1>
   <button class="tab" data-tab="cal" data-i="cal">달력</button><button class="tab" data-tab="rec" data-i="pen">학생 기록</button><button class="tab" data-tab="cs" data-i="chat">상담 일지</button><button class="tab" data-tab="note" data-i="note">일지</button><button class="tab" data-tab="info" data-i="info">학생 정보</button><button class="tab" data-tab="att" data-i="att">출결</button><button class="tab" data-tab="box" data-i="box">보관함</button>
-  <div class="hright"><button class="dday" id="dday" title="디데이·재량휴업일 정하기"></button><button class="jset" id="jset" title="설정" aria-label="설정" data-i="gear"></button><span class="today" id="today"></span></div>
+  <div class="hright"><button class="dday" id="dday" title="디데이·재량휴업일 정하기"></button><span class="today" id="today"></span><button class="jset" id="jset" title="설정" aria-label="설정" data-i="gear"></button></div>
 </header>
 <main>
   <section class="pane" id="p-cal" hidden>
     <div class="box">
       <div class="cal-head"><button id="cal-prev" aria-label="지난달">◀</button><b id="cal-title"></b><button id="cal-next" aria-label="다음 달">▶</button><button id="cal-today">오늘</button>
-        <span class="sp"></span><span class="hint">+로 쓰기 · 누르면 줄 긋기 · 더블클릭으로 수정 · 끌어서 옮기기</span></div>
+        <span class="sp"></span><span class="hint">빈 칸 더블클릭: 일정 등록 · +: 기록·상담·일지 쓰기 · 일정 누르면 줄 긋기 · 더블클릭: 수정 · 끌어서 옮기기 · 옆으로 밀어 달 넘기기</span></div>
       <div class="cal" id="cal"></div>
     </div>
     <div class="side">
@@ -378,7 +379,7 @@ function showTab(t) {
 document.querySelectorAll(".tab").forEach(b => b.onclick = () => showTab(b.dataset.tab));
 $("dday").onclick = e => ddayForm(e.currentTarget);
 $("jset").onclick = e => jrSettings(e.currentTarget);
-function draw() { ddayDraw(); $("today").textContent = new Date().toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric", weekday: "long" }); ({ cal: calDraw, rec: recDraw, cs: csDraw, note: noteDraw, info: infoDraw, att: attDraw, box: boxDraw })[tab](); }
+function draw() { ddayDraw(); $("today").textContent = (d => `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, "0")}/${String(d.getDate()).padStart(2, "0")}(${"일월화수목금토"[d.getDay()]})`)(new Date()); ({ cal: calDraw, rec: recDraw, cs: csDraw, note: noteDraw, info: infoDraw, att: attDraw, box: boxDraw })[tab](); }
 
 // ── 작은 팝업 (누른 곳 바로 옆). 바깥을 누르거나 Esc면 닫힘
 function pop(anchor, title, icon, body, onSave, o = {}) {
@@ -455,7 +456,7 @@ function evForm(date, e, anchor) { // 일정: 위에 그날 일정, 아래 [입�
   const wset = new Set(e?.wdays?.length ? e.wdays : [sday().getDay()]);
   const wdBox = el("div", { class: "wdays" }, ...W7.map((t, i) => { const b = el("button", { type: "button", class: wset.has(i) ? "on" : "", onclick: () => { if (wset.has(i) && wset.size > 1) wset.delete(i); else wset.add(i); b.classList.toggle("on", wset.has(i)); } }, t); return b; }));
   const mbySel = el("select", { "aria-label": "매월 반복 방식" });
-  const mbyDraw = () => { const x = sday(), v = mbySel.value || e?.mby || "date"; mbySel.replaceChildren(el("option", { value: "date" }, `매월 ${x.getDate()}일`), el("option", { value: "nth" }, `매월 ${Math.ceil(x.getDate() / 7)}번째 ${W7[x.getDay()]}요일`)); mbySel.value = v; };
+  const mbyDraw = () => { const x = sday(), v = mbySel.value || e?.mby || "date"; mbySel.replaceChildren(el("option", { value: "date" }, `매월 ${x.getDate()}일`), el("option", { value: "nth" }, `매월 ${Math.ceil(x.getDate() / 7)}번째 ${W7[x.getDay()]}요일`), el("option", { value: "last" }, `매월 마지막 ${W7[x.getDay()]}요일`)); mbySel.value = v; };
   mbyDraw(); d?.addEventListener("change", mbyDraw);
   const repSub = () => { wdBox.hidden = repSel.value !== "week"; mbySel.hidden = repSel.value !== "month"; };
   repSel.onchange = repSub; repSub();
@@ -570,7 +571,7 @@ function occurs(e, d) { // 이 일정이 그날에 있나
   if (d < e.date || (e.until && d > e.until) || e.skip?.includes(d)) return false;
   const a = new Date(e.date + "T00:00"), b = new Date(d + "T00:00"), nth = x => Math.ceil(x.getDate() / 7);
   return { day: true, wday: b.getDay() % 6 !== 0, week: (e.wdays?.length ? e.wdays : [a.getDay()]).includes(b.getDay()),
-    month: e.mby === "nth" ? b.getDay() === a.getDay() && nth(b) === nth(a) : a.getDate() === b.getDate(), year: a.getMonth() === b.getMonth() && a.getDate() === b.getDate() }[e.rep];
+    month: e.mby === "nth" ? b.getDay() === a.getDay() && nth(b) === nth(a) : e.mby === "last" ? b.getDay() === a.getDay() && addDays(d, 7).slice(5, 7) !== d.slice(5, 7) : a.getDate() === b.getDate(), year: a.getMonth() === b.getMonth() && a.getDate() === b.getDate() }[e.rep];
 }
 const isDone = (e, d) => e.rep ? !!e.dones?.[d] : !!e.done;
 function setDone(e, d) { if (e.rep) { e.dones ||= {}; if (e.dones[d]) delete e.dones[d]; else e.dones[d] = 1; } else e.done = !e.done; store(); }
@@ -883,6 +884,12 @@ function hdrFit() { // 위 바가 두 줄이면 아랫줄의 디데이·설정·
 }
 new ResizeObserver(hdrFit).observe(document.querySelector("header"));
 $("cal-prev").onclick = () => { month.setMonth(month.getMonth() - 1); calDraw(); };
+{ // 달력을 옆으로 밀면 달 넘기기 (터치: 손가락, 노트북: 트랙패드 두 손가락). 일정 끌기는 그대로
+  let sx = null, sy = 0, wx = 0, wt = 0; const cal = $("cal"), go = n => $(n < 0 ? "cal-prev" : "cal-next").click();
+  cal.addEventListener("touchstart", e => { sx = e.touches.length === 1 && !e.target.closest(".ev, .spbar, .item") ? e.touches[0].clientX : null; sy = e.touches[0].clientY; }, { passive: true });
+  cal.addEventListener("touchend", e => { if (sx == null) return; const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy; sx = null; if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) go(dx > 0 ? -1 : 1); });
+  cal.addEventListener("wheel", e => { if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return; e.preventDefault(); if (Date.now() < wt) return; wx += e.deltaX; if (Math.abs(wx) > 80) { go(wx < 0 ? -1 : 1); wx = 0; wt = Date.now() + 600; } }, { passive: false });
+}
 $("cal-next").onclick = () => { month.setMonth(month.getMonth() + 1); calDraw(); };
 $("cal-today").onclick = () => { month = new Date(); month.setDate(1); pick = today(); calDraw(); };
 document.querySelectorAll("[data-add]").forEach(b => b.onclick = () => add(b.dataset.add, pick, b));
