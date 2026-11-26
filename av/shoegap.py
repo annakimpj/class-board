@@ -11,3 +11,5 @@ for k in range(1, 9):
     col, al = uniform(a, rgb, 2)
     m = al[..., None]; out[..., :3] = out[..., :3] * (1 - m) + col * m; out[..., 3] = np.maximum(out[..., 3], al * 255)
   Image.fromarray(out.round().clip(0, 255).astype(np.uint8)).resize((258, 386), Image.LANCZOS).save(f, optimize=True)
+# 2차(따로 한 번 돌림): 보는 쪽 오른쪽 짝이 다리보다 3px 안쪽이라 x>=129를 오른쪽으로 3px 옮김
+#   a = np.array(Image.open(f)); o = a.copy(); o[:, 129:] = 0; o[:, 132:] = a[:, 129:-3]
