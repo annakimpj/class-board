@@ -197,6 +197,7 @@
   .att td.c { position: relative; } .att i.doc, .att-legend i.doc, .att-key i.doc { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #fd7e14; vertical-align: middle; } .att i.doc.ok, .att-legend i.doc.ok, .att-key i.doc.ok { background: #2f9e44; }
   .att td.c i.doc { position: absolute; top: 3px; right: 3px; }
   .att-key { display: none; border-collapse: collapse; margin: 0 0 4mm; font-size: 9pt; } .att-key th, .att-key td { border: 1px solid #ccc; padding: 2px 10px; text-align: center; } .att-key th { background: #f1f3f5; } .att-key td.kd { text-align: left; color: #666; }
+  :is(.pop, .pop-in) .chips.sub2 { margin-top: 2px; padding-top: 8px; border-top: 1px solid #eee5da; } /* 출결: 종류 아래 분류 줄 */
   :is(.pop, .pop-in) .docs button.need { border-color: #fd7e14; color: #d9480f; background: #fff4e6; } :is(.pop, .pop-in) .docs button.got { border-color: #2f9e44; color: #2b8a3e; background: #ebfbee; } :is(.pop, .pop-in) .docs button { font-size: 13px; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px 4px 6px; }
   :is(.pop, .pop-in) .docs .bx { width: 20px; height: 20px; border: 2px solid #ced4da; border-radius: 5px; background: #fff; font-style: normal; font-weight: 900; font-size: 14px; line-height: 16px; text-align: center; flex: none; }
   :is(.pop, .pop-in) .docs .need .bx { border-color: #fd7e14; } :is(.pop, .pop-in) .docs .got .bx { border-color: #2f9e44; background: #2f9e44; color: #fff; }
@@ -1167,7 +1168,7 @@ function attSpan(a, b) { // a~b 사이 학교 가는 날 (주말·공휴일·재
 }
 function attForm(s, p, anchor) { // 하루 또는 여러 날 (~까지)
   const A = J.att ||= {}, cur = A[s]?.[p];
-  const tc = chips(ATT_T, cur?.t || "결석"), rc = chips(ATT_R.map(x => x[0]), cur?.r || "질병", attColor), memo = el("input", { type: "text", value: cur?.m || "", placeholder: "사유 (예: 감기, 체험학습)" });
+  const tc = chips(ATT_T, cur?.t || null), rc = chips(ATT_R.map(x => x[0]), cur?.r || "질병", attColor), memo = el("input", { type: "text", value: cur?.m || "", placeholder: "사유 (예: 감기, 체험학습)" });
   const until = el("input", { type: "date", value: s, min: s, title: "여러 날이면 끝나는 날" });
   const span = () => attSpan(s, until.value > s ? until.value : s);
   // 필요 서류: 누를 때마다 필요 → 받음 → 빼기. 처음 쓰는 칸은 분류·종류·사유에 맞춰 저절로 채움 (손댄 뒤로는 그대로)
@@ -1180,8 +1181,10 @@ function attForm(s, p, anchor) { // 하루 또는 여러 날 (~까지)
       onclick: ev => { touched = true; if (ev.target.closest(".bx")) docs[k] = docs[k] ? 0 : 1; else if (k in docs) delete docs[k]; else docs[k] = 0; docDraw(); } }, el("i", { class: "bx" }, k in docs && docs[k] ? "✓" : ""), k))); };
   docIn.onkeydown = e => { if (e.key === "Enter" && docIn.value.trim()) { e.preventDefault(); touched = true; docs[docIn.value.trim()] = 0; docIn.value = ""; docDraw(); } };
   [tc.box, rc.box].forEach(b => b.addEventListener("click", docDraw)); memo.addEventListener("input", docDraw); docDraw();
+  rc.box.classList.add("sub2"); rc.box.hidden = !cur; tc.box.addEventListener("click", () => { rc.box.hidden = !tc.get(); }); // 결석·지각…을 고르면 그 아래에 질병·미인정… 줄이 나옴
   const close = pop(anchor, `${nameOf(p)} · ${dayName(s)}`, "att", [tc.box, rc.box, memo, el("div", { class: "row" }, el("span", { class: "tip" }, "여러 날이면"), until, el("span", { class: "tip" }, "까지 (주말·공휴일 빼고)")),
     el("p", { class: "sub" }, "필요 서류 (□ 아직 · ✓ 받음)"), docBox, el("div", { class: "row" }, docIn)], () => {
+    if (!tc.get()) return false; // 종류를 안 골랐으면 저장 안 함
     for (const d of span()) (A[d] ||= {})[p] = { t: tc.get(), r: rc.get(), m: memo.value.trim(), ...(Object.keys(docs).length ? { d: { ...docs } } : {}) };
     store();
   }, { cancel: "취소", foot: cur ? el("button", { type: "button", class: "danger", onclick: () => { for (const d of span()) if (A[d]) { delete A[d][p]; if (!Object.keys(A[d]).length) delete A[d]; } store(); close(); } }, "출석으로") : null });
