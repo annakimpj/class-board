@@ -75,6 +75,7 @@
   .tp > b { font-size: 17px; color: #e2643f; } .tp .r { background: #fff; border-radius: 12px; padding: 8px 12px; font-size: 16px; text-align: left; border: 1.5px solid #f3d6c2; display: grid; gap: 2px; }
   .tp .r small { color: var(--muted); font-size: 13px; } .tp .r .t { color: #1971c2; } .tp .r .t::before { content: "선생님의 한마디 "; font-weight: 700; } .tp .r .my { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; } /* 긴 글은 두 줄까지만 (누르면 다 보임) */
   .tp > button.main { justify-self: end; font-size: 19px; } .tp .none { margin: 0; color: var(--muted); } .tp .q { margin: 0; font-size: 22px; font-weight: 700; line-height: 1.4; } .tp .q + .when { margin-top: -6px; }
+  .spark { width: 1.45em; height: 1.45em; vertical-align: -.3em; margin-right: 3px; fill: #ffd60a; stroke: #222; stroke-width: 1.4; stroke-linejoin: round; overflow: visible; } /* 꾸미기: 노란 반짝이 */
   .nb { background: #2f4a3a; color: #f8f9f0; border: 6px solid #8a6a4a; border-radius: 16px; padding: 14px 20px 16px; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(60, 40, 20, .1); }
   .nb b { display: block; font-size: 17px; color: #ffe066; } .nb-h { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
   .nb-h button { background: none; border: 0; color: #ffe066; font-size: 14px; padding: 2px 6px; cursor: pointer; } .nb-h button:disabled { opacity: .25; cursor: default; } .nb-h #nb-next { margin-right: auto; } .nb a { color: #a5d8ff; } .nb #nb-l p { margin: 2px 0; font-size: 21px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
@@ -135,7 +136,7 @@
   </form>
 </div>
 <div class="app" id="app" hidden>
-  <div class="top"><button class="hw-btn" id="hw-btn" hidden>🏠 홈</button><h1 id="me-name"></h1><span class="pt" id="me-pt"></span><button class="hw-btn" id="nt-on" hidden>🔔 알림 켜기</button><button class="hw-btn" id="dress-btn">🧑 꾸미기</button><button class="out" id="out">나가기</button></div>
+  <div class="top"><button class="hw-btn" id="hw-btn" hidden>🏠 홈</button><h1 id="me-name"></h1><span class="pt" id="me-pt"></span><button class="hw-btn" id="nt-on" hidden>🔔 알림 켜기</button><button class="hw-btn" id="dress-btn"><svg class="spark" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 1.5Q10.6 8.4 17.5 10Q10.6 11.6 9 18.5Q7.4 11.6 0.5 10Q7.4 8.4 9 1.5Z"/><path d="M18 12.5Q19 16.5 23 17.5Q19 18.5 18 22.5Q17 18.5 13 17.5Q17 16.5 18 12.5Z"/></svg>꾸미기</button><button class="out" id="out">나가기</button></div>
   <div class="nt" id="nt" hidden><b>📢 선생님 공지</b><p id="nt-t"></p><button class="main" id="nt-ok">확인</button></div>
   <div class="duo" id="duo"><div class="nb" id="nb" hidden><div class="nb-h"><button id="nb-prev" aria-label="이전 알림장">◀</button><b id="nb-d"></b><button id="nb-next" aria-label="다음 알림장">▶</button></div><div id="nb-l"></div></div><div class="tp" id="tp" hidden></div></div>
   <div class="hw" id="hw"><p class="hw-none">불러오는 중…</p></div>
