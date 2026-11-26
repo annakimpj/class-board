@@ -1113,7 +1113,7 @@
   .dock button, .drawer-items button { position: relative; }
   .dock button.shown i, .drawer-items button.shown i { box-shadow: inset 0 0 0 2px var(--accent); }
   .dock button.shown::after, .drawer-items button.shown::after { content: ""; position: absolute; left: 50%; bottom: 0; width: 4px; height: 4px; margin-left: -2px; border-radius: 50%; background: var(--accent); }
-  .dock-add { position: absolute; top: 0; right: 8px; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); color: #fff; font: 700 14px/18px sans-serif; text-align: center; box-shadow: 0 0 0 2px #fff; }
+  .dock-add { position: absolute; top: 0; right: 8px; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); color: #fff; font: 700 15px/1 sans-serif; display: grid; place-items: center; padding-bottom: 1px; box-sizing: border-box; box-shadow: 0 0 0 2px #fff; }
   .dock-add:hover { filter: brightness(1.15); }
   /* 서랍: 아래쪽 바에서 고른 버튼을 넣어 두는 곳 */
   .dock #drawer-btn { position: sticky; right: 0; margin-left: 9px; background: #fff; overflow: visible; box-shadow: -12px 0 0 #fff, 12px 0 0 #fff; } /* 바가 넘쳐 밀려도 늘 맨 오른쪽 */
@@ -2349,7 +2349,7 @@ function applyLayout() {
       b.classList.toggle("shown", l.mode === "board" || !!pops[k]);
       b.title = l.mode === "board" ? "누르면 보드에서 내려요" : "누르면 보드에 띄워요";
       b.onclick = () => { if (dockDragged) return; toggleCard(k); document.getElementById("drawer").hidePopover(); };
-      if (MULTI[k]) {
+      if (MULTI[k] && CARDS.some(([q]) => (q === k || q.startsWith(k + "-")) && (lay(q).mode === "board" || pops[q]))) { // 하나라도 떠 있을 때만 +
         const add = document.createElement("span");
         add.className = "dock-add"; add.textContent = "+"; add.title = "하나 더 띄우기"; add.setAttribute("role", "button");
         add.onclick = e => { e.stopPropagation(); addCard(k); document.getElementById("drawer").hidePopover(); };

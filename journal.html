@@ -64,7 +64,9 @@
   /* 달력 (크게) + 오른쪽 좁게 */
   #p-cal { grid-template-columns: minmax(0, 1fr) 270px; }
   .cal-head { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; } .cal-head b { font-size: 20px; min-width: 130px; text-align: center; }
-  .cal-head .sp { flex: 1; } .cal-head .hint { color: var(--muted); font-size: 12px; flex: 1 1 260px; text-align: right; }
+  .cal-head .sp { flex: 1; } .cal-head .hint { position: relative; color: var(--muted); opacity: .45; cursor: help; display: flex; padding: 4px; border-radius: 8px; outline: none; } .cal-head .hint svg { width: 22px; height: 22px; }
+  .cal-head .hint:hover, .cal-head .hint:focus { opacity: 1; } .cal-head .hint .tipbox { display: none; position: absolute; right: 0; top: 100%; z-index: 30; background: #fff; color: var(--ink); border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 14px; font-size: 13px; line-height: 1.7; white-space: nowrap; box-shadow: 0 6px 18px rgba(0,0,0,.12); }
+  .cal-head .hint:hover .tipbox, .cal-head .hint:focus .tipbox { display: block; }
   .cal { user-select: none; -webkit-user-select: none; flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); grid-template-rows: auto repeat(6, minmax(0, 1fr)); gap: 4px; }
   .cal .dw { text-align: center; font-size: 13px; color: var(--muted); } .cal .dw.sun { color: #e03131; } .cal .dw.sat { color: #1c7ed6; }
   .day { position: relative; border-radius: 10px; background: #faf8f5; padding: 4px 6px; cursor: pointer; overflow: hidden; display: flex; flex-direction: column; gap: 2px; min-height: 0; }
@@ -102,7 +104,7 @@
   .inbox .clock:hover { color: var(--accent); } .inbox .tpick { position: absolute; right: 0; bottom: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; border: 0; padding: 0; }
   .pop .bell { padding: 4px; } .pop .addrow .bell .i { width: 18px; height: 18px; }
   .evquick { margin-top: 6px; } .evquick input { width: 100%; box-sizing: border-box; font: inherit; font-size: 14px; border: 1.5px solid var(--line); border-radius: 8px; padding: 6px 10px; background: #fff; }
-  .evquick input:focus { outline: none; border-color: var(--accent); }
+  .evquick input { cursor: pointer; } .evquick input:focus { outline: none; border-color: var(--accent); }
   .addseg { display: flex; margin-top: 8px; border: 1.5px solid var(--line); border-radius: 8px; overflow: hidden; background: #fff; } /* 한 버튼을 셋으로 나눔 */
   .addseg button { flex: 1; border: 0; border-radius: 0; background: none; padding: 7px 4px; font-size: 13.5px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; color: var(--ink); }
   .addseg button + button { border-left: 1.5px solid var(--line); } .addseg button:hover { background: var(--soft); color: var(--accent); } .addseg .i { width: 15px; height: 15px; }
@@ -182,10 +184,13 @@
   .att th.n, .att th.nm { background: #faf8f5; z-index: 3; }
   .att td.c { cursor: pointer; font-weight: 700; } .att td.c:hover { background: var(--soft); } .att td.c.on { background: #fbf7f1; } .att .today { background: #fff8e1; }
   .att .sum { background: #faf8f5; } .att td.sum { font-weight: 600; color: #5e554e; }
-  .att td.c { position: relative; } .att i.doc, .att-legend i.doc, .att-key i.doc { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #fd7e14; vertical-align: middle; }
+  .att td.c { position: relative; } .att i.doc, .att-legend i.doc, .att-key i.doc { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #fd7e14; vertical-align: middle; } .att i.doc.ok, .att-legend i.doc.ok, .att-key i.doc.ok { background: #2f9e44; }
   .att td.c i.doc { position: absolute; top: 3px; right: 3px; }
   .att-key { display: none; border-collapse: collapse; margin: 0 0 4mm; font-size: 9pt; } .att-key th, .att-key td { border: 1px solid #ccc; padding: 2px 10px; text-align: center; } .att-key th { background: #f1f3f5; } .att-key td.kd { text-align: left; color: #666; }
-  .pop .docs button.need { border-color: #fd7e14; color: #d9480f; background: #fff4e6; } .pop .docs button.got { border-color: #2f9e44; color: #2b8a3e; background: #ebfbee; } .pop .docs button { font-size: 12px; }
+  .pop .docs button.need { border-color: #fd7e14; color: #d9480f; background: #fff4e6; } .pop .docs button.got { border-color: #2f9e44; color: #2b8a3e; background: #ebfbee; } .pop .docs button { font-size: 13px; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px 4px 6px; }
+  .pop .docs .bx { width: 20px; height: 20px; border: 2px solid #ced4da; border-radius: 5px; background: #fff; font-style: normal; font-weight: 900; font-size: 14px; line-height: 16px; text-align: center; flex: none; }
+  .pop .docs .need .bx { border-color: #fd7e14; } .pop .docs .got .bx { border-color: #2f9e44; background: #2f9e44; color: #fff; }
+  .ddl .dk { flex: none; width: 110px; font-size: 13px; }
   .drop-on { outline: 3px dashed #3b82f6 !important; outline-offset: -3px; }
   header .jinst { font-size: 13px; padding: 4px 12px; border-radius: 999px; background: #3b82f6; color: #fff; border: 0; cursor: pointer; } header .jinst.hot { animation: jpulse 1s 6 alternate; } @keyframes jpulse { to { box-shadow: 0 0 0 6px rgba(59, 130, 246, .35); } }
   .att-legend { font-size: 12px; color: var(--muted); display: flex; gap: 6px; align-items: center; flex-wrap: wrap; } .att-legend i { font-style: normal; font-weight: 700; color: var(--ink); }
@@ -226,13 +231,13 @@
   <section class="pane" id="p-cal" hidden>
     <div class="box">
       <div class="cal-head"><button id="cal-prev" aria-label="지난달">◀</button><b id="cal-title"></b><button id="cal-next" aria-label="다음 달">▶</button><button id="cal-today">오늘</button>
-        <span class="sp"></span><span class="hint">빈 칸 더블클릭: 일정 등록 · +: 기록·상담·일지 쓰기 · 일정 누르면 줄 긋기 · 더블클릭: 수정 · 끌어서 옮기기 · 옆으로 밀어 달 넘기기</span></div>
+        <span class="sp"></span><span class="hint" tabindex="0" data-i="bulb" aria-label="도움말"><span class="tipbox">빈 칸 더블클릭: 일정 등록<br>일정 클릭: 완료<br>더블클릭: 수정 · 끌어서 옮기기<br>스크롤해서 넘기기</span></span></div>
       <div class="cal" id="cal"></div>
     </div>
     <div class="side">
       <div class="box"><h2 id="day-title"></h2></div>
       <div class="box duo"><h2 data-i="cal">일정</h2><div class="scroll" id="day-evs"></div>
-        <form class="evquick" id="ev-quick"><input type="text" id="ev-q" placeholder="일정 쓰고 Enter (예: 14:00 회의)" autocomplete="off" aria-label="일정 쓰기"></form>
+        <form class="evquick" id="ev-quick"><input type="text" id="ev-q" placeholder="+ 일정 쓰기 (시간·종류·연속·반복)" readonly aria-label="일정 쓰기"></form>
         <h2 data-i="pen" class="h2b">학생 기록 · 상담 · 일지</h2><div class="scroll" id="day-list"></div>
         <div class="addseg"><button data-add="rec" data-i="plus">학생 기록</button><button data-add="cs" data-i="plus">상담</button><button data-add="note" data-i="plus">일지</button></div></div>
     </div>
@@ -279,7 +284,7 @@
       <p class="print-title" id="att-ptitle"></p>
       <table class="att-key" id="att-key"></table>
       <div class="bar"><button id="att-prev" aria-label="지난달">◀</button><b id="att-title"></b><button id="att-next" aria-label="다음 달">▶</button><button id="att-now">이번 달</button><span class="sp"></span>
-        <span class="att-legend"><i>결</i>결석 <i>지</i>지각 <i>조</i>조퇴 <i>과</i>결과 · <i style="color:#1c7ed6">질병</i><i style="color:#e03131">미인정</i><i style="color:#868e96">기타</i><i style="color:#2f9e44">출석인정</i> · <i class="doc"></i>서류 아직</span>
+        <span class="att-legend"><i>결</i>결석 <i>지</i>지각 <i>조</i>조퇴 <i>과</i>결과 · <i style="color:#1c7ed6">질병</i><i style="color:#e03131">미인정</i><i style="color:#868e96">기타</i><i style="color:#2f9e44">출석인정</i> · <i class="doc"></i>서류 아직 <i class="doc ok"></i>다 냄</span>
         <button id="att-copy" title="이달 출결을 엑셀에 붙여 넣을 수 있게 복사">복사</button><button id="att-print">출력</button></div>
       <div class="scroll" id="att-wrap"><table class="att" id="att"></table></div>
     </div>
@@ -302,7 +307,7 @@
 const $ = id => document.getElementById(id);
 const el = (tag, attrs = {}, ...kids) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) k.startsWith("on") ? e[k] = v : e.setAttribute(k, v); e.append(...kids.flat().filter(x => x != null && x !== false)); return e; };
 // 선 아이콘 (보드 아이콘과 같은 모양)
-const IC = { gear: '<path d="M10.3 4.3c.4-1.8 2.9-1.8 3.4 0a1.7 1.7 0 0 0 2.6 1.1c1.5-.9 3.3.8 2.4 2.4a1.7 1.7 0 0 0 1 2.5c1.8.5 1.8 3 0 3.4a1.7 1.7 0 0 0-1 2.6c.9 1.5-.8 3.3-2.4 2.4a1.7 1.7 0 0 0-2.6 1c-.4 1.8-2.9 1.8-3.3 0a1.7 1.7 0 0 0-2.6-1c-1.5.9-3.3-.8-2.4-2.4a1.7 1.7 0 0 0-1-2.6c-1.8-.4-1.8-2.9 0-3.4a1.7 1.7 0 0 0 1-2.5c-.9-1.6.8-3.3 2.4-2.4 1 .6 2.3.1 2.5-1.1z"/><circle cx="12" cy="12" r="3"/>', span: '<path d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4"/>', rep: '<path d="M12 12c-2-3-3.5-4-5.5-4a4 4 0 0 0 0 8c2 0 3.5-1 5.5-4s3.5-4 5.5-4a4 4 0 0 1 0 8c-2 0-3.5-1-5.5-4z"/>', cal: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>', pen: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13 7l4 4"/>',
+const IC = { bulb: '<path d="M9 18v-1.5c0-1.3-.6-2.2-1.5-3.2A6 6 0 1 1 16.5 13.3c-.9 1-1.5 1.9-1.5 3.2V18M9.5 21h5"/><path d="M10 9.5l1.6 1.6 2.6-2.8M12 1v1.5M4.2 4.2l1 1M19.8 4.2l-1 1M1.5 10H3M21 10h1.5"/>', gear: '<path d="M10.3 4.3c.4-1.8 2.9-1.8 3.4 0a1.7 1.7 0 0 0 2.6 1.1c1.5-.9 3.3.8 2.4 2.4a1.7 1.7 0 0 0 1 2.5c1.8.5 1.8 3 0 3.4a1.7 1.7 0 0 0-1 2.6c.9 1.5-.8 3.3-2.4 2.4a1.7 1.7 0 0 0-2.6 1c-.4 1.8-2.9 1.8-3.3 0a1.7 1.7 0 0 0-2.6-1c-1.5.9-3.3-.8-2.4-2.4a1.7 1.7 0 0 0-1-2.6c-1.8-.4-1.8-2.9 0-3.4a1.7 1.7 0 0 0 1-2.5c-.9-1.6.8-3.3 2.4-2.4 1 .6 2.3.1 2.5-1.1z"/><circle cx="12" cy="12" r="3"/>', span: '<path d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4"/>', rep: '<path d="M12 12c-2-3-3.5-4-5.5-4a4 4 0 0 0 0 8c2 0 3.5-1 5.5-4s3.5-4 5.5-4a4 4 0 0 1 0 8c-2 0-3.5-1-5.5-4z"/>', cal: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>', pen: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13 7l4 4"/>',
   chat: '<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>', note: '<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h7M9 16h7"/>',
   book: '<path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5zM5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3M9 7h6"/>', plus: '<path d="M12 5v14M5 12h14"/>',
   clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
@@ -567,7 +572,7 @@ function noteForm(date, anchor) { // 일지: 쓰는 대로 저장
 }
 
 // ── 달력: 칸마다 일정(누르면 줄 긋기), 기록·상담·일지 표시. 칸의 +나 오른쪽 버튼으로 바로 쓰기
-let month = new Date(), pick = today();
+let month = new Date(), pick = today(), calWk = 0; // calWk: 휠로 넘긴 주 수
 month.setDate(1);
 const REPS = [["day", "매일"], ["wday", "평일마다"], ["week", "매주"], ["month", "매월"], ["year", "매년"]];
 const addDays = (s, n) => { const d = new Date(s + "T00:00"); d.setDate(d.getDate() + n); return iso(d); };
@@ -761,11 +766,10 @@ function jrSettings(anchor) {
     document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
   };
   const grp = (title, ...kids) => el("div", { class: "sgroup" }, el("h4", {}, title), ...kids);
-  const docRules = el("div", { class: "ddl" }), drawDocs = () => { const L = J.attDocs ||= ATT_DOCS.map(x => ({ ...x })), sv = () => store(); // 조건 + 필요 서류 (고치면 바로 저장)
-    docRules.replaceChildren(...L.map(x => el("div", { class: "row" }, el("input", { type: "text", value: x.c, placeholder: "조건 (예: 질병 결석)", style: "width:130px", oninput: e => { x.c = e.target.value; sv(); } }),
-      el("input", { type: "text", class: "grow", value: x.d, placeholder: "필요 서류 (예: 결석계, 진료확인서)", oninput: e => { x.d = e.target.value; sv(); } }),
-      el("button", { type: "button", class: "x", title: "지우기", onclick: () => { L.splice(L.indexOf(x), 1); sv(); drawDocs(); } }, "✕"))),
-      el("div", { class: "row" }, el("button", { type: "button", onclick: () => { L.push({ c: "", d: "" }); drawDocs(); docRules.querySelector(".row:nth-last-child(2) input")?.focus(); } }, "+ 조건 추가"), el("button", { type: "button", onclick: () => { J.attDocs = undefined; store(); drawDocs(); } }, "처음대로"))); };
+  const docRules = el("div", { class: "ddl" }), drawDocs = () => { const M = J.attDoc ||= { ...attDocMap() }; // 종류+분류마다 필요 서류 (고치면 바로 저장)
+    docRules.replaceChildren(...ATT_T.flatMap(t => ATT_R.map(([r, c]) => el("div", { class: "row" }, el("b", { class: "dk", style: `color:${c}` }, `${t} + ${r} :`),
+      el("input", { type: "text", class: "grow", value: M[`${t}+${r}`] || "", placeholder: "없음", oninput: e => { M[`${t}+${r}`] = e.target.value; store(); } })))),
+      el("div", { class: "row" }, el("button", { type: "button", onclick: () => { J.attDoc = { ...ATT_DOC0 }; store(); drawDocs(); } }, "처음대로"))); };
   drawDocs();
   const panes = {
     gen: [grp("달력", chk("mon", "월요일부터 보기"), el("label", { class: "chk" }, el("input", { type: "checkbox", ...(st.hideBd ? {} : { checked: "" }), onchange: ev => { st.hideBd = !ev.target.checked; store(); draw(); } }), "학생 생일 보기 (학생 정보의 생년월일)")),
@@ -774,7 +778,7 @@ function jrSettings(anchor) {
     kind: [grp("일정 종류 (달력 색)", cats), grp("학생 기록 종류", kds)],
     cs: [grp("상담 대상", words(targets, L => J.targets = L, "학생, 학부모, 기타"), el("p", { class: "tip" }, "쉼표(,)로 나눠 써요.")),
       grp("상담 방법", words(ways, L => J.ways = L, "대면, 전화, 문자"))],
-    doc: [grp("출결 필요 서류", el("p", { class: "tip" }, "조건의 낱말이 출결의 분류(질병·미인정·기타·출석인정)·종류(결석·지각·조퇴·결과)·사유에 모두 들어 있으면 그 서류가 '필요'로 채워져요. 서류는 쉼표(,)로 나눠요."), docRules)],
+    doc: [grp("출결 필요 서류", el("p", { class: "tip" }, "출결을 적을 때 종류 + 분류에 맞는 서류가 '필요'로 채워져요. 서류는 쉼표(,)로 나눠요. 비워 두면 필요 서류 없음."), docRules)],
     bak: [grp("백업", el("p", { class: "tip" }, "일지 전체를 파일로 내보내 보관하거나 다른 컴퓨터에서 불러와요. 읽거나 인쇄하려면 각 탭의 '출력'에서 PDF로 저장해요."),
       el("div", { class: "row" }, el("button", { type: "button", onclick: backup }, "파일로 내보내기"), el("button", { type: "button", onclick: () => file.click() }, "파일에서 불러오기"), file))],
   };
@@ -808,12 +812,13 @@ const dayCs = (d, a) => dayList(a, `${dayName(d)} 상담`, "chat", csOf(d).map(c
   el("div", { class: "ibody" }, [c.topic, c.text, c.next ? "→ " + c.next : ""].filter(Boolean).join("\n")))));
 const dayBd = (d, list, a) => dayList(a, `${dayName(d)} 생일`, "cake", list.map(n => el("div", { class: "item bdline" }, ico("cake"), `${n} 생일이에요`)));
 function calDraw() {
-  const off = jset().mon ? 1 : 0, y = month.getFullYear(), m = month.getMonth(), lead = (new Date(y, m, 1).getDay() - off + 7) % 7, start = new Date(y, m, 1 - lead), t = today();
+  const off = jset().mon ? 1 : 0, y0 = month.getFullYear(), m0 = month.getMonth(), lead = (new Date(y0, m0, 1).getDay() - off + 7) % 7 - calWk * 7, start = new Date(y0, m0, 1 - lead), t = today();
+  const mid = new Date(y0, m0, 1 - lead + 17), y = mid.getFullYear(), m = mid.getMonth(); // 주를 넘기면 가운데 주의 달이 제목·진한 칸
   $("cal-title").textContent = `${y}년 ${m + 1}월`;
   // 연속 일정 막대: 주마다 겹치지 않게 줄(lane)을 정해서 달력 칸 위에 가로로 놓음 (칸 사이도 이어짐)
   const lanes = [], bars = [];
   for (let w = 0; w < 6; w++) {
-    const a = iso(new Date(y, m, 1 - lead + w * 7)), b = addDays(a, 6), used = [];
+    const a = iso(new Date(y0, m0, 1 - lead + w * 7)), b = addDays(a, 6), used = [];
     J.events.filter(e => e.end && e.date <= b && e.end >= a).sort((p, q) => p.date.localeCompare(q.date) || (q.end > p.end ? 1 : -1)).forEach(e => {
       const c0 = dayGap(a, e.date > a ? e.date : a), c1 = dayGap(a, e.end < b ? e.end : b);
       let ln = 0; while (used[ln]?.some(c => c >= c0 && c <= c1)) ln++;
@@ -893,25 +898,24 @@ function sideFit() { // 일정·학생 기록 칸: 기본 반반, 한쪽이 적�
 new ResizeObserver(() => sideFit()).observe(document.querySelector(".duo"));
 function hdrFit() { // 위 바가 두 줄이면 아랫줄의 디데이·설정·날짜는 창 오른쪽 끝까지 (윗줄만 창 단추 자리를 비움)
   const h = document.querySelector("header"), r = h.querySelector(".hright");
-  r.style.marginRight = "";
-  if (r.offsetTop > h.querySelector("h1").offsetTop + 8) r.style.marginRight = -Math.max(0, parseFloat(getComputedStyle(h).paddingRight) - 16) + "px";
+  r.style.marginRight = r.style.flexBasis = "";
+  if (r.offsetTop > h.querySelector("h1").offsetTop + 8) { r.style.marginRight = -Math.max(0, parseFloat(getComputedStyle(h).paddingRight) - 16) + "px"; r.style.flexBasis = "100%"; r.style.justifyContent = "flex-end"; } // 아랫줄에 붙잡아 둠 (안 그러면 넓어진 자리로 윗줄에 올라가 창 단추에 가림)
 }
 new ResizeObserver(hdrFit).observe(document.querySelector("header"));
-$("cal-prev").onclick = () => { month.setMonth(month.getMonth() - 1); calDraw(); };
-{ // 달력을 옆으로 밀면 달 넘기기 (터치: 손가락, 노트북: 트랙패드 두 손가락). 일정 끌기는 그대로
-  let sx = null, sy = 0, wx = 0, wt = 0; const cal = $("cal"), go = n => $(n < 0 ? "cal-prev" : "cal-next").click();
-  cal.addEventListener("touchstart", e => { sx = e.touches.length === 1 && !e.target.closest(".ev, .spbar, .item") ? e.touches[0].clientX : null; sy = e.touches[0].clientY; }, { passive: true });
-  cal.addEventListener("touchend", e => { if (sx == null) return; const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy; sx = null; if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) go(dx > 0 ? -1 : 1); });
-  cal.addEventListener("wheel", e => { if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return; e.preventDefault(); if (Date.now() < wt) return; wx += e.deltaX; if (Math.abs(wx) > 80) { go(wx < 0 ? -1 : 1); wx = 0; wt = Date.now() + 600; } }, { passive: false });
+const calBase = () => { const [y, m] = $("cal-title").textContent.match(/\d+/g); month = new Date(+y, m - 1, 1); calWk = 0; }; // 보이는 달로 맞추고 주 넘김은 비움
+$("cal-prev").onclick = () => { calBase(); month.setMonth(month.getMonth() - 1); calDraw(); };
+{ // 달력 위에서 스크롤하면 한 주씩 넘기기. 안에 스크롤이 있는 칸(일정이 넘치는 날)은 그 칸이 먼저 스크롤
+  let acc = 0, wt = 0; const cal = $("cal");
+  const inner = (t, dy) => { for (let e = t; e && e !== cal; e = e.parentElement) { const st = getComputedStyle(e).overflowY; if (/(auto|scroll)/.test(st) && e.scrollHeight > e.clientHeight + 1 && (dy < 0 ? e.scrollTop > 0 : e.scrollTop + e.clientHeight < e.scrollHeight - 1)) return true; } return false; };
+  cal.addEventListener("wheel", e => { if (Math.abs(e.deltaY) < Math.abs(e.deltaX) || inner(e.target, e.deltaY)) return; e.preventDefault(); if (Date.now() < wt) return;
+    acc += e.deltaY; if (Math.abs(acc) >= 60) { calWk += acc > 0 ? 1 : -1; acc = 0; wt = Date.now() + 120; calDraw(); } }, { passive: false });
 }
-$("cal-next").onclick = () => { month.setMonth(month.getMonth() + 1); calDraw(); };
-$("cal-today").onclick = () => { month = new Date(); month.setDate(1); pick = today(); calDraw(); };
+$("cal-next").onclick = () => { calBase(); month.setMonth(month.getMonth() + 1); calDraw(); };
+$("cal-today").onclick = () => { month = new Date(); month.setDate(1); calWk = 0; pick = today(); calDraw(); };
 document.querySelectorAll("[data-add]").forEach(b => b.onclick = () => add(b.dataset.add, pick, b));
-$("ev-quick").onsubmit = e => { // 오른쪽 일정 칸에서 바로 쓰기: Enter마다 하나씩 (고른 날에)
-  e.preventDefault(); const v = $("ev-q").value.trim(); if (!v) return;
-  const { time, text } = parseTime(v);
-  J.events.push({ id: uid(), date: pick, time, text, done: false, alarm: "", ord: evOf(pick).length }); store(); $("ev-q").value = ""; calDraw(); $("ev-q").focus();
-};
+$("ev-quick").onsubmit = e => e.preventDefault();
+$("ev-q").onclick = () => evForm(pick, null, $("ev-q")); // 오른쪽 일정 칸도 달력 + 와 같은 일정 쓰기 창
+$("ev-q").onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); $("ev-q").click(); } };
 // 알람: 알람을 켠 일정만 (정시 / 10분 전). 이 창에서만 울림 (학생 화면에는 안 나옴)
 const rung = new Set();
 setInterval(() => {
@@ -1085,11 +1089,14 @@ $("info-print").onclick = () => { if (!infoAll) { infoAll = true; infoDraw(); } 
 // ── 출결: 달마다 표 (평일만, 공휴일·재량휴업일 빼고). 칸을 누르면 결석·지각·조퇴·결과 + 질병·미인정·기타
 const ATT_T = ["결석", "지각", "조퇴", "결과"], ATT_SYM = { 결석: "결", 지각: "지", 조퇴: "조", 결과: "과" };
 const ATT_R = [["질병", "#1c7ed6"], ["미인정", "#e03131"], ["기타", "#868e96"], ["출석인정", "#2f9e44"]], attColor = r => (ATT_R.find(x => x[0] === r) || ATT_R[2])[1];
-// 필요 서류: 조건의 낱말이 모두 '분류 종류 사유'에 들어 있으면 그 서류가 필요 (⚙ 설정 → 출결 서류에서 고침). 칸마다 a.d = { 서류: 0 아직 | 1 받음 }
-const ATT_DOCS = [{ c: "질병 결석", d: "결석계(질병결석 포함), 진료확인서(3일 이상 연속 결석 시)" }, { c: "미인정 결석", d: "결석계" }, { c: "기타 결석", d: "결석계" },
+// 필요 서류: 종류+분류마다 (⚙ 설정 → 출결 서류에서 고침, J.attDoc = { "결석+질병": "결석계, …" }). 칸마다 a.d = { 서류: 0 아직 | 1 받음 }
+const ATT_DOC0 = { "결석+질병": "결석계, 진료확인서(3일 이상 연속 결석 시)", "결석+미인정": "결석계", "결석+기타": "결석계", "결석+출석인정": "체험학습 신청서, 체험학습 보고서" };
+const ATT_DOCS = [ // 예전 '조건 낱말' 방식 (J.attDocs) → 처음 열 때 종류+분류로 옮김{ c: "질병 결석", d: "결석계(질병결석 포함), 진료확인서(3일 이상 연속 결석 시)" }, { c: "미인정 결석", d: "결석계" }, { c: "기타 결석", d: "결석계" },
   { c: "체험학습", d: "체험학습 신청서, 체험학습 보고서" }, { c: "경조사", d: "사망진단서(경조사)" }];
-const attDocRules = () => J.attDocs || ATT_DOCS, docList = t => t.split(/[,，]/).map(v => v.trim()).filter(Boolean);
-const attNeed = (t, r, m) => { const hay = `${r} ${t} ${m}`; return [...new Set(attDocRules().filter(x => x.c.trim() && x.c.trim().split(/\s+/).every(w => hay.includes(w))).flatMap(x => docList(x.d)))]; };
+const docList = t => (t || "").split(/[,，]/).map(v => v.trim()).filter(Boolean);
+const attDocMap = () => J.attDoc || (J.attDocs ? Object.fromEntries(ATT_T.flatMap(t => ATT_R.map(([r]) => [`${t}+${r}`,
+  [...new Set(J.attDocs.filter(x => x.c.trim() && x.c.trim().split(/\s+/).every(w => `${r} ${t}`.includes(w))).flatMap(x => docList(x.d)))].join(", ")]))) : ATT_DOC0);
+const attNeed = (t, r) => docList(attDocMap()[`${t}+${r}`]);
 const attDocLeft = a => Object.entries(a?.d || {}).filter(([, v]) => !v).map(([k]) => k); // 아직 안 낸 서류
 let attMonth = new Date(); attMonth.setDate(1);
 function attDays() {
@@ -1108,13 +1115,13 @@ function attDraw() {
   $("att-title").textContent = `${attMonth.getFullYear()}년 ${attMonth.getMonth() + 1}월 출결`;
   $("att-ptitle").textContent = $("att-title").textContent;
   $("att-key").replaceChildren(...ATT_T.map(t => el("tr", {}, el("th", {}, t), ...ATT_R.map(([r, c]) => el("td", {}, r, " ", el("b", { style: `color:${c}` }, ATT_SYM[t]))))),
-    el("tr", {}, el("td", { colspan: ATT_R.length + 1, class: "kd" }, el("i", { class: "doc" }), " 서류를 아직 안 냄")));
+    el("tr", {}, el("td", { colspan: ATT_R.length + 1, class: "kd" }, el("i", { class: "doc" }), " 서류 아직 · ", el("i", { class: "doc ok" }), " 서류 다 냄")));
   if (!people().length) return $("att").replaceChildren(el("tr", {}, el("td", { class: "empty" }, "보드 ⚙ 설정 → 명단에 학생을 넣어 주세요.")));
   const cols = el("colgroup", {}, el("col", { class: "n" }), el("col", { class: "nm" }), ...days.map(() => el("col")), ...ATT_T.map(() => el("col", { class: "sum" })));
   const head = el("tr", {}, el("th", { class: "n" }, "번호"), el("th", { class: "nm" }, "이름"),
     ...days.map(s => el("th", { class: s === t ? "today" : "" }, String(+s.slice(8)), el("small", {}, "일월화수목금토"[new Date(s + "T12:00").getDay()]))), ...ATT_T.map(k => el("th", { class: "sum" }, k)));
   $("att").replaceChildren(cols, head, ...attRows().map(([p, cnt]) => el("tr", {}, el("td", { class: "n" }, numOf(p)), el("td", { class: "nm" }, nameOf(p)),
-    ...days.map(s => { const a = A[s]?.[p]; return el("td", { class: "c" + (s === t ? " today" : "") + (a ? " on" : ""), title: a ? `${dayName(s)} ${a.r}${a.t}${a.m ? " · " + a.m : ""}${a.d ? "\n서류: " + Object.entries(a.d).map(([k, v]) => `${k} ${v ? "✓" : "아직"}`).join(", ") : ""}` : `${dayName(s)} 출석 (누르면 결석·지각…)`, style: a ? `color:${attColor(a.r)}` : "", onclick: ev => attForm(s, p, ev.currentTarget) }, a ? ATT_SYM[a.t] : "", attDocLeft(a).length ? el("i", { class: "doc" }) : null); }),
+    ...days.map(s => { const a = A[s]?.[p]; return el("td", { class: "c" + (s === t ? " today" : "") + (a ? " on" : ""), title: a ? `${dayName(s)} ${a.r}${a.t}${a.m ? " · " + a.m : ""}${a.d ? "\n서류: " + Object.entries(a.d).map(([k, v]) => `${k} ${v ? "✓" : "아직"}`).join(", ") : ""}` : `${dayName(s)} 출석 (누르면 결석·지각…)`, style: a ? `color:${attColor(a.r)}` : "", onclick: ev => attForm(s, p, ev.currentTarget) }, a ? ATT_SYM[a.t] : "", Object.keys(a?.d || {}).length ? el("i", { class: attDocLeft(a).length ? "doc" : "doc ok" }) : null); }), // 서류: 다 냄 초록 · 하나라도 아직 주황
     ...ATT_T.map(k => el("td", { class: "sum" }, cnt[k] ? String(cnt[k]) : "")))));
   attFit();
 }
@@ -1141,9 +1148,9 @@ function attForm(s, p, anchor) { // 하루 또는 여러 날 (~까지)
   let docs = cur?.d ? { ...cur.d } : null, touched = !!cur?.d;
   const docBox = el("div", { class: "chips docs" }), docIn = el("input", { type: "text", placeholder: "서류 직접 쓰기 (Enter)", class: "grow" });
   const docDraw = () => { if (!touched) docs = Object.fromEntries(attNeed(tc.get(), rc.get(), memo.value).map(k => [k, 0]));
-    const all = [...new Set([...Object.keys(docs), ...attDocRules().flatMap(x => docList(x.d))])];
+    const all = [...new Set([...Object.keys(docs), ...Object.values(attDocMap()).flatMap(docList)])];
     docBox.replaceChildren(...all.map(k => el("button", { type: "button", class: k in docs ? docs[k] ? "got" : "need" : "", title: k in docs ? docs[k] ? "받음 (누르면 빼기)" : "필요 (누르면 받음)" : "누르면 필요",
-      onclick: () => { touched = true; if (!(k in docs)) docs[k] = 0; else if (!docs[k]) docs[k] = 1; else delete docs[k]; docDraw(); } }, k in docs ? (docs[k] ? "✓ " : "□ ") + k : k))); };
+      onclick: () => { touched = true; if (!(k in docs)) docs[k] = 0; else if (!docs[k]) docs[k] = 1; else delete docs[k]; docDraw(); } }, el("i", { class: "bx" }, k in docs && docs[k] ? "✓" : ""), k))); };
   docIn.onkeydown = e => { if (e.key === "Enter" && docIn.value.trim()) { e.preventDefault(); touched = true; docs[docIn.value.trim()] = 0; docIn.value = ""; docDraw(); } };
   [tc.box, rc.box].forEach(b => b.addEventListener("click", docDraw)); memo.addEventListener("input", docDraw); docDraw();
   const close = pop(anchor, `${nameOf(p)} · ${dayName(s)}`, "att", [tc.box, rc.box, memo, el("div", { class: "row" }, el("span", { class: "tip" }, "여러 날이면"), until, el("span", { class: "tip" }, "까지 (주말·공휴일 빼고)")),
@@ -1329,7 +1336,7 @@ const spotSave = () => { if (!$("cover").hidden || onBoard()) return; try { loca
 setInterval(spotSave, 4000); addEventListener("pagehide", spotSave);
 try { // 선생님이 옮겨 둔 자리와 다르면 그 자리로 (보드가 연 창이라 스스로 옮길 수 있음). 보드 화면을 벗어났으면 덮개를 걷음
   const p = JSON.parse(localStorage.getItem("teacher-win"));
-  if (p && opener && (Math.abs(screenX - p.x) > 30 || Math.abs(screenY - p.y) > 30)) { resizeTo(p.w, p.h); moveTo(p.x, p.y); }
+  if (p && (Math.abs(screenX - p.x) > 30 || Math.abs(screenY - p.y) > 30 || Math.abs(outerWidth - p.w) > 30 || Math.abs(outerHeight - p.h) > 30)) { resizeTo(p.w, p.h); moveTo(p.x, p.y); } // 크기만 달라도 맞춤. 앱으로 켠 창도 (브라우저가 막으면 그냥 넘어감)
   setTimeout(() => { if (location.hash === "#cover" && opener && !onBoard()) { history.replaceState(null, "", location.pathname); coverSync(); } }, 300);
 } catch (e) {}
 load(); showTab(tab);
