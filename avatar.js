@@ -40,7 +40,8 @@ const AV_ACC = []; // 장신구 칸 (아직 없음)
 const AV_TABS = [["eye", "눈"], ["mouth", "입"], ["cheek", "볼터치"], ["hair", "헤어"], ["top", "상의"], ["bottom", "하의"], ["full", "한벌"], ["shoes", "신발"], ["pet", "펫"]];
 const AV_FULL = new Set(["top-47", "top-48", "top-49", "top-50", "top-51", "top-52", "top-53", "top-54"]); // 위아래 한 벌 옷: 입으면 하의를 안 그림. 가게에서는 '한벌' 칸
 // 가게에서 뺀 옷: 몸에 꼭 맞지 않는 상의·하의 (이미 산 학생은 그대로 입고 있음. 번호는 그대로 둬야 산 기록이 안 꼬임)
-const AV_HIDE = new Set([...[24, 25, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 44, 45, 46].map(i => "top-" + i),
+const AV_V = "?v=3"; // 그림을 고치면 숫자를 올림 (브라우저에 남은 옛 그림 대신 새로 받게)
+const AV_HIDE = new Set([...[6, 16, 17, 18, 19, 20, 21, 22, 23, 26, 39, 40, 41, 42, 43, 24, 25, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 44, 45, 46].map(i => "top-" + i),
   ...[13, 14, 15, 17, 19, 20, 21, 22, 23, 27, 29, 32, 33, 34, 35, 36, 37, 38, 39].map(i => "bottom-" + i)]); // 하의: 긴 바지·롱스커트(안 맞음)와 비슷한 것 중 덜 맞는 쪽
 const avInTab = (it, k) => !AV_HIDE.has(it.id) && (k === "acc" ? AV_ACC.includes(it.slot) : k === "full" ? AV_FULL.has(it.id) : k === "top" ? it.slot === "top" && !AV_FULL.has(it.id) : it.slot === k); // 가게 칸에 보일 물건
 // 단위에 맞춘 글: "3 으쓱이 모자라요", "3으쓱으로 바꾸기" (이/가, 으로/로)
@@ -54,14 +55,14 @@ const avWear = (wear = {}) => ({ ...AV_REQ, ...Object.fromEntries(Object.entries
 // 처음 그릴 때 모든 그림을 미리 받아 풀어 둠: 색·옷을 바꿀 때 새 <img>가 잠깐 비었다가 뜨지 않게 (Image를 잡아 둬야 풀린 채로 남음)
 let avPre = null;
 const avPreload = () => avPre ||= [...AV_SKIN.map((_, i) => `av/base-${i}.png`), ...AV_ITEMS.filter(it => it.id !== "pet-0" && it.id !== "shoes-0").map(it => it.img), ...AV_ITEMS.filter(it => it.slot === "hair").map(it => it.img.replace(".png", "-g.png")), ...AV_FRECK.map(i => `av/cheek-${i}-f.png`), ...AV_SKIN.map((_, i) => `av/ear-${i}.png`)]
-  .map(s => { const im = new Image(); im.src = s; im.decode?.().catch(() => {}); return im; });
+  .map(s => { const im = new Image(); im.src = s + AV_V; im.decode?.().catch(() => {}); return im; });
 function avPic(av, wear = {}) {
   avPreload();
   const w = avWear(wear), skin = AV_SKIN[av?.skin] ? av.skin : 0, hc = AV_HAIR[av?.hc] && av.hc, cc = AV_CHEEK[av?.cc] ? av.cc : 0;
-  const img = s => `<img src="${s}" alt="" draggable="false">`, hair = avItem(w.hair).img;
-  const hairL = !hc ? img(hair) : (g => img(g) + `<i style="background:${AV_HAIR[hc][0]};-webkit-mask-image:url(${g});mask-image:url(${g})"></i>`)(hair.replace(".png", "-g.png"));
+  const img = s => `<img src="${s}${AV_V}" alt="" draggable="false">`, hair = avItem(w.hair).img;
+  const hairL = !hc ? img(hair) : (g => img(g) + `<i style="background:${AV_HAIR[hc][0]};-webkit-mask-image:url(${g}${AV_V});mask-image:url(${g}${AV_V})"></i>`)(hair.replace(".png", "-g.png"));
   const ck = avItem(w.cheek).img, cn = +w.cheek.split("-")[1];
-  const cheekL = !cn ? "" : `<i style="background:${AV_CHEEK[cc][0]};-webkit-mask-image:url(${ck});mask-image:url(${ck})"></i>` + (AV_FRECK.includes(cn) ? img(ck.replace(".png", "-f.png")) : "");
+  const cheekL = !cn ? "" : `<i style="background:${AV_CHEEK[cc][0]};-webkit-mask-image:url(${ck}${AV_V});mask-image:url(${ck}${AV_V})"></i>` + (AV_FRECK.includes(cn) ? img(ck.replace(".png", "-f.png")) : "");
   // .avp = 펫 칸(378×426), 그 안의 .avb = 아바타 칸(258×386, 위 40·왼쪽 60 띄움). 펫 그림은 펫 칸 크기
   return `<div class="avp" aria-hidden="true"><div class="avb">${w.shoes !== "shoes-0" ? img(`av/base-${skin}.png`).replace("<img", '<img style="clip-path:inset(0 0 2.6% 0)"') : img(`av/base-${skin}.png`)}${cheekL}${[avItem(w.eye).img, avItem(w.mouth).img, w.shoes !== "shoes-0" && avItem(w.shoes).img, !AV_FULL.has(w.top) && avItem(w.bottom).img, avItem(w.top).img].filter(Boolean).map(img).join("")}${hairL}${AV_EAR.has(+w.hair.split("-")[1]) ? img(`av/ear-${skin}.png`) : ""}</div>${w.pet !== "pet-0" ? img(avItem(w.pet).img) : ""}</div>`;
 }
