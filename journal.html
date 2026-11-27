@@ -336,10 +336,9 @@
     </div>
   </section>
   <section class="pane" id="p-gm" hidden>
-    <div class="box"><div class="bar"><b>공문 다듬기</b><span class="tip">줄 앞 띄어쓰기로 번호 단계, Enter로 넣기</span><span class="sp"></span>
+    <div class="box"><div class="bar"><b>공문 다듬기</b><span class="tip">줄 앞 띄어쓰기로 번호 단계, 흐린 번호는 → 키로 넣기</span><span class="sp"></span>
         <label class="tip"><input type="checkbox" id="gm-end" checked> 끝. 붙이기</label><button id="gm-fix" title="공문서 규칙으로 고쳐 씀 (Ctrl+Z로 되돌리기)">✨ 다듬기</button><button class="main" id="gm-copy">복사</button><button id="gm-save" title="보관함 '업무'에 메모로">보관함에 저장</button></div>
-      <div class="gm-wrap"><div class="gm-ghost" id="gm-ghost" aria-hidden="true"></div><textarea id="gm-in" spellcheck="false" placeholder="번호는 저절로: 줄 맨 앞 띄어쓰기 0칸 1. · 2칸 가. · 4칸 1) · 6칸 가) … 흐리게 보이면 Enter
-(Tab: 한 단계 안으로, Shift+Tab: 밖으로)"></textarea></div>
+      <div class="gm-wrap"><div class="gm-ghost" id="gm-ghost" aria-hidden="true"></div><textarea id="gm-in" spellcheck="false" placeholder="번호는 저절로: 줄 맨 앞 띄어쓰기 0칸 1. · 2칸 가. · 4칸 1) · 6칸 가) … 흐리게 보이면 → 키\n(Tab 한 단계 안으로 · Shift+Tab·빈 줄 Backspace 밖으로 · Enter는 줄 바꿈)"></textarea></div>
       <p class="tip gm-rules">다듬기: 항목 1. → 가. → 1) → 가) → (1) → (가) 는 두 칸씩 들여 쓰고 기호 뒤 한 칸 · 날짜 2026. 11. 5. · 금액 960,000원 · 붙임 뒤 두 칸 · 마지막에 두 칸 띄우고 끝.</p></div>
   </section>
   <section class="pane" id="p-box" hidden>
@@ -1341,10 +1340,12 @@ $("gm-in").addEventListener("keydown", e => {
   if (e.isComposing) return;
   const { t, v, c, a, b, lines } = gmCaret(), cur = v.slice(a, b), put = (from, to, txt, at) => { t.setRangeText(txt, from, to, "end"); if (at !== undefined) t.selectionStart = t.selectionEnd = at; t.dispatchEvent(new Event("input")); e.preventDefault(); };
   if (e.key === "Backspace" && cur && !/\S/.test(cur) && c === b) return put(c - (cur.length % 2 || 2), c, ""); // 빈 줄: 한 단계(2칸)씩 밖으로 → 3) → 다. → 2.
-  if (e.key === "Tab") { const sp = cur.match(/^ */)[0].length; return e.shiftKey ? put(a, a + Math.min(2, sp), "") : put(a, a, "  ", c + 2); } // Tab: 한 단계 안으로
+  const blank = !/\S/.test(cur) && c === b;
+  if (e.key === "ArrowRight" && blank && !(cur.length % 2)) { const lv = Math.min(7, Math.floor(cur.length / 2)); return put(c, c, GM_SEQ[lv](gmNext(lines, lines.length, lv)) + " "); } // →: 흐린 번호 넣기 (자동 완성처럼)
+  if (e.key === "Tab") { const sp = cur.match(/^ */)[0].length; return e.shiftKey ? put(a, a + Math.min(2, sp), "") : put(a, a, "  ", c + 2); } // Tab 한 단계 안으로 · Shift+Tab 밖으로
   if (e.key !== "Enter" || e.shiftKey) return;
   if (t.selectionStart !== t.selectionEnd) return;
-  if (!/\S/.test(cur) && c === b && !(cur.length % 2)) { const lv = Math.min(7, Math.floor(cur.length / 2)); return put(c, c, GM_SEQ[lv](gmNext(lines, lines.length, lv)) + " "); } // 흐린 번호 넣기
+  if (blank) return put(a, b, "\n"); // 빈 줄에서 Enter: 그냥 한 줄 띄움 (붙임 앞 빈 줄 등)
   const p = gmLine(cur);
   if (p.lv >= 0 && !p.text.trim() && c === b) return put(a, b, ""); // 번호만 있는 줄에서 Enter: 번호 지우기
   put(c, c, "\n" + " ".repeat(p.sp)); // 줄 바꿈은 같은 들여쓰기로 → 다음 번호가 흐리게
