@@ -26,10 +26,12 @@
   header { display: flex; align-items: center; gap: 4px; padding: 12px 16px; min-height: 52px; box-sizing: border-box; padding-right: max(200px, calc(100vw - env(titlebar-area-x, 0px) - env(titlebar-area-width, 100vw) + 16px)); /* 따로 연 창은 env 값이 비어도 창 버튼(… – □ ×)에 안 가리게 */ background: #e9e2d6; border-bottom: 1.5px solid #ddd3c4; flex-wrap: wrap;
            app-region: drag; -webkit-app-region: drag; } /* 머리줄을 잡고 창을 옮겨요 */
   header button, header input { app-region: no-drag; -webkit-app-region: no-drag; }
-  header .tab:not(.on):hover { background: rgba(255, 255, 255, .5); } header .dday .dd { background: #fff; }
+  header .tab:not(.on):hover { filter: brightness(1.04); padding-top: 9px; } header .dday .dd { background: #fff; }
   header h1 { margin: 0 14px 0 0; font-size: 18px; display: flex; align-items: center; gap: 6px; }
-  header .tab { border: 0; background: none; padding: 7px 14px; border-radius: 999px; font-size: 15px; color: var(--muted); }
-  header .tab.on { background: var(--soft); color: var(--accent); font-weight: 600; }
+  /* 위 탭: 공책 인덱스처럼 색 띠. 고른 탭은 아래 쪽(페이지)과 이어지고 위에 색 줄 */
+  header .tab { --tc: #dfe7e2; align-self: flex-end; margin: 0 1px -13.5px; border: 0; border-radius: 12px 12px 0 0; background: var(--tc); padding: 7px 18px 8px; font-size: 15px; color: #5d5650; transition: padding .12s; }
+  header .tab[data-tab="cal"] { --tc: #cfe6d8; } header .tab[data-tab="stu"] { --tc: #f4e2b0; } header .tab[data-tab="box"] { --tc: #f3cfae; }
+  header .tab.on { background: var(--bg); color: var(--ink); font-weight: 700; padding: 10px 20px 10px; box-shadow: inset 0 4px 0 var(--tc); position: relative; z-index: 1; }
   header .dday { border: 0; background: none; padding: 0; display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
   header .dday .dd { display: inline-flex; align-items: center; gap: 6px; background: var(--soft); border-radius: 8px; padding: 4px 10px; color: var(--ink); }
   header .dday .dd b { font-weight: 600; } header .dday .dn { font-weight: 800; color: var(--accent); }
@@ -61,7 +63,7 @@
   :is(.pop, .pop-in) .moderow.col { display: grid; gap: 6px; } :is(.pop, .pop-in) .modes .chips { flex: 1; min-width: 0; flex-wrap: wrap; } /* 종류는 왼쪽, 연속·반복은 오른쪽 */
   header .sp { flex: 1; } header .hright { margin-left: auto; display: flex; align-items: center; gap: 4px; } header .today { color: var(--muted); font-size: 14px; white-space: nowrap; margin: 0 4px 0 8px; }
   main { min-height: 0; overflow: hidden; padding: 10px 14px 12px; display: flex; flex-direction: column; gap: 8px; } main > .pane { flex: 1; height: auto; }
-  .subtabs { display: flex; gap: 2px; flex: none; } .subtabs button { border: 0; background: none; padding: 4px 12px; border-radius: 8px; font-size: 14px; color: var(--muted); } .subtabs button + button { position: relative; } .subtabs button.on { background: #fff; color: var(--accent); font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,.06); } .subtabs button:not(.on):hover { background: rgba(255,255,255,.6); } /* 위 탭 안의 작은 탭 */
+  .subtabs { display: flex; gap: 2px; flex: none; position: relative; } /* 고른 위 탭의 가운데에 맞춤 (subCenter) */ .subtabs button { border: 0; background: none; padding: 4px 12px; border-radius: 8px; font-size: 14px; color: var(--muted); } .subtabs button + button { position: relative; } .subtabs button.on { background: #fff; color: var(--accent); font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,.06); } .subtabs button:not(.on):hover { background: rgba(255,255,255,.6); } /* 위 탭 안의 작은 탭 */
   .pane { height: 100%; display: grid; gap: 12px; min-height: 0; }
   .box { background: var(--card); border-radius: 14px; padding: 14px 16px; min-height: 0; display: flex; flex-direction: column; }
   .box h2 { margin: 0 0 10px; font-size: 15px; color: var(--ink); font-weight: 700; display: flex; align-items: center; gap: 6px; }
@@ -412,6 +414,12 @@ let tab = localStorage.getItem("journal-tab") || "cal";
 const GROUPS = { cal: [["cal", "달력"], ["note", "일지"]], stu: [["rec", "학생 기록"], ["cs", "상담 일지"], ["info", "학생 정보"], ["att", "출결"]], box: [["box", "보관함"], ["gm", "공문 다듬기"]] };
 const groupOf = t => Object.keys(GROUPS).find(g => GROUPS[g].some(([k]) => k === t));
 let subLast = {}; try { subLast = JSON.parse(localStorage.getItem("journal-sub")) || {}; } catch (e) {}
+function subCenter() { // 작은 탭 줄의 가운데 = 고른 위 탭의 가운데 (화면 밖으로는 안 나가게)
+  const n = $("subnav"), b = document.querySelector(".tab.on"); if (!b) return;
+  n.style.left = "0px"; const nr = n.getBoundingClientRect(), br = b.getBoundingClientRect(), w = [...n.children].reduce((x, c) => x + c.offsetWidth + 2, 0);
+  n.style.left = Math.max(0, Math.min(nr.width - w, br.left + br.width / 2 - nr.left - w / 2)) + "px";
+}
+addEventListener("resize", subCenter);
 function showTab(t) {
   if (GROUPS[t] && !TABS.includes(t)) t = subLast[t] || GROUPS[t][0][0]; // '학생'처럼 묶음을 누름
   if (!TABS.includes(t)) t = "cal";
@@ -419,6 +427,7 @@ function showTab(t) {
   const g = groupOf(t); subLast[g] = t; try { localStorage.setItem("journal-sub", JSON.stringify(subLast)); } catch (e) {}
   document.querySelectorAll(".tab").forEach(b => b.classList.toggle("on", b.dataset.tab === g));
   $("subnav").replaceChildren(...GROUPS[g].map(([k, n]) => el("button", { type: "button", class: k === t ? "on" : "", onclick: () => showTab(k) }, n)));
+  subCenter();
   TABS.forEach(k => $("p-" + k).hidden = k !== t);
   draw();
 }
