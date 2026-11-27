@@ -1241,6 +1241,32 @@
   .dc-files .sc-meta { display: flex; align-items: center; gap: 6px; font-size: 14px; } .dc-files .sc-meta input { flex: 1; min-width: 0; }
   .dc-files .card-ed-list > * + * { margin-top: 8px; }
 </style>
+<script>
+// 오류 알림: 보드가 멈출 만한 오류가 나면 구석에 작게 알리고, 누르면 개발자에게 메일(오류 내용이 채워진)로 보냄
+// 받는 주소는 보드 ⚙ 설정 → 개발자에게 연락의 주소(#dev-mail)를 씀. 없는 화면(교사 일지)은 오류 내용을 복사해 두고 그곳으로 안내
+(() => {
+  const seen = new Set();
+  const show = (msg, stack) => {
+    const key = String(msg).slice(0, 120); if (seen.has(key) || seen.size > 4) return; seen.add(key);
+    const body = `어떤 걸 하다가 이렇게 됐는지 한 줄 적어 주세요:\n\n\n---- 아래는 오류 내용이에요 (지우지 말아 주세요) ----\n${msg}\n${String(stack || "").split("\n").slice(0, 6).join("\n")}\n화면: ${location.pathname.split("/").pop() || "index.html"}\n시각: ${new Date().toLocaleString("ko-KR")}\n브라우저: ${navigator.userAgent}`;
+    const put = () => {
+      document.getElementById("err-box")?.remove();
+      const to = document.getElementById("dev-mail")?.value || "";
+      const d = document.createElement("div"); d.id = "err-box";
+      d.style.cssText = "position:fixed;right:14px;bottom:14px;z-index:2147483647;max-width:340px;background:#fff;border:1.5px solid #ffc9c9;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.15);padding:12px 14px;font:14px/1.5 'Pretendard Variable','Malgun Gothic',sans-serif;color:#333";
+      d.innerHTML = '<b style="color:#e03131">⚠︎ 문제가 생겼어요</b><div style="margin:4px 0 8px;color:#666;font-size:13px">새로고침(Ctrl+Shift+R)해도 그대로면 개발자에게 알려 주세요. 오류 내용이 같이 가요.</div>';
+      const a = document.createElement("a"); a.textContent = to ? "✉︎ 개발자에게 보내기" : "📋 오류 내용 복사";
+      if (to) a.href = `mailto:${to}?subject=${encodeURIComponent("우리반 보드 오류")}&body=${encodeURIComponent(body)}`;
+      a.style.cssText = "display:inline-block;background:#e03131;color:#fff;text-decoration:none;border-radius:8px;padding:5px 12px;font-weight:600;cursor:pointer";
+      a.onclick = () => { try { navigator.clipboard.writeText(body); } catch (e) {} if (!to) a.textContent = "복사했어요 · 보드 ⚙ 설정 → 개발자에게 연락에 붙여 넣어 보내 주세요"; }; // 메일이 안 열려도 붙여 넣을 수 있게
+      const x = document.createElement("button"); x.textContent = "닫기"; x.style.cssText = "margin-left:8px;border:0;background:none;color:#888;cursor:pointer;font:inherit"; x.onclick = () => d.remove();
+      d.append(a, x); document.body.append(d);
+    };
+    document.readyState === "loading" ? addEventListener("DOMContentLoaded", put) : put();
+  };
+  addEventListener("error", e => { if (e.error && (!e.filename || e.filename.startsWith(location.origin))) show(e.message, e.error.stack); }); // 우리 파일의 코드 오류만 (그림·글꼴을 못 받은 것은 빼고)
+})();
+</script>
 </head>
 <body>
 <header><b>우리반 보드</b> <span id="today"></span></header>

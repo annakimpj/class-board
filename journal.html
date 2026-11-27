@@ -239,6 +239,32 @@
     .att-key { display: table !important; } .att th, .att td { min-width: 0; height: 18px; font-size: 8pt; } .att th small { font-size: 6pt; } .itable { font-size: 9pt; } .itable td { white-space: normal; }
   }
 </style>
+<script>
+// 오류 알림: 보드가 멈출 만한 오류가 나면 구석에 작게 알리고, 누르면 개발자에게 메일(오류 내용이 채워진)로 보냄
+// 받는 주소는 보드 ⚙ 설정 → 개발자에게 연락의 주소(#dev-mail)를 씀. 없는 화면(교사 일지)은 오류 내용을 복사해 두고 그곳으로 안내
+(() => {
+  const seen = new Set();
+  const show = (msg, stack) => {
+    const key = String(msg).slice(0, 120); if (seen.has(key) || seen.size > 4) return; seen.add(key);
+    const body = `어떤 걸 하다가 이렇게 됐는지 한 줄 적어 주세요:\n\n\n---- 아래는 오류 내용이에요 (지우지 말아 주세요) ----\n${msg}\n${String(stack || "").split("\n").slice(0, 6).join("\n")}\n화면: ${location.pathname.split("/").pop() || "index.html"}\n시각: ${new Date().toLocaleString("ko-KR")}\n브라우저: ${navigator.userAgent}`;
+    const put = () => {
+      document.getElementById("err-box")?.remove();
+      const to = document.getElementById("dev-mail")?.value || "";
+      const d = document.createElement("div"); d.id = "err-box";
+      d.style.cssText = "position:fixed;right:14px;bottom:14px;z-index:2147483647;max-width:340px;background:#fff;border:1.5px solid #ffc9c9;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.15);padding:12px 14px;font:14px/1.5 'Pretendard Variable','Malgun Gothic',sans-serif;color:#333";
+      d.innerHTML = '<b style="color:#e03131">⚠︎ 문제가 생겼어요</b><div style="margin:4px 0 8px;color:#666;font-size:13px">새로고침(Ctrl+Shift+R)해도 그대로면 개발자에게 알려 주세요. 오류 내용이 같이 가요.</div>';
+      const a = document.createElement("a"); a.textContent = to ? "✉︎ 개발자에게 보내기" : "📋 오류 내용 복사";
+      if (to) a.href = `mailto:${to}?subject=${encodeURIComponent("우리반 보드 오류")}&body=${encodeURIComponent(body)}`;
+      a.style.cssText = "display:inline-block;background:#e03131;color:#fff;text-decoration:none;border-radius:8px;padding:5px 12px;font-weight:600;cursor:pointer";
+      a.onclick = () => { try { navigator.clipboard.writeText(body); } catch (e) {} if (!to) a.textContent = "복사했어요 · 보드 ⚙ 설정 → 개발자에게 연락에 붙여 넣어 보내 주세요"; }; // 메일이 안 열려도 붙여 넣을 수 있게
+      const x = document.createElement("button"); x.textContent = "닫기"; x.style.cssText = "margin-left:8px;border:0;background:none;color:#888;cursor:pointer;font:inherit"; x.onclick = () => d.remove();
+      d.append(a, x); document.body.append(d);
+    };
+    document.readyState === "loading" ? addEventListener("DOMContentLoaded", put) : put();
+  };
+  addEventListener("error", e => { if (e.error && (!e.filename || e.filename.startsWith(location.origin))) show(e.message, e.error.stack); }); // 우리 파일의 코드 오류만 (그림·글꼴을 못 받은 것은 빼고)
+})();
+</script>
 </head>
 <body>
 <div class="cover" id="cover" hidden title="두 번 누르면 열려요"><div class="cover-bar" title="여기를 잡고 끌어서 옮겨요">잡고 옮기기</div><b>우리반 보드</b><span id="cover-date"></span></div>
@@ -1307,20 +1333,26 @@ function gmCaret() { const t = $("gm-in"), v = t.value, c = t.selectionStart, a 
 function gmGhost() {
   const g = $("gm-ghost"), { t, v, c, a, b, lines } = gmCaret(), cur = v.slice(a, b);
   g.replaceChildren(); g.scrollTop = t.scrollTop; g.scrollLeft = t.scrollLeft;
-  if (document.activeElement !== t || c !== b || /\S/.test(cur)) return; // 빈 줄(띄어쓰기만)에 커서가 있을 때만
+  if (document.activeElement !== t || c !== b || /\S/.test(cur) || cur.length % 2) return; // 빈 줄(띄어쓰기만, 2칸 단위)에 커서가 있을 때만
   const lv = Math.min(7, Math.floor(cur.length / 2));
   g.append(v.slice(0, b), Object.assign(document.createElement("i"), { textContent: GM_SEQ[lv](gmNext(lines, lines.length, lv)) + " " }), v.slice(b));
 }
 $("gm-in").addEventListener("keydown", e => {
   if (e.isComposing) return;
   const { t, v, c, a, b, lines } = gmCaret(), cur = v.slice(a, b), put = (from, to, txt, at) => { t.setRangeText(txt, from, to, "end"); if (at !== undefined) t.selectionStart = t.selectionEnd = at; t.dispatchEvent(new Event("input")); e.preventDefault(); };
+  if (e.key === "Backspace" && cur && !/\S/.test(cur) && c === b) return put(c - (cur.length % 2 || 2), c, ""); // 빈 줄: 한 단계(2칸)씩 밖으로 → 3) → 다. → 2.
   if (e.key === "Tab") { const sp = cur.match(/^ */)[0].length; return e.shiftKey ? put(a, a + Math.min(2, sp), "") : put(a, a, "  ", c + 2); } // Tab: 한 단계 안으로
   if (e.key !== "Enter" || e.shiftKey) return;
   if (t.selectionStart !== t.selectionEnd) return;
-  if (!/\S/.test(cur) && c === b) { const lv = Math.min(7, Math.floor(cur.length / 2)); return put(c, c, GM_SEQ[lv](gmNext(lines, lines.length, lv)) + " "); } // 흐린 번호 넣기
+  if (!/\S/.test(cur) && c === b && !(cur.length % 2)) { const lv = Math.min(7, Math.floor(cur.length / 2)); return put(c, c, GM_SEQ[lv](gmNext(lines, lines.length, lv)) + " "); } // 흐린 번호 넣기
   const p = gmLine(cur);
   if (p.lv >= 0 && !p.text.trim() && c === b) return put(a, b, ""); // 번호만 있는 줄에서 Enter: 번호 지우기
   put(c, c, "\n" + " ".repeat(p.sp)); // 줄 바꿈은 같은 들여쓰기로 → 다음 번호가 흐리게
+});
+$("gm-in").addEventListener("input", e => { // 한글을 치는 중에 Enter를 누르면 위 keydown이 건너뛰어짐 → 브라우저가 넣은 줄바꿈 뒤에 같은 들여쓰기를 붙임
+  if (e.inputType !== "insertLineBreak" && e.inputType !== "insertParagraph") return;
+  const { t, v, a } = gmCaret(), prev = v.slice(v.lastIndexOf("\n", a - 2) + 1, a - 1), sp = gmLine(prev).sp;
+  if (sp && t.selectionStart === a) t.setRangeText(" ".repeat(sp), a, a, "end");
 });
 ["input", "keyup", "click", "focus", "blur", "scroll"].forEach(ev => $("gm-in").addEventListener(ev, gmGhost));
 function gmDraw() { gmGhost(); }
