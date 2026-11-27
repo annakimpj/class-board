@@ -13,10 +13,10 @@ const AV_NAMES = {
   top: ["세일러 블라우스", "크림 후드티", "검정 재킷", "분홍 가디건", "고양이 후드티", "흰 셔츠", "곰돌이 니트", "검정 프릴 블라우스", "줄무늬 티", "하얀 패딩", "빨간 망토", "카키 야상", "멜빵 원피스", "검정 후드티", "레이스 블라우스", 
     "검정 도복", "가죽 재킷", "산타 옷", "산타 원피스", "요정 옷", "눈사람 옷", "진저브레드 옷", "루돌프 옷", "트리 스웨터 잠옷", "호두까기 인형 옷", "의사 가운 세트", "요리사 세트", "멜빵바지 세트", "승무원 세트", "기장 세트", 
     "가디건 세트", "흰 가운 세트", "흰 도복 세트", "빨간 로봇 슈트", "소방관 옷", "우주인 점퍼", "군복 셔츠", "요리사 옷", "경찰 제복", "의사 가운", "야구 유니폼", "탐험가 셔츠", "승무원 재킷", "갈색 가디건", "컵케이크 앞치마", "검정 도복 세트", "농구 유니폼", "공룡 잠옷", "소방관 세트", "경찰 세트", "레이싱 슈트", "조종사 슈트", "우주복", "하트 꽈배기 가디건", "체크 교복 재킷", "민트 꽃 블라우스", "보라 별 가디건", "분홍 하트 재킷", "백설 공주 옷", "얼음 공주 옷", "세일러 교복"],
-  shoes: ["맨발", "민트 운동화", "빨간 찍찍이 운동화", "곰돌이 슬리퍼", "검정 운동화", "하늘 고무신발", "남색 슬립온", "갈색 구두", "노란 운동화"],
-  eye: ["기본 눈", "날렵한 눈", "졸린 눈", "웃는 눈", "윙크", "반짝 눈", "울먹 눈", "화난 눈", "옆 보는 눈", "걱정 눈", "놀란 눈", "시큰둥 눈", "하트 눈", "빙글빙글 눈", "속눈썹 눈", "점 눈", "초롱 눈", "울먹 초롱 눈", "질끈 눈", "웃는 초롱 눈", "초롱 윙크"],
+  shoes: ["맨발", "검정 운동화", "카모 운동화", "파랑 하이탑"],
+  eye: ["기본 눈", "날렵한 눈", "졸린 눈", "웃는 눈", "윙크", "반짝 눈", "울먹 눈", "화난 눈", "옆 보는 눈", "걱정 눈", "놀란 눈", "시큰둥 눈", "하트 눈", "빙글빙글 눈", "속눈썹 눈", "점 눈", "초롱 눈", "울먹 초롱 눈", "질끈 눈", "웃는 초롱 눈", "초롱 윙크", "졸린 초롱 눈"],
   cheek: ["볼터치 없음", "볼 정중앙", "콧잔등 + 주근깨", "볼 정중앙 + 주근깨", "빗금 볼터치", "작은 동그라미", "콧잔등", "크게 발그레"],
-  mouth: ["미소", "활짝 웃는 입", "고양이 입", "작은 입", "시무룩 입", "삐뚤 입", "씩 웃는 입", "메롱", "이 보이게 웃기", "놀란 입", "뽀뽀 입", "일자 입", "송곳니 웃음", "울먹 입", "크게 웃는 입", "쪽 입", "살짝 미소"],
+  mouth: ["미소", "활짝 웃는 입", "고양이 입", "작은 입", "시무룩 입", "삐뚤 입", "씩 웃는 입", "메롱", "이 보이게 웃기", "놀란 입", "뽀뽀 입", "일자 입", "송곳니 웃음", "울먹 입", "크게 웃는 입", "쪽 입", "살짝 미소", "삐죽 입"],
   bottom: ["하늘 주름치마", "검정 주름치마", "베이지 반바지", "청반바지", "검정 카고 바지", "회색 운동복 바지", "남색 트레이닝 바지", "분홍 체크 치마", "카키 반바지", "체인 치마", "체크 바지", "연청 반바지", "베이지 카고 반바지", 
     "빨간 운동 반바지", "남색 치마", "체크무늬 반바지", "회색 반바지", "줄무늬 야구 반바지", "물감 청반바지", "갈색 리본 치마"],
 };
@@ -26,9 +26,9 @@ const AV_PRICE = { // 0이면 무료 (기본으로 입는 것)
   pet: [0, 12, 12, 12, 12, 12, 14, 16, 18, 16, 16, 18, 20, 14, 14, 14, 14, 15, 15, 16, 15],
   hair: [9, 8, 8, 8, 0, 6, 6, 8, 0, 8, 7, 6, 10, 10],
   top: [8, 7, 9, 7, 9, 0, 8, 9, 0, 9, 10, 9, 9, 8, 10, 10, 11, 14, 14, 14, 13, 13, 13, 12, 14, 12, 12, 11, 12, 12, 10, 12, 11, 12, 10, 12, 9, 10, 10, 11, 10, 9, 10, 8, 9, 11, 9, 13, 12, 12, 13, 12, 14, 9, 11, 10, 9, 11, 12, 12, 10],
-  shoes: [0, 0, 6, 8, 5, 6, 5, 7, 6],
-  eye: Array(21).fill(0),
-  mouth: Array(17).fill(0),
+  shoes: [0, 0, 6, 6],
+  eye: Array(22).fill(0),
+  mouth: Array(18).fill(0),
   cheek: Array(8).fill(0),
   bottom: [6, 6, 0, 0, 7, 6, 7, 7, 0, 8, 7, 6, 6, 6, 7, 8, 6, 8, 9, 7],
 };
@@ -37,7 +37,7 @@ const AV_REQ = { pet: "pet-0", shoes: "shoes-1", eye: "eye-0", mouth: "mouth-0",
 const AV_ACC = []; // 장신구 칸 (아직 없음)
 const AV_TABS = [["eye", "눈"], ["mouth", "입"], ["cheek", "볼터치"], ["hair", "헤어"], ["top", "상의"], ["bottom", "하의"], ["full", "한벌"], ["shoes", "신발"], ["pet", "펫"]];
 const AV_FULL = new Set(["top-50","top-51","top-52","top-45","top-47","top-48","top-49","top-17","top-18","top-19","top-20","top-21","top-22","top-23","top-24","top-25","top-26","top-27","top-28","top-29","top-30","top-31","top-32"]); // 위아래 한 벌 옷: 입으면 하의를 안 그림. 가게에서는 '한벌' 칸
-const AV_V = "?v=26"; // 그림을 고치면 숫자를 올림 (브라우저에 남은 옛 그림 대신 새로 받게)
+const AV_V = "?v=27"; // 그림을 고치면 숫자를 올림 (브라우저에 남은 옛 그림 대신 새로 받게)
 const AV_HAT = new Set(["hair-12", "hair-13"]); // 모자·헬멧 (헤어 칸): 머리색을 안 칠함, 귀도 안 올림
 const AV_HIDE = new Set(["shoes-0"]); // 가게에 안 보이는 것 (맨발: 그림 없음)
 const avInTab = (it, k) => !AV_HIDE.has(it.id) && (k === "acc" ? AV_ACC.includes(it.slot) : k === "full" ? AV_FULL.has(it.id) : k === "top" ? it.slot === "top" && !AV_FULL.has(it.id) : it.slot === k); // 가게 칸에 보일 물건
@@ -61,5 +61,5 @@ function avPic(av, wear = {}) {
   const ck = avItem(w.cheek).img, cn = +w.cheek.split("-")[1];
   const cheekL = !cn ? "" : `<i style="background:${AV_CHEEK[cc][0]};-webkit-mask-image:url(${ck}${AV_V});mask-image:url(${ck}${AV_V})"></i>` + (AV_FRECK.includes(cn) ? img(ck.replace(".png", "-f.png")) : "");
   // .avp = 펫 칸(378×426), 그 안의 .avb = 아바타 칸(258×386, 위 40·왼쪽 60 띄움). 펫 그림은 펫 칸 크기
-  return `<div class="avp" aria-hidden="true"><div class="avb">${w.shoes !== "shoes-0" ? img(`av/base-${skin}.png`).replace("<img", '<img style="clip-path:inset(0 0 2.6% 0)"') : img(`av/base-${skin}.png`)}${cheekL}${w.shoes !== "shoes-0" ? img(avItem(w.shoes).img).replace("<img", +w.shoes.split("-")[1] <= 8 ? '<img style="transform:translateY(1.2%)"' : "<img") : ""}${[avItem(w.eye).img, avItem(w.mouth).img, !AV_FULL.has(w.top) && avItem(w.bottom).img, avItem(w.top).img].filter(Boolean).map(img).join("")}${hairL}${AV_EAR.has(+w.hair.split("-")[1]) ? img(`av/ear-${skin}.png`) : ""}</div>${w.pet !== "pet-0" ? img(avItem(w.pet).img) : ""}</div>`;
+  return `<div class="avp" aria-hidden="true"><div class="avb">${w.shoes !== "shoes-0" ? img(`av/base-${skin}.png`).replace("<img", '<img style="clip-path:inset(0 0 2.6% 0)"') : img(`av/base-${skin}.png`)}${cheekL}${w.shoes !== "shoes-0" ? img(avItem(w.shoes).img) : ""}${[avItem(w.eye).img, avItem(w.mouth).img, !AV_FULL.has(w.top) && avItem(w.bottom).img, avItem(w.top).img].filter(Boolean).map(img).join("")}${hairL}${AV_EAR.has(+w.hair.split("-")[1]) ? img(`av/ear-${skin}.png`) : ""}</div>${w.pet !== "pet-0" ? img(avItem(w.pet).img) : ""}</div>`;
 }
