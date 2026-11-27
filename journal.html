@@ -465,6 +465,11 @@ function minAsk(btn, done) { // ( )분 전: 종 옆 작은 칸
   document.body.append(m); n.select();
   setTimeout(() => addEventListener("mousedown", function off(e) { if (!m.contains(e.target)) { removeEventListener("mousedown", off); if (m.isConnected) { m.remove(); done(0); } } }));
 }
+function schoolEnd(from) { // 종업식 날: 디데이·일정에 '종업식'이 있으면 그날, 없으면 그 학년도 2월 마지막 날
+  const hit = [...(J.dday || []).filter(x => /종업식/.test(x.t || "")).map(x => x.d), ...J.events.filter(x => /종업식/.test(x.text || "")).map(x => x.date)].filter(d => d && d >= from).sort()[0];
+  if (hit) return hit;
+  const y = +from.slice(0, 4) + (+from.slice(5, 7) >= 3 ? 1 : 0); return iso(new Date(y, 2, 0)); // 3월 0일 = 2월 마지막 날
+}
 function evForm(date, e, anchor, host) { // host: 팝업 대신 그 form 안에 같은 입력 칸을 (오른쪽 일정 칸) // 일정: 위에 그날 일정, 아래 [입력칸 + 🕒] [🔔] [추가]. Enter로 이어서 씀
   const x = el("input", { type: "text", class: "grow", value: e ? (e.time ? e.time + " " : "") + e.text : "", placeholder: e ? "" : "일정 쓰고 Enter", autocomplete: "off" });
   // 🕒: 오전/오후 + 시 : 분을 타이핑해서 넣는 작은 칸 (끌어서 고르면 1분 단위가 어려워서)
@@ -487,7 +492,7 @@ function evForm(date, e, anchor, host) { // host: 팝업 대신 그 form 안에 
   const upd = () => bell.hidden = !parseTime(x.value).time; // 시간이 있을 때만 종
   x.oninput = upd; upd();
   const d = e ? dateIn(e.date) : null, list = el("div", { class: "plist" });
-  let mode = e?.end ? "span" : e?.rep ? "rep" : "", endV = e?.end || "", untilV = e?.until || "";
+  let mode = e?.end ? "span" : e?.rep ? "rep" : "", endV = e?.end || "", untilV = e ? e.until || "" : schoolEnd(date); // 새 반복 일정은 종업식까지
   const endF = dateField(endV, v => endV = v), untilF = dateField(untilV, v => untilV = v);
   const repSel = el("select", { "aria-label": "반복" }, ...REPS.map(([k, t]) => el("option", { value: k }, t))); repSel.value = e?.rep || "week";
   const W7 = ["일", "월", "화", "수", "목", "금", "토"], startOf = () => (d?.value || e?.date || date), sday = () => new Date(startOf() + "T00:00");
