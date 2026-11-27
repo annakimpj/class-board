@@ -7881,7 +7881,11 @@ async function hwSaveAll(title, cards, btn) {
   const none = cards.filter(c => !hwFiles(c.v).length).length, label = btn.textContent;
   if (!L.length) return seConfirm(btn.closest(".card") || document.body, "낸 사진·파일이 없어요. (글이나 링크만 냈어요)", "확인", null);
   let dir = null;
-  if (window.showDirectoryPicker) try { dir = await showDirectoryPicker({ id: "hw-save", mode: "readwrite" }); } catch (e) { return; } // 취소하면 그만
+  if (window.showDirectoryPicker) {
+    // 한 번 저장해 보기 전까지는 미리 알려 줌: 바탕화면·문서·다운로드 폴더 '자체'는 브라우저가 막음 (그 안의 새 폴더는 됨)
+    if (!lsGet("hw-save-ok") && !await seConfirm(btn.closest(".card") || document.body, "저장할 폴더를 골라 주세요.\n\n바탕화면·문서·다운로드 폴더는 바로 고를 수 없어요 (브라우저가 막아요).\n그 안에서 '새 폴더'를 만들어 그 폴더를 골라 주세요.\n예) 바탕화면 → 새 폴더 '과제 모음' → 폴더 선택", "폴더 고르기")) return;
+    try { dir = await showDirectoryPicker({ id: "hw-save", mode: "readwrite", startIn: "desktop" }); } catch (e) { return; } // 취소하면 그만
+  }
   let n = 0;
   for (const { f, name } of L) {
     btn.textContent = `저장 중… ${++n}/${L.length}`;
@@ -7889,7 +7893,7 @@ async function hwSaveAll(title, cards, btn) {
     if (dir) { const w = await (await dir.getFileHandle(name, { create: true })).createWritable(); await w.write(blob); await w.close(); }
     else { const a = h("a", { href: URL.createObjectURL(blob), download: name }); document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); await new Promise(r => setTimeout(r, 300)); } // shortcut: 폴더를 못 고르는 브라우저는 다운로드 폴더로 하나씩
   }
-  btn.textContent = label;
+  btn.textContent = label; if (dir) lsSet("hw-save-ok", "1");
   seConfirm(btn.closest(".card") || document.body, `${L.length}개를 저장했어요.${dir ? ` (폴더: ${dir.name})` : ""}${none ? `\n글·링크만 낸 ${none}명은 저장할 파일이 없어요.` : ""}`, "확인", null);
 }
 const hwFiles = v => v?.files || (v?.file || v?.img ? [{ file: v.file || v.img, fname: v.fname || "" }] : []); // 예전 file·img 하나짜리도
