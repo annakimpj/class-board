@@ -60,7 +60,8 @@
   :is(.pop, .pop-in) .wdays { display: flex; gap: 2px; } :is(.pop, .pop-in) .wdays button { width: 28px; height: 26px; padding: 0; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; } :is(.pop, .pop-in) .wdays button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
   :is(.pop, .pop-in) .moderow.col { display: grid; gap: 6px; } :is(.pop, .pop-in) .modes .chips { flex: 1; min-width: 0; flex-wrap: wrap; } /* 종류는 왼쪽, 연속·반복은 오른쪽 */
   header .sp { flex: 1; } header .hright { margin-left: auto; display: flex; align-items: center; gap: 4px; } header .today { color: var(--muted); font-size: 14px; white-space: nowrap; margin: 0 4px 0 8px; }
-  main { min-height: 0; overflow: hidden; padding: 12px 14px; }
+  main { min-height: 0; overflow: hidden; padding: 10px 14px 12px; display: flex; flex-direction: column; gap: 8px; } main > .pane { flex: 1; height: auto; }
+  .subtabs { display: flex; gap: 2px; flex: none; } .subtabs button { border: 0; background: none; padding: 4px 12px; border-radius: 8px; font-size: 14px; color: var(--muted); } .subtabs button + button { position: relative; } .subtabs button.on { background: #fff; color: var(--accent); font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,.06); } .subtabs button:not(.on):hover { background: rgba(255,255,255,.6); } /* 위 탭 안의 작은 탭 */
   .pane { height: 100%; display: grid; gap: 12px; min-height: 0; }
   .box { background: var(--card); border-radius: 14px; padding: 14px 16px; min-height: 0; display: flex; flex-direction: column; }
   .box h2 { margin: 0 0 10px; font-size: 15px; color: var(--ink); font-weight: 700; display: flex; align-items: center; gap: 6px; }
@@ -228,7 +229,7 @@
   .day .mk.bd { color: #e64980; width: 18px; height: 18px; } .bdline { display: flex; align-items: center; gap: 4px; color: #e64980 !important; } .bdline .i { width: 18px; height: 18px; }
   .print-title { display: none; }
   @media print {
-    body { display: block; background: #fff; } header, .kids, .bar, .rec .acts, #p-cal, #p-note, .pop-wrap { display: none !important; }
+    body { display: block; background: #fff; } header, .subtabs, .kids, .bar, .rec .acts, #p-cal, #p-note, .pop-wrap { display: none !important; }
     main, .pane, .box, .scroll { display: block !important; overflow: visible !important; height: auto !important; border: 0; padding: 0; }
     .pane[hidden], .box:has(> .kids) { display: none !important; } /* 다른 탭과 학생 목록은 출력하지 않음 */
     .print-title { display: block !important; font-size: 17pt; margin: 0 0 6mm; }
@@ -241,10 +242,11 @@
 <div class="cover" id="cover" hidden title="두 번 누르면 열려요"><div class="cover-bar" title="여기를 잡고 끌어서 옮겨요">잡고 옮기기</div><b>우리반 보드</b><span id="cover-date"></span></div>
 <header>
   <h1 data-i="book">교사 일지</h1>
-  <button class="tab" data-tab="cal" data-i="cal">달력</button><button class="tab" data-tab="rec" data-i="pen">학생 기록</button><button class="tab" data-tab="cs" data-i="chat">상담 일지</button><button class="tab" data-tab="note" data-i="note">일지</button><button class="tab" data-tab="info" data-i="info">학생 정보</button><button class="tab" data-tab="att" data-i="att">출결</button><button class="tab" data-tab="box" data-i="box">보관함</button>
+  <button class="tab" data-tab="cal" data-i="cal">달력</button><button class="tab" data-tab="stu" data-i="pen">학생</button><button class="tab" data-tab="box" data-i="box">보관함</button>
   <div class="hright"><button class="dday" id="dday" title="디데이·재량휴업일 정하기"></button><button class="jinst" id="jinst" hidden>⬇ 교사 일지 앱으로 설치</button><span class="today" id="today"></span><button class="jset" id="jset" title="설정" aria-label="설정" data-i="gear"></button></div>
 </header>
 <main>
+  <nav class="subtabs" id="subnav"></nav>
   <section class="pane" id="p-cal" hidden>
     <div class="box">
       <div class="cal-head"><button id="cal-prev" aria-label="지난달">◀</button><b id="cal-title"></b><button id="cal-next" aria-label="다음 달">▶</button><button id="cal-today">오늘</button>
@@ -306,7 +308,7 @@
     </div>
   </section>
   <section class="pane" id="p-gm" hidden>
-    <div class="box"><div class="bar"><button id="gm-back" title="보관함으로">← 보관함</button><b>공문 다듬기</b><span class="tip">줄 앞 띄어쓰기로 번호 단계, Enter로 넣기</span><span class="sp"></span>
+    <div class="box"><div class="bar"><b>공문 다듬기</b><span class="tip">줄 앞 띄어쓰기로 번호 단계, Enter로 넣기</span><span class="sp"></span>
         <label class="tip"><input type="checkbox" id="gm-end" checked> 끝. 붙이기</label><button id="gm-fix" title="공문서 규칙으로 고쳐 씀 (Ctrl+Z로 되돌리기)">✨ 다듬기</button><button class="main" id="gm-copy">복사</button><button id="gm-save" title="보관함 '업무'에 메모로">보관함에 저장</button></div>
       <div class="gm-wrap"><div class="gm-ghost" id="gm-ghost" aria-hidden="true"></div><textarea id="gm-in" spellcheck="false" placeholder="번호는 저절로: 줄 맨 앞 띄어쓰기 0칸 1. · 2칸 가. · 4칸 1) · 6칸 가) … 흐리게 보이면 Enter
 (Tab: 한 단계 안으로, Shift+Tab: 밖으로)"></textarea></div>
@@ -314,7 +316,7 @@
   </section>
   <section class="pane" id="p-box" hidden>
     <div class="box">
-      <div class="bar"><b>보관함</b><span class="sp"></span><button id="gm-open" title="대충 쓴 글을 공문서 규칙으로 다듬어 복사">✎ 공문 다듬기</button><input type="search" id="box-q" placeholder="찾기"></div>
+      <div class="bar"><b>보관함</b><span class="sp"></span><input type="search" id="box-q" placeholder="찾기"></div>
       <div id="box-tags"></div>
       <div class="crumbs" id="box-path"></div>
       <div class="scroll" id="box-list"></div>
@@ -406,14 +408,21 @@ const names = ps => ps.map(nameOf).join(", ");
 // ── 탭
 const TABS = ["cal", "rec", "cs", "note", "info", "att", "gm", "box"];
 let tab = localStorage.getItem("journal-tab") || "cal";
+// 위 탭 3개(달력·학생·보관함), 그 안의 작은 탭. 위 탭을 누르면 그 안에서 마지막에 보던 칸
+const GROUPS = { cal: [["cal", "달력"], ["note", "일지"]], stu: [["rec", "학생 기록"], ["cs", "상담 일지"], ["info", "학생 정보"], ["att", "출결"]], box: [["box", "보관함"], ["gm", "공문 다듬기"]] };
+const groupOf = t => Object.keys(GROUPS).find(g => GROUPS[g].some(([k]) => k === t));
+let subLast = {}; try { subLast = JSON.parse(localStorage.getItem("journal-sub")) || {}; } catch (e) {}
 function showTab(t) {
+  if (GROUPS[t] && !TABS.includes(t)) t = subLast[t] || GROUPS[t][0][0]; // '학생'처럼 묶음을 누름
   if (!TABS.includes(t)) t = "cal";
   tab = t; try { localStorage.setItem("journal-tab", t); } catch (e) {}
-  document.querySelectorAll(".tab").forEach(b => b.classList.toggle("on", b.dataset.tab === (t === "gm" ? "box" : t))); // 공문 다듬기는 보관함 안
+  const g = groupOf(t); subLast[g] = t; try { localStorage.setItem("journal-sub", JSON.stringify(subLast)); } catch (e) {}
+  document.querySelectorAll(".tab").forEach(b => b.classList.toggle("on", b.dataset.tab === g));
+  $("subnav").replaceChildren(...GROUPS[g].map(([k, n]) => el("button", { type: "button", class: k === t ? "on" : "", onclick: () => showTab(k) }, n)));
   TABS.forEach(k => $("p-" + k).hidden = k !== t);
   draw();
 }
-document.querySelectorAll(".tab").forEach(b => b.onclick = () => showTab(b.dataset.tab));
+document.querySelectorAll(".tab").forEach(b => b.onclick = () => showTab(b.dataset.tab === "box" ? subLast.box || "box" : b.dataset.tab === "cal" ? subLast.cal || "cal" : b.dataset.tab));
 $("dday").onclick = e => ddayForm(e.currentTarget);
 $("jset").onclick = e => jrSettings(e.currentTarget);
 function draw() { ddayDraw(); $("today").textContent = (d => `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, "0")}/${String(d.getDate()).padStart(2, "0")}(${"일월화수목금토"[d.getDay()]})`)(new Date()); ({ cal: calDraw, rec: recDraw, cs: csDraw, note: noteDraw, info: infoDraw, att: attDraw, gm: gmDraw, box: boxDraw })[tab](); }
@@ -1278,7 +1287,6 @@ function gmFix(text, end) {
   if (end && out.length) out[out.length - 1] = out.at(-1).replace(/\s+$/, "") + "  끝.";
   return out.join("\n");
 }
-$("gm-open").onclick = () => showTab("gm"); $("gm-back").onclick = () => showTab("box");
 // 쓰기 칸: 줄 맨 앞 띄어쓰기 수(2칸에 한 단계)로 다음 번호를 흐리게 보여 주고 Enter로 넣음
 const GM_SEQ = [n => `${n}.`, n => `${GM_H[n - 1] || n}.`, n => `${n})`, n => `${GM_H[n - 1] || n})`, n => `(${n})`, n => `(${GM_H[n - 1] || n})`, n => String.fromCharCode(0x2460 + n - 1), n => String.fromCharCode(0x326e + n - 1)];
 const gmLine = l => { const sp = l.match(/^ */)[0].length, t = l.slice(sp); for (let k = 0; k < GM_LV.length; k++) { const m = t.match(GM_LV[k]); if (m) { const v = m[1], n = /\d/.test(v) ? +v : GM_H.includes(v) ? GM_H.indexOf(v) + 1 : v.charCodeAt(0) - (k === 6 ? 0x2460 : 0x326e) + 1; return { sp, lv: k, n, text: t.slice(m[0].length) }; } } return { sp, lv: -1, text: t }; };

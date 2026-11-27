@@ -802,6 +802,7 @@
   /* 카드 안을 덮는 창(정답·묻기·칭찬·편집…)은 맨 위 제목줄(43px) 아래만: 덮여 있어도 끌어 옮기고 ✕·전체 화면을 누를 수 있게 */
   .card > :is(.se-ask, .rw-cheer, .sc-show, .dc-show) { top: 43px !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; }
   .card > .card-ed { top: calc(50% + 21px) !important; max-height: calc(100% - 59px) !important; }
+  .card > .card-grip { z-index: 35; } /* 크기 조절 모서리도 덮는 창 위에 */
   .drop-on { outline: 3px dashed #3b82f6 !important; outline-offset: -3px; }
   .kid-chip { font-size: 13px; padding: 2px 10px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer; margin-left: auto; } .kid-chip b { letter-spacing: .08em; }
   .hw-head .kid-chip { margin-left: 0; } .rw-tabs .kid-chip { align-self: center; } .hw-tt { margin: 0 0 4px; font-size: 17px; } .hw-new .hw-title { font: inherit; font-size: 16px; font-weight: 600; padding: 6px 8px; border: 1.5px solid var(--line); border-radius: 8px; }
