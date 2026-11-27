@@ -75,7 +75,7 @@
   .cal { user-select: none; -webkit-user-select: none; flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); grid-template-rows: auto repeat(6, minmax(0, 1fr)); gap: 4px; }
   .cal .dw { text-align: center; font-size: 13px; color: var(--muted); } .cal .dw.sun { color: #e03131; } .cal .dw.sat { color: #1c7ed6; }
   .day { position: relative; border-radius: 10px; background: #faf8f5; padding: 4px 6px; cursor: pointer; overflow: hidden; display: flex; flex-direction: column; gap: 2px; min-height: 0; }
-  .day:hover { background: #f3efe9; } .day.out { opacity: .45; } .day.sel { background: var(--soft); box-shadow: inset 0 0 0 1.5px var(--accent); }
+  .day:hover { background: #f3efe9; } .cal { position: relative; } .mline { position: absolute; inset: 0; pointer-events: none; overflow: visible; } /* 달이 바뀌는 곳: 칸 사이에 계단 모양 선 */ .day.sel { background: var(--soft); box-shadow: inset 0 0 0 1.5px var(--accent); }
   .day .top { display: flex; align-items: center; gap: 4px; } .day .n { font-size: 14px; }
   .day.sun .n { color: #e03131; } .day.off .holi { color: #e8590c; background: #fff4e6; border-radius: 4px; padding: 0 4px; } .day .holi { font-size: 11px; color: #e03131; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; } .day.sat .n { color: #1c7ed6; }
   .day.today .n { display: inline-grid; place-items: center; min-width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: #fff; }
@@ -843,6 +843,17 @@ const dayCs = (d, a) => dayList(a, `${dayName(d)} 상담`, "chat", csOf(d).map(c
   el("div", { class: "ihead" }, el("span", { class: "k", style: "background:#7048e8" }, c.way), names(c.ps) || c.target, c.time ? el("small", { class: "meta" }, c.time) : null),
   el("div", { class: "ibody" }, [c.topic, c.text, c.next ? "→ " + c.next : ""].filter(Boolean).join("\n")))));
 const dayBd = (d, list, a) => dayList(a, `${dayName(d)} 생일`, "cake", list.map(n => el("div", { class: "item bdline" }, ico("cake"), `${n} 생일이에요`)));
+function monthLine() { // 달력 칸 사이, 달이 바뀌는 곳을 따라 연한 계단 선 (교정 부호처럼)
+  const cal = $("cal"), days = [...cal.querySelectorAll(".day[data-d]")]; cal.querySelector(".mline")?.remove();
+  if (days.length < 8) return;
+  const R = cal.getBoundingClientRect(), g = 2, mon = el => el.dataset.d.slice(0, 7), segs = [];
+  days.forEach((d, i) => { const r = d.getBoundingClientRect(), x0 = r.left - R.left - g, x1 = r.right - R.left + g, y0 = r.top - R.top - g, y1 = r.bottom - R.top + g;
+    if (i >= 7 && mon(days[i - 7]) !== mon(d)) segs.push(`M${x0} ${y0}H${x1}`); // 위 칸과 달이 다르면 위쪽 선
+    if (i % 7 && mon(days[i - 1]) !== mon(d)) segs.push(`M${x0} ${y0}V${y1}`); }); // 왼쪽 칸과 다르면 왼쪽 선
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg"); svg.setAttribute("class", "mline");
+  svg.innerHTML = `<path d="${segs.join("")}" fill="none" stroke="#c9b8a3" stroke-width="2" stroke-linecap="round" opacity=".8"/>`; cal.append(svg);
+}
+new ResizeObserver(() => monthLine()).observe($("cal"));
 function calDraw() {
   const off = jset().mon ? 1 : 0, y0 = month.getFullYear(), m0 = month.getMonth(), lead = (new Date(y0, m0, 1).getDay() - off + 7) % 7 - calWk * 7, start = new Date(y0, m0, 1 - lead), t = today();
   const mid = new Date(y0, m0, 1 - lead + 17), y = mid.getFullYear(), m = mid.getMonth(); // 주를 넘기면 가운데 주의 달이 제목·진한 칸
@@ -876,6 +887,7 @@ function calDraw() {
       el("div", { class: "evs", style: lanes[Math.floor(i / 7)] ? `padding-top:${lanes[Math.floor(i / 7)] * 19}px` : "" }, ...evs.map(e => { const c = el("span", { class: "ev" + (isDone(e, s) ? " done" : ""), "data-id": e.id, oncontextmenu: ev => evCtx(ev, e, s), style: evStyle(e), title: `${e.time ? e.time + " " : ""}${e.text}${e.rep ? " (반복)" : ""} (누르면 줄 긋기 · 더블클릭으로 수정 · 끌면 다른 날로)`, onclick: tap(() => toggle(e, s), a => evForm(s, e, a)) }, (e.time ? e.time + " " : "") + e.text); chipDrag(c, e); return c; })), plus));
   }
   $("cal").replaceChildren(...cells, ...bars);
+  requestAnimationFrame(monthLine);
   sideDraw();
 }
 function recSortable(box) { // 오른쪽 목록의 학생 기록: 위아래로 끌면 순서, 달력 날짜에 놓으면 그날로
