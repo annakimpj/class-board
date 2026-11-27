@@ -803,6 +803,7 @@
   .card > :is(.se-ask, .rw-cheer, .sc-show, .dc-show) { top: 43px !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; }
   .card > .card-ed { top: calc(50% + 21px) !important; max-height: calc(100% - 59px) !important; }
   .card > .card-grip { z-index: 35; } /* 크기 조절 모서리도 덮는 창 위에 */
+  .rw-dress-ok { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 600; color: var(--accent, #3b82f6); cursor: pointer; margin: 0 6px; white-space: nowrap; } .rw-menu .rw-dress-ok { display: flex; margin: 2px 0 8px; }
   .drop-on { outline: 3px dashed #3b82f6 !important; outline-offset: -3px; }
   .kid-chip { font-size: 13px; padding: 2px 10px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer; margin-left: auto; } .kid-chip b { letter-spacing: .08em; }
   .hw-head .kid-chip { margin-left: 0; } .rw-tabs .kid-chip { align-self: center; } .hw-tt { margin: 0 0 4px; font-size: 17px; } .hw-new .hw-title { font: inherit; font-size: 16px; font-weight: 600; padding: 6px 8px; border: 1.5px solid var(--line); border-radius: 8px; }
@@ -1667,7 +1668,7 @@
     <button class="danger" onclick="resetEverything()">모든 데이터 초기화</button>
   </section>
 </div>
-<script src="avatar.js?v=32"></script><!-- 아바타를 고치면 avatar.js의 AV_V와 같이 숫자를 올림 -->
+<script src="avatar.js?v=34"></script><!-- 아바타를 고치면 avatar.js의 AV_V와 같이 숫자를 올림 -->
 <script>
 setTimeout(() => document.body.classList.add("ready"), 2000); // 혹시 아래에서 오류가 나도 2초 뒤엔 카드를 보여 줌
 // 다른 창(듀얼 모니터)으로 뗀 카드: { 카드: { w: 창, c: 카드, mark: 보드에 돌아올 자리, np: 글자 도구 창 } }
@@ -4305,10 +4306,13 @@ function popAt(btn, m, alignRight) { // 버튼 옆에 작은 팝업 (바깥을 �
   m.style.left = Math.max(8, Math.min(alignRight ? r.right - m.offsetWidth : r.left, W.innerWidth - m.offsetWidth - 8)) + "px";
   m.style.top = (r.bottom + 6 + m.offsetHeight < W.innerHeight ? r.bottom + 6 : Math.max(8, r.top - m.offsetHeight - 6)) + "px";
 }
+// 학생 화면 꾸미기 허용 (과제 시간에 꾸미기만 하지 않게): 켜면 학생 화면에 '꾸미기'가 생김
+const rwDressToggle = () => { const i = h("input", { type: "checkbox" }); i.checked = !!reward.dress; i.onchange = () => { reward.dress = i.checked; rwStore(); };
+  return h("label", { class: "rw-dress-ok", title: "켜면 학생 화면에서 아바타를 꾸밀 수 있어요" }, i, "학생 화면에서 꾸미기 허용"); };
 function rwDressPick(btn) { // 한 명을 골라 두었으면 바로, 아니면 누구를 꾸밀지 고르기
   if (rwPick.size === 1) return rwAvatar([...rwPick][0]);
   btn.ownerDocument.querySelector(".rw-menu")?.remove();
-  const m = h("div", { class: "rw-menu rw-who", popover: "auto" }, h("h4", {}, "누구를 꾸밀까요?", reward.cls?.code ? h("b", { class: "rw-code" }, `반 코드 ${reward.cls.code}`) : null),
+  const m = h("div", { class: "rw-menu rw-who", popover: "auto" }, h("h4", {}, "누구를 꾸밀까요?", reward.cls?.code ? h("b", { class: "rw-code" }, `반 코드 ${reward.cls.code}`) : null), rwDressToggle(),
     h("div", { class: "g" }, ...people().map(p => h("button", { onclick: () => { m.hidePopover(); rwAvatar(p); } }, seName(p)))));
   popAt(btn, m, true);
 }
@@ -4356,7 +4360,7 @@ function rwAvatar(p) {
     rwStore(); rwDraw(); ed.remove();
   };
   const close = async () => { if (JSON.stringify(d) === start || await seConfirm(rwCard, "저장하지 않고 닫을까요?\n바꾼 것과 입어 본 것이 모두 취소돼요.", "닫기")) ed.remove(); };
-  const ed = h("div", { class: "card-ed" }, h("div", { class: "card-ed-head" }, h("b", {}, "아바타 꾸미기"), reward.cls?.code ? h("span", { class: "rw-code" }, `반 코드 ${reward.cls.code}`) : null, h("button", { onclick: close }, "취소"), saveB), body);
+  const ed = h("div", { class: "card-ed" }, h("div", { class: "card-ed-head" }, h("b", {}, "아바타 꾸미기"), reward.cls?.code ? h("span", { class: "rw-code" }, `반 코드 ${reward.cls.code}`) : null, rwDressToggle(), h("button", { onclick: close }, "취소"), saveB), body);
   rwCard.append(ed);
 }
 // 점수 기록: 누가, 언제, 몇 점, 왜 (학생별로 골라 보기)
@@ -7679,7 +7683,7 @@ function kidSoon() { if (kidOn()) { clearTimeout(kidT); kidT = setTimeout(() => 
 async function kidPush() { // 교사 쪽에서 바뀐 것만 올림 (서버에 있는 것과 같으면 안 씀)
   if (!kidOn() || kidReady < 2) return; // kids·claim 두 목록을 한 번씩 받은 뒤에만 (학생이 바꾼 걸 덮지 않게)
   const pins = reward.cls.pins ||= {};
-  const cls = { owner: fbUser.uid, unit: reward.unit, prices: reward.prices || {} }, cj = JSON.stringify(cls);
+  const cls = { owner: fbUser.uid, unit: reward.unit, prices: reward.prices || {}, dress: !!reward.dress }, cj = JSON.stringify(cls);
   if (kidClsSent !== cj) { await fb.setDoc(fb.doc(fb.db, "classes", reward.cls.code), { ...cls, at: Date.now() }); kidClsSent = cj; }
   const live = new Set(), open = new Set();
   for (const p of people()) {

@@ -159,7 +159,7 @@
     </div>
   </div>
 </div>
-<script src="avatar.js?v=32"></script><!-- 아바타를 고치면 avatar.js의 AV_V와 같이 숫자를 올림 -->
+<script src="avatar.js?v=34"></script><!-- 아바타를 고치면 avatar.js의 AV_V와 같이 숫자를 올림 -->
 <script type="module">
 // 서버: classes/{반 코드} = { unit, prices } · classes/{반 코드}/kids/{번호}-{비밀번호} = { n, pt, av, wear, own, buys, kidAt } (이름 없음)
 // 점수는 선생님 보드만 바꿈. 가게 물건은 입어 보기만 하다가 저장할 때 삼(buys에 남김). 선생님 보드가 받아서 점수를 뺌
@@ -277,7 +277,7 @@ let reps = {}, repUnsub = null; // reps: 과제마다 선생님의 한마디 { m
 const repRef = id => fs.doc(db, "classes", hwL.code, "hw", id, "reply", hwL.key);
 function hwDraw() {
   const todo = hws.filter(x => x.kind !== "topic" && !sent(mine[x.id])).length;
-  $("hw-btn").replaceChildren("🏠 홈", ...(todo ? [el("b", {}, String(todo))] : [])); $("hw-btn").hidden = hwOpen; $("dress-btn").hidden = !hwOpen; // 홈(과제)은 왼쪽, 꾸미기는 오른쪽 위
+  $("hw-btn").replaceChildren("🏠 홈", ...(todo ? [el("b", {}, String(todo))] : [])); $("hw-btn").hidden = hwOpen; $("dress-btn").hidden = !hwOpen || !cls.dress; // 꾸미기는 선생님이 허용했을 때만 // 홈(과제)은 왼쪽, 꾸미기는 오른쪽 위
   $("hw").hidden = !hwOpen; $("dress").hidden = hwOpen; nbDraw(); tpDraw();
   if (!hwOpen) return;
   const hw = hws.filter(x => x.kind !== "topic");
@@ -397,7 +397,7 @@ function logout(msg) {
 function enter(l) { // 내 문서와 반 설정을 계속 들음 (점수가 바뀌면 바로 보임)
   unsubs.forEach(u => u()); unsubs = [];
   unsubs.push(hwListen(l), ntListen(l), nbListen(l));
-  unsubs.push(fs.onSnapshot(fs.doc(db, "classes", l.code), s => { if (!s.exists()) return logout("학생 입장이 꺼졌어요. 선생님께 물어보세요."); cls = s.data(); if (me) draw(); }, () => {}));
+  unsubs.push(fs.onSnapshot(fs.doc(db, "classes", l.code), s => { if (!s.exists()) return logout("학생 입장이 꺼졌어요. 선생님께 물어보세요."); cls = s.data(); if (!cls.dress && !hwOpen) { hwOpen = true; toast("선생님이 꾸미기를 닫았어요."); } if (me) { draw(); hwDraw(); } }, () => {}));
   unsubs.push(fs.onSnapshot(kidRef(l), s => {
     if (!s.exists()) return logout("비밀번호가 지워졌어요. 다시 들어와서 새 비밀번호를 정해요.");
     me = s.data();
