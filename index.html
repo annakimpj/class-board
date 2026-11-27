@@ -746,7 +746,8 @@
   [data-card="check"] { --accent: #0ca678; --card: #e6fcf5; --line: #b2f2bb; }
   .ch-top, .ch-foot { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; } .ch-top .sp, .ch-foot .sp { flex: 1; }
   .tool-card .ch-pick { font-size: 18px; padding: 3px 12px; border-radius: 10px; max-width: 70%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .tool-card .ch-top .ch-new, .tool-card .ch-foot button { font-size: 13px; padding: 4px 10px; border-radius: 8px; } .tool-card .ch-foot .ch-minus { border-color: #ffc078; color: #d9480f; }
+  .tool-card .ch-top .ch-new, .tool-card .ch-foot button { font-size: 13px; padding: 4px 10px; border-radius: 8px; } .tool-card .ch-foot .ch-minus { border: 0; background: none; color: #d9480f; display: inline-flex; align-items: center; justify-content: center; gap: 5px; font-weight: 600; } /* 박스 없이 아이콘 + 글 */
+  .ch-minus svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linejoin: round; stroke-linecap: round; } .tool-card .ch-foot .ch-minus:hover { color: #e8590c; background: #fff4e6; }
   .ch-wrap { flex: 1; min-height: 0; overflow: auto; font-family: "Pretendard Variable", "Wanted Sans", "Malgun Gothic", "Noto Emoji", sans-serif; }
   .ch-empty { margin: 24px 0; text-align: center; color: var(--muted); font-size: 14px; }
   .ch-tb { border-collapse: separate; border-spacing: 0; font-size: 20px; color: var(--ink); user-select: none; }
@@ -1442,7 +1443,7 @@
     <p class="label">✅ 체크표</p>
     <div class="ch-top"><button class="ch-pick" id="ch-pick" onclick="chList(this)">표 ▾</button><span class="sp"></span><button class="main ch-new" onclick="chNew()">+ 새 표</button></div>
     <div class="ch-wrap" id="ch-wrap"></div>
-    <div class="ch-foot"><button class="ch-minus" onclick="chMinus(this)" title="한 사람에게 주기 · 안 한 사람 빼기 (우리반 점수)">± 점수 주기</button><span class="sp"></span><button onclick="chClear()">↺ ✓ 지우기</button></div>
+    <div class="ch-foot"><button class="ch-minus" onclick="chMinus(this)" title="한 사람에게 주기 · 안 한 사람 빼기 (우리반 점수)"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.6"/><path d="M12 4l2.3 3.9 4.6 1-3.1 3.5.5 4.7L12 15.3l-4.3 1.8.5-4.7-3.1-3.5 4.6-1z"/><path d="M10.7 14v-4.8h1.6a1.4 1.4 0 0 1 0 2.8h-1.6"/></svg>점수 주기</button><span class="sp"></span><button onclick="chClear()">↺ ✓ 지우기</button></div>
   </section>
   <section class="card tool-card" data-card="bracket" id="br-card">
     <p class="label">🏆 토너먼트</p>
@@ -7165,7 +7166,7 @@ const TOURS = {
   check: { name: "✅ 체크표", steps: [
     { at: ".ch-new", text: "체크표(숙제, 가정통신문…)를 만들어요. '표 ▾'에서 바꾸거나 지워요." },
     { at: "#ch-wrap", text: "칸을 누르면 ✓. 위 칸에는 날짜 등을 직접 쓰고, +로 열을 더해요. 맨 아래에 안 한 사람 수가 나와요." },
-    { at: ".ch-minus", text: "안 한 학생 점수를 우리반 점수에서 한꺼번에 빼요." }] },
+    { at: ".ch-minus", text: "✓한 사람에게 점수를 주거나, 안 한 사람 점수를 한꺼번에 빼요." }] },
   bracket: { name: "🏆 토너먼트", steps: [
     { at: ".br-set", text: "참가할 학생을 고르면 대진표를 짜 줘요. 사람이 모자라면 부전승이 생겨요." },
     { at: "#br-view", text: "이긴 사람 이름을 누르면 다음 라운드로 올라가요. 한 번 더 누르면 취소돼요." }] },
