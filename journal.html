@@ -162,6 +162,8 @@
   .rec .meta { font-size: 12.5px; color: var(--muted); display: block; } .rec .next { display: block; margin-top: 4px; color: #6741c4; font-size: 14px; }
   /* 일지 */
   #p-note { grid-template-columns: 220px minmax(0, 1fr); }
+  #p-gm { grid-template-columns: repeat(2, minmax(0, 1fr)); } #p-gm textarea { flex: 1; min-height: 0; resize: none; font: 15px/1.75 "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 12px; white-space: pre; overflow: auto; tab-size: 4; }
+  #p-gm textarea:focus { outline: none; border-color: var(--accent); } #p-gm .tip { font-size: 12.5px; color: var(--muted); } #p-gm .gm-rules { margin: 8px 0 0; line-height: 1.6; } #p-gm label.tip { display: inline-flex; align-items: center; gap: 4px; }
   .notehead { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; } .notehead b { font-size: 18px; flex: 1; }
   #note { flex: 1; min-height: 0; resize: none; font-size: 17px; line-height: 1.7; padding: 12px 14px; }
   .dates button { display: block; width: 100%; text-align: left; border: 0; background: none; padding: 6px 8px; border-radius: 8px; }
@@ -301,9 +303,16 @@
       <div class="scroll" id="att-wrap"><table class="att" id="att"></table></div>
     </div>
   </section>
+  <section class="pane" id="p-gm" hidden>
+    <div class="box"><div class="bar"><button id="gm-back" title="보관함으로">← 보관함</button><b>공문 다듬기</b><span class="tip">내용만 대충 써서 붙여 넣어요 (1. 가. 1) 가) · 붙임 · 날짜)</span></div>
+      <textarea id="gm-in" spellcheck="false" placeholder="예)\n제목 2026학년도 1학기 학생자치회 임원 선거 결과 보고\n1.관련 : 정남초-13401(2025.11.17)\n2. 학생자치회 임원 선거 결과를 붙임과 같이 보고합니다.\n- 당선증 수여: 2025.12.19.(금) 9:40, 교무실\n붙임 1.당선자 공고 1부.\n2. 개표 결과 1부.\n끝"></textarea></div>
+    <div class="box"><div class="bar"><b>다듬은 글</b><span class="sp"></span><label class="tip"><input type="checkbox" id="gm-end" checked> 끝. 붙이기</label><button id="gm-save" title="보관함 '업무'에 메모로">보관함에 저장</button><button class="main" id="gm-copy">복사</button></div>
+      <textarea id="gm-out" spellcheck="false"></textarea>
+      <p class="tip gm-rules">항목 1. → 가. → 1) → 가) → (1) → (가) 는 두 칸씩 들여 쓰고 기호 뒤 한 칸 · 날짜 2026. 11. 5. · 금액 960,000원 · 붙임 뒤 두 칸 · 마지막에 두 칸 띄우고 끝.</p></div>
+  </section>
   <section class="pane" id="p-box" hidden>
     <div class="box">
-      <div class="bar"><b>보관함</b><span class="sp"></span><input type="search" id="box-q" placeholder="찾기"></div>
+      <div class="bar"><b>보관함</b><span class="sp"></span><button id="gm-open" title="대충 쓴 글을 공문서 규칙으로 다듬어 복사">✎ 공문 다듬기</button><input type="search" id="box-q" placeholder="찾기"></div>
       <div id="box-tags"></div>
       <div class="crumbs" id="box-path"></div>
       <div class="scroll" id="box-list"></div>
@@ -393,19 +402,19 @@ const nameOf = p => p.replace(/^\d+번 /, ""), numOf = p => (p.match(/^(\d+)번/
 const names = ps => ps.map(nameOf).join(", ");
 
 // ── 탭
-const TABS = ["cal", "rec", "cs", "note", "info", "att", "box"];
+const TABS = ["cal", "rec", "cs", "note", "info", "att", "gm", "box"];
 let tab = localStorage.getItem("journal-tab") || "cal";
 function showTab(t) {
   if (!TABS.includes(t)) t = "cal";
   tab = t; try { localStorage.setItem("journal-tab", t); } catch (e) {}
-  document.querySelectorAll(".tab").forEach(b => b.classList.toggle("on", b.dataset.tab === t));
+  document.querySelectorAll(".tab").forEach(b => b.classList.toggle("on", b.dataset.tab === (t === "gm" ? "box" : t))); // 공문 다듬기는 보관함 안
   TABS.forEach(k => $("p-" + k).hidden = k !== t);
   draw();
 }
 document.querySelectorAll(".tab").forEach(b => b.onclick = () => showTab(b.dataset.tab));
 $("dday").onclick = e => ddayForm(e.currentTarget);
 $("jset").onclick = e => jrSettings(e.currentTarget);
-function draw() { ddayDraw(); $("today").textContent = (d => `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, "0")}/${String(d.getDate()).padStart(2, "0")}(${"일월화수목금토"[d.getDay()]})`)(new Date()); ({ cal: calDraw, rec: recDraw, cs: csDraw, note: noteDraw, info: infoDraw, att: attDraw, box: boxDraw })[tab](); }
+function draw() { ddayDraw(); $("today").textContent = (d => `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, "0")}/${String(d.getDate()).padStart(2, "0")}(${"일월화수목금토"[d.getDay()]})`)(new Date()); ({ cal: calDraw, rec: recDraw, cs: csDraw, note: noteDraw, info: infoDraw, att: attDraw, gm: gmDraw, box: boxDraw })[tab](); }
 
 // ── 작은 팝업 (누른 곳 바로 옆). 바깥을 누르거나 Esc면 닫힘
 function pop(anchor, title, icon, body, onSave, o = {}) {
@@ -1236,6 +1245,46 @@ $("jinst").onclick = () => jInst?.prompt().catch(() => {});
   addEventListener("drop", e => { mark(null); if (e.defaultPrevented || !e.dataTransfer?.files.length) return; const [, f] = find(e.target); if (!f) return; e.preventDefault();
     const dt = new DataTransfer(); [...e.dataTransfer.files].slice(0, f.multiple ? 99 : 1).forEach(x => dt.items.add(x)); f.files = dt.files; f.dispatchEvent(new Event("change", { bubbles: true })); });
 }
+
+// ── 공문 다듬기: 대충 쓴 글을 공문서 규칙으로 (행정업무운영편람) → 복사해서 업무관리시스템·에듀파인에 붙여 넣기
+//   항목 1. → 가. → 1) → 가) → (1) → (가) → ① → ㉮ 는 두 칸씩 들여 쓰고 기호 뒤 한 칸, -·※ 같은 표시는 바로 위 항목 아래로
+//   날짜 2026. 11. 5., 금액 960,000원, '관련 :' → '관련: ', 붙임 뒤 두 칸(여러 개면 번호 줄 맞춤), 마지막에 두 칸 띄우고 '끝.'
+const GM_H = "가나다라마바사아자차카타파하";
+const GM_LV = [new RegExp("^(\\d{1,2})\\.(?!\\d)\\s*"), new RegExp(`^([${GM_H}])\\.\\s*`), /^(\d{1,2})\)\s*/, new RegExp(`^([${GM_H}])\\)\\s*`), /^\((\d{1,2})\)\s*/, new RegExp(`^\\(([${GM_H}])\\)\\s*`), /^([①-⑳])\s*/, /^([㉮-㉻])\s*/];
+const gmMark = (lv, m) => [`${m}.`, `${m}.`, `${m})`, `${m})`, `(${m})`, `(${m})`, m, m][lv];
+const gmW = t => [...t].reduce((n, c) => n + (/[ᄀ-ᇿ　-鿿가-힣＀-￯]/.test(c) ? 2 : 1), 0); // 한글 2칸
+function gmFix(text, end) {
+  const fixIn = t => t.replace(/(\d{4})\s*[.\-\/]\s*(\d{1,2})\s*[.\-\/]\s*(\d{1,2})(?!\d)\.?/g, (_, y, m, d) => `${y}. ${+m}. ${+d}.`) // 날짜
+    .replace(/(\d)\.\s*\(/g, "$1.(").replace(/(\d{4,})(?=\s*원)/g, n => Number(n).toLocaleString("ko-KR")) // 요일 붙이기 · 금액 쉼표
+    .replace(/([가-힣])\s*:\s*/g, "$1: ").replace(/[ \t]+/g, " ").trim();
+  const out = []; let lv = -1, ind = 0, att = null; // att: 붙임 칸의 들여쓰기 (붙임 안이면)
+  for (let raw of text.replace(/\r/g, "").split("\n")) {
+    let t = raw.trim();
+    if (!t) { if (out.length && out.at(-1) !== "") out.push(""); continue; }
+    t = t.replace(/\s*끝\s*\.?\s*$/, "").trim(); if (!t) continue; // 끝은 맨 마지막에 다시 붙임
+    const bm = t.match(/^붙\s*임\s*(.*)$/);
+    if (bm) { if (out.length && out.at(-1) !== "") out.push(""); const body = fixIn(bm[1].replace(/^(\d{1,2})\.(?!\d)\s*/, "$1. ")); out.push("붙임  " + body); att = "      "; continue; }
+    if (att !== null) { const m = t.match(/^(\d{1,2})\.(?!\d)\s*(.*)$/); out.push(att + (m ? `${m[1]}. ${fixIn(m[2])}` : fixIn(t))); continue; }
+    let hit = -1, mk = ""; for (let k = 0; k < GM_LV.length; k++) { const m = t.match(GM_LV[k]); if (m) { hit = k; mk = gmMark(k, m[1]); t = t.slice(m[0].length); break; } }
+    if (hit >= 0) { lv = hit; ind = 2 * hit; out.push(" ".repeat(ind) + mk + " " + fixIn(t)); continue; }
+    const sm = t.match(/^([-∘·•※❍❑○□▪◦])\s*(.*)$/);
+    if (sm) { out.push(" ".repeat(lv >= 0 ? ind + 2 : 0) + sm[1] + " " + fixIn(sm[2])); continue; }
+    if (/^제\s*목\b|^제목/.test(t)) { out.push("제목  " + fixIn(t.replace(/^제\s*목\s*[:：]?\s*/, ""))); continue; }
+    out.push((lv >= 0 ? " ".repeat(ind + 2) : "") + fixIn(t)); // 번호 없는 줄: 위 항목의 글 아래로
+  }
+  while (out.at(-1) === "") out.pop();
+  if (end && out.length) out[out.length - 1] = out.at(-1).replace(/\s+$/, "") + "  끝.";
+  return out.join("\n");
+}
+$("gm-open").onclick = () => showTab("gm"); $("gm-back").onclick = () => showTab("box");
+function gmDraw() { $("gm-out").value = gmFix($("gm-in").value, $("gm-end").checked); }
+$("gm-in").oninput = $("gm-end").onchange = () => { gmDraw(); try { localStorage.setItem("journal-gm", $("gm-in").value); } catch (e) {} };
+try { $("gm-in").value = localStorage.getItem("journal-gm") || ""; } catch (e) {}
+$("gm-copy").onclick = async () => { const b = $("gm-copy"); try { await navigator.clipboard.writeText($("gm-out").value); b.textContent = "복사했어요"; } catch (e) { $("gm-out").select(); document.execCommand("copy"); b.textContent = "복사했어요"; } setTimeout(() => b.textContent = "복사", 1500); };
+$("gm-save").onclick = () => { const v = $("gm-out").value.trim(); if (!v) return;
+  const title = (v.match(/^제목\s+(.+)$/m)?.[1] || v.split("\n")[0]).replace(/\s+끝\.$/, "").slice(0, 40);
+  (J.box ||= []).push({ id: uid(), type: "memo", title, text: v, tag: boxTags().includes("업무") ? "업무" : boxTags()[0], at: Date.now() }); store();
+  const b = $("gm-save"); b.textContent = "저장했어요 (보관함)"; setTimeout(() => b.textContent = "보관함에 저장", 1800); };
 
 // ── 보관함: 위의 탭 = 분류(수업자료·생기부…), 안에는 즐겨찾기처럼 폴더(과목별 등, 폴더 안에 폴더도).
 //   J.box: [{ id, type: link·memo·folder, title, url, text, tag(분류), in(들어 있는 폴더 id) }]
