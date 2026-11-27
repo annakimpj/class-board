@@ -9,6 +9,7 @@ for k in sorted(int(f[5:-7]) for f in os.listdir('raw_user') if f.startswith('ha
   Image.fromarray((np.dstack([g, g, g, b[..., 3]]) * 255).round().astype(np.uint8)).save(f'hair-{k}-g.png', optimize=True)
 # 옷·신발: 흰 옷이 있어서 테두리 바깥(그림 밖과 이어진) 흰색만 지우고 절반으로
 import glob, os
+HOLES = {'shoes-11'}  # 흰 구멍을 비울 그림 (메리제인 구두 입구)
 for f in glob.glob('raw_user/*-2x.png'):
   n = os.path.basename(f)[:-7]
   if n.startswith('hair-'): continue
@@ -19,6 +20,10 @@ for f in glob.glob('raw_user/*-2x.png'):
     for y in range(ys[0], ys[0] + (ys[-1] - ys[0]) // 5):
       xs = np.nonzero(G[y])[0]
       if len(xs): wh[y, xs[0]:xs[-1] + 1] = False
+  if n in HOLES:  # 신발 입구처럼 테두리로 막힌 흰 구멍도 비움 (발이 보이게)
+    lab0, k0 = ndimage.label(wh); edge0 = set(np.unique(np.r_[lab0[0], lab0[-1], lab0[:, 0], lab0[:, -1]]))
+    for i in range(1, k0 + 1):
+      if i not in edge0 and (lab0 == i).sum() > 150: a[lab0 == i, 3] = 0
   lab, _ = ndimage.label(wh); out = np.isin(lab, np.unique(np.r_[lab[0], lab[-1], lab[:, 0], lab[:, -1]])) & (lab > 0)  # 그림 가장자리와 이어진 것 = 테두리 바깥
   if len(ys):  # 목 구멍: 열마다 옷 맨 위에서 아래로, 깃 선(흰색 아닌 곳)을 만날 때까지의 흰색
     W0 = (a[..., 3] < 30) | (a[..., :3].min(-1) > 200)
