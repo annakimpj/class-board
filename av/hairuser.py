@@ -14,6 +14,11 @@ for f in glob.glob('raw_user/*-2x.png'):
   if n.startswith('hair-'): continue
   a = np.array(Image.open(f).convert('RGBA').crop((0, 0, 516, 772))).astype(float)  # shortcut: 772 아래(신발을 더 내려 그린 것)는 잘림, 신발을 그렇게 그려 오면 신발만 따로 키워 그리기
   wh = (a[..., 3] < 30) | (a[..., :3].min(-1) > 200)  # 빈 곳 또는 흰색
+  G = ~wh; ys = np.nonzero(G.any(1))[0]
+  if len(ys):  # 목 트임으로 바깥과 이어진 흰 옷 안쪽(가운 속 셔츠 등)이 지워지지 않게: 옷 맨 위 1/5은 줄마다 양끝 사이를 막음
+    for y in range(ys[0], ys[0] + (ys[-1] - ys[0]) // 5):
+      xs = np.nonzero(G[y])[0]
+      if len(xs): wh[y, xs[0]:xs[-1] + 1] = False
   lab, _ = ndimage.label(wh); out = np.isin(lab, np.unique(np.r_[lab[0], lab[-1], lab[:, 0], lab[:, -1]])) & (lab > 0)  # 그림 가장자리와 이어진 것 = 테두리 바깥
   for _ in range(2): out |= ndimage.binary_dilation(out) & (a[..., :3].min(-1) > 170) & (a[..., 3] > 0)  # 바깥 흰색에 붙은 옅은 테두리 번짐도
   a[out, 3] = 0
