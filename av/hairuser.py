@@ -20,6 +20,11 @@ for f in glob.glob('raw_user/*-2x.png'):
       xs = np.nonzero(G[y])[0]
       if len(xs): wh[y, xs[0]:xs[-1] + 1] = False
   lab, _ = ndimage.label(wh); out = np.isin(lab, np.unique(np.r_[lab[0], lab[-1], lab[:, 0], lab[:, -1]])) & (lab > 0)  # 그림 가장자리와 이어진 것 = 테두리 바깥
+  if len(ys):  # 목 구멍: 열마다 옷 맨 위에서 아래로, 깃 선(흰색 아닌 곳)을 만날 때까지의 흰색
+    W0 = (a[..., 3] < 30) | (a[..., :3].min(-1) > 200)
+    for x in range(a.shape[1]):
+      y = ys[0]
+      while y < ys[-1] and W0[y, x]: out[y, x] = True; y += 1
   for _ in range(2): out |= ndimage.binary_dilation(out) & (a[..., :3].min(-1) > 170) & (a[..., 3] > 0)  # 바깥 흰색에 붙은 옅은 테두리 번짐도
   a[out, 3] = 0
   if n.startswith('top-'): # 옷: 테두리를 매끈하고 같은 굵기로 다시 그림 (outline.py, 다른 옷과 같게)
