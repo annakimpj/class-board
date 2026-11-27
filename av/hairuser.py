@@ -32,7 +32,7 @@ for f in glob.glob('raw_user/*-2x.png'):
       while y < ys[-1] and W0[y, x]: out[y, x] = True; y += 1
   for _ in range(2): out |= ndimage.binary_dilation(out) & (a[..., :3].min(-1) > 170) & (a[..., 3] > 0)  # 바깥 흰색에 붙은 옅은 테두리 번짐도
   a[out, 3] = 0
-  if n.startswith('top-'): # 옷: 테두리를 매끈하고 같은 굵기로 다시 그림 (outline.py, 다른 옷과 같게)
+  if n.startswith(('top-', 'bottom-')): # 옷: 테두리를 매끈하고 같은 굵기로 다시 그림 (outline.py, 다른 옷과 같게)
     col, al = uniform(a[..., 3] > 128, a[..., :3], 2); a = np.dstack([col, al * 255])
   Image.fromarray(a.round().clip(0, 255).astype(np.uint8)).resize((258, 386), Image.LANCZOS).save(f'{n}.png', optimize=True)
 # 몸(raw_user/base-2x.png): 흰 배경 지우고 테두리 4px로 고르게 → base-0, 피부색 4개 더(base-1~4: 예전 피부색 비율로), 귀만 떼어 ear-0~4 (귀 보이는 머리 위에 그림)
