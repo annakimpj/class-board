@@ -20,3 +20,28 @@ for f in glob.glob('raw_user/*-2x.png'):
   if n.startswith('top-'): # 옷: 테두리를 매끈하고 같은 굵기로 다시 그림 (outline.py, 다른 옷과 같게)
     col, al = uniform(a[..., 3] > 128, a[..., :3], 2); a = np.dstack([col, al * 255])
   Image.fromarray(a.round().clip(0, 255).astype(np.uint8)).resize((258, 386), Image.LANCZOS).save(f'{n}.png', optimize=True)
+# 몸(raw_user/base-2x.png): 흰 배경 지우고 테두리 4px로 고르게 → base-0, 피부색 4개 더(base-1~4: 예전 피부색 비율로), 귀만 떼어 ear-0~4 (귀 보이는 머리 위에 그림)
+SKIN = [[248, 225, 221], [246, 210, 198], [229, 186, 169], [201, 152, 139], [143, 103, 96]]  # 피부 평균색 (예전 base-0~4에서 잼)
+if os.path.exists('raw_user/base-2x.png'):
+  a = np.array(Image.open('raw_user/base-2x.png').convert('RGBA').crop((0, 0, 516, 772))).astype(float)
+  wh = (a[..., 3] < 30) | (a[..., :3].min(-1) > 200)
+  lab, _ = ndimage.label(wh); out = np.isin(lab, np.unique(np.r_[lab[0], lab[-1], lab[:, 0], lab[:, -1]])) & (lab > 0)
+  for _ in range(2): out |= ndimage.binary_dilation(out) & (a[..., :3].min(-1) > 170) & (a[..., 3] > 0)
+  a[out, 3] = 0
+  col, al = uniform(a[..., 3] > 128, a[..., :3], 2, R=4.0, D=4.5)  # 몸 테두리는 옷(3px)보다 조금 굵게 4px
+  b0 = np.array(Image.fromarray(np.dstack([col, al * 255]).round().clip(0, 255).astype(np.uint8)).resize((258, 386), Image.LANCZOS)).astype(float)
+  rgb = b0[..., :3]; pale = (b0[..., 3] > 0) & (rgb.min(-1) > 175) & (rgb[..., 0] - rgb[..., 2] < 14)  # 흰·회색
+  lab, n = ndimage.label(pale); big = np.isin(lab, 1 + np.nonzero(ndimage.sum(pale, lab, range(1, n + 1)) > 60)[0])
+  under = ndimage.binary_dilation(big, iterations=1) & (b0[..., 3] > 0) & (rgb.min(-1) > 120)  # 속옷(큰 흰 덩어리)만 그대로
+  skin = (b0[..., 3] > 0) & ~under  # 나머지(피부·테두리 번짐·볼)는 피부색 비율로
+  # 귀: 머리를 원으로 맞춰(귀 위쪽 줄들의 폭으로) 원 안쪽은 빼고, 귀 높이의 양옆만
+  A = b0[..., 3] > 128; ys = np.array([y for y in range(66, 140) if A[y].any()]); w = np.array([np.ptp(np.nonzero(A[y])[0]) / 2 + .5 for y in ys])
+  M = np.c_[2 * ys, np.ones_like(ys)]; (cy, c0), *_ = np.linalg.lstsq(M, w ** 2 + ys ** 2, rcond=None); R = np.sqrt(c0 + cy ** 2); cx = 128.5
+  Y, X = np.mgrid[:386, :258]; dd = np.hypot(X - cx, Y - cy); side = (X < 75) | (X > 183)
+  out = A & (dd > R + 2) & side & (Y > 120) & (Y < 220)  # 머리 원 밖으로 확실히 나온 곳 = 귀
+  rows = np.nonzero(out.any(1))[0]; ear = A & (dd > R - 3) & side & (Y >= rows.min() - 1) & (Y <= rows.max() + 1)  # 귀 높이 안에서 머리 테두리에 붙은 데까지
+  ear = ndimage.binary_dilation(ear, iterations=1) & (b0[..., 3] > 0)
+  for k, sc in enumerate(SKIN):
+    bk = b0.copy(); f = np.array(sc) / np.array(SKIN[0]); bk[skin, :3] = (rgb[skin] * f).clip(0, 255)
+    Image.fromarray(bk.round().astype(np.uint8)).save(f'base-{k}.png', optimize=True)
+    ek = bk.copy(); ek[~ear, 3] = 0; Image.fromarray(ek.round().astype(np.uint8)).save(f'ear-{k}.png', optimize=True)
