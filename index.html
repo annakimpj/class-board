@@ -795,6 +795,9 @@
   .dz { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; box-sizing: border-box; padding: 22px 16px; border: 2px dashed #c9c2b8 !important; border-radius: 14px !important; background: #fcfaf7 !important; font: inherit; color: var(--ink, #333); cursor: pointer; }
   .dz:hover, .dz.drop-on, .drop-on > .dz { border-color: #3b82f6 !important; background: #f0f6ff !important; } .dz svg { width: 40px; height: 40px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
   .dz b { font-weight: 500; font-size: 15px; } .dz u { color: #2f6fd6; text-decoration: none; font-weight: 600; font-size: 15px; } .dz small { color: var(--muted); font-size: 12px; }
+  .ch-tabs { display: flex; border: 1.5px solid var(--line, #ddd); border-radius: 10px; overflow: hidden; margin-bottom: 8px; } /* 체크표 점수: 주기 | 빼기 */
+  .ch-tabs button { flex: 1; border: 0; border-radius: 0; background: #fff; padding: 7px 6px; font: inherit; font-size: 14px; color: var(--muted); cursor: pointer; white-space: nowrap; } .ch-tabs button + button { border-left: 1.5px solid var(--line, #ddd); }
+  .ch-tabs button.on { background: var(--accent, #3b82f6); color: #fff; font-weight: 700; }
   .drop-on { outline: 3px dashed #3b82f6 !important; outline-offset: -3px; }
   .kid-chip { font-size: 13px; padding: 2px 10px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer; margin-left: auto; } .kid-chip b { letter-spacing: .08em; }
   .hw-head .kid-chip { margin-left: 0; } .rw-tabs .kid-chip { align-self: center; } .hw-tt { margin: 0 0 4px; font-size: 17px; } .hw-new .hw-title { font: inherit; font-size: 16px; font-weight: 600; padding: 6px 8px; border: 1.5px solid var(--line); border-radius: 8px; }
@@ -1439,7 +1442,7 @@
     <p class="label">✅ 체크표</p>
     <div class="ch-top"><button class="ch-pick" id="ch-pick" onclick="chList(this)">표 ▾</button><span class="sp"></span><button class="main ch-new" onclick="chNew()">+ 새 표</button></div>
     <div class="ch-wrap" id="ch-wrap"></div>
-    <div class="ch-foot"><button class="ch-minus" onclick="chMinus(this)" title="안 한 학생 점수를 우리반 점수에서 빼요">− 안 한 사람 점수 빼기</button><span class="sp"></span><button onclick="chClear()">↺ ✓ 지우기</button></div>
+    <div class="ch-foot"><button class="ch-minus" onclick="chMinus(this)" title="한 사람에게 주기 · 안 한 사람 빼기 (우리반 점수)">± 점수 주기</button><span class="sp"></span><button onclick="chClear()">↺ ✓ 지우기</button></div>
   </section>
   <section class="card tool-card" data-card="bracket" id="br-card">
     <p class="label">🏆 토너먼트</p>
@@ -4605,21 +4608,29 @@ function chList(btn) { // 표 고르기 · ✕ 지우기
     "아직 표가 없어요. '+ 새 표'로 만들어요.");
 }
 async function chClear() { const c = chCur(); if (c && c.cols.some(x => x.done.length) && await seConfirm(chCard, `'${c.name}' 표의 ✓를 모두 지울까요? (열은 남아요)`, "지우기")) { c.cols.forEach(x => x.done = []); chStore(); chDraw(); } }
-function chMinus(btn) { // 고른 열에서 ✓ 없는 학생 점수를 우리반 점수에서 빼기 (점수 기록에도 남음)
+function chMinus(btn) { // 고른 열에서 ✓ 한 사람에게 점수 주기 / ✓ 없는 사람 점수 빼기 (탭으로 바꿈, 점수 기록에도 남음)
   const c = chCur(); if (!c?.cols.length) return;
   btn.ownerDocument.querySelector(".rw-menu")?.remove();
   const unit = reward.unit.trim() || "점", ppl = people();
-  const col = h("select", {}, ...c.cols.map((x, i) => { const o = h("option", { value: String(i) }, `${x.head || i + 1 + "열"} (안 한 사람 ${ppl.length - x.done.length}명)`); if (i === c.cols.length - 1) o.selected = true; return o; }));
-  const n = h("input", { type: "number", min: "1", max: "100", value: "1" }), why = h("input", { placeholder: "이유" }), err = h("p", { class: "rw-err" });
-  const setWhy = () => why.value = `${c.name} ${c.cols[+col.value].head || ""} 안 함`.replace(/\s+/g, " ").trim();
-  col.onchange = setWhy; setWhy();
-  const m = h("div", { class: "rw-menu rw-sendpop", popover: "auto" }, h("h4", {}, "− 안 한 사람 점수 빼기"), h("div", { class: "rw-send" }, "열", col, unit, n, "이유", why), err,
-    h("button", { class: "go", onclick: () => {
-      const x = c.cols[+col.value], who = ppl.filter(p => !x.done.includes(p)), v = Math.max(1, Math.round(+n.value || 1));
-      if (!who.length) return err.textContent = "모두 했어요. 뺄 사람이 없어요.";
-      m.hidePopover(); rwGrant([[who, -v, why.value.trim() || `${c.name} 안 함`]]); rwSound("try");
-      seConfirm(chCard, `${who.length}명에게서 ${v} ${unit}씩 뺐어요.\n(우리반 점수 → 📜 기록에 남아요)`, "확인", null);
-    } }, "빼기"));
+  let give = true; // true: 한 사람 주기, false: 안 한 사람 빼기
+  const col = h("select", {}), n = h("input", { type: "number", min: "1", max: "100", value: "1" }), why = h("input", { placeholder: "이유" }), err = h("p", { class: "rw-err" });
+  const who = () => { const x = c.cols[+col.value]; return ppl.filter(p => x.done.includes(p) === give); };
+  const go = h("button", { class: "go" });
+  const tabs = h("div", { class: "ch-tabs" }), draw = () => {
+    const v = col.value || String(c.cols.length - 1);
+    col.replaceChildren(...c.cols.map((x, i) => h("option", { value: String(i) }, `${x.head || i + 1 + "열"} (${give ? "한" : "안 한"} 사람 ${give ? x.done.length : ppl.length - x.done.length}명)`))); col.value = v;
+    why.value = `${c.name} ${c.cols[+col.value].head || ""} ${give ? "했어요" : "안 함"}`.replace(/\s+/g, " ").trim();
+    tabs.replaceChildren(...[[true, "+ 한 사람 주기"], [false, "− 안 한 사람 빼기"]].map(([g, t]) => h("button", { class: g === give ? "on" : "", onclick: () => { give = g; err.textContent = ""; draw(); } }, t)));
+    go.textContent = give ? "주기" : "빼기";
+  };
+  col.onchange = draw; draw();
+  go.onclick = () => {
+    const L = who(), v = Math.max(1, Math.round(+n.value || 1));
+    if (!L.length) return err.textContent = give ? "아직 한 사람이 없어요." : "모두 했어요. 뺄 사람이 없어요.";
+    m.hidePopover(); rwGrant([[L, give ? v : -v, why.value.trim() || `${c.name} ${give ? "했어요" : "안 함"}`]]); rwSound(give ? "give" : "try");
+    seConfirm(chCard, `${L.length}명${give ? "에게" : "에게서"} ${v} ${unit}씩 ${give ? "줬어요" : "뺐어요"}.\n(우리반 점수 → 📜 기록에 남아요)`, "확인", null);
+  };
+  const m = h("div", { class: "rw-menu rw-sendpop", popover: "auto" }, tabs, h("div", { class: "rw-send" }, "열", col, unit, n, "이유", why), err, go);
   popAt(btn, m);
 }
 setTimeout(chDraw);
