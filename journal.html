@@ -355,7 +355,8 @@ function load() {
   J.recs.forEach(r => { if (!r.ps) { r.ps = r.p ? [r.p] : []; delete r.p; } }); // 예전: 학생 한 명
 }
 function dzBtn(go, kinds) { const b = el("button", { type: "button", class: "dz", onclick: go }, el("b", {}, "여기로 파일을 끌어다 놓거나"), el("u", {}, "눌러서 파일 고르기"), el("small", {}, kinds)); b.insertAdjacentHTML("afterbegin", '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a4.5 4.5 0 0 1-.6-9A6 6 0 0 1 18 8a4.5 4.5 0 0 1-.5 10"/><path d="M12 20v-9M8.5 14 12 10.5l3.5 3.5"/></svg>'); return b; } // 파일 넣는 점선 상자
-function store() { try { localStorage.setItem("journal", JSON.stringify(J)); localStorage.setItem("sync-dirty", "1"); } catch (e) { ask("저장할 자리가 모자라요.", "확인", null); } }
+function store() { try { localStorage.setItem("journal", JSON.stringify(J)); localStorage.setItem("sync-dirty", "1"); syncKey("journal"); } catch (e) { ask("저장할 자리가 모자라요.", "확인", null); } }
+function syncKey(k) { const ks = new Set(JSON.parse(localStorage.getItem("sync-keys") || "[]")); if (!ks.has(k)) { ks.add(k); localStorage.setItem("sync-keys", JSON.stringify([...ks])); } } // 보드가 꺼져 있어도: 다음에 보드를 켤 때 서버 것으로 덮지 않고 이 일지를 올림
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 function ask(text, ok = "확인", cancel = "취소", near = null) { // 창 안 팝업. near(누른 버튼)가 있으면 그 옆에 작게
   return new Promise(res => {

@@ -4922,14 +4922,14 @@ function dcPrint(answers) { // A4 세로. 시험지: 번호마다 쓰는 칸(원
     @page { size: A4 portrait; margin: 14mm; }
     body { font-family: "Malgun Gothic", "Noto Emoji", sans-serif; margin: 0; color: #222; }
     h1 { text-align: center; font-size: 22pt; margin: 0 0 2mm; } .sub { text-align: center; color: #666; font-size: 11pt; margin-bottom: 5mm; }
-    .who { display: flex; justify-content: flex-end; gap: 10mm; font-size: 13pt; margin-bottom: 5mm; } .who span { border-bottom: 1px solid #444; min-width: 30mm; display: inline-block; }
+    .who { display: flex; justify-content: flex-end; gap: 10mm; font-size: 13pt; margin-bottom: 5mm; } .who span { border-bottom: 1px solid #444; min-width: 30mm; display: inline-block; } .who span.g { min-width: 14mm; } /* 급: 손으로 쓰는 칸 */
     .row { display: flex; align-items: center; gap: 3mm; margin-bottom: 4mm; break-inside: avoid; } .row b { width: 8mm; text-align: right; font-size: 14pt; }
     .boxes { display: grid; grid-template-columns: repeat(${cols}, 1fr); flex: 1; border-left: 1px solid #888; border-top: 1px solid #888; }
     .boxes i { height: 10mm; border-right: 1px solid #888; border-bottom: 1px solid #888; }
     .ans { font-size: 18pt; }
     .tip { margin: 6mm 0 3mm; font-size: 12pt; color: #444; break-after: avoid; } .tip ~ .row { margin-bottom: 2mm; } .tip ~ .row .boxes i { height: 8mm; }
   </style></head><body><h1>${head}</h1>${gr.title ? `<div class="sub">${esc(gr.title)}</div>` : ""}
-  <div class="who">${answers ? "" : "<label>번호 <span></span></label><label>이름 <span></span></label><label>점수 <span></span></label>"}</div>${rows}${answers ? "" : practice}</body></html>`);
+  <div class="who">${answers ? "" : "<label><span class=\"g\"></span> 급</label><label>번호 <span></span></label><label>이름 <span></span></label><label>점수 <span></span></label>"}</div>${rows}${answers ? "" : practice}</body></html>`);
   w.document.close(); w.focus(); w.print();
 }
 function dcEdit() { // 직접 쓰기: 지금 고른 급의 제목과 문장(한 줄에 하나)을 고침. 급 추가·지우기
