@@ -162,7 +162,7 @@
   .rec .meta { font-size: 12.5px; color: var(--muted); display: block; } .rec .next { display: block; margin-top: 4px; color: #6741c4; font-size: 14px; }
   /* 일지 */
   #p-note { grid-template-columns: 220px minmax(0, 1fr); }
-  #p-gm { grid-template-columns: repeat(2, minmax(0, 1fr)); } #p-gm textarea { flex: 1; min-height: 0; resize: none; font: 15px/1.75 "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 12px; white-space: pre; overflow: auto; tab-size: 4; }
+  #p-gm { grid-template-columns: minmax(0, 1fr); } #p-gm textarea { flex: 1; min-height: 0; resize: none; font: 15px/1.75 "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 12px; white-space: pre; overflow: auto; tab-size: 4; }
   #p-gm .gm-wrap { position: relative; flex: 1; min-height: 0; display: flex; } #p-gm .gm-wrap textarea { position: relative; background: transparent; z-index: 1; }
   #p-gm .gm-ghost { position: absolute; inset: 0; border: 1.5px solid transparent; padding: 10px 12px; font: 15px/1.75 "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; white-space: pre; overflow: hidden; color: transparent; pointer-events: none; tab-size: 4; } #p-gm .gm-ghost i { font-style: normal; color: #b9aea2; } /* 다음 번호를 흐리게 */
   #p-gm textarea:focus { outline: none; border-color: var(--accent); } #p-gm .tip { font-size: 12.5px; color: var(--muted); } #p-gm .gm-rules { margin: 8px 0 0; line-height: 1.6; } #p-gm label.tip { display: inline-flex; align-items: center; gap: 4px; }
@@ -306,12 +306,11 @@
     </div>
   </section>
   <section class="pane" id="p-gm" hidden>
-    <div class="box"><div class="bar"><button id="gm-back" title="보관함으로">← 보관함</button><b>공문 다듬기</b><span class="tip">쓰거나 붙여 넣어요 · 줄 앞 띄어쓰기로 번호 단계, Enter로 넣기</span></div>
+    <div class="box"><div class="bar"><button id="gm-back" title="보관함으로">← 보관함</button><b>공문 다듬기</b><span class="tip">줄 앞 띄어쓰기로 번호 단계, Enter로 넣기</span><span class="sp"></span>
+        <label class="tip"><input type="checkbox" id="gm-end" checked> 끝. 붙이기</label><button id="gm-fix" title="공문서 규칙으로 고쳐 씀 (Ctrl+Z로 되돌리기)">✨ 다듬기</button><button class="main" id="gm-copy">복사</button><button id="gm-save" title="보관함 '업무'에 메모로">보관함에 저장</button></div>
       <div class="gm-wrap"><div class="gm-ghost" id="gm-ghost" aria-hidden="true"></div><textarea id="gm-in" spellcheck="false" placeholder="번호는 저절로: 줄 맨 앞 띄어쓰기 0칸 1. · 2칸 가. · 4칸 1) · 6칸 가) … 흐리게 보이면 Enter
-(Tab: 한 단계 안으로, Shift+Tab: 밖으로)"></textarea></div></div>
-    <div class="box"><div class="bar"><b>다듬은 글</b><span class="sp"></span><label class="tip"><input type="checkbox" id="gm-end" checked> 끝. 붙이기</label><button id="gm-save" title="보관함 '업무'에 메모로">보관함에 저장</button><button class="main" id="gm-copy">복사</button></div>
-      <textarea id="gm-out" spellcheck="false"></textarea>
-      <p class="tip gm-rules">항목 1. → 가. → 1) → 가) → (1) → (가) 는 두 칸씩 들여 쓰고 기호 뒤 한 칸 · 날짜 2026. 11. 5. · 금액 960,000원 · 붙임 뒤 두 칸 · 마지막에 두 칸 띄우고 끝.</p></div>
+(Tab: 한 단계 안으로, Shift+Tab: 밖으로)"></textarea></div>
+      <p class="tip gm-rules">다듬기: 항목 1. → 가. → 1) → 가) → (1) → (가) 는 두 칸씩 들여 쓰고 기호 뒤 한 칸 · 날짜 2026. 11. 5. · 금액 960,000원 · 붙임 뒤 두 칸 · 마지막에 두 칸 띄우고 끝.</p></div>
   </section>
   <section class="pane" id="p-box" hidden>
     <div class="box">
@@ -1307,11 +1306,12 @@ $("gm-in").addEventListener("keydown", e => {
   put(c, c, "\n" + " ".repeat(p.sp)); // 줄 바꿈은 같은 들여쓰기로 → 다음 번호가 흐리게
 });
 ["input", "keyup", "click", "focus", "blur", "scroll"].forEach(ev => $("gm-in").addEventListener(ev, gmGhost));
-function gmDraw() { $("gm-out").value = gmFix($("gm-in").value, $("gm-end").checked); }
-$("gm-in").oninput = $("gm-end").onchange = () => { gmDraw(); try { localStorage.setItem("journal-gm", $("gm-in").value); } catch (e) {} };
+function gmDraw() { gmGhost(); }
+$("gm-in").oninput = () => { try { localStorage.setItem("journal-gm", $("gm-in").value); } catch (e) {} };
+$("gm-fix").onclick = () => { const t = $("gm-in"), v = gmFix(t.value, $("gm-end").checked); if (v === t.value) return; t.focus(); t.select(); if (!document.execCommand("insertText", false, v)) t.value = v; t.dispatchEvent(new Event("input")); t.setSelectionRange(0, 0); t.scrollTop = 0; }; // execCommand: Ctrl+Z로 되돌릴 수 있게
 try { $("gm-in").value = localStorage.getItem("journal-gm") || ""; } catch (e) {}
-$("gm-copy").onclick = async () => { const b = $("gm-copy"); try { await navigator.clipboard.writeText($("gm-out").value); b.textContent = "복사했어요"; } catch (e) { $("gm-out").select(); document.execCommand("copy"); b.textContent = "복사했어요"; } setTimeout(() => b.textContent = "복사", 1500); };
-$("gm-save").onclick = () => { const v = $("gm-out").value.trim(); if (!v) return;
+$("gm-copy").onclick = async () => { const b = $("gm-copy"); try { await navigator.clipboard.writeText($("gm-in").value); b.textContent = "복사했어요"; } catch (e) { $("gm-in").select(); document.execCommand("copy"); b.textContent = "복사했어요"; } setTimeout(() => b.textContent = "복사", 1500); };
+$("gm-save").onclick = () => { const v = $("gm-in").value.trim(); if (!v) return;
   const title = (v.match(/^제목\s+(.+)$/m)?.[1] || v.split("\n")[0]).replace(/\s+끝\.$/, "").slice(0, 40);
   (J.box ||= []).push({ id: uid(), type: "memo", title, text: v, tag: boxTags().includes("업무") ? "업무" : boxTags()[0], at: Date.now() }); store();
   const b = $("gm-save"); b.textContent = "저장했어요 (보관함)"; setTimeout(() => b.textContent = "보관함에 저장", 1800); };
