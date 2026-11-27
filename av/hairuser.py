@@ -1,7 +1,7 @@
 # 선생님이 그린 머리·옷·신발 (raw_user/*-2x.png, 516×772) → hair-N.png(절반) + hair-N-g.png(머리색 칠하기용 회색)
 # 흰색으로 칠해진 빈 곳(이마·귀 구멍 둘레)은 투명하게
-import numpy as np; from PIL import Image; from scipy import ndimage; from outline import uniform
-for k in range(12, 24):
+import os, numpy as np; from PIL import Image; from scipy import ndimage; from outline import uniform
+for k in sorted(int(f[5:-7]) for f in os.listdir('raw_user') if f.startswith('hair-') and f.endswith('-2x.png')):  # raw_user/hair-N-2x.png 모두
   a = np.array(Image.open(f'raw_user/hair-{k}-2x.png').convert('RGBA').crop((0, 0, 516, 772))).astype(float)  # 아래 여백이 있는 기본형(516×832)에 그려도 위 772만
   w = np.clip((a[..., :3].min(-1) - 215) / 30, 0, 1); a[..., 3] *= 1 - w  # 흰색일수록 투명
   im = Image.fromarray(a.round().astype(np.uint8)).resize((258, 386), Image.LANCZOS); im.save(f'hair-{k}.png', optimize=True)
