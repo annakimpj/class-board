@@ -88,3 +88,16 @@ for k in SHORT:
     h = Image.open(f'hair-{k}{suf}.png').convert('RGBA'); top = h.crop((0, 0, 258, 205)); bot = h.crop((0, 205, 258, 386)); bb = bot.getbbox()
     if not bb: continue
     bot = bot.crop((0, 0, 258, bb[3])).resize((258, int(bb[3] * .75)), Image.LANCZOS); o = Image.new('RGBA', (258, 386)); o.paste(top, (0, 0)); o.alpha_composite(bot, (0, 205)); o.save(f'hair-{k}{suf}.png', optimize=True)
+# 정수리 높이 맞추기: 정수리(가운데 열에서 가장 위) ~ y=110(이마 위) 사이만 세로로 늘이거나 줄여 정수리를 y=CROWN에 (얼굴 둘레·귀 구멍은 그대로)
+# 똥머리(0·1)·모자(12·13)·까까머리(16)·모히칸(23)은 빼고
+CROWN, PIN = 38, 110  # 정수리 = 양 갈래 웨이브 높이
+for k in [k for k in range(24) if k not in (0, 1, 12, 13, 16, 23)]:
+  for suf in ('', '-g'):
+    f = f'hair-{k}{suf}.png'
+    if not os.path.exists(f): continue
+    h = Image.open(f).convert('RGBA'); a = np.array(h)[..., 3] > 128; ys = np.nonzero(a[:, 110:148].any(1))[0]
+    if not len(ys): continue
+    top = ys.min(); y0 = np.nonzero(np.array(h)[..., 3].any(1))[0].min()  # 맨 위(삐죽 끝 포함)부터 함께 옮김
+    if abs(top - CROWN) < 3: continue
+    sc = (PIN - CROWN) / (PIN - top); seg = h.crop((0, y0, 258, PIN)); nh = max(1, round((PIN - y0) * sc))
+    o = Image.new('RGBA', (258, 386)); o.paste(h.crop((0, PIN, 258, 386)), (0, PIN)); o.alpha_composite(seg.resize((258, nh), Image.LANCZOS), (0, PIN - nh)); o.save(f, optimize=True)
