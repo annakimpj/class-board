@@ -817,7 +817,7 @@
   .hw-tc-b b { font-size: 16px; } .hw-tc-b small { color: var(--muted); font-size: 12px; } .hw-tc-b span { font-size: 13px; color: var(--muted); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
   .hw-tc .x { position: absolute; top: 4px; right: 4px; border: 0 !important; background: none !important; color: var(--muted); padding: 2px 6px !important; } .hw-tc .x:hover { color: #e03131; }
   .hw-back { margin-bottom: 8px; } .hw-fl { display: inline-block; margin: 4px 0; word-break: break-all; }
-  .tpv { position: fixed; inset: 0; z-index: 9999; background: rgba(30, 20, 10, .45); display: grid; place-items: center; }
+  .tpv { position: fixed; inset: env(titlebar-area-height, 0px) 0 0 0; z-index: 9999; background: rgba(30, 20, 10, .45); display: grid; place-items: center; }
   .tpv-box { background: #fff; width: min(860px, 94vw); height: 88vh; border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; font-family: "Pretendard Variable", "Wanted Sans", "Malgun Gothic", sans-serif; }
   .tpv-head { display: flex; align-items: center; padding: 12px 16px; border-bottom: 1.5px solid #f3d6c2; background: #fff5f0; } .tpv-head b { flex: 1; font-size: 18px; color: #e2643f; }
   .tpv-head button, .tpv-in button, .tpv-more { font: inherit; font-size: 14px; border: 1.5px solid #f3d6c2; background: #fff; border-radius: 8px; padding: 4px 12px; cursor: pointer; }
@@ -854,11 +854,11 @@
   .hw-nt { margin-bottom: 8px; } .hw-nt input { flex: 1; min-width: 160px; font: inherit; font-size: 15px; padding: 5px 8px; border: 1.5px solid var(--line); border-radius: 8px; }
   .hw-new { display: grid; gap: 6px; margin-bottom: 12px; } .hw-new[hidden] { display: none; } .hw-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; } .hw-head > b { flex: 1; } .hw-send { justify-content: flex-end; } .hw-send .rw-h { margin-right: auto; } .hw-it p a { word-break: break-all; } .hw-new textarea, .hw-new input:not([type=file]) { font: inherit; font-size: 15px; padding: 6px 8px; border: 1.5px solid var(--line); border-radius: 8px; width: 100%; box-sizing: border-box; }
   .hw-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; } .hw-img { max-width: 160px; max-height: 120px; border-radius: 6px; cursor: zoom-in; display: block; } .hw-img.big { max-width: 100%; max-height: none; cursor: zoom-out; }
-  .hw-view { position: fixed; inset: 0; z-index: 9999; background: rgba(15, 12, 10, .92); display: grid; grid-template-rows: auto 1fr auto; color: #fff; }
+  .hw-view { position: fixed; inset: env(titlebar-area-height, 0px) 0 0 0; /* 앱 창의 맨 위 줄(– □ ×) 아래부터 */ z-index: 9999; background: rgba(15, 12, 10, .92); display: grid; grid-template-rows: auto 1fr auto; color: #fff; }
   .hw-view .bar { display: flex; gap: 8px; align-items: center; padding: 10px 14px; font-size: 18px; } .hw-view .bar b { flex: 1; }
   .hw-view button { font: inherit; font-size: 16px; background: rgba(255, 255, 255, .15); color: #fff; border: 0; border-radius: 10px; padding: 6px 14px; cursor: pointer; }
   .hw-view .stage { display: grid; place-items: center; min-height: 0; padding: 0 56px; position: relative; } .hw-view .stage img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 6px; }
-  .hw-view .stage a { color: #9cc5ff; font-size: 22px; word-break: break-all; } .hw-view .nav { position: absolute; top: 50%; transform: translateY(-50%); font-size: 30px; padding: 10px 14px; } .hw-view .nav.l { left: 8px; } .hw-view .nav.r { right: 8px; }
+  .hw-view .stage a { color: #9cc5ff; font-size: 22px; word-break: break-all; } .hw-view .nav { position: absolute; top: 50%; transform: translateY(-50%); width: 52px; height: 52px; border-radius: 50%; border: 0; padding: 0; font-size: 20px; color: #fff; background: rgba(255, 255, 255, .16); cursor: pointer; } .hw-view .nav:hover { background: rgba(255, 255, 255, .3); } .hw-view .nav:disabled { opacity: .25; cursor: default; } .hw-view .nav.l { left: 6px; } .hw-view .nav.r { right: 6px; }
   .hw-it { border: 1.5px solid var(--line); border-radius: 10px; padding: 8px 10px; margin-bottom: 8px; background: #fff; } .hw-it p { margin: 0 0 6px; white-space: pre-line; font-size: 16px; } .hw-it a { word-break: break-all; }
   .tool-card .hw-it button, .tool-card .hw-new button { font-size: 13px; padding: 2px 10px; border-radius: 8px; } .hw-it .kid-tb { margin-top: 6px; font-size: 15px; }
   .tool-card .kid-tb button, .tool-card .kid-acts button, .tool-card .kid-url button { font-size: 13px; padding: 2px 10px; border-radius: 8px; } .kid-acts { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
@@ -8004,8 +8004,8 @@ function hwPanel(host) { // 📮 과제함: 첫 화면은 낸 과제 카드, 누
         h("div", { class: "stage" }, h("div", { class: "vb" }, c.v.text ? h("p", { class: "txt" }, ...hwText(c.v.text)) : null, ...imgs.map(f => h("img", { src: f.file, alt: f.fname || "사진" })),
             others.length ? h("div", { class: "hw-files" }, ...others.map(f => h("button", { class: "hw-fl", onclick: () => hwOpenFile(f) }, iconEl("file-text"), f.fname || "파일"))) : null,
             u ? h("a", { href: u, target: "_blank", rel: "noopener noreferrer" }, "🔗 " + u) : null),
-          cards.length > 1 ? h("button", { class: "nav l", onclick: () => { i = (i + cards.length - 1) % cards.length; show(); } }, "‹") : null,
-          cards.length > 1 ? h("button", { class: "nav r", onclick: () => { i = (i + 1) % cards.length; show(); } }, "›") : null),
+          h("button", { class: "nav l", title: "이전 학생 (←)", "aria-label": "이전 학생", ...(cards.length < 2 ? { disabled: "" } : {}), onclick: () => { i = (i + cards.length - 1) % cards.length; show(); } }, "◀"),
+          h("button", { class: "nav r", title: "다음 학생 (→)", "aria-label": "다음 학생", ...(cards.length < 2 ? { disabled: "" } : {}), onclick: () => { i = (i + 1) % cards.length; show(); } }, "▶")),
         h("div", { class: "rep" }, h("div", { class: "thr" }, ...hwThread(c.v.msgs, c.rep?.msgs).map(m => h("p", { class: m.me ? "kid" : "tch" }, h("small", {}, (m.me ? c.name : "선생님") + " · " + new Date(m.at).toLocaleString("ko-KR", { month: "numeric", day: "numeric", hour: "numeric", minute: "2-digit" })), ...hwText(m.t)))),
           h("div", { class: "hw-row" }, rIn, h("button", { onclick: send }, "남기기"))));
       v.querySelector(".thr").scrollTop = 1e9;
