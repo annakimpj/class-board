@@ -101,3 +101,13 @@ for k in [k for k in range(24) if k not in (0, 1, 12, 13, 16, 23)]:
     if abs(top - CROWN) < 3: continue
     sc = (PIN - CROWN) / (PIN - top); seg = h.crop((0, y0, 258, PIN)); nh = max(1, round((PIN - y0) * sc))
     o = Image.new('RGBA', (258, 386)); o.paste(h.crop((0, PIN, 258, 386)), (0, PIN)); o.alpha_composite(seg.resize((258, nh), Image.LANCZOS), (0, PIN - nh)); o.save(f, optimize=True)
+# 옷깃이 얼굴(턱 위)을 덮지 않게: 모든 상의에서 머리(몸 그림의 y<214 부분)와 겹친 곳을 지우고, 잘린 가장자리를 2px 테두리로 마무리 (여러 번 돌려도 같음)
+INK_C = [45, 34, 38]  # 테두리 색 (outline.py와 같음)
+HEAD = np.array(Image.open('base-0.png'))[..., 3] > 128; HEAD[214:] = False
+for f in glob.glob('top-*.png'):
+  a = np.array(Image.open(f).convert('RGBA')).astype(float); al = a[..., 3] > 20; cut = al & HEAD
+  if cut.sum() < 4: continue
+  a[cut, 3] = 0
+  edge = ndimage.binary_dilation(cut, iterations=2) & ~cut & (a[..., 3] > 20)
+  a[edge, :3] = INK_C; a[edge, 3] = 255
+  Image.fromarray(a.round().clip(0, 255).astype(np.uint8)).save(f, optimize=True)

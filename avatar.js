@@ -40,7 +40,7 @@ const AV_ACC = ["acc"]; // 장신구 칸
 const AV_BACK = new Set(["acc-1", "acc-3"]); // 몸보다 뒤에 그리는 장신구 (날개·꼬리). 나머지(망토)는 상의 위
 const AV_TABS = [["eye", "눈"], ["mouth", "입"], ["cheek", "볼터치"], ["hair", "헤어"], ["top", "상의"], ["bottom", "하의"], ["full", "한벌"], ["shoes", "신발"], ["acc", "장신구"], ["pet", "펫"]];
 const AV_FULL = new Set(["top-50","top-51","top-52","top-45","top-47","top-48","top-49","top-17","top-18","top-19","top-20","top-21","top-22","top-23","top-24","top-25","top-26","top-27","top-28","top-29","top-30","top-31","top-32"]); // 위아래 한 벌 옷: 입으면 하의를 안 그림. 가게에서는 '한벌' 칸
-const AV_V = "?v=40"; // 그림을 고치면 숫자를 올림 (브라우저에 남은 옛 그림 대신 새로 받게)
+const AV_V = "?v=41"; // 그림을 고치면 숫자를 올림 (브라우저에 남은 옛 그림 대신 새로 받게)
 const AV_HAT = new Set(["hair-12", "hair-13"]); // 모자·헬멧 (헤어 칸): 머리색을 안 칠함, 귀도 안 올림
 const AV_HIDE = new Set(["shoes-0"]); // 가게에 안 보이는 것 (맨발: 그림 없음)
 const avInTab = (it, k) => !AV_HIDE.has(it.id) && (k === "acc" ? AV_ACC.includes(it.slot) : k === "full" ? AV_FULL.has(it.id) : k === "top" ? it.slot === "top" && !AV_FULL.has(it.id) : it.slot === k); // 가게 칸에 보일 물건
