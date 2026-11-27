@@ -81,3 +81,10 @@ for f in glob.glob('raw_user/eye-*-2x.png') + glob.glob('raw_user/mouth-*-2x.png
   a[..., 3] *= np.clip((255 - a[..., :3].min(-1)) / 40, 0, 1)  # 옅은 흰 번짐은 흰 만큼 투명하게
   a[out, 3] = 0
   Image.fromarray(a.round().clip(0, 255).astype(np.uint8)).resize((258, 386), Image.LANCZOS).save(f'{n}.png', optimize=True)
+# 긴 머리 길이 줄이기: 턱(y=205) 아래만 세로 75%로 (얼굴·귀 구멍은 그대로). 회색본도 같이
+SHORT = [14, 15, 17, 18]  # 양 갈래 땋은 머리·양 갈래 웨이브·긴 생머리·앞머리 웨이브
+for k in SHORT:
+  for suf in ('', '-g'):
+    h = Image.open(f'hair-{k}{suf}.png').convert('RGBA'); top = h.crop((0, 0, 258, 205)); bot = h.crop((0, 205, 258, 386)); bb = bot.getbbox()
+    if not bb: continue
+    bot = bot.crop((0, 0, 258, bb[3])).resize((258, int(bb[3] * .75)), Image.LANCZOS); o = Image.new('RGBA', (258, 386)); o.paste(top, (0, 0)); o.alpha_composite(bot, (0, 205)); o.save(f'hair-{k}{suf}.png', optimize=True)
