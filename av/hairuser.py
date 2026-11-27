@@ -111,3 +111,11 @@ for f in glob.glob('top-*.png'):
   edge = ndimage.binary_dilation(cut, iterations=2) & ~cut & (a[..., 3] > 20)
   a[edge, :3] = INK_C; a[edge, 3] = 255
   Image.fromarray(a.round().clip(0, 255).astype(np.uint8)).save(f, optimize=True)
+# 펫(raw_user/pet-N-2x.png): 위 옷 처리로 만든 아바타 칸 그림(pet-N.png, 258×386)을 펫 칸(378×426, 아바타 칸은 왼쪽 60·위 40)으로 옮김. 아래로 넘치면 올림
+for f in glob.glob('raw_user/pet-*-2x.png'):
+  n = os.path.basename(f)[:-7]; a = np.array(Image.open(f).convert('RGBA')).astype(float)
+  wh = (a[..., 3] < 30) | (a[..., :3].min(-1) > 200); lab, _ = ndimage.label(wh)
+  out = np.isin(lab, np.unique(np.r_[lab[0], lab[-1], lab[:, 0], lab[:, -1]])) & (lab > 0)
+  for _ in range(2): out |= ndimage.binary_dilation(out) & (a[..., :3].min(-1) > 170) & (a[..., 3] > 0)
+  a[out, 3] = 0; im = Image.fromarray(a.round().clip(0, 255).astype(np.uint8)).resize((258, 416), Image.LANCZOS)
+  bb = im.getbbox(); dy = min(0, 426 - (40 + bb[3]) - 2); c = Image.new('RGBA', (378, 426)); c.alpha_composite(im, (60, 40 + dy)); c.save(f'{n}.png', optimize=True)
