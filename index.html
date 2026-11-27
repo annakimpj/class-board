@@ -7872,6 +7872,26 @@ async function hwAttach(f) {
   if (f.size > 600000) throw new Error("big");
   return { file: await new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = no; r.readAsDataURL(f); }), fname: f.name };
 }
+// 과제 첨부 모두 저장: 폴더를 고르면(엣지·크롬) 그 폴더에, 못 고르는 브라우저면 다운로드 폴더에. 이름은 과제명(번호이름), 여러 개면 -2, -3
+async function hwSaveAll(title, cards, btn) {
+  const safe = t => t.replace(/[\\/:*?"<>|]/g, "_").trim();
+  const ext = f => { const m = (f.file.match(/^data:([^;,]+)/) || [, ""])[1], e = { "image/jpeg": ".jpg", "image/png": ".png", "image/gif": ".gif", "image/webp": ".webp", "application/pdf": ".pdf" }[m];
+    return m.startsWith("image/") && e ? e : (f.fname || "").match(/\.[a-z0-9]{1,5}$/i)?.[0] || e || ".bin"; }; // 사진은 올릴 때 바뀌므로 실제 종류로, 나머지는 원래 이름의 확장자
+  const L = cards.flatMap(c => { const F = hwFiles(c.v); return F.map((f, k) => ({ f, name: safe(`${title}(${c.n}${c.name})`) + (F.length > 1 ? `-${k + 1}` : "") + ext(f) })); });
+  const none = cards.filter(c => !hwFiles(c.v).length).length, label = btn.textContent;
+  if (!L.length) return seConfirm(btn.closest(".card") || document.body, "낸 사진·파일이 없어요. (글이나 링크만 냈어요)", "확인", null);
+  let dir = null;
+  if (window.showDirectoryPicker) try { dir = await showDirectoryPicker({ id: "hw-save", mode: "readwrite" }); } catch (e) { return; } // 취소하면 그만
+  let n = 0;
+  for (const { f, name } of L) {
+    btn.textContent = `저장 중… ${++n}/${L.length}`;
+    const blob = await (await fetch(f.file)).blob();
+    if (dir) { const w = await (await dir.getFileHandle(name, { create: true })).createWritable(); await w.write(blob); await w.close(); }
+    else { const a = h("a", { href: URL.createObjectURL(blob), download: name }); document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); await new Promise(r => setTimeout(r, 300)); } // shortcut: 폴더를 못 고르는 브라우저는 다운로드 폴더로 하나씩
+  }
+  btn.textContent = label;
+  seConfirm(btn.closest(".card") || document.body, `${L.length}개를 저장했어요.${dir ? ` (폴더: ${dir.name})` : ""}${none ? `\n글·링크만 낸 ${none}명은 저장할 파일이 없어요.` : ""}`, "확인", null);
+}
 const hwFiles = v => v?.files || (v?.file || v?.img ? [{ file: v.file || v.img, fname: v.fname || "" }] : []); // 예전 file·img 하나짜리도
 const hwIsImg = f => f.file?.startsWith("data:image/");
 function hwOpenFile(f) { // PDF 등은 새 탭에서 (data: 주소는 브라우저가 바로 못 열어서 blob으로)
@@ -8008,7 +8028,7 @@ function hwPanel(host) { // 📮 과제함: 첫 화면은 낸 과제 카드, 누
     const kids = people(), sent = kids.filter(p => hwSent(by[kidNum(p)]));
     const cards = sent.map(p => { const v = by[kidNum(p)]; return { n: kidNum(p), name: seName(p).replace(/^\d+번\s*/, "") || seName(p), v, key: v.key, rep: rep[v.key] }; });
     const seen = kids.filter(p => by[kidNum(p)] && !hwSent(by[kidNum(p)])).length;
-    box.replaceChildren(h("div", { class: "hw-row" }, h("b", {}, `낸 학생 ${sent.length} / ${kids.length}명`), h("span", { class: "rw-h" }, `· 보고 아직 안 낸 학생 ${seen}명`), h("button", { onclick: () => subs(d, box) }, "새로 고침")),
+    box.replaceChildren(h("div", { class: "hw-row" }, h("b", {}, `낸 학생 ${sent.length} / ${kids.length}명`), h("span", { class: "rw-h" }, `· 보고 아직 안 낸 학생 ${seen}명`), h("button", { onclick: () => subs(d, box) }, "새로 고침"), h("button", { title: "낸 사진·파일을 고른 폴더에 '과제명(번호이름)'으로 한꺼번에 저장", onclick: e => hwSaveAll(d.data().title || "과제", cards, e.currentTarget) }, "⬇ 첨부 모두 저장")),
       h("p", { class: "hw-legend" }, h("i", { class: "ok" }), "냈어요 ", h("i", { class: "seen" }), "봤어요 ", h("i"), "아직"),
       h("div", { class: "hw-big" }, ...kids.map(p => { const n = kidNum(p), v = by[n], ok = hwSent(v), i = cards.findIndex(c => c.n === n), img = hwFiles(v).find(hwIsImg), nr = (v && rep[v.key]?.msgs?.length) || 0;
         return h("button", { class: "hw-bc " + (ok ? "ok" : v ? "seen" : ""), title: ok ? "눌러서 크게 보고 답장" : v ? "봤어요" : "아직", onclick: () => ok && hwView(d, cards, i) },
