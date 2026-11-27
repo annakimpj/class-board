@@ -67,3 +67,12 @@ for f in glob.glob('raw_user/hat-*-2x.png'):
   a[out, 3] = 0
   col, al = uniform(a[..., 3] > 128, a[..., :3], 2); a = np.dstack([col, al * 255])
   Image.fromarray(a.round().clip(0, 255).astype(np.uint8)).resize((258, 386), Image.LANCZOS).save(f'hair-{k}.png', optimize=True)
+# 눈·입(raw_user/eye-N-2x.png, mouth-N-2x.png): 그림 밖과 이어진 흰색만 지우고(눈 속 반짝이는 그대로) 절반으로. 가는 선이라 테두리는 안 다시 그림
+for f in glob.glob('raw_user/eye-*-2x.png') + glob.glob('raw_user/mouth-*-2x.png'):
+  n = os.path.basename(f)[:-7]
+  a = np.array(Image.open(f).convert('RGBA').crop((0, 0, 516, 772))).astype(float)
+  wh = (a[..., 3] < 30) | (a[..., :3].min(-1) > 200)
+  lab, _ = ndimage.label(wh); out = np.isin(lab, np.unique(np.r_[lab[0], lab[-1], lab[:, 0], lab[:, -1]])) & (lab > 0)
+  a[..., 3] *= np.clip((255 - a[..., :3].min(-1)) / 40, 0, 1)  # 옅은 흰 번짐은 흰 만큼 투명하게
+  a[out, 3] = 0
+  Image.fromarray(a.round().clip(0, 255).astype(np.uint8)).resize((258, 386), Image.LANCZOS).save(f'{n}.png', optimize=True)
