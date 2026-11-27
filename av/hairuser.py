@@ -55,3 +55,15 @@ if os.path.exists('raw_user/base-2x.png'):
     bk = b0.copy(); f = np.array(sc) / np.array(SKIN[0]); bk[skin, :3] = (rgb[skin] * f).clip(0, 255)
     Image.fromarray(bk.round().astype(np.uint8)).save(f'base-{k}.png', optimize=True)
     ek = bk.copy(); ek[~ear, 3] = 0; Image.fromarray(ek.round().astype(np.uint8)).save(f'ear-{k}.png', optimize=True)
+# 모자·헬멧(raw_user/hat-N-2x.png → hair-N.png, 헤어 칸): 흰 털·이빨이 있어서 그림 밖과 이어진 흰색 + 얼굴 구멍(가운데 가장 큰 흰 덩어리)만 지우고 테두리 정리. 머리색은 안 칠함
+for f in glob.glob('raw_user/hat-*-2x.png'):
+  k = int(os.path.basename(f)[4:-7])
+  a = np.array(Image.open(f).convert('RGBA').crop((0, 0, 516, 772))).astype(float)
+  wh = (a[..., 3] < 30) | (a[..., :3].min(-1) > 225)
+  lab, n = ndimage.label(wh); edge = np.unique(np.r_[lab[0], lab[-1], lab[:, 0], lab[:, -1]])
+  inner = [i for i in range(1, n + 1) if i not in edge]; face = max(inner, key=lambda i: (lab == i).sum()) if inner else -1
+  out = np.isin(lab, edge) & (lab > 0) | (lab == face)
+  for _ in range(2): out |= ndimage.binary_dilation(out) & (a[..., :3].min(-1) > 170) & (a[..., 3] > 0)
+  a[out, 3] = 0
+  col, al = uniform(a[..., 3] > 128, a[..., :3], 2); a = np.dstack([col, al * 255])
+  Image.fromarray(a.round().clip(0, 255).astype(np.uint8)).resize((258, 386), Image.LANCZOS).save(f'hair-{k}.png', optimize=True)
