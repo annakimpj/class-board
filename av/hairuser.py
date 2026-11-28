@@ -61,6 +61,7 @@ if os.path.exists('raw_user/base-2x.png'):
     Image.fromarray(bk.round().astype(np.uint8)).save(f'base-{k}.png', optimize=True)
     ek = bk.copy(); ek[~ear, 3] = 0; Image.fromarray(ek.round().astype(np.uint8)).save(f'ear-{k}.png', optimize=True)
 # 모자·헬멧(raw_user/hat-N-2x.png → hair-N.png, 헤어 칸): 흰 털·이빨이 있어서 그림 밖과 이어진 흰색 + 얼굴 구멍(가운데 가장 큰 흰 덩어리)만 지우고 테두리 정리. 머리색은 안 칠함
+HAT_HOLES, THIN = {30, 31}, {26}  # 한복 머리(귀 구멍이 흰 칸), 면류관
 for f in glob.glob('raw_user/hat-*-2x.png'):
   k = int(os.path.basename(f)[4:-7])
   a = np.array(Image.open(f).convert('RGBA').crop((0, 0, 516, 772))).astype(float)
@@ -68,9 +69,11 @@ for f in glob.glob('raw_user/hat-*-2x.png'):
   lab, n = ndimage.label(wh); edge = np.unique(np.r_[lab[0], lab[-1], lab[:, 0], lab[:, -1]])
   inner = [i for i in range(1, n + 1) if i not in edge]; face = max(inner, key=lambda i: (lab == i).sum()) if inner else -1
   out = np.isin(lab, edge) & (lab > 0) | (lab == face)
+  if k in HAT_HOLES: out |= np.isin(lab, [i for i in inner if (lab == i).sum() > 300])  # 귀 구멍처럼 막힌 흰 칸도 모두 비움
   for _ in range(2): out |= ndimage.binary_dilation(out) & (a[..., :3].min(-1) > 170) & (a[..., 3] > 0)
   a[out, 3] = 0
-  col, al = uniform(a[..., 3] > 128, a[..., :3], 2); a = np.dstack([col, al * 255])
+  if k not in THIN:  # 가는 줄(면류관 구슬 줄)이 있는 그림은 테두리를 다시 그리지 않음 (다시 그리면 가는 선이 지워짐)
+    col, al = uniform(a[..., 3] > 128, a[..., :3], 2); a = np.dstack([col, al * 255])
   Image.fromarray(a.round().clip(0, 255).astype(np.uint8)).resize((258, 386), Image.LANCZOS).save(f'hair-{k}.png', optimize=True)
 # 눈·입(raw_user/eye-N-2x.png, mouth-N-2x.png): 그림 밖과 이어진 흰색만 지우고(눈 속 반짝이는 그대로) 절반으로. 가는 선이라 테두리는 안 다시 그림
 for f in glob.glob('raw_user/eye-*-2x.png') + glob.glob('raw_user/mouth-*-2x.png'):
