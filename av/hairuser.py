@@ -122,3 +122,19 @@ for f in glob.glob('raw_user/pet-*-2x.png'):
   for _ in range(2): out |= ndimage.binary_dilation(out) & (a[..., :3].min(-1) > 170) & (a[..., 3] > 0)
   a[out, 3] = 0; im = Image.fromarray(a.round().clip(0, 255).astype(np.uint8)).resize((258, 416), Image.LANCZOS)
   bb = im.getbbox(); dy = min(0, 426 - (40 + bb[3]) - 2); c = Image.new('RGBA', (378, 426)); c.alpha_composite(im, (60, 40 + dy)); c.save(f'{n}.png', optimize=True)
+# 쪽머리 구레나룻: 귀 앞 얼굴 가장자리에 머리 띠(위는 넓고 아래는 뾰족)를 매끈하게 붙이고 테두리를 다시 그림 (대머리 가발처럼 안 보이게)
+SIDEBURN = [30, 31]
+B = np.array(Image.open('base-0.png'))[..., 3] > 128; Bd = ndimage.distance_transform_edt(B)  # 머리 가장자리에서 안쪽으로 거리
+for k in SIDEBURN:
+  h = np.array(Image.open(f'hair-{k}.png').convert('RGBA')).astype(float); H = h[..., 3] > 128
+  hair = h[H & (h[..., :3].max(-1) < 120) & (h[..., :3].max(-1) > 45)][:, :3]; col = np.median(hair, 0)  # 머리카락 색 (장식·테두리 빼고)
+  Y, X = np.mgrid[:386, :258]; Y0, Y1 = 90, 184
+  t = np.clip((Y - Y0) / (Y1 - Y0), 0, 1); w = 16 * (1 - t) ** .8 + 1  # 띠 두께
+  band = B & (Bd < w) & (Y >= Y0) & (Y < Y1) & (np.abs(X - 128.5) > 40)
+  band = ndimage.gaussian_filter(band.astype(float), 1.2) > .5
+  add = band & ~H; h[add, :3] = col; h[add, 3] = 255
+  M = (h[..., 3] > 128) | band
+  big = np.array(Image.fromarray(h.round().clip(0, 255).astype(np.uint8)).resize((516, 772), Image.LANCZOS)).astype(float)
+  Mb = np.array(Image.fromarray((M * 255).astype(np.uint8)).resize((516, 772), Image.LANCZOS)) > 128
+  c2, a2 = uniform(Mb, big[..., :3], 2, R=2.0, D=0)  # 테두리만 새로 (원래 그림 안쪽은 그대로)
+  Image.fromarray(np.dstack([c2, a2 * 255]).round().clip(0, 255).astype(np.uint8)).resize((258, 386), Image.LANCZOS).save(f'hair-{k}.png', optimize=True)
