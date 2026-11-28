@@ -32,6 +32,8 @@ for f in glob.glob('raw_user/*-2x.png'):
       while y < ys[-1] and W0[y, x]: out[y, x] = True; y += 1
   for _ in range(2): out |= ndimage.binary_dilation(out) & (a[..., :3].min(-1) > 170) & (a[..., 3] > 0)  # 바깥 흰색에 붙은 옅은 테두리 번짐도
   a[out, 3] = 0
+  if n.startswith(('shoes-', 'acc-')):  # 오려 낸 자국(신발 사이·둘레의 가는 선)은 지움: 굵은 덩어리에서 이어진 것만 남김
+    M = a[..., 3] > 60; core = ndimage.binary_opening(M, iterations=3); a[M & ~ndimage.binary_dilation(core, iterations=4), 3] = 0
   if n.startswith(('top-', 'bottom-')): # 옷: 테두리를 매끈하고 같은 굵기로 다시 그림 (outline.py, 다른 옷과 같게)
     col, al = uniform(a[..., 3] > 128, a[..., :3], 2); a = np.dstack([col, al * 255])
   Image.fromarray(a.round().clip(0, 255).astype(np.uint8)).resize((258, 386), Image.LANCZOS).save(f'{n}.png', optimize=True)
